@@ -1,5 +1,7 @@
 import { createBattle } from './battle'
-import { cards, encounters, startingDeck } from './types'
+import { cards, startingDeck } from './types'
+import { baselineEconomy, economyEncounters } from './economy'
+import type { EconomyConfig } from './economy'
 import { shuffle } from './deck'
 import type { BattleState, CardDefinition, CardId, EncounterDefinition, Hero } from './types'
 
@@ -9,19 +11,27 @@ export interface CampaignBattleOptions {
   deck?: readonly CardId[]
   seed?: number
   battleId?: string
+  economy?: EconomyConfig
 }
 
 /** Shared campaign rules used by the playable app and the headless balance lab. */
 export function createCampaignBattle(options: CampaignBattleOptions = {}): BattleState {
-  return createBattle(options.encounter ?? encounters[0]!, options.heroes, {
+  const economy = options.economy ?? baselineEconomy
+  return createBattle(options.encounter ?? economyEncounters(economy)[0]!, options.heroes, {
     deck: options.deck ?? startingDeck,
     seed: options.seed,
     battleId: options.battleId,
+    economy,
   })
 }
 
-export function campaignEncounter(index: number): EncounterDefinition | undefined {
-  return encounters[index]
+/** The encounters of the economy's enemy package (the v0.6 enemies for the standard game). */
+export function campaignEncounters(economy: EconomyConfig = baselineEconomy): readonly EncounterDefinition[] {
+  return economyEncounters(economy)
+}
+
+export function campaignEncounter(index: number, economy: EconomyConfig = baselineEconomy): EncounterDefinition | undefined {
+  return campaignEncounters(economy)[index]
 }
 
 export function campaignRewards(): CardDefinition[] {
@@ -43,7 +53,7 @@ export type CampaignAdvance = { kind: 'reward'; nextEncounter: number } | { kind
 export function advanceCampaign(battle: BattleState, encounterIndex: number): CampaignAdvance {
   if (battle.result === 'defeat') return { kind: 'defeat' }
   if (battle.result !== 'victory') throw new Error('Campaign can advance only after a victory')
-  return encounterIndex >= encounters.length - 1
+  return encounterIndex >= campaignEncounters(battle.economy).length - 1
     ? { kind: 'complete' }
     : { kind: 'reward', nextEncounter: encounterIndex + 1 }
 }

@@ -1,3 +1,5 @@
+import type { EconomyConfig } from './economy'
+
 export type HeroId = 'warrior' | 'mage'
 // Kept separate from HeroId so class presentation can evolve independently of its current hero.
 export type CardClassId = 'warrior' | 'mage'
@@ -148,6 +150,8 @@ export interface BattleState {
   discardPile: CardInstance[]
   exhausted: CardInstance[]
   pending: PendingPlay | null
+  /** Rules that differ between the standard game and the experimental economies; plain data, never mutated. */
+  economy: EconomyConfig
   mana: number
   maxMana: number
   turn: number

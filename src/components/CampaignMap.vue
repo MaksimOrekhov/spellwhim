@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { EncounterDefinition, Hero } from '../game/types'
 
-defineProps<{ encounters: EncounterDefinition[]; activeIndex: number; heroes: Record<'warrior' | 'mage', Hero> }>()
+defineProps<{ encounters: readonly EncounterDefinition[]; activeIndex: number; heroes: Record<'warrior' | 'mage', Hero> }>()
 const emit = defineEmits<{ enter: [index: number] }>()
 </script>
 

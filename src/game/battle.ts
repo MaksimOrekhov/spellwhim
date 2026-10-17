@@ -1,4 +1,6 @@
-import { CARDS_DRAWN_PER_TURN, OPENING_HAND_SIZE, cardDefinition, encounters, links, startingDeck } from './types'
+import { cardDefinition, encounters, links, startingDeck } from './types'
+import { baselineEconomy, drawForTurn, manaForTurn } from './economy'
+import type { EconomyConfig } from './economy'
 import { drawCards, shuffle } from './deck'
 import type { BattleState, CardEffect, CardDefinition, CardId, CardPreview, EncounterDefinition, EnemyAction, EnemyHit, HeroId, PendingPlay, StatusId } from './types'
 
@@ -7,6 +9,8 @@ export interface BattleOptions {
   seed?: number
   battleId?: string
   openingHandSize?: number
+  /** Mana curve and draw schedule; the standard game (flat 3 mana, draw 2) when omitted. */
+  economy?: EconomyConfig
 }
 const ENEMY_ARMOR_CAP = 8
 
@@ -23,6 +27,7 @@ function updateResult(state: BattleState): void {
 
 export function createBattle(encounter: EncounterDefinition = encounters[1]!, previousHeroes?: BattleState['heroes'], options: BattleOptions = {}): BattleState {
   const seed = (options.seed ?? 1) >>> 0
+  const economy = options.economy ?? baselineEconomy
   const battleId = options.battleId ?? encounter.id + ':' + seed
   const heroes = previousHeroes
     ? { warrior: { ...previousHeroes.warrior, armor: 0 }, mage: { ...previousHeroes.mage, armor: 0 } }
@@ -34,13 +39,13 @@ export function createBattle(encounter: EncounterDefinition = encounters[1]!, pr
     battleId, seed, rngState: seed, nextActionId: 1, heroes,
     enemy: { name: encounter.name, title: encounter.title, health: encounter.maxHealth, maxHealth: encounter.maxHealth, armor: 0, appearance: encounter.appearance, phase: 1, nextActionPhase: 1, behavior: encounter.behavior, behaviorIndex: 1, nextAction: encounter.behavior.phase1[0]!, focus: initialFocus(encounter.behavior.phase1[0]!) },
     statuses: {}, hand: [], blockedDraws: 0, drawPile: [], discardPile: [], exhausted: [], pending: null,
-    mana: 3, maxMana: 3, turn: 1, result: null,
+    economy, mana: manaForTurn(economy, 1), maxMana: manaForTurn(economy, 1), turn: 1, result: null,
   }
   state.drawPile = shuffle(state, (options.deck ?? startingDeck).map((id, index) => ({
     instanceId: battleId + '/card/' + (index + 1), definitionId: cardDefinition(id).id,
   })))
   updateResult(state)
-  drawCards(state, options.openingHandSize ?? OPENING_HAND_SIZE)
+  drawCards(state, options.openingHandSize ?? economy.openingHand)
   return state
 }
 
@@ -222,8 +227,10 @@ export function endTurn(state: BattleState): boolean {
   }
   updateResult(state)
   if (state.result) return true
-  state.mana = state.maxMana
   state.turn += 1
+  // The curve grows at the start of the turn and the pool is refilled completely.
+  state.maxMana = manaForTurn(state.economy, state.turn)
+  state.mana = state.maxMana
   if (action.kind === 'prepare') {
     state.enemy.nextAction = action.prepared
     state.enemy.focus = hitFocus(action.prepared, state.enemy.focus)
@@ -235,6 +242,6 @@ export function endTurn(state: BattleState): boolean {
     state.enemy.behaviorIndex = (index + 1) % actions.length
     state.enemy.focus = hitFocus(state.enemy.nextAction, state.enemy.focus)
   }
-  drawCards(state, CARDS_DRAWN_PER_TURN)
+  drawCards(state, drawForTurn(state.economy, state.turn))
   return true
 }

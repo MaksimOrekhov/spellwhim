@@ -1,6 +1,8 @@
 import { computed, shallowRef } from 'vue'
 import { endTurn, previewCard, resolveCardPlay, startCardPlay } from '../game/battle'
 import { addCampaignReward, createCampaignBattle } from '../game/campaign'
+import { baselineEconomy } from '../game/economy'
+import type { EconomyConfig } from '../game/economy'
 import { cardDefinition, startingDeck } from '../game/types'
 import type { BattleState, CardDefinition, CardId, CardInstance, CardPreview, EncounterDefinition } from '../game/types'
 
@@ -11,18 +13,19 @@ export interface HandCardView {
   playable: boolean
 }
 
-export function useBattle(options: { seed?: number; deck?: readonly CardId[] } = {}) {
+export function useBattle(options: { seed?: number; deck?: readonly CardId[]; economy?: EconomyConfig } = {}) {
+  const economy = options.economy ?? baselineEconomy
   let seed = (options.seed ?? Date.now()) >>> 0
   let battleSequence = 0
   let runGeneration = 0
   const ownedDeck = shallowRef<CardId[]>([...(options.deck ?? startingDeck)])
   const ownedCards = computed(() => ownedDeck.value.map(cardDefinition))
   function previewBattle() {
-    return createCampaignBattle({ deck: ownedDeck.value, seed, battleId: 'run/' + seed + '/generation/' + runGeneration + '/preview' })
+    return createCampaignBattle({ deck: ownedDeck.value, seed, economy, battleId: 'run/' + seed + '/generation/' + runGeneration + '/preview' })
   }
   function newBattle(encounter?: EncounterDefinition, heroes?: BattleState['heroes']) {
     const sequence = battleSequence++
-    return createCampaignBattle({ encounter, heroes, deck: ownedDeck.value, seed: (seed + sequence) >>> 0,
+    return createCampaignBattle({ encounter, heroes, deck: ownedDeck.value, seed: (seed + sequence) >>> 0, economy,
       battleId: 'run/' + seed + '/generation/' + runGeneration + '/battle/' + sequence,
     })
   }

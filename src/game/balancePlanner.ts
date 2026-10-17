@@ -1,5 +1,6 @@
 import { endTurn, playCard } from './battle'
 import { shuffle } from './deck'
+import { cloneEconomy } from './economy'
 import { cardDefinition } from './types'
 import type { BattleState, CardId, CardInstance } from './types'
 
@@ -77,6 +78,7 @@ export function cloneBattleState(state: BattleState): BattleState {
     ...state,
     heroes: { warrior: { ...state.heroes.warrior }, mage: { ...state.heroes.mage } },
     enemy: { ...state.enemy },
+    economy: cloneEconomy(state.economy),
     statuses,
     hand: [...state.hand], drawPile: [...state.drawPile], discardPile: [...state.discardPile], exhausted: [...state.exhausted],
   }
