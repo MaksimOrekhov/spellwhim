@@ -1,9 +1,16 @@
 import { endTurn, forecastEnemyAction, playCard, previewCard } from './battle'
 import { addCampaignReward, advanceCampaign, campaignEncounter, campaignRewardOptions, campaignRewards, carriedHeroes, createCampaignBattle } from './campaign'
+import { createTurnPlanner } from './balancePlanner'
+import type { PlannerStats } from './balancePlanner'
 import { MAX_HAND_SIZE, cardDefinition, encounters, startingDeck } from './types'
 import type { BattleState, CardId, CardInstance, HeroId } from './types'
 
-export type BalanceStrategy = 'aggressive' | 'defensive' | 'balanced'
+/** One-card-at-a-time heuristics: the original controls. */
+export type ClassicStrategy = 'aggressive' | 'defensive' | 'balanced'
+/** `planner` searches whole-turn card sequences (see balancePlanner.ts); the other three score single cards. */
+export type BalanceStrategy = ClassicStrategy | 'planner'
+export const classicStrategies: readonly ClassicStrategy[] = ['aggressive', 'defensive', 'balanced']
+export const allStrategies: readonly BalanceStrategy[] = [...classicStrategies, 'planner']
 export type RunStatus = 'victory' | 'defeat' | 'timeout'
 
 export interface CardStats {
@@ -28,6 +35,9 @@ export interface BattleRecord {
   armorDamagePrevented: Record<HeroId, number>
   enemyHealthDamage: number
   cardsPlayedTotal: number
+  /** Mana available at the start of each of this battle's turns, and mana actually spent. */
+  manaAvailable: number
+  manaSpent: number
   averageCardsPlayedPerTurn: number
   averageHandSizeAtTurnStart: number
   averagePlayableCardsAtTurnStart: number
@@ -54,6 +64,8 @@ export interface BalanceRun {
   cards: Record<string, CardStats>
   linkTriggers: Record<string, number>
   actionCount: number
+  /** Cost of planning (planner strategy only; zeros otherwise). Deterministic: counts search nodes, not milliseconds. */
+  planning: PlannerStats
 }
 
 export interface BalanceLimits { maxTurnsPerBattle: number; maxPlaysPerTurn: number; maxActionsPerRun: number }
@@ -68,7 +80,7 @@ function opponentForecast(state: BattleState) {
   return forecast.targets.length ? forecast.targets : forecast.futureTargets
 }
 
-function evaluateCard(state: BattleState, instance: CardInstance, strategy: BalanceStrategy): number {
+function evaluateCard(state: BattleState, instance: CardInstance, strategy: ClassicStrategy): number {
   const card = cardDefinition(instance.definitionId)
   const preview = previewCard(state, card)
   const forecast = opponentForecast(state)
@@ -99,7 +111,7 @@ function evaluateCard(state: BattleState, instance: CardInstance, strategy: Bala
   return damage * 0.9 + block * danger + linkValue + drawValue * 0.7 - card.cost * 0.45
 }
 
-function chooseCard(state: BattleState, strategy: BalanceStrategy): CardInstance | undefined {
+function chooseCard(state: BattleState, strategy: ClassicStrategy): CardInstance | undefined {
   const choice = state.hand
     .filter(instance => cardDefinition(instance.definitionId).cost <= state.mana)
     .map((instance, index) => ({ instance, index, score: evaluateCard(state, instance, strategy) }))
@@ -107,7 +119,7 @@ function chooseCard(state: BattleState, strategy: BalanceStrategy): CardInstance
   return choice && choice.score > 0.15 ? choice.instance : undefined
 }
 
-function chooseReward(state: BattleState, deck: readonly CardId[], strategy: BalanceStrategy): CardId {
+function chooseReward(state: BattleState, deck: readonly CardId[], strategy: ClassicStrategy): CardId {
   const counts = new Map<CardId, number>()
   for (const id of deck) counts.set(id, (counts.get(id) ?? 0) + 1)
   const hpRatio = Math.min(state.heroes.warrior.health / state.heroes.warrior.maxHealth, state.heroes.mage.health / state.heroes.mage.maxHealth)
@@ -139,12 +151,12 @@ interface HandMetrics {
   fullHandAfterActions: number
 }
 
-function recordBattle(state: BattleState, encounterId: string, encounterName: string, deckSizeStart: number, startHealth: Record<HeroId, number>, turns: number, result: BattleRecord['result'], cardsPlayed: Record<string, number>, enemyActions: Record<string, number>, healthDamageTaken: Record<HeroId, number>, armorDamagePrevented: Record<HeroId, number>, enemyHealthDamage: number, cardsPlayedTotal: number, handMetrics: HandMetrics, blockedDraws: number, links: Record<string, number>, actionLog: string[]): BattleRecord {
+function recordBattle(state: BattleState, encounterId: string, encounterName: string, deckSizeStart: number, startHealth: Record<HeroId, number>, turns: number, result: BattleRecord['result'], cardsPlayed: Record<string, number>, enemyActions: Record<string, number>, healthDamageTaken: Record<HeroId, number>, armorDamagePrevented: Record<HeroId, number>, enemyHealthDamage: number, cardsPlayedTotal: number, manaAvailable: number, manaSpent: number, handMetrics: HandMetrics, blockedDraws: number, links: Record<string, number>, actionLog: string[]): BattleRecord {
   const samples = Math.max(1, turns)
   return {
     encounterId, encounterName, deckSizeStart, turns, result, heroesStart: startHealth,
     heroesEnd: { warrior: state.heroes.warrior.health, mage: state.heroes.mage.health },
-    healthDamageTaken, armorDamagePrevented, enemyHealthDamage, cardsPlayedTotal,
+    healthDamageTaken, armorDamagePrevented, enemyHealthDamage, cardsPlayedTotal, manaAvailable, manaSpent,
     averageCardsPlayedPerTurn: cardsPlayedTotal / samples,
     averageHandSizeAtTurnStart: handMetrics.handSizeAtTurnStartTotal / samples,
     averagePlayableCardsAtTurnStart: handMetrics.playableCardsAtTurnStartTotal / samples,
@@ -168,6 +180,8 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, limits: Par
   const battles: BattleRecord[] = []
   const cardStats: Record<string, CardStats> = {}
   const linkTriggers: Record<string, number> = { 'Магическая метка': 0, 'Защитный резонанс': 0 }
+  const planning: PlannerStats = { plans: 0, nodes: 0, truncated: 0, maxNodes: 0 }
+  const rewardStrategy: ClassicStrategy = strategy === 'planner' ? 'balanced' : strategy
 
   for (let encounterIndex = 0; encounterIndex < encounters.length; encounterIndex += 1) {
     const encounter = campaignEncounter(encounterIndex)!
@@ -188,6 +202,10 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, limits: Par
     const actionLog: string[] = []
     let enemyHealthDamage = 0
     let cardsPlayedTotal = 0
+    let manaAvailable = 0
+    let manaSpent = 0
+    // The planner gets its own entropy (the run seed) and never reads the battle's RNG state or draw order.
+    const planner = strategy === 'planner' ? createTurnPlanner({ entropy: (seed + encounterIndex) >>> 0 }) : undefined
     const handMetrics: HandMetrics = { handSizeAtTurnStartTotal: 0, playableCardsAtTurnStartTotal: 0, handSizeAfterActionsTotal: 0, fullHandAtTurnStart: 0, fullHandAfterActions: 0 }
     let battleTurns = 0
     let battleStatus: BattleRecord['result'] = 'timeout'
@@ -196,11 +214,13 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, limits: Par
       battleTurns += 1
       actionLog.push(`Ход ${battle.turn}: мана ${battle.mana}/${battle.maxMana}`)
       handMetrics.handSizeAtTurnStartTotal += battle.hand.length
+      manaAvailable += battle.mana
       handMetrics.playableCardsAtTurnStartTotal += battle.hand.filter(instance => cardDefinition(instance.definitionId).cost <= battle!.mana).length
       if (battle.hand.length >= MAX_HAND_SIZE) handMetrics.fullHandAtTurnStart += 1
       let playsThisTurn = 0
       while (!battle.result && playsThisTurn < max.maxPlaysPerTurn && actionCount < max.maxActionsPerRun) {
-        const chosen = chooseCard(battle, strategy)
+        const plannedId = planner?.next(battle)
+        const chosen = planner ? battle.hand.find(instance => instance.instanceId === plannedId) : chooseCard(battle, strategy as ClassicStrategy)
         if (!chosen) break
         const card = cardDefinition(chosen.definitionId)
         const outcome = playCard(battle, chosen.instanceId)
@@ -208,6 +228,7 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, limits: Par
         playsThisTurn += 1
         cardsPlayedTotal += 1
         if (!outcome.ok) break
+        manaSpent += card.cost
         actionLog.push(`Карта: ${card.name}; урон здоровью врага ${outcome.damageDealt}; мана ${card.cost}`)
         const stats = ensureCard(cardStats, card.id)
         stats.plays += 1
@@ -242,12 +263,16 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, limits: Par
       if (!endTurn(battle)) break
       actionCount += 1
     }
+    if (planner) {
+      planning.plans += planner.stats.plans; planning.nodes += planner.stats.nodes; planning.truncated += planner.stats.truncated
+      planning.maxNodes = Math.max(planning.maxNodes, planner.stats.maxNodes)
+    }
     turns += battleTurns
     if (battle.result === 'victory') { battleStatus = 'victory'; battlesCompleted += 1 }
     else if (battle.result === 'defeat') battleStatus = 'defeat'
     if (battle.result) actionLog.push(battle.result === 'victory' ? 'Бой выигран' : 'Бой проигран')
     else actionLog.push('Ограничение симуляции: бой остановлен техническим таймаутом')
-    battles.push(recordBattle(battle, encounter.id, encounter.name, deck.length, startHealth, battleTurns, battleStatus, cardsPlayed, enemyActions, healthDamageTaken, armorDamagePrevented, enemyHealthDamage, cardsPlayedTotal, handMetrics, battle.blockedDraws - blockedDrawsStart, localLinks, actionLog))
+    battles.push(recordBattle(battle, encounter.id, encounter.name, deck.length, startHealth, battleTurns, battleStatus, cardsPlayed, enemyActions, healthDamageTaken, armorDamagePrevented, enemyHealthDamage, cardsPlayedTotal, manaAvailable, manaSpent, handMetrics, battle.blockedDraws - blockedDrawsStart, localLinks, actionLog))
     if (!battle.result) {
       status = 'timeout'
       failedEncounter = encounter.id
@@ -256,7 +281,7 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, limits: Par
     const advance = advanceCampaign(battle, encounterIndex)
     if (advance.kind === 'defeat') { status = 'defeat'; failedEncounter = encounter.id; break }
     if (advance.kind === 'complete') { status = 'victory'; break }
-    const rewardId = chooseReward(battle, deck, strategy)
+    const rewardId = chooseReward(battle, deck, rewardStrategy)
     const reward = campaignRewards().find(card => card.id === rewardId)!
     deck = addCampaignReward(deck, reward)
     rewards.push(rewardId)
@@ -265,12 +290,13 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, limits: Par
   return {
     seed: seed >>> 0, strategy, status, battlesCompleted, failedEncounter, turns,
     finalHealth: { warrior: battle?.heroes.warrior.health ?? 25, mage: battle?.heroes.mage.health ?? 18 },
-    rewards, battles, cards: cardStats, linkTriggers, actionCount,
+    rewards, battles, cards: cardStats, linkTriggers, actionCount, planning,
   }
 }
 
 export function simulateBalance(options: { runs: number; seed: number; strategies?: BalanceStrategy[]; limits?: Partial<BalanceLimits> }): BalanceRun[] {
-  const strategies = options.strategies ?? ['aggressive', 'defensive', 'balanced']
+  // The default stays the three classic controls so existing reports are unchanged; pass `allStrategies` to add the planner.
+  const strategies = options.strategies ?? [...classicStrategies]
   const results: BalanceRun[] = []
   for (const strategy of strategies) for (let index = 0; index < options.runs; index += 1) results.push(simulateRun((options.seed + index) >>> 0, strategy, options.limits))
   return results
@@ -286,7 +312,24 @@ export function summarizeBalance(runs: BalanceRun[]) {
     const denominator = sample.length || 1
     const hp = sample.filter(run => run.status !== 'timeout')
     const hpDenominator = hp.length || 1
+    const battles = sample.flatMap(run => run.battles)
+    const totalTurns = Math.max(1, sample.reduce((sum, run) => sum + run.turns, 0))
+    const manaAvailable = battles.reduce((sum, battle) => sum + battle.manaAvailable, 0)
+    const manaSpent = battles.reduce((sum, battle) => sum + battle.manaSpent, 0)
+    const linkTriggers = sample.reduce((sum, run) => sum + Object.values(run.linkTriggers).reduce((a, b) => a + b, 0), 0)
     return {
+      // Mana economy, combo frequency, fight length and planning cost (nodes are deterministic search counts).
+      averageManaAvailablePerTurn: manaAvailable / totalTurns,
+      averageManaSpentPerTurn: manaSpent / totalTurns,
+      manaUtilization: manaAvailable ? manaSpent / manaAvailable : 0,
+      linkTriggersPerTurn: linkTriggers / totalTurns,
+      encounterTurns: Array.from({ length: encounters.length }, (_, index) => {
+        const fights = sample.filter(run => run.battles[index])
+        return fights.length ? fights.reduce((sum, run) => sum + run.battles[index]!.turns, 0) / fights.length : 0
+      }),
+      planningNodesPerTurn: sample.reduce((sum, run) => sum + run.planning.nodes, 0) / totalTurns,
+      planningTruncatedPlans: sample.reduce((sum, run) => sum + run.planning.truncated, 0),
+      planningMaxNodes: sample.reduce((max, run) => Math.max(max, run.planning.maxNodes), 0),
       strategy, runs: sample.length, victories: wins, defeats, timeouts, winRate: wins / denominator,
       averageTurns: sample.reduce((sum, run) => sum + run.turns, 0) / denominator,
       averageCardsPlayedPerTurn: sample.reduce((sum, run) => sum + run.battles.reduce((total, battle) => total + battle.cardsPlayedTotal, 0), 0) / Math.max(1, sample.reduce((sum, run) => sum + run.turns, 0)),

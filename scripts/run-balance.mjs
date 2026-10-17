@@ -1,6 +1,10 @@
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
+import { performance } from 'node:perf_hooks'
 import { createServer } from 'vite'
+
+const classic = ['aggressive', 'defensive', 'balanced']
+const everything = [...classic, 'planner']
 
 function readArgs(args) {
   const options = { runs: 200, seed: 42, strategy: 'all', json: null, run: null }
@@ -23,14 +27,21 @@ async function writeJson(path, data) {
   await writeFile(path, JSON.stringify(data, null, 2) + '\n')
 }
 
+function resolveStrategies(name) {
+  if (name === 'all') return everything
+  if (name === 'baseline') return classic
+  const list = name.split(',')
+  if (list.some(strategy => !everything.includes(strategy))) throw new Error('--strategy: aggressive, defensive, balanced, planner, baseline (три классических), all или список через запятую')
+  return list
+}
+
 const options = readArgs(process.argv.slice(2))
 if (options.help) {
-  console.log('npm run balance -- [--runs 200] [--seed 42] [--strategy all|aggressive|defensive|balanced] [--json path] [--run seed]')
+  console.log('npm run balance -- [--runs 200] [--seed 42] [--strategy all|baseline|planner|aggressive|defensive|balanced|a,b] [--json path] [--run seed]')
+  console.log('  all — четыре стратегии (по умолчанию); baseline — три классические без планировщика.')
   process.exit(0)
 }
-const allStrategies = ['aggressive', 'defensive', 'balanced']
-const strategies = options.strategy === 'all' ? allStrategies : [options.strategy]
-if (strategies.some(strategy => !allStrategies.includes(strategy))) throw new Error('--strategy: aggressive, defensive, balanced или all')
+const strategies = resolveStrategies(options.strategy)
 
 const server = await createServer({
   optimizeDeps: { noDiscovery: true, include: [] },
@@ -45,35 +56,75 @@ try {
     if (options.json) await writeJson(options.json, run)
     process.exitCode = run.status === 'timeout' ? 2 : 0
   } else {
-    const runs = simulateBalance({ runs: options.runs, seed: options.seed, strategies })
+    // Each strategy is timed on its own so planning cost is visible; the seed range is identical for all of them.
+    const runs = []
+    const timing = {}
+    for (const strategy of strategies) {
+      const started = performance.now()
+      runs.push(...simulateBalance({ runs: options.runs, seed: options.seed, strategies: [strategy] }))
+      const elapsed = performance.now() - started
+      timing[strategy] = { totalMs: Math.round(elapsed), msPerRun: Number((elapsed / options.runs).toFixed(2)) }
+    }
     const summary = summarizeBalance(runs)
+    const f = (value, digits = 1) => value.toFixed(digits)
     console.log('SPELLWHIM — BALANCE REPORT')
-    console.log(`Runs: ${options.runs} per strategy | seeds: ${options.seed}–${(options.seed + options.runs - 1) >>> 0}`)
-    console.table(summary.map(row => ({ strategy: row.strategy, victories: row.victories, defeats: row.defeats, timeout: row.timeouts, 'win %': (row.winRate * 100).toFixed(1), 'avg turns': row.averageTurns.toFixed(1), 'cards / turn': row.averageCardsPlayedPerTurn.toFixed(2), 'hand start': row.averageHandSizeAtTurnStart.toFixed(2), 'playable start': row.averagePlayableCardsAtTurnStart.toFixed(2), 'hand after plays': row.averageHandSizeAfterActions.toFixed(2), 'full at start': row.fullHandAtTurnStart, 'full after plays': row.fullHandAfterActions, 'blocked draws': row.blockedDraws, 'median turns': row.medianTurns, 'Brann HP': row.averageBrannHp.toFixed(1), 'Lira HP': row.averageLiraHp.toFixed(1) })))
+    console.log(`Runs: ${options.runs} per strategy | seeds: ${options.seed}–${(options.seed + options.runs - 1) >>> 0} | strategies: ${strategies.join(', ')}`)
+
+    console.log('Исход и здоровье:')
+    console.table(summary.map(row => ({ strategy: row.strategy, victories: row.victories, defeats: row.defeats, timeout: row.timeouts, 'win %': f(row.winRate * 100), 'avg turns': f(row.averageTurns), 'median turns': row.medianTurns, 'Brann HP': f(row.averageBrannHp), 'Lira HP': f(row.averageLiraHp) })))
+
+    console.log('Продолжительность боёв (средние ходы по встречам):')
+    console.table(summary.map(row => Object.fromEntries([['strategy', row.strategy], ...row.encounterTurns.map((turns, index) => ['encounter ' + (index + 1), f(turns)])])))
+
+    console.log('Карты, мана и комбинации (на ход игрока):')
+    console.table(summary.map(row => ({ strategy: row.strategy, 'cards / turn': f(row.averageCardsPlayedPerTurn, 2), 'mana available': f(row.averageManaAvailablePerTurn, 2), 'mana spent': f(row.averageManaSpentPerTurn, 2), 'mana use %': f(row.manaUtilization * 100), 'links / turn': f(row.linkTriggersPerTurn, 2), 'hand start': f(row.averageHandSizeAtTurnStart, 2), 'hand after plays': f(row.averageHandSizeAfterActions, 2), 'full at start': row.fullHandAtTurnStart, 'blocked draws': row.blockedDraws })))
 
     console.log('Победы по встречам (победы / сколько дошло):')
-    console.table(summary.flatMap(row => row.battlesReached.map((reached, index) => ({ strategy: row.strategy, encounter: index + 1, wins: row.battleWins[index], reached, 'win %': reached ? (row.battleWins[index] / reached * 100).toFixed(1) : '—' }))))
+    console.table(summary.flatMap(row => row.battlesReached.map((reached, index) => ({ strategy: row.strategy, encounter: index + 1, wins: row.battleWins[index], reached, 'win %': reached ? f(row.battleWins[index] / reached * 100) : '—' }))))
 
     const deaths = {}
     const cardTotals = {}
     const rewardTotals = {}
     const linkTotals = {}
     for (const run of runs) {
-      if (run.failedEncounter) deaths[run.failedEncounter] = (deaths[run.failedEncounter] ?? 0) + (run.status === 'defeat' ? 1 : 0)
-      for (const [id, stats] of Object.entries(run.cards)) cardTotals[id] = (cardTotals[id] ?? 0) + stats.plays
-      for (const reward of run.rewards) rewardTotals[reward] = (rewardTotals[reward] ?? 0) + 1
-      for (const [name, count] of Object.entries(run.linkTriggers)) linkTotals[name] = (linkTotals[name] ?? 0) + count
+      if (run.status === 'defeat' && run.failedEncounter) deaths[run.strategy + ' / ' + run.failedEncounter] = (deaths[run.strategy + ' / ' + run.failedEncounter] ?? 0) + 1
+      for (const [id, stats] of Object.entries(run.cards)) {
+        cardTotals[id] ??= {}
+        cardTotals[id][run.strategy] = (cardTotals[id][run.strategy] ?? 0) + stats.plays
+      }
+      for (const reward of run.rewards) {
+        rewardTotals[reward] ??= {}
+        rewardTotals[reward][run.strategy] = (rewardTotals[reward][run.strategy] ?? 0) + 1
+      }
+      for (const [name, count] of Object.entries(run.linkTriggers)) {
+        linkTotals[name] ??= {}
+        linkTotals[name][run.strategy] = (linkTotals[name][run.strategy] ?? 0) + count
+      }
     }
-    console.log('Поражения по встречам:')
-    console.table(Object.entries(deaths).map(([encounter, defeats]) => ({ encounter, defeats })))
-    console.log('Сыгранные карты:')
-    console.table(Object.entries(cardTotals).map(([card, plays]) => ({ card, plays })).sort((a, b) => b.plays - a.plays))
-    console.log('Выбранные награды:')
-    console.table(Object.entries(rewardTotals).map(([card, choices]) => ({ card, choices })))
-    console.log('Срабатывания связок:')
-    console.table(Object.entries(linkTotals).map(([link, triggers]) => ({ link, triggers })))
+    if (Object.keys(deaths).length) {
+      console.log('Поражения по встречам:')
+      console.table(Object.entries(deaths).map(([where, defeats]) => ({ where, defeats })))
+    }
+
+    console.log('Розыгрыши карт за поход (по стратегиям; последний столбец — планировщик минус balanced):')
+    console.table(Object.entries(cardTotals).map(([card, byStrategy]) => {
+      const row = { card }
+      for (const strategy of strategies) row[strategy] = f((byStrategy[strategy] ?? 0) / options.runs, 2)
+      if (strategies.includes('planner') && strategies.includes('balanced')) row['planner − balanced'] = f(((byStrategy.planner ?? 0) - (byStrategy.balanced ?? 0)) / options.runs, 2)
+      return row
+    }).sort((a, b) => Number(b[strategies[strategies.length - 1]]) - Number(a[strategies[strategies.length - 1]])))
+
+    console.log('Срабатывания связок за поход:')
+    console.table(Object.entries(linkTotals).map(([link, byStrategy]) => Object.fromEntries([['link', link], ...strategies.map(strategy => [strategy, f((byStrategy[strategy] ?? 0) / options.runs, 2)])])))
+
+    console.log('Выбранные награды (выборов за 100 походов):')
+    console.table(Object.entries(rewardTotals).map(([card, byStrategy]) => Object.fromEntries([['card', card], ...strategies.map(strategy => [strategy, f((byStrategy[strategy] ?? 0) / options.runs * 100, 0)])])))
+
+    console.log('Вычислительная стоимость:')
+    console.table(summary.map(row => ({ strategy: row.strategy, 'ms / run': timing[row.strategy].msPerRun, 'total ms': timing[row.strategy].totalMs, 'search nodes / turn': f(row.planningNodesPerTurn, 1), 'max nodes in a plan': row.planningMaxNodes, 'plans cut by node cap': row.planningTruncatedPlans })))
+
     if (options.json) {
-      const report = { schemaVersion: 1, options: { runs: options.runs, seed: options.seed, strategies }, summary, runs }
+      const report = { schemaVersion: 2, options: { runs: options.runs, seed: options.seed, strategies }, summary, timing, runs }
       await writeJson(options.json, report)
       console.log('JSON сохранён: ' + options.json)
     }
