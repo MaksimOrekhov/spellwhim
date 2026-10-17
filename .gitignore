@@ -5,3 +5,7 @@ src-tauri/target/
 .DS_Store
 *.log
 balance-reports/
+
+# Исследование экономики маны (research/mana): сырые результаты и логи
+research/mana/results/
+research/mana/*.log

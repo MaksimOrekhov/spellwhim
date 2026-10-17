@@ -1,0 +1,2682 @@
+[
+ {
+  "tag": "boss-draw3",
+  "model": "A",
+  "lever": "boss",
+  "variant": "draw3",
+  "hp": [
+   1.88,
+   1.77,
+   1.46
+  ],
+  "dmg": 1.1,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   5,
+   8
+  ],
+  "plannerHpLost": 20.8,
+  "plannerWinPct": 96
+ },
+ {
+  "tag": "boss-draw3",
+  "model": "B",
+  "lever": "boss",
+  "variant": "draw3",
+  "hp": [
+   2.46,
+   2.42,
+   2.31
+  ],
+  "dmg": 1.19,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   5,
+   7.9
+  ],
+  "plannerHpLost": 21,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "boss-draw3",
+  "model": "G1",
+  "lever": "boss",
+  "variant": "draw3",
+  "hp": [
+   2.41,
+   2.34,
+   2.05
+  ],
+  "dmg": 1.14,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   5,
+   7.9
+  ],
+  "plannerHpLost": 18.8,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "boss-draw3",
+  "model": "S",
+  "lever": "boss",
+  "variant": "draw3",
+  "hp": [
+   2.15,
+   2.07,
+   2.07
+  ],
+  "dmg": 1.11,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   5,
+   7.9
+  ],
+  "plannerHpLost": 20.2,
+  "plannerWinPct": 99
+ },
+ {
+  "tag": "boss-draw3",
+  "model": "U",
+  "lever": "boss",
+  "variant": "draw3",
+  "hp": [
+   2.23,
+   2.35,
+   2.4
+  ],
+  "dmg": 1.21,
+  "iterations": 3,
+  "plannerTurns": [
+   4,
+   5,
+   8
+  ],
+  "plannerHpLost": 21.1,
+  "plannerWinPct": 99
+ },
+ {
+  "tag": "boss-draw3",
+  "model": "UG1",
+  "lever": "boss",
+  "variant": "draw3",
+  "hp": [
+   2.65,
+   2.87,
+   2.72
+  ],
+  "dmg": 1.39,
+  "iterations": 6,
+  "plannerTurns": [
+   4,
+   5,
+   8
+  ],
+  "plannerHpLost": 19.1,
+  "plannerWinPct": 99
+ },
+ {
+  "tag": "boss-draw3late",
+  "model": "B",
+  "lever": "boss",
+  "variant": "draw3late",
+  "hp": [
+   2.35,
+   2.28,
+   2.15
+  ],
+  "dmg": 1.14,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   5,
+   7.9
+  ],
+  "plannerHpLost": 19.3,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "boss-draw3late",
+  "model": "S",
+  "lever": "boss",
+  "variant": "draw3late",
+  "hp": [
+   2.06,
+   2.03,
+   2
+  ],
+  "dmg": 1.06,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   5,
+   7.8
+  ],
+  "plannerHpLost": 19.5,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "boss-draw3late",
+  "model": "U",
+  "lever": "boss",
+  "variant": "draw3late",
+  "hp": [
+   2.16,
+   2.23,
+   2.26
+  ],
+  "dmg": 1.19,
+  "iterations": 3,
+  "plannerTurns": [
+   4,
+   5.1,
+   8
+  ],
+  "plannerHpLost": 21.4,
+  "plannerWinPct": 98
+ },
+ {
+  "tag": "boss",
+  "model": "A",
+  "lever": "boss",
+  "variant": "base",
+  "hp": [
+   1.78,
+   1.74,
+   1.44
+  ],
+  "dmg": 0.96,
+  "iterations": 1,
+  "plannerTurns": [
+   3.8,
+   5,
+   8.2
+  ],
+  "plannerHpLost": 19.1,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "boss",
+  "model": "B",
+  "lever": "boss",
+  "variant": "base",
+  "hp": [
+   2.35,
+   2.26,
+   1.98
+  ],
+  "dmg": 1.16,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   5.1,
+   8
+  ],
+  "plannerHpLost": 19,
+  "plannerWinPct": 98
+ },
+ {
+  "tag": "boss",
+  "model": "G1",
+  "lever": "boss",
+  "variant": "base",
+  "hp": [
+   2.27,
+   2.19,
+   1.9
+  ],
+  "dmg": 1.2,
+  "iterations": 8,
+  "plannerTurns": [
+   3.9,
+   5,
+   8.1
+  ],
+  "plannerHpLost": 21.5,
+  "plannerWinPct": 96
+ },
+ {
+  "tag": "boss",
+  "model": "S",
+  "lever": "boss",
+  "variant": "base",
+  "hp": [
+   2.06,
+   2.04,
+   1.88
+  ],
+  "dmg": 1.06,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   5,
+   7.9
+  ],
+  "plannerHpLost": 19.3,
+  "plannerWinPct": 98
+ },
+ {
+  "tag": "boss",
+  "model": "U",
+  "lever": "boss",
+  "variant": "base",
+  "hp": [
+   2.15,
+   2.17,
+   1.96
+  ],
+  "dmg": 1.16,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   5,
+   7.9
+  ],
+  "plannerHpLost": 19.1,
+  "plannerWinPct": 98
+ },
+ {
+  "tag": "boss",
+  "model": "UG1",
+  "lever": "boss",
+  "variant": "base",
+  "hp": [
+   2.51,
+   2.35,
+   2.01
+  ],
+  "dmg": 1.34,
+  "iterations": 1,
+  "plannerTurns": [
+   4,
+   4.9,
+   8
+  ],
+  "plannerHpLost": 20.7,
+  "plannerWinPct": 80
+ },
+ {
+  "tag": "std",
+  "model": "A",
+  "lever": "escalate",
+  "variant": "base",
+  "hp": [
+   1.66,
+   1.77,
+   1.65
+  ],
+  "dmg": 0.94,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   5,
+   8.1
+  ],
+  "plannerHpLost": 20.5,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "std",
+  "model": "A",
+  "lever": "hp",
+  "variant": "base",
+  "hp": [
+   1.66,
+   1.77,
+   1.7
+  ],
+  "dmg": 1.08,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   5,
+   8
+  ],
+  "plannerHpLost": 20.1,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "std",
+  "model": "A",
+  "lever": "pattern",
+  "variant": "base",
+  "hp": [
+   1.85,
+   1.75,
+   1.74
+  ],
+  "dmg": 0.96,
+  "iterations": 2,
+  "plannerTurns": [
+   3.9,
+   5.1,
+   8
+  ],
+  "plannerHpLost": 20.7,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "std",
+  "model": "A",
+  "lever": "reactive",
+  "variant": "base",
+  "hp": [
+   1.41,
+   1.48,
+   1.35
+  ],
+  "dmg": 1.19,
+  "iterations": 1,
+  "plannerTurns": [
+   4.1,
+   4.9,
+   7.9
+  ],
+  "plannerHpLost": 20.1,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "std",
+  "model": "B",
+  "lever": "escalate",
+  "variant": "base",
+  "hp": [
+   2.1,
+   2.26,
+   2.31
+  ],
+  "dmg": 1.19,
+  "iterations": 2,
+  "plannerTurns": [
+   3.9,
+   5,
+   7.9
+  ],
+  "plannerHpLost": 20.5,
+  "plannerWinPct": 96
+ },
+ {
+  "tag": "std",
+  "model": "B",
+  "lever": "hp",
+  "variant": "base",
+  "hp": [
+   2.1,
+   2.27,
+   2.31
+  ],
+  "dmg": 1.36,
+  "iterations": 2,
+  "plannerTurns": [
+   3.9,
+   5,
+   7.9
+  ],
+  "plannerHpLost": 20.4,
+  "plannerWinPct": 98
+ },
+ {
+  "tag": "std",
+  "model": "B",
+  "lever": "pattern",
+  "variant": "base",
+  "hp": [
+   2.35,
+   2.26,
+   2.37
+  ],
+  "dmg": 1.17,
+  "iterations": 2,
+  "plannerTurns": [
+   4.1,
+   5.1,
+   8.1
+  ],
+  "plannerHpLost": 20.2,
+  "plannerWinPct": 99
+ },
+ {
+  "tag": "std",
+  "model": "B",
+  "lever": "reactive",
+  "variant": "base",
+  "hp": [
+   1.79,
+   1.94,
+   1.9
+  ],
+  "dmg": 1.46,
+  "iterations": 1,
+  "plannerTurns": [
+   4,
+   5,
+   7.9
+  ],
+  "plannerHpLost": 21.3,
+  "plannerWinPct": 98
+ },
+ {
+  "tag": "std",
+  "model": "BG",
+  "lever": "escalate",
+  "variant": "base",
+  "hp": [
+   2.59,
+   2.43,
+   2.23
+  ],
+  "dmg": 1.32,
+  "iterations": 3,
+  "plannerTurns": [
+   4,
+   5,
+   8.1
+  ],
+  "plannerHpLost": 20.3,
+  "plannerWinPct": 75
+ },
+ {
+  "tag": "std",
+  "model": "BG",
+  "lever": "hp",
+  "variant": "base",
+  "hp": [
+   2.53,
+   2.44,
+   2.18
+  ],
+  "dmg": 1.51,
+  "iterations": 4,
+  "plannerTurns": [
+   3.9,
+   5,
+   7.9
+  ],
+  "plannerHpLost": 20.7,
+  "plannerWinPct": 81
+ },
+ {
+  "tag": "std",
+  "model": "BG",
+  "lever": "pattern",
+  "variant": "base",
+  "hp": [
+   2.82,
+   2.44,
+   2.36
+  ],
+  "dmg": 1.34,
+  "iterations": 8,
+  "plannerTurns": [
+   4.5,
+   4.9,
+   8.5
+  ],
+  "plannerHpLost": 18.5,
+  "plannerWinPct": 90
+ },
+ {
+  "tag": "std",
+  "model": "BG",
+  "lever": "reactive",
+  "variant": "base",
+  "hp": [
+   2.11,
+   2.05,
+   1.88
+  ],
+  "dmg": 1.54,
+  "iterations": 4,
+  "plannerTurns": [
+   3.8,
+   4.9,
+   7.9
+  ],
+  "plannerHpLost": 20.1,
+  "plannerWinPct": 81
+ },
+ {
+  "tag": "std",
+  "model": "C",
+  "lever": "escalate",
+  "variant": "base",
+  "hp": [
+   2.1,
+   2.33,
+   2.41
+  ],
+  "dmg": 1.17,
+  "iterations": 2,
+  "plannerTurns": [
+   3.9,
+   5,
+   7.9
+  ],
+  "plannerHpLost": 20.9,
+  "plannerWinPct": 86
+ },
+ {
+  "tag": "std",
+  "model": "C",
+  "lever": "hp",
+  "variant": "base",
+  "hp": [
+   2.1,
+   2.34,
+   2.37
+  ],
+  "dmg": 1.36,
+  "iterations": 2,
+  "plannerTurns": [
+   3.9,
+   4.9,
+   8.1
+  ],
+  "plannerHpLost": 20.6,
+  "plannerWinPct": 95
+ },
+ {
+  "tag": "std",
+  "model": "C",
+  "lever": "pattern",
+  "variant": "base",
+  "hp": [
+   2.34,
+   2.33,
+   2.41
+  ],
+  "dmg": 1.25,
+  "iterations": 3,
+  "plannerTurns": [
+   4,
+   5,
+   8
+  ],
+  "plannerHpLost": 20.7,
+  "plannerWinPct": 97
+ },
+ {
+  "tag": "std",
+  "model": "C",
+  "lever": "reactive",
+  "variant": "base",
+  "hp": [
+   1.79,
+   1.96,
+   2.01
+  ],
+  "dmg": 1.39,
+  "iterations": 1,
+  "plannerTurns": [
+   3.9,
+   5,
+   8.2
+  ],
+  "plannerHpLost": 20.5,
+  "plannerWinPct": 87
+ },
+ {
+  "tag": "std",
+  "model": "D",
+  "lever": "escalate",
+  "variant": "base",
+  "hp": [
+   1.72,
+   1.95,
+   2.2
+  ],
+  "dmg": 1.03,
+  "iterations": 2,
+  "plannerTurns": [
+   3.9,
+   4.9,
+   7.8
+  ],
+  "plannerHpLost": 20.6,
+  "plannerWinPct": 99
+ },
+ {
+  "tag": "std",
+  "model": "D",
+  "lever": "hp",
+  "variant": "base",
+  "hp": [
+   1.72,
+   1.95,
+   2.23
+  ],
+  "dmg": 1.1,
+  "iterations": 2,
+  "plannerTurns": [
+   3.9,
+   4.9,
+   7.9
+  ],
+  "plannerHpLost": 20.3,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "std",
+  "model": "D",
+  "lever": "pattern",
+  "variant": "base",
+  "hp": [
+   1.92,
+   1.97,
+   2.23
+  ],
+  "dmg": 0.96,
+  "iterations": 2,
+  "plannerTurns": [
+   3.9,
+   4.9,
+   7.9
+  ],
+  "plannerHpLost": 21.4,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "std",
+  "model": "D",
+  "lever": "reactive",
+  "variant": "base",
+  "hp": [
+   1.5,
+   1.69,
+   1.8
+  ],
+  "dmg": 1.27,
+  "iterations": 1,
+  "plannerTurns": [
+   4,
+   4.9,
+   7.8
+  ],
+  "plannerHpLost": 19.5,
+  "plannerWinPct": 99
+ },
+ {
+  "tag": "std",
+  "model": "D0",
+  "lever": "escalate",
+  "variant": "base",
+  "hp": [
+   1.34,
+   1.54,
+   1.97
+  ],
+  "dmg": 0.88,
+  "iterations": 2,
+  "plannerTurns": [
+   4.1,
+   5,
+   7.8
+  ],
+  "plannerHpLost": 19.9,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "std",
+  "model": "D0",
+  "lever": "hp",
+  "variant": "base",
+  "hp": [
+   1.35,
+   1.54,
+   1.99
+  ],
+  "dmg": 0.97,
+  "iterations": 2,
+  "plannerTurns": [
+   4.1,
+   5,
+   7.8
+  ],
+  "plannerHpLost": 21,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "std",
+  "model": "D0",
+  "lever": "pattern",
+  "variant": "base",
+  "hp": [
+   1.44,
+   1.54,
+   2.07
+  ],
+  "dmg": 0.84,
+  "iterations": 3,
+  "plannerTurns": [
+   4,
+   5,
+   7.9
+  ],
+  "plannerHpLost": 20.2,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "std",
+  "model": "D0",
+  "lever": "reactive",
+  "variant": "base",
+  "hp": [
+   1.24,
+   1.48,
+   1.73
+  ],
+  "dmg": 1.06,
+  "iterations": 2,
+  "plannerTurns": [
+   4.1,
+   5,
+   7.8
+  ],
+  "plannerHpLost": 19.9,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "std",
+  "model": "F4",
+  "lever": "escalate",
+  "variant": "base",
+  "hp": [
+   2.12,
+   2.17,
+   2.12
+  ],
+  "dmg": 1.2,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   5,
+   7.9
+  ],
+  "plannerHpLost": 18.9,
+  "plannerWinPct": 98
+ },
+ {
+  "tag": "std",
+  "model": "F4",
+  "lever": "hp",
+  "variant": "base",
+  "hp": [
+   2.1,
+   2.14,
+   2.11
+  ],
+  "dmg": 1.36,
+  "iterations": 6,
+  "plannerTurns": [
+   4,
+   4.9,
+   7.9
+  ],
+  "plannerHpLost": 18.6,
+  "plannerWinPct": 99
+ },
+ {
+  "tag": "std",
+  "model": "F4",
+  "lever": "pattern",
+  "variant": "base",
+  "hp": [
+   2.29,
+   2.11,
+   2.15
+  ],
+  "dmg": 1.29,
+  "iterations": 3,
+  "plannerTurns": [
+   4,
+   5,
+   8
+  ],
+  "plannerHpLost": 20.2,
+  "plannerWinPct": 99
+ },
+ {
+  "tag": "std",
+  "model": "F4",
+  "lever": "reactive",
+  "variant": "base",
+  "hp": [
+   1.83,
+   1.79,
+   1.77
+  ],
+  "dmg": 1.44,
+  "iterations": 2,
+  "plannerTurns": [
+   4.1,
+   4.9,
+   8
+  ],
+  "plannerHpLost": 18.7,
+  "plannerWinPct": 98
+ },
+ {
+  "tag": "std",
+  "model": "F5",
+  "lever": "escalate",
+  "variant": "base",
+  "hp": [
+   2.34,
+   2.36,
+   2.29
+  ],
+  "dmg": 1.39,
+  "iterations": 2,
+  "plannerTurns": [
+   3.9,
+   5.1,
+   8
+  ],
+  "plannerHpLost": 20.4,
+  "plannerWinPct": 76
+ },
+ {
+  "tag": "std",
+  "model": "F5",
+  "lever": "hp",
+  "variant": "base",
+  "hp": [
+   2.37,
+   2.4,
+   2.27
+  ],
+  "dmg": 1.51,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   5.2,
+   8
+  ],
+  "plannerHpLost": 19.9,
+  "plannerWinPct": 84
+ },
+ {
+  "tag": "std",
+  "model": "F5",
+  "lever": "pattern",
+  "variant": "base",
+  "hp": [
+   2.5,
+   2.36,
+   2.27
+  ],
+  "dmg": 1.57,
+  "iterations": 8,
+  "plannerTurns": [
+   3.8,
+   5.2,
+   7.8
+  ],
+  "plannerHpLost": 22.9,
+  "plannerWinPct": 87
+ },
+ {
+  "tag": "std",
+  "model": "F5",
+  "lever": "reactive",
+  "variant": "base",
+  "hp": [
+   2.05,
+   1.96,
+   1.85
+  ],
+  "dmg": 1.64,
+  "iterations": 5,
+  "plannerTurns": [
+   4,
+   5,
+   8
+  ],
+  "plannerHpLost": 21.1,
+  "plannerWinPct": 83
+ },
+ {
+  "tag": "std",
+  "model": "G",
+  "lever": "escalate",
+  "variant": "base",
+  "hp": [
+   2.43,
+   2.38,
+   2.37
+  ],
+  "dmg": 1.25,
+  "iterations": 1,
+  "plannerTurns": [
+   4.1,
+   4.9,
+   8.1
+  ],
+  "plannerHpLost": 19.2,
+  "plannerWinPct": 93
+ },
+ {
+  "tag": "std",
+  "model": "G",
+  "lever": "hp",
+  "variant": "base",
+  "hp": [
+   2.36,
+   2.43,
+   2.29
+  ],
+  "dmg": 1.47,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   5.1,
+   8
+  ],
+  "plannerHpLost": 20.4,
+  "plannerWinPct": 98
+ },
+ {
+  "tag": "std",
+  "model": "G",
+  "lever": "pattern",
+  "variant": "base",
+  "hp": [
+   2.48,
+   2.37,
+   2.3
+  ],
+  "dmg": 1.32,
+  "iterations": 4,
+  "plannerTurns": [
+   4,
+   5,
+   8
+  ],
+  "plannerHpLost": 20.8,
+  "plannerWinPct": 98
+ },
+ {
+  "tag": "std",
+  "model": "G",
+  "lever": "reactive",
+  "variant": "base",
+  "hp": [
+   2,
+   1.99,
+   1.94
+  ],
+  "dmg": 1.54,
+  "iterations": 8,
+  "plannerTurns": [
+   4,
+   5,
+   8
+  ],
+  "plannerHpLost": 21.7,
+  "plannerWinPct": 95
+ },
+ {
+  "tag": "std",
+  "model": "G1",
+  "lever": "escalate",
+  "variant": "base",
+  "hp": [
+   2.14,
+   2.24,
+   2.12
+  ],
+  "dmg": 1.17,
+  "iterations": 1,
+  "plannerTurns": [
+   4,
+   5,
+   7.8
+  ],
+  "plannerHpLost": 19.5,
+  "plannerWinPct": 99
+ },
+ {
+  "tag": "std",
+  "model": "G1",
+  "lever": "hp",
+  "variant": "base",
+  "hp": [
+   2.14,
+   2.24,
+   2.12
+  ],
+  "dmg": 1.33,
+  "iterations": 1,
+  "plannerTurns": [
+   4,
+   5.1,
+   7.8
+  ],
+  "plannerHpLost": 18.6,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "std",
+  "model": "G1",
+  "lever": "pattern",
+  "variant": "base",
+  "hp": [
+   2.31,
+   2.2,
+   2.21
+  ],
+  "dmg": 1.19,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   5,
+   7.9
+  ],
+  "plannerHpLost": 20,
+  "plannerWinPct": 99
+ },
+ {
+  "tag": "std",
+  "model": "G1",
+  "lever": "reactive",
+  "variant": "base",
+  "hp": [
+   1.85,
+   1.95,
+   1.78
+  ],
+  "dmg": 1.44,
+  "iterations": 1,
+  "plannerTurns": [
+   4,
+   5.2,
+   7.9
+  ],
+  "plannerHpLost": 20.5,
+  "plannerWinPct": 99
+ },
+ {
+  "tag": "std",
+  "model": "K",
+  "lever": "escalate",
+  "variant": "base",
+  "hp": [
+   1.63,
+   2.18,
+   2.27
+  ],
+  "dmg": 1.25,
+  "iterations": 2,
+  "plannerTurns": [
+   3.9,
+   5,
+   8
+  ],
+  "plannerHpLost": 20.6,
+  "plannerWinPct": 83
+ },
+ {
+  "tag": "std",
+  "model": "K",
+  "lever": "hp",
+  "variant": "base",
+  "hp": [
+   1.62,
+   2.13,
+   2.25
+  ],
+  "dmg": 1.39,
+  "iterations": 3,
+  "plannerTurns": [
+   4,
+   5,
+   8.2
+  ],
+  "plannerHpLost": 21,
+  "plannerWinPct": 87
+ },
+ {
+  "tag": "std",
+  "model": "K",
+  "lever": "pattern",
+  "variant": "base",
+  "hp": [
+   1.78,
+   2.21,
+   2.34
+  ],
+  "dmg": 1.32,
+  "iterations": 1,
+  "plannerTurns": [
+   4,
+   5.2,
+   8.1
+  ],
+  "plannerHpLost": 21.2,
+  "plannerWinPct": 83
+ },
+ {
+  "tag": "std",
+  "model": "K",
+  "lever": "reactive",
+  "variant": "base",
+  "hp": [
+   1.31,
+   1.82,
+   1.89
+  ],
+  "dmg": 1.45,
+  "iterations": 2,
+  "plannerTurns": [
+   3.9,
+   5.1,
+   8
+  ],
+  "plannerHpLost": 19.4,
+  "plannerWinPct": 84
+ },
+ {
+  "tag": "std",
+  "model": "P4",
+  "lever": "escalate",
+  "variant": "base",
+  "hp": [
+   1.98,
+   2.11,
+   2.11
+  ],
+  "dmg": 1.16,
+  "iterations": 4,
+  "plannerTurns": [
+   4,
+   5,
+   8
+  ],
+  "plannerHpLost": 21,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "std",
+  "model": "P4",
+  "lever": "hp",
+  "variant": "base",
+  "hp": [
+   1.97,
+   2.12,
+   2.12
+  ],
+  "dmg": 1.27,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   5,
+   8
+  ],
+  "plannerHpLost": 20.4,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "std",
+  "model": "P4",
+  "lever": "pattern",
+  "variant": "base",
+  "hp": [
+   2.14,
+   2.08,
+   2.16
+  ],
+  "dmg": 1.13,
+  "iterations": 2,
+  "plannerTurns": [
+   3.9,
+   4.9,
+   7.9
+  ],
+  "plannerHpLost": 19.6,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "std",
+  "model": "P4",
+  "lever": "reactive",
+  "variant": "base",
+  "hp": [
+   1.69,
+   1.75,
+   1.72
+  ],
+  "dmg": 1.35,
+  "iterations": 1,
+  "plannerTurns": [
+   4,
+   4.9,
+   7.8
+  ],
+  "plannerHpLost": 19.3,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "std",
+  "model": "PG",
+  "lever": "escalate",
+  "variant": "base",
+  "hp": [
+   2.58,
+   2.53,
+   2.29
+  ],
+  "dmg": 1.36,
+  "iterations": 3,
+  "plannerTurns": [
+   4.1,
+   5.1,
+   8.1
+  ],
+  "plannerHpLost": 19.2,
+  "plannerWinPct": 73
+ },
+ {
+  "tag": "std",
+  "model": "PG",
+  "lever": "hp",
+  "variant": "base",
+  "hp": [
+   2.54,
+   2.48,
+   2.21
+  ],
+  "dmg": 1.57,
+  "iterations": 6,
+  "plannerTurns": [
+   4.1,
+   4.9,
+   7.9
+  ],
+  "plannerHpLost": 19.7,
+  "plannerWinPct": 84
+ },
+ {
+  "tag": "std",
+  "model": "PG",
+  "lever": "pattern",
+  "variant": "base",
+  "hp": [
+   2.72,
+   2.46,
+   2.31
+  ],
+  "dmg": 1.45,
+  "iterations": 3,
+  "plannerTurns": [
+   4,
+   5,
+   8.1
+  ],
+  "plannerHpLost": 19.8,
+  "plannerWinPct": 91
+ },
+ {
+  "tag": "std",
+  "model": "PG",
+  "lever": "reactive",
+  "variant": "base",
+  "hp": [
+   2.11,
+   2.08,
+   1.89
+  ],
+  "dmg": 1.58,
+  "iterations": 2,
+  "plannerTurns": [
+   3.9,
+   4.9,
+   7.9
+  ],
+  "plannerHpLost": 20.2,
+  "plannerWinPct": 82
+ },
+ {
+  "tag": "std2",
+  "model": "BG1",
+  "lever": "hp",
+  "variant": "base",
+  "hp": [
+   2.46,
+   2.43,
+   2.29
+  ],
+  "dmg": 1.47,
+  "iterations": 2,
+  "plannerTurns": [
+   4.1,
+   5,
+   8
+  ],
+  "plannerHpLost": 19.8,
+  "plannerWinPct": 86
+ },
+ {
+  "tag": "std2",
+  "model": "PG1",
+  "lever": "hp",
+  "variant": "base",
+  "hp": [
+   2.45,
+   2.41,
+   2.27
+  ],
+  "dmg": 1.44,
+  "iterations": 2,
+  "plannerTurns": [
+   4.1,
+   4.9,
+   8.1
+  ],
+  "plannerHpLost": 18.8,
+  "plannerWinPct": 94
+ },
+ {
+  "tag": "std2",
+  "model": "S",
+  "lever": "hp",
+  "variant": "base",
+  "hp": [
+   1.85,
+   2.05,
+   2.25
+  ],
+  "dmg": 1.18,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   4.9,
+   7.8
+  ],
+  "plannerHpLost": 20.6,
+  "plannerWinPct": 99
+ },
+ {
+  "tag": "std2",
+  "model": "SG1",
+  "lever": "hp",
+  "variant": "base",
+  "hp": [
+   2.21,
+   2.36,
+   2.34
+  ],
+  "dmg": 1.38,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   5,
+   8
+  ],
+  "plannerHpLost": 19.8,
+  "plannerWinPct": 88
+ },
+ {
+  "tag": "std2",
+  "model": "U",
+  "lever": "hp",
+  "variant": "base",
+  "hp": [
+   1.98,
+   2.18,
+   2.32
+  ],
+  "dmg": 1.3,
+  "iterations": 2,
+  "plannerTurns": [
+   3.9,
+   5,
+   7.9
+  ],
+  "plannerHpLost": 19.8,
+  "plannerWinPct": 97
+ },
+ {
+  "tag": "std3",
+  "model": "KR",
+  "lever": "hp",
+  "variant": "base",
+  "hp": [
+   1.97,
+   2.27,
+   2.35
+  ],
+  "dmg": 1.31,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   5,
+   7.9
+  ],
+  "plannerHpLost": 19.9,
+  "plannerWinPct": 96
+ },
+ {
+  "tag": "surge",
+  "model": "UZ",
+  "lever": "hp",
+  "variant": "base",
+  "hp": [
+   2.22,
+   2.31,
+   2.33
+  ],
+  "dmg": 1.34,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   4.9,
+   7.9
+  ],
+  "plannerHpLost": 19.3,
+  "plannerWinPct": 97
+ },
+ {
+  "tag": "surge",
+  "model": "Z",
+  "lever": "hp",
+  "variant": "base",
+  "hp": [
+   1.98,
+   1.98,
+   1.84
+  ],
+  "dmg": 1.14,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   5,
+   8.2
+  ],
+  "plannerHpLost": 21.1,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-concept-costup-draw3",
+  "model": "A",
+  "lever": "hp",
+  "variant": "concept-costup-draw3",
+  "hp": [
+   1.2,
+   1.28,
+   1.05
+  ],
+  "dmg": 1.34,
+  "iterations": 2,
+  "plannerTurns": [
+   4.1,
+   4.9,
+   8
+  ],
+  "plannerHpLost": 19,
+  "plannerWinPct": 98
+ },
+ {
+  "tag": "v-concept-costup-draw3",
+  "model": "B",
+  "lever": "hp",
+  "variant": "concept-costup-draw3",
+  "hp": [
+   1.78,
+   1.93,
+   2.09
+  ],
+  "dmg": 1.38,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   5,
+   8.1
+  ],
+  "plannerHpLost": 19.6,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-concept-costup-draw3",
+  "model": "BG1",
+  "lever": "hp",
+  "variant": "concept-costup-draw3",
+  "hp": [
+   2.17,
+   2.36,
+   2.49
+  ],
+  "dmg": 1.52,
+  "iterations": 2,
+  "plannerTurns": [
+   3.9,
+   5,
+   7.8
+  ],
+  "plannerHpLost": 20.1,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-concept-costup-draw3",
+  "model": "G",
+  "lever": "hp",
+  "variant": "concept-costup-draw3",
+  "hp": [
+   1.91,
+   2.03,
+   1.86
+  ],
+  "dmg": 1.41,
+  "iterations": 1,
+  "plannerTurns": [
+   4,
+   5.1,
+   8.2
+  ],
+  "plannerHpLost": 20.1,
+  "plannerWinPct": 98
+ },
+ {
+  "tag": "v-concept-costup-draw3",
+  "model": "G1",
+  "lever": "hp",
+  "variant": "concept-costup-draw3",
+  "hp": [
+   1.67,
+   1.8,
+   1.62
+  ],
+  "dmg": 1.29,
+  "iterations": 1,
+  "plannerTurns": [
+   4,
+   5.1,
+   8
+  ],
+  "plannerHpLost": 19,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-concept-costup-draw3",
+  "model": "PG1",
+  "lever": "hp",
+  "variant": "concept-costup-draw3",
+  "hp": [
+   2.01,
+   2.15,
+   2.14
+  ],
+  "dmg": 1.46,
+  "iterations": 1,
+  "plannerTurns": [
+   3.9,
+   4.9,
+   7.8
+  ],
+  "plannerHpLost": 20.3,
+  "plannerWinPct": 99
+ },
+ {
+  "tag": "v-concept-costup-draw3",
+  "model": "S",
+  "lever": "hp",
+  "variant": "concept-costup-draw3",
+  "hp": [
+   1.4,
+   1.67,
+   1.84
+  ],
+  "dmg": 1.35,
+  "iterations": 3,
+  "plannerTurns": [
+   4,
+   5,
+   7.9
+  ],
+  "plannerHpLost": 18.5,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-concept-costup-draw3",
+  "model": "U",
+  "lever": "hp",
+  "variant": "concept-costup-draw3",
+  "hp": [
+   1.63,
+   1.84,
+   2.11
+  ],
+  "dmg": 1.43,
+  "iterations": 2,
+  "plannerTurns": [
+   3.9,
+   4.9,
+   7.9
+  ],
+  "plannerHpLost": 19.9,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-concept-costup",
+  "model": "A",
+  "lever": "hp",
+  "variant": "concept-costup",
+  "hp": [
+   1.18,
+   1.23,
+   1.05
+  ],
+  "dmg": 1.32,
+  "iterations": 2,
+  "plannerTurns": [
+   4.2,
+   5,
+   8
+  ],
+  "plannerHpLost": 19.9,
+  "plannerWinPct": 98
+ },
+ {
+  "tag": "v-concept-costup",
+  "model": "B",
+  "lever": "hp",
+  "variant": "concept-costup",
+  "hp": [
+   1.76,
+   1.89,
+   1.99
+  ],
+  "dmg": 1.33,
+  "iterations": 2,
+  "plannerTurns": [
+   3.9,
+   5,
+   7.9
+  ],
+  "plannerHpLost": 19.2,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-concept-costup",
+  "model": "BG",
+  "lever": "hp",
+  "variant": "concept-costup",
+  "hp": [
+   2.31,
+   2.51,
+   2.61
+  ],
+  "dmg": 1.52,
+  "iterations": 3,
+  "plannerTurns": [
+   4,
+   4.9,
+   8
+  ],
+  "plannerHpLost": 19.9,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-concept-costup",
+  "model": "BG1",
+  "lever": "hp",
+  "variant": "concept-costup",
+  "hp": [
+   2.06,
+   2.27,
+   2.34
+  ],
+  "dmg": 1.46,
+  "iterations": 2,
+  "plannerTurns": [
+   3.9,
+   4.9,
+   7.9
+  ],
+  "plannerHpLost": 20.1,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-concept-costup",
+  "model": "C",
+  "lever": "hp",
+  "variant": "concept-costup",
+  "hp": [
+   1.77,
+   1.99,
+   2.19
+  ],
+  "dmg": 1.4,
+  "iterations": 2,
+  "plannerTurns": [
+   3.9,
+   4.9,
+   7.8
+  ],
+  "plannerHpLost": 19.8,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-concept-costup",
+  "model": "D",
+  "lever": "hp",
+  "variant": "concept-costup",
+  "hp": [
+   1.39,
+   1.64,
+   1.85
+  ],
+  "dmg": 1.14,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   4.9,
+   7.9
+  ],
+  "plannerHpLost": 19.5,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-concept-costup",
+  "model": "G",
+  "lever": "hp",
+  "variant": "concept-costup",
+  "hp": [
+   1.77,
+   1.86,
+   1.75
+  ],
+  "dmg": 1.31,
+  "iterations": 1,
+  "plannerTurns": [
+   4.1,
+   5,
+   8.1
+  ],
+  "plannerHpLost": 19.1,
+  "plannerWinPct": 99
+ },
+ {
+  "tag": "v-concept-costup",
+  "model": "G1",
+  "lever": "hp",
+  "variant": "concept-costup",
+  "hp": [
+   1.6,
+   1.71,
+   1.53
+  ],
+  "dmg": 1.24,
+  "iterations": 1,
+  "plannerTurns": [
+   3.9,
+   4.9,
+   7.9
+  ],
+  "plannerHpLost": 19.1,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-concept-costup",
+  "model": "PG1",
+  "lever": "hp",
+  "variant": "concept-costup",
+  "hp": [
+   1.95,
+   2.09,
+   2.12
+  ],
+  "dmg": 1.39,
+  "iterations": 6,
+  "plannerTurns": [
+   4,
+   5,
+   8
+  ],
+  "plannerHpLost": 20.6,
+  "plannerWinPct": 99
+ },
+ {
+  "tag": "v-concept-costup",
+  "model": "S",
+  "lever": "hp",
+  "variant": "concept-costup",
+  "hp": [
+   1.39,
+   1.58,
+   1.79
+  ],
+  "dmg": 1.26,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   4.9,
+   7.9
+  ],
+  "plannerHpLost": 20,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-concept-costup",
+  "model": "U",
+  "lever": "hp",
+  "variant": "concept-costup",
+  "hp": [
+   1.64,
+   1.78,
+   2.03
+  ],
+  "dmg": 1.41,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   4.9,
+   8
+  ],
+  "plannerHpLost": 20.1,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-concept-draw3",
+  "model": "A",
+  "lever": "hp",
+  "variant": "concept-draw3",
+  "hp": [
+   1.55,
+   1.65,
+   1.45
+  ],
+  "dmg": 1.12,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   4.9,
+   8
+  ],
+  "plannerHpLost": 18.6,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-concept-draw3",
+  "model": "B",
+  "lever": "hp",
+  "variant": "concept-draw3",
+  "hp": [
+   2.07,
+   2.32,
+   2.42
+  ],
+  "dmg": 1.41,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   5,
+   8
+  ],
+  "plannerHpLost": 21.1,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-concept-draw3",
+  "model": "BG",
+  "lever": "hp",
+  "variant": "concept-draw3",
+  "hp": [
+   2.87,
+   3.09,
+   3.44
+  ],
+  "dmg": 1.65,
+  "iterations": 3,
+  "plannerTurns": [
+   4,
+   5,
+   8
+  ],
+  "plannerHpLost": 20,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-concept-draw3",
+  "model": "C",
+  "lever": "hp",
+  "variant": "concept-draw3",
+  "hp": [
+   2.12,
+   2.48,
+   2.79
+  ],
+  "dmg": 1.4,
+  "iterations": 4,
+  "plannerTurns": [
+   4,
+   5,
+   8
+  ],
+  "plannerHpLost": 20.9,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-concept-draw3",
+  "model": "D",
+  "lever": "hp",
+  "variant": "concept-draw3",
+  "hp": [
+   1.63,
+   1.91,
+   2.2
+  ],
+  "dmg": 1.09,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   4.9,
+   7.9
+  ],
+  "plannerHpLost": 20,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-concept-draw3",
+  "model": "G",
+  "lever": "hp",
+  "variant": "concept-draw3",
+  "hp": [
+   2.25,
+   2.34,
+   2.39
+  ],
+  "dmg": 1.49,
+  "iterations": 1,
+  "plannerTurns": [
+   3.9,
+   4.8,
+   8.1
+  ],
+  "plannerHpLost": 20.6,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-concept-draw3",
+  "model": "KR",
+  "lever": "hp",
+  "variant": "concept-draw3",
+  "hp": [
+   1.91,
+   2.33,
+   2.76
+  ],
+  "dmg": 1.36,
+  "iterations": 3,
+  "plannerTurns": [
+   4,
+   5,
+   7.9
+  ],
+  "plannerHpLost": 20,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-concept",
+  "model": "A",
+  "lever": "hp",
+  "variant": "concept",
+  "hp": [
+   1.53,
+   1.6,
+   1.47
+  ],
+  "dmg": 1.1,
+  "iterations": 2,
+  "plannerTurns": [
+   4.1,
+   5,
+   8.1
+  ],
+  "plannerHpLost": 19.8,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-concept",
+  "model": "B",
+  "lever": "hp",
+  "variant": "concept",
+  "hp": [
+   2,
+   2.23,
+   2.28
+  ],
+  "dmg": 1.3,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   5,
+   8
+  ],
+  "plannerHpLost": 19.7,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-concept",
+  "model": "BG",
+  "lever": "hp",
+  "variant": "concept",
+  "hp": [
+   2.69,
+   2.84,
+   2.91
+  ],
+  "dmg": 1.64,
+  "iterations": 7,
+  "plannerTurns": [
+   4.1,
+   5,
+   8.1
+  ],
+  "plannerHpLost": 20.5,
+  "plannerWinPct": 98
+ },
+ {
+  "tag": "v-concept",
+  "model": "C",
+  "lever": "hp",
+  "variant": "concept",
+  "hp": [
+   2.01,
+   2.37,
+   2.51
+  ],
+  "dmg": 1.34,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   5,
+   7.9
+  ],
+  "plannerHpLost": 18.6,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-concept",
+  "model": "D",
+  "lever": "hp",
+  "variant": "concept",
+  "hp": [
+   1.62,
+   1.88,
+   2.15
+  ],
+  "dmg": 1.1,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   4.9,
+   7.9
+  ],
+  "plannerHpLost": 20.5,
+  "plannerWinPct": 99
+ },
+ {
+  "tag": "v-concept",
+  "model": "E",
+  "lever": "hp",
+  "variant": "concept",
+  "hp": [
+   1.51,
+   1.66,
+   1.49
+  ],
+  "dmg": 1.1,
+  "iterations": 3,
+  "plannerTurns": [
+   3.9,
+   5,
+   7.8
+  ],
+  "plannerHpLost": 19.3,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-concept",
+  "model": "E2",
+  "lever": "hp",
+  "variant": "concept",
+  "hp": [
+   1.51,
+   1.66,
+   1.49
+  ],
+  "dmg": 1.1,
+  "iterations": 3,
+  "plannerTurns": [
+   3.9,
+   5,
+   7.8
+  ],
+  "plannerHpLost": 19.3,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-concept",
+  "model": "G",
+  "lever": "hp",
+  "variant": "concept",
+  "hp": [
+   2.09,
+   2.15,
+   2.01
+  ],
+  "dmg": 1.42,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   5,
+   8.1
+  ],
+  "plannerHpLost": 19.5,
+  "plannerWinPct": 98
+ },
+ {
+  "tag": "v-costup",
+  "model": "A",
+  "lever": "hp",
+  "variant": "costup",
+  "hp": [
+   1.22,
+   1.32,
+   1.16
+  ],
+  "dmg": 1.3,
+  "iterations": 1,
+  "plannerTurns": [
+   4,
+   5.2,
+   8
+  ],
+  "plannerHpLost": 18.9,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-costup",
+  "model": "B",
+  "lever": "hp",
+  "variant": "costup",
+  "hp": [
+   1.64,
+   1.75,
+   1.88
+  ],
+  "dmg": 1.45,
+  "iterations": 1,
+  "plannerTurns": [
+   3.9,
+   4.8,
+   7.8
+  ],
+  "plannerHpLost": 21.4,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-costup",
+  "model": "BG",
+  "lever": "hp",
+  "variant": "costup",
+  "hp": [
+   2.23,
+   2.4,
+   2.24
+  ],
+  "dmg": 1.56,
+  "iterations": 2,
+  "plannerTurns": [
+   3.9,
+   5,
+   8.1
+  ],
+  "plannerHpLost": 20.6,
+  "plannerWinPct": 89
+ },
+ {
+  "tag": "v-costup",
+  "model": "C",
+  "lever": "hp",
+  "variant": "costup",
+  "hp": [
+   1.76,
+   1.91,
+   2.13
+  ],
+  "dmg": 1.4,
+  "iterations": 6,
+  "plannerTurns": [
+   4,
+   5,
+   7.9
+  ],
+  "plannerHpLost": 19.1,
+  "plannerWinPct": 97
+ },
+ {
+  "tag": "v-costup",
+  "model": "D",
+  "lever": "hp",
+  "variant": "costup",
+  "hp": [
+   1.4,
+   1.63,
+   1.89
+  ],
+  "dmg": 1.18,
+  "iterations": 3,
+  "plannerTurns": [
+   4,
+   5,
+   8.2
+  ],
+  "plannerHpLost": 21,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-costup",
+  "model": "G",
+  "lever": "hp",
+  "variant": "costup",
+  "hp": [
+   1.87,
+   1.94,
+   1.88
+  ],
+  "dmg": 1.38,
+  "iterations": 1,
+  "plannerTurns": [
+   4,
+   5,
+   7.9
+  ],
+  "plannerHpLost": 20.9,
+  "plannerWinPct": 97
+ },
+ {
+  "tag": "v-draw3",
+  "model": "A",
+  "lever": "hp",
+  "variant": "draw3",
+  "hp": [
+   1.68,
+   1.82,
+   1.68
+  ],
+  "dmg": 1.14,
+  "iterations": 1,
+  "plannerTurns": [
+   4,
+   5.1,
+   7.8
+  ],
+  "plannerHpLost": 19.8,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-draw3",
+  "model": "B",
+  "lever": "hp",
+  "variant": "draw3",
+  "hp": [
+   2.14,
+   2.41,
+   2.68
+  ],
+  "dmg": 1.33,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   4.9,
+   7.8
+  ],
+  "plannerHpLost": 19.5,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-draw3",
+  "model": "BG",
+  "lever": "hp",
+  "variant": "draw3",
+  "hp": [
+   2.96,
+   3.29,
+   3.34
+  ],
+  "dmg": 1.68,
+  "iterations": 4,
+  "plannerTurns": [
+   4,
+   5,
+   8
+  ],
+  "plannerHpLost": 20.1,
+  "plannerWinPct": 99
+ },
+ {
+  "tag": "v-draw3",
+  "model": "C",
+  "lever": "hp",
+  "variant": "draw3",
+  "hp": [
+   2.15,
+   2.58,
+   3.04
+  ],
+  "dmg": 1.36,
+  "iterations": 3,
+  "plannerTurns": [
+   4,
+   5,
+   7.9
+  ],
+  "plannerHpLost": 19.9,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-draw3",
+  "model": "D",
+  "lever": "hp",
+  "variant": "draw3",
+  "hp": [
+   1.76,
+   2.03,
+   2.51
+  ],
+  "dmg": 1.05,
+  "iterations": 3,
+  "plannerTurns": [
+   4,
+   5,
+   8
+  ],
+  "plannerHpLost": 19.2,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-draw3",
+  "model": "G",
+  "lever": "hp",
+  "variant": "draw3",
+  "hp": [
+   2.54,
+   2.68,
+   2.81
+  ],
+  "dmg": 1.44,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   4.9,
+   7.8
+  ],
+  "plannerHpLost": 18.9,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-draw3",
+  "model": "KR",
+  "lever": "hp",
+  "variant": "draw3",
+  "hp": [
+   2.02,
+   2.46,
+   3.02
+  ],
+  "dmg": 1.37,
+  "iterations": 3,
+  "plannerTurns": [
+   4,
+   5,
+   7.9
+  ],
+  "plannerHpLost": 20.1,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-draw4",
+  "model": "A",
+  "lever": "hp",
+  "variant": "draw4",
+  "hp": [
+   1.68,
+   1.82,
+   1.69
+  ],
+  "dmg": 1.16,
+  "iterations": 1,
+  "plannerTurns": [
+   4,
+   5.1,
+   8
+  ],
+  "plannerHpLost": 20.1,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-draw4",
+  "model": "B",
+  "lever": "hp",
+  "variant": "draw4",
+  "hp": [
+   2.14,
+   2.48,
+   2.81
+  ],
+  "dmg": 1.37,
+  "iterations": 3,
+  "plannerTurns": [
+   4,
+   5,
+   8
+  ],
+  "plannerHpLost": 20.1,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-draw4",
+  "model": "BG",
+  "lever": "hp",
+  "variant": "draw4",
+  "hp": [
+   3.19,
+   3.47,
+   3.86
+  ],
+  "dmg": 1.69,
+  "iterations": 4,
+  "plannerTurns": [
+   4,
+   5,
+   8
+  ],
+  "plannerHpLost": 20.1,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-draw4",
+  "model": "C",
+  "lever": "hp",
+  "variant": "draw4",
+  "hp": [
+   2.14,
+   2.61,
+   3.14
+  ],
+  "dmg": 1.42,
+  "iterations": 3,
+  "plannerTurns": [
+   4,
+   5,
+   7.9
+  ],
+  "plannerHpLost": 21.4,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-draw4",
+  "model": "D",
+  "lever": "hp",
+  "variant": "draw4",
+  "hp": [
+   1.74,
+   2,
+   2.55
+  ],
+  "dmg": 1.13,
+  "iterations": 3,
+  "plannerTurns": [
+   4,
+   5,
+   8
+  ],
+  "plannerHpLost": 20.2,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-draw4",
+  "model": "G",
+  "lever": "hp",
+  "variant": "draw4",
+  "hp": [
+   2.59,
+   2.78,
+   2.94
+  ],
+  "dmg": 1.54,
+  "iterations": 3,
+  "plannerTurns": [
+   4,
+   5,
+   7.9
+  ],
+  "plannerHpLost": 20.3,
+  "plannerWinPct": 99
+ },
+ {
+  "tag": "v-open6draw3",
+  "model": "A",
+  "lever": "hp",
+  "variant": "open6draw3",
+  "hp": [
+   1.61,
+   1.75,
+   1.68
+  ],
+  "dmg": 1.09,
+  "iterations": 1,
+  "plannerTurns": [
+   3.8,
+   5,
+   7.8
+  ],
+  "plannerHpLost": 19.3,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-open6draw3",
+  "model": "B",
+  "lever": "hp",
+  "variant": "open6draw3",
+  "hp": [
+   2.06,
+   2.33,
+   2.56
+  ],
+  "dmg": 1.36,
+  "iterations": 2,
+  "plannerTurns": [
+   4,
+   5.1,
+   7.8
+  ],
+  "plannerHpLost": 20.7,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-open6draw3",
+  "model": "BG",
+  "lever": "hp",
+  "variant": "open6draw3",
+  "hp": [
+   2.58,
+   2.78,
+   2.8
+  ],
+  "dmg": 1.71,
+  "iterations": 3,
+  "plannerTurns": [
+   3.9,
+   5,
+   7.9
+  ],
+  "plannerHpLost": 20.9,
+  "plannerWinPct": 93
+ },
+ {
+  "tag": "v-open6draw3",
+  "model": "C",
+  "lever": "hp",
+  "variant": "open6draw3",
+  "hp": [
+   2.11,
+   2.42,
+   2.85
+  ],
+  "dmg": 1.35,
+  "iterations": 3,
+  "plannerTurns": [
+   4,
+   5,
+   7.9
+  ],
+  "plannerHpLost": 20,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-open6draw3",
+  "model": "D",
+  "lever": "hp",
+  "variant": "open6draw3",
+  "hp": [
+   1.7,
+   2.02,
+   2.48
+  ],
+  "dmg": 1.09,
+  "iterations": 3,
+  "plannerTurns": [
+   3.9,
+   5,
+   7.9
+  ],
+  "plannerHpLost": 20.6,
+  "plannerWinPct": 100
+ },
+ {
+  "tag": "v-open6draw3",
+  "model": "G",
+  "lever": "hp",
+  "variant": "open6draw3",
+  "hp": [
+   2.28,
+   2.48,
+   2.67
+  ],
+  "dmg": 1.46,
+  "iterations": 3,
+  "plannerTurns": [
+   4,
+   5,
+   8
+  ],
+  "plannerHpLost": 20.9,
+  "plannerWinPct": 100
+ }
+]
