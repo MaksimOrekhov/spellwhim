@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'vue'
-import warriorEmblem from '../assets/art/warrior-shield.svg'
-import mageEmblem from '../assets/art/mage-arcane-star.svg'
+import warriorEmblem from '../assets/art/warrior-class-sword-clash.svg'
+import mageEmblem from '../assets/art/mage-class-wizard-staff.svg'
 import type { CardClassId } from './types'
 
 export interface ClassTheme {
