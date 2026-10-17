@@ -67,7 +67,7 @@ function play() {
 .card-class-emblem img{display:block;width:100%;height:100%}
 .spell-card--angular .card-class-emblem img{filter:brightness(0) opacity(.88)}
 .card-nameplate{display:grid;place-items:center;min-height:32px;padding:4px 8px;border:1px solid var(--class-accent);border-radius:5px;background:linear-gradient(110deg,color-mix(in srgb,var(--class-primary) 75%,var(--class-surface)),var(--class-surface) 82%);box-shadow:inset 0 1px #fff3;color:#fff0cb}
-.spell-card--angular .card-nameplate{clip-path:polygon(5% 0,95% 0,100% 50%,95% 100%,5% 100%,0 50%);border-radius:0;background:linear-gradient(110deg,color-mix(in srgb,var(--class-primary) 68%,var(--class-accent)),var(--class-surface) 84%)}
+.spell-card--angular .card-nameplate{clip-path:polygon(3% 0,97% 0,100% 50%,97% 100%,3% 100%,0 50%);border-radius:0;padding-inline:clamp(12px,1vw,18px);background:linear-gradient(110deg,color-mix(in srgb,var(--class-primary) 68%,var(--class-accent)),var(--class-surface) 84%)}
 .spell-card--arcane .card-nameplate{border-radius:12px;background:linear-gradient(110deg,color-mix(in srgb,var(--class-primary) 45%,var(--class-surface)),color-mix(in srgb,var(--class-accent) 26%,var(--class-surface)))}
 .card-name{display:block;min-width:0;max-width:100%;overflow:hidden;text-overflow:clip;white-space:nowrap;font:700 clamp(16px,1.05vw,20px)/1.1 var(--display)}
 .card-description{display:grid;align-content:center;min-height:0;padding:2px 5px;color:#f0e4cb;font-size:clamp(13px,.92vw,16px);line-height:1.24}

@@ -69,7 +69,7 @@ function kindLabel(card: CardDefinition) {
 .reward-card--arcane .reward-card-art{border-radius:13px 13px 7px 7px}
 .reward-card-art img{display:block;width:100%;height:clamp(130px,20vh,250px);object-fit:cover}
 .reward-card-name{display:grid;place-items:center;min-width:0;max-width:100%;overflow:hidden;text-overflow:clip;white-space:nowrap;min-height:42px;padding:5px 8px;border:1px solid var(--class-accent);border-radius:6px;background:linear-gradient(110deg,color-mix(in srgb,var(--class-primary) 58%,var(--class-surface)),var(--class-surface));font:700 clamp(18px,1.5vw,24px)/1.1 var(--display);color:#ffebbd}
-.reward-card--angular .reward-card-name{clip-path:polygon(5% 0,95% 0,100% 50%,95% 100%,5% 100%,0 50%);border-radius:0}
+.reward-card--angular .reward-card-name{clip-path:polygon(3% 0,97% 0,100% 50%,97% 100%,3% 100%,0 50%);border-radius:0;padding-inline:clamp(16px,1vw,20px)}
 .reward-card--arcane .reward-card-name{border-radius:13px;background:linear-gradient(110deg,color-mix(in srgb,var(--class-primary) 40%,var(--class-surface)),color-mix(in srgb,var(--class-accent) 25%,var(--class-surface)))}
 .reward-card-meta{display:flex;justify-content:center;gap:8px;margin:9px 0;color:#d5ceb7;font-size:11px;letter-spacing:.08em}
 .reward-card-meta b{color:var(--class-accent)}
