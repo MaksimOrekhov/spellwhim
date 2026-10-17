@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { forecastEnemyAttack, hasStatus } from '../game/battle'
+import { forecastEnemyAction, hasStatus } from '../game/battle'
 import type { BattleState } from '../game/types'
 import type { BattlePhase, BattlePresentation } from '../composables/useBattleAnimation'
 import HeroPortrait from './HeroPortrait.vue'
@@ -13,9 +13,10 @@ const props = defineProps<{ state: BattleState; animation: BattlePresentation; p
 const emit = defineEmits<{ impact: [actionId: string]; endTurn: []; continue: [] }>()
 const mark = computed(() => hasStatus(props.state, 'mark'))
 const resonance = computed(() => hasStatus(props.state, 'resonance'))
-const forecast = computed(() => props.phase === 'enemy' && props.animation.incoming ? props.animation.incoming : forecastEnemyAttack(props.state))
+const forecast = computed(() => props.phase === 'enemy' && props.animation.incoming ? props.animation.incoming : forecastEnemyAction(props.state))
 const phaseTitle = computed(() => ({ player: 'Ваш ход', card: 'Способность отряда', enemy: 'Ход противника', finished: 'Бой завершён' })[props.phase])
-const enemyHero = computed(() => ({ id: 'mage' as const, name: props.state.enemy.name, title: props.state.enemy.title, health: props.state.enemy.health, maxHealth: props.state.enemy.maxHealth, armor: 0, icon: '✧' }))
+const enemyHero = computed(() => ({ id: 'mage' as const, name: props.state.enemy.name, title: props.state.enemy.title, health: props.state.enemy.health, maxHealth: props.state.enemy.maxHealth, armor: props.state.enemy.armor, icon: '✧' }))
+const threatened = computed(() => new Set(forecast.value.threatened))
 </script>
 <template>
   <main class="battle-scene" data-battle-scene :class="'battle-scene--' + phase">
@@ -37,19 +38,19 @@ const enemyHero = computed(() => ({ id: 'mage' as const, name: props.state.enemy
     </header>
     <div class="arena">
       <section class="enemy-encounter" aria-label="Противник">
-        <HeroPortrait :hero="enemyHero" side="enemy" :appearance="state.enemy.appearance" :marked="mark" :active="phase === 'enemy'" :damaged="animation.impactTarget === 'enemy'" />
-        <div class="enemy-plan"><EnemyIntent :forecast="forecast" :target-name="state.heroes[forecast.target].name" :executing="phase === 'enemy'" /></div>
+        <HeroPortrait :hero="enemyHero" side="enemy" :appearance="state.enemy.appearance" :marked="mark" :active="phase === 'enemy'" :damaged="animation.impactTarget === 'enemy'" :boss-phase="state.enemy.behavior.phase2 ? state.enemy.phase : undefined" />
+        <div class="enemy-plan"><EnemyIntent :forecast="forecast" :hero-names="{ warrior: state.heroes.warrior.name, mage: state.heroes.mage.name }" :executing="phase === 'enemy'" /></div>
       </section>
       <section class="party" aria-label="Бранн и Лира — общий ход отряда">
-        <HeroPortrait :hero="state.heroes.warrior" side="player" :targeted="forecast.target === 'warrior'" :damaged="animation.impactTarget === 'warrior'" :active="phase === 'card' && animation.source === 'warrior'" />
+        <HeroPortrait :hero="state.heroes.warrior" side="player" :targeted="threatened.has('warrior')" :damaged="animation.impactTarget === 'warrior' || animation.impactTarget === 'both'" :active="phase === 'card' && animation.source === 'warrior'" />
         <div class="party-link">
           <GameTooltip v-if="resonance" label="Защитный резонанс"><button class="resonance-token" aria-label="Активен защитный резонанс">⬡ <span>Резонанс</span></button><template #content><p>Следующее атакующее заклинание Лиры: +2 урона.</p><p>До конца текущего хода.</p></template></GameTooltip>
           <span v-else class="party-link-line" aria-hidden="true">✦</span>
         </div>
-        <HeroPortrait :hero="state.heroes.mage" side="player" :targeted="forecast.target === 'mage'" :damaged="animation.impactTarget === 'mage'" :active="phase === 'card' && animation.source === 'mage'" />
+        <HeroPortrait :hero="state.heroes.mage" side="player" :targeted="threatened.has('mage')" :damaged="animation.impactTarget === 'mage' || animation.impactTarget === 'both'" :active="phase === 'card' && animation.source === 'mage'" />
       </section>
     </div>
-    <BattleFx :pulse="animation.pulse" :action-id="animation.actionId" :effect="animation.effect" :source="animation.source" :target="animation.target" :damage="animation.amount" :bonus-damage="animation.bonusDamage" :partner-armor="animation.partnerArmor" @impact="emit('impact', $event)" />
+    <BattleFx :pulse="animation.pulse" :action-id="animation.actionId" :effect="animation.effect" :source="animation.source" :target="animation.target" :damage="animation.amount" :bonus-damage="animation.bonusDamage" :partner-armor="animation.partnerArmor" :incoming="animation.incoming" @impact="emit('impact', $event)" />
     <BattleResult v-if="state.result" :result="state.result" :continue-label="continueLabel" @continue="emit('continue')" />
   </main>
 </template>

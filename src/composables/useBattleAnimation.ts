@@ -1,7 +1,7 @@
 import { computed, onUnmounted, shallowRef } from 'vue'
 import { cardDefinition } from '../game/types'
-import { forecastEnemyAttack } from '../game/battle'
-import type { EnemyAttackForecast, PlayResult } from '../game/battle'
+import { forecastEnemyAction } from '../game/battle'
+import type { EnemyActionForecast, PlayResult } from '../game/battle'
 import type { Ref } from 'vue'
 import type { BattleState, HeroId, PendingPlay } from '../game/types'
 
@@ -10,7 +10,7 @@ export interface BattlePresentation {
   actionId: string | null
   pulse: number
   phase: 'player' | 'card' | 'enemy'
-  effect: 'attack' | 'spell' | 'guard' | 'hit' | ''
+  effect: 'attack' | 'spell' | 'guard' | 'hit' | 'heavy' | 'hit-all' | 'defend' | 'prepare' | 'recover' | ''
   busy: boolean
   source: HeroId | 'enemy' | null
   target: HeroId | 'enemy'
@@ -18,8 +18,8 @@ export interface BattlePresentation {
   bonusDamage: number
   partnerArmor: number
   label: string
-  impactTarget: HeroId | 'enemy' | null
-  incoming: EnemyAttackForecast | null
+  impactTarget: HeroId | 'enemy' | 'both' | null
+  incoming: EnemyActionForecast | null
 }
 
 export function useBattleAnimation(options: { state: Readonly<Ref<BattleState>>; resolvePlay: (id: string) => PlayResult | void; finishTurn: () => void }) {
@@ -38,7 +38,7 @@ export function useBattleAnimation(options: { state: Readonly<Ref<BattleState>>;
     pending = null
     window.clearTimeout(impactTimer)
     const current = animation.value
-    if (current.effect !== 'guard') animation.value = { ...current, impactTarget: current.target }
+    if (['attack', 'spell', 'hit', 'heavy', 'hit-all'].includes(current.effect)) animation.value = { ...current, impactTarget: current.effect === 'hit-all' ? 'both' : current.target }
     resolve()
   }
   type ActionData = Pick<BattlePresentation, 'phase' | 'effect' | 'source' | 'target' | 'amount' | 'bonusDamage' | 'partnerArmor' | 'label' | 'incoming'>
@@ -58,31 +58,33 @@ export function useBattleAnimation(options: { state: Readonly<Ref<BattleState>>;
     const card = cardDefinition(play.card.definitionId)
     const state = options.state.value
     const preview = play.preview
-    const target = state.enemy.intent
+    const target = state.enemy.focus
     const partner = target === 'warrior' ? 'mage' : 'warrior'
     const actor = state.heroes[card.className].name
     start({
       phase: 'card', source: card.className, incoming: null,
       effect: card.kind === 'defense' ? 'guard' : card.kind === 'spell' ? 'spell' : 'attack',
       target: card.kind === 'defense' ? target : 'enemy',
-      amount: card.kind === 'defense' ? preview.armor[target] : Math.min(state.enemy.health, preview.damage),
+      amount: card.kind === 'defense' ? preview.armor[target] : preview.healthDamage,
       partnerArmor: preview.armor[partner], bonusDamage: preview.bonusDamage,
       label: actor + ' · ' + card.name,
     }, card.kind === 'spell' ? 820 : 560, card.kind === 'spell' ? 1300 : card.kind === 'defense' ? 1120 : 880, () => {
       const result = options.resolvePlay(play.actionId)
       if (!result?.ok) return
-      const detail = card.kind === 'defense' ? '+' + preview.armor[target] + ' брони: ' + state.heroes[target].name : '−' + result.damageDealt + ' здоровья'
+      const detail = card.kind === 'defense' ? '+' + preview.armor[target] + ' брони: ' + state.heroes[target].name : '−' + result.damageDealt + ' здоровья' + (preview.armorDamage ? ' · снято ' + preview.armorDamage + ' брони врага' : '')
       animation.value = { ...animation.value, label: actor + ' · ' + detail + (result.drawn ? ' · +' + result.drawn + ' карта' : '') }
     })
   }
   function enemyTurn() {
     const state = options.state.value
-    const incoming = forecastEnemyAttack(state)
-    const target = incoming.target
-    const hero = state.heroes[target]
-    start({ phase: 'enemy', source: 'enemy', effect: 'hit', target, incoming, amount: incoming.healthLoss, bonusDamage: 0, partnerArmor: 0, label: state.enemy.name + ' → ' + hero.name }, 560, 880, () => {
+    const incoming = forecastEnemyAction(state)
+    const action = incoming.action
+    const primary = incoming.threatened[0] ?? state.enemy.focus
+    const effect = action.kind === 'attack_all' ? 'hit-all' : action.kind === 'defend' ? 'defend' : action.kind === 'prepare' ? 'prepare' : action.kind === 'recover' ? 'recover' : action.damage >= 9 ? 'heavy' : 'hit'
+    const suffix = incoming.threatened.length > 1 ? ' → оба героя' : incoming.threatened.length ? ' → ' + state.heroes[primary].name : ''
+    start({ phase: 'enemy', source: 'enemy', effect, target: effect === 'defend' || effect === 'prepare' || effect === 'recover' ? 'enemy' : primary, incoming, amount: incoming.targets.reduce((sum, target) => sum + target.healthLoss, 0) || incoming.armorGain, bonusDamage: 0, partnerArmor: 0, label: action.name + suffix }, 560, 880, () => {
       options.finishTurn()
-      animation.value = { ...animation.value, label: hero.name + ': −' + incoming.healthLoss + ' здоровья' + (incoming.absorbed ? ' · броня поглотила ' + incoming.absorbed : '') }
+      animation.value = { ...animation.value, label: action.name + ' выполнено' }
     })
   }
   function cancel() { clearTimers(); pending = null; animation.value = { ...idle(), pulse: animation.value.pulse + 1 } }

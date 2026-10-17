@@ -154,21 +154,26 @@ describe('dual-class links', () => {
 
   it('protects Lira when she is the announced target', () => {
     const state = fixture(['guard'])
-    state.enemy.intent = 'mage'
+    state.enemy.nextAction = { kind: 'attack', name: 'Удар', damage: 4, target: 'mage' }
+    state.enemy.focus = 'mage'
     cast(state, 'guard')
     endTurn(state)
-    expect(state.heroes.mage.health).toBe(17)
+    expect(state.heroes.mage.health).toBe(18)
     expect(state.heroes.mage.armor).toBe(0)
     expect(state.heroes.warrior.health).toBe(25)
   })
 
   it('keeps Bastion’s partner shield until that hero is attacked, without healing', () => {
     const state = fixture(['bastion'])
+    state.enemy.nextAction = { kind: 'attack', name: 'Удар', damage: 5, target: 'warrior' }
+    state.enemy.focus = 'warrior'
     cast(state, 'bastion')
     endTurn(state)
     expect(state.heroes.warrior.health).toBe(25)
     expect(state.heroes.warrior.armor).toBe(0)
     expect(state.heroes.mage.armor).toBe(3)
+    state.enemy.nextAction = { kind: 'attack', name: 'Удар', damage: 5, target: 'mage' }
+    state.enemy.focus = 'mage'
     endTurn(state)
     expect(state.heroes.mage.health).toBe(16)
     expect(state.heroes.mage.armor).toBe(0)
@@ -218,7 +223,7 @@ describe('deck, draw, recycle and exhaustion', () => {
   it('conserves every unique instance through many launch, draw, discard and shuffle operations', () => {
     for (let seed = 0; seed < 16; seed += 1) {
       const deck = [...startingDeck, 'quick-cut', 'thunderbolt', 'bastion'] as CardId[]
-      const state = createBattle({ ...encounters[2]!, attack: 1, maxHealth: 1000 }, undefined, { seed, deck })
+      const state = createBattle({ ...encounters[2]!, maxHealth: 1000 }, undefined, { seed, deck })
       const original = identities(state)
       for (let turn = 0; turn < 8; turn += 1) {
         for (let play = 0; play < 12; play += 1) {
@@ -238,6 +243,41 @@ describe('deck, draw, recycle and exhaustion', () => {
 })
 
 describe('terminal states and run adapter', () => {
+  it('uses enemy armor first, previews the split, and applies only overflow to health', () => {
+    const state = fixture(['sword-strike'])
+    state.enemy.armor = 5
+    const preview = previewCard(state, cardDefinition('sword-strike'))
+    expect(preview).toMatchObject({ damage: 6, armorDamage: 5, healthDamage: 1 })
+    expect(cast(state, 'sword-strike')).toMatchObject({ ok: true, damageDealt: 1 })
+    expect(state.enemy.armor).toBe(0)
+    expect(state.enemy.health).toBe(99)
+  })
+
+  it('gives root sentinel its declared defensive action and caps armor at eight', () => {
+    const state = createBattle(encounters[0], undefined, { seed: 6, deck: [] })
+    state.enemy.nextAction = { kind: 'defend', name: 'Кора', armor: 5 }
+    state.enemy.armor = 6
+    expect(forecastEnemyAttack(state)).toMatchObject({ armorGain: 2, targets: [] })
+    endTurn(state)
+    expect(state.enemy.armor).toBe(8)
+    expect(state.heroes.warrior.health).toBe(25)
+  })
+
+  it('resolves every AoE target from the same snapshot before declaring defeat', () => {
+    const state = createBattle(encounters[2], undefined, { seed: 11, deck: [] })
+    state.enemy.nextAction = { kind: 'attack_all', name: 'Волна', damage: 4, primaryTarget: 'warrior' }
+    state.heroes.warrior.health = 1
+    state.heroes.warrior.armor = 2
+    state.heroes.mage.health = 2
+    state.heroes.mage.armor = 1
+    const forecast = forecastEnemyAttack(state)
+    expect(forecast.targets).toMatchObject([{ target: 'warrior', healthLoss: 1 }, { target: 'mage', healthLoss: 2 }])
+    endTurn(state)
+    expect(state.heroes.warrior.health).toBe(0)
+    expect(state.heroes.mage.health).toBe(0)
+    expect(state.result).toBe('defeat')
+  })
+
   it('stops at lethal damage, with no draw or status applied to a defeated enemy', () => {
     const state = fixture(['fireball', 'sword-strike'], 8)
     expect(cast(state, 'fireball')).toMatchObject({ ok: true, damageDealt: 8 })
@@ -252,7 +292,8 @@ describe('terminal states and run adapter', () => {
 
   it('ends immediately when either hero dies, without starting another turn or draw', () => {
     const state = fixture(['sword-strike'])
-    state.enemy.intent = 'mage'
+    state.enemy.nextAction = { kind: 'attack', name: 'Удар', damage: 4, target: 'mage' }
+    state.enemy.focus = 'mage'
     state.heroes.mage.health = 3
     endTurn(state)
     expect(state.result).toBe('defeat')
@@ -300,16 +341,44 @@ describe('terminal states and run adapter', () => {
 
   it('uses the same armor forecast for UI and actual incoming health loss', () => {
     const state = fixture(['guard'])
-    state.enemy.attack = 7
-    state.enemy.intent = 'mage'
+    state.enemy.nextAction = { kind: 'attack', name: 'Удар', damage: 7, target: 'mage' }
+    state.enemy.focus = 'mage'
     state.heroes.mage.armor = 4
     const forecast = forecastEnemyAttack(state)
-    expect(forecast).toEqual({ target: 'mage', attack: 7, absorbed: 4, healthLoss: 3, lethal: false })
+    expect(forecast).toMatchObject({ target: 'mage', attack: 7, absorbed: 4, healthLoss: 3, lethal: false })
     endTurn(state)
     expect(state.heroes.mage.health).toBe(18 - forecast.healthLoss)
     const lethal = fixture([])
     lethal.heroes.warrior.health = 2
     expect(forecastEnemyAttack(lethal)).toMatchObject({ healthLoss: 2, lethal: true })
+  })
+
+  it('announces and resolves the guardian heavy strike against the same hero', () => {
+    const state = fixture([])
+    const announced = forecastEnemyAttack(state)
+    expect(announced.action).toMatchObject({ kind: 'prepare' })
+    expect(announced.futureTargets![0]).toMatchObject({ target: 'warrior', attack: 10 })
+    endTurn(state)
+    expect(state.enemy.nextAction).toMatchObject({ kind: 'attack', target: 'warrior', damage: 10 })
+    const attack = forecastEnemyAttack(state)
+    endTurn(state)
+    expect(state.heroes.warrior.health).toBe(25 - attack.healthLoss)
+  })
+
+  it('applies boss area damage from one snapshot and defers phase behavior until the announced action ends', () => {
+    const state = createBattle(encounters[2], undefined, { seed: 9, deck: ['sword-strike', 'sword-strike'], openingHandSize: 2 })
+    state.enemy.health = 24
+    state.enemy.nextAction = { kind: 'attack_all', name: 'Волна', damage: 4, primaryTarget: 'mage' }
+    const announced = forecastEnemyAttack(state)
+    cast(state, 'sword-strike')
+    expect(state.enemy.phase).toBe(2)
+    expect(state.enemy.nextAction).toMatchObject({ kind: 'attack_all', damage: 4 })
+    expect(forecastEnemyAttack(state).phase).toBe(1)
+    expect(announced.targets).toHaveLength(2)
+    endTurn(state)
+    expect(state.heroes.warrior.health).toBe(21)
+    expect(state.heroes.mage.health).toBe(14)
+    expect(state.enemy.nextAction).toEqual(encounters[2]!.behavior.phase2![0])
   })
 
   it('supports duplicate rewards and ignores a stale impact from a previous encounter', () => {

@@ -67,7 +67,7 @@ export function useBattle(options: { seed?: number; deck?: readonly CardId[] } =
     const next = structuredClone(current.value)
     if (!endTurn(next)) return
     current.value = next
-    log.value = next.result === 'defeat' ? 'Отряд пал…' : 'Ваш ход. Враг целится в героя: ' + next.heroes[next.enemy.intent].name + '.'
+    log.value = next.result === 'defeat' ? 'Отряд пал…' : next.result === 'victory' ? 'Противник повержен.' : 'Ваш ход. Намерение: ' + next.enemy.nextAction.name + '.'
   }
 
   function startBattle(encounter: EncounterDefinition): void {

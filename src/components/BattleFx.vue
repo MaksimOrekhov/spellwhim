@@ -2,9 +2,10 @@
 import { onMounted, onUnmounted, useTemplateRef, watch } from 'vue'
 import { Application, Container, Graphics, Text } from 'pixi.js'
 import type { HeroId } from '../game/types'
+import type { EnemyActionForecast } from '../game/battle'
 
-type Effect = 'attack' | 'spell' | 'guard' | 'hit' | ''
-const props = defineProps<{ pulse: number; effect: Effect; target: HeroId | 'enemy'; source: HeroId | 'enemy' | null; damage: number; actionId: string | null; bonusDamage: number; partnerArmor: number }>()
+type Effect = 'attack' | 'spell' | 'guard' | 'hit' | 'heavy' | 'hit-all' | 'defend' | 'prepare' | 'recover' | ''
+const props = defineProps<{ pulse: number; effect: Effect; target: HeroId | 'enemy'; source: HeroId | 'enemy' | null; damage: number; actionId: string | null; bonusDamage: number; partnerArmor: number; incoming?: EnemyActionForecast | null }>()
 const emit = defineEmits<{ impact: [actionId: string] }>()
 const canvasHost = useTemplateRef<HTMLDivElement>('canvasHost')
 let app: Application | null = null
@@ -85,7 +86,7 @@ function popAt(x: number, y: number, color: number, amount: number) {
   }
 }
 
-function swordSlashAt(x: number, y: number, onImpact: () => void, impactColor = 0xffd27c) {
+function swordSlashAt(x: number, y: number, onImpact: () => void, impactColor = 0xffd27c, damage = props.damage) {
   if (!effects || !app) return
   const width = canvasHost.value?.clientWidth ?? 1280
   const reach = Math.max(50, Math.min(104, width * 0.055))
@@ -128,7 +129,7 @@ function swordSlashAt(x: number, y: number, onImpact: () => void, impactColor = 
       didImpact = true
       onImpact()
       impactFlashAt(x, y)
-      scheduleEffect(() => popAt(x, y, impactColor, props.damage), 65)
+      scheduleEffect(() => popAt(x, y, impactColor, damage), 65)
     }
     if (didImpact && impactHold >= 160) {
       removeEffectTick(tick)
@@ -228,6 +229,27 @@ function guardAt(x: number, y: number, armor: number, onImpact: () => void) {
       scheduleEffect(() => floatingLabelAt(x, y, `+${armor} БРОНИ`, '#bdf7ff'), 65)
     }
     if (p >= 1) { removeEffectTick(tick); shield.destroy(); innerShield.destroy(); glow.destroy(); orbit.destroy() }
+  }
+  addEffectTick(tick)
+}
+
+function prepareAt(x: number, y: number, onImpact: () => void) {
+  if (!effects || !app) return
+  const core = new Graphics().circle(0, 0, 18).fill({ color: 0xffbd66, alpha: .72 })
+  const ring = new Graphics().circle(0, 0, 38).stroke({ color: 0xffdb8e, width: 5, alpha: .9 })
+  const outer = new Graphics().circle(0, 0, 64).stroke({ color: 0xc88aff, width: 3, alpha: .72 })
+  for (const item of [core, ring, outer]) { item.position.set(x, y); effects.addChild(item) }
+  let elapsed = 0
+  let sent = false
+  const tick = (ticker: { deltaMS: number }) => {
+    elapsed += ticker.deltaMS
+    const p = Math.min(elapsed / 760, 1)
+    core.scale.set(.7 + Math.sin(elapsed * .012) * .18)
+    ring.scale.set(.55 + p * .85)
+    outer.scale.set(.45 + p * 1.1)
+    ring.alpha = outer.alpha = 1 - p
+    if (elapsed >= 280 && !sent) { sent = true; onImpact(); floatingLabelAt(x, y - 8, 'АТАКА ГОТОВИТСЯ', '#ffe1a0') }
+    if (p >= 1) { removeEffectTick(tick); core.destroy(); ring.destroy(); outer.destroy() }
   }
   addEffectTick(tick)
 }
@@ -368,7 +390,19 @@ function trigger() {
   if (props.effect === 'spell' && source) { fireball(source, target, onImpact); return }
   if (props.effect === 'attack') { swordSlashAt(target.x, target.y, onImpact); return }
   if (props.effect === 'guard') { guardAt(target.x, target.y, props.damage, onImpact); return }
-  if (props.effect === 'hit') swordSlashAt(target.x, target.y, onImpact, 0xffa06e)
+  if (props.effect === 'hit' || props.effect === 'heavy') swordSlashAt(target.x, target.y, onImpact, props.effect === 'heavy' ? 0xff735f : 0xffa06e)
+  if (props.effect === 'hit-all') {
+    const targets = (['warrior', 'mage'] as HeroId[]).map(id => ({ id, point: center(id) })).filter((entry): entry is { id: HeroId; point: NonNullable<typeof entry.point> } => !!entry.point)
+    let remaining = targets.length
+    let sent = false
+    if (!remaining) return
+    for (const { id, point } of targets) {
+      const actual = props.incoming?.targets.find(hit => hit.target === id)?.healthLoss ?? 0
+      swordSlashAt(point.x, point.y, () => { remaining -= 1; if (!remaining && !sent) { sent = true; onImpact() } }, 0xffa06e, actual)
+    }
+  }
+  if (props.effect === 'defend' || props.effect === 'recover') guardAt(target.x, target.y, props.damage, onImpact)
+  if (props.effect === 'prepare') prepareAt(target.x, target.y, onImpact)
 }
 watch(() => props.pulse, trigger, { flush: 'post' })
 </script>

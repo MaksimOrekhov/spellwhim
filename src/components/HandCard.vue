@@ -21,7 +21,7 @@ function play() {
       <strong class="card-name">{{ card.name }}</strong><span class="card-description">{{ card.description }}</span>
       <span class="card-footer"><span>{{ card.className === 'warrior' ? 'Бранн · Воин' : 'Лира · Маг' }}</span><b v-if="preview.links.length" class="card-link" aria-label="Связка готова">✦ +{{ preview.bonusDamage }}</b><kbd v-else>{{ index + 1 }}</kbd></span>
     </button>
-    <template #content><p>{{ card.description }}</p><p v-if="preview.links.length" class="tooltip-accent">{{ preview.links.join(' · ') }}: +{{ preview.bonusDamage }} → {{ preview.damage }} урона.</p><p v-if="preview.draw">Добор: до {{ preview.draw }} {{ preview.draw === 1 ? 'карты' : 'карт' }}.</p><p v-if="card.exhaust">Эта копия выбывает до конца боя.</p><p v-if="reason" class="tooltip-reason">{{ reason }}</p><p v-else class="tooltip-reason">Нажмите, чтобы разыграть карту.</p></template>
+    <template #content><p>{{ card.description }}</p><p v-if="preview.damage">Урон: {{ preview.healthDamage }} здоровью<template v-if="preview.armorDamage">, {{ preview.armorDamage }} снимет с брони врага</template>.</p><p v-if="preview.links.length" class="tooltip-accent">{{ preview.links.join(' · ') }}: +{{ preview.bonusDamage }} → {{ preview.damage }} урона.</p><p v-if="preview.draw">Добор: до {{ preview.draw }} {{ preview.draw === 1 ? 'карты' : 'карт' }}.</p><p v-if="card.exhaust">Эта копия выбывает до конца боя.</p><p v-if="reason" class="tooltip-reason">{{ reason }}</p><p v-else class="tooltip-reason">Нажмите, чтобы разыграть карту.</p></template>
   </GameTooltip>
 </template>
 <style scoped>

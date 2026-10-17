@@ -79,20 +79,30 @@ export interface EncounterDefinition {
   name: string
   title: string
   maxHealth: number
-  attack: number
-  intent: HeroId
+  behavior: EnemyBehavior
   appearance: 'root' | 'guardian' | 'heart'
   mapLabel: string
 }
 
+export type EnemyHit = { kind: 'attack'; name: string; damage: number; target: HeroId } | { kind: 'attack_all'; name: string; damage: number; primaryTarget: HeroId }
+export type EnemyAction = EnemyHit | { kind: 'defend'; name: string; armor: number } | { kind: 'prepare'; name: string; prepared: EnemyHit } | { kind: 'recover'; name: string; armor: number }
+export interface EnemyBehavior { phase1: EnemyAction[]; phase2?: EnemyAction[] }
+export interface EnemyState {
+  name: string; title: string; health: number; maxHealth: number; armor: number
+  appearance: EncounterDefinition['appearance']; phase: 1 | 2; nextActionPhase: 1 | 2; behavior: EnemyBehavior
+  behaviorIndex: number; nextAction: EnemyAction; focus: HeroId
+}
+
 export const encounters: EncounterDefinition[] = [
-  { id: 'root-sentinel', name: 'Корневой дозорный', title: 'Порождение чащи', maxHealth: 24, attack: 4, intent: 'mage', appearance: 'root', mapLabel: 'Заражённый овраг' },
-  { id: 'twilight-guardian', name: 'Страж старой рощи', title: 'Древний хранитель', maxHealth: 30, attack: 5, intent: 'warrior', appearance: 'guardian', mapLabel: 'Забытый алтарь' },
-  { id: 'twilight-heart', name: 'Сумеречное сердце', title: 'Пробудившаяся чаща', maxHealth: 46, attack: 7, intent: 'mage', appearance: 'heart', mapLabel: 'Сердце чащи' },
+  { id: 'root-sentinel', name: 'Корневой дозорный', title: 'Порождение чащи', maxHealth: 24, behavior: { phase1: [{ kind: 'attack', name: 'Удар корнями', damage: 4, target: 'mage' }, { kind: 'defend', name: 'Кора-защитница', armor: 5 }, { kind: 'attack', name: 'Хлёсткая лоза', damage: 5, target: 'warrior' }] }, appearance: 'root', mapLabel: 'Заражённый овраг' },
+  { id: 'twilight-guardian', name: 'Страж старой рощи', title: 'Древний хранитель', maxHealth: 30, behavior: { phase1: [{ kind: 'prepare', name: 'Тяжёлый удар', prepared: { kind: 'attack', name: 'Сокрушающий удар', damage: 10, target: 'warrior' } }, { kind: 'recover', name: 'Передышка', armor: 2 }, { kind: 'prepare', name: 'Прицелился в Лиру', prepared: { kind: 'attack', name: 'Удар по чародейке', damage: 9, target: 'mage' } }, { kind: 'recover', name: 'Передышка', armor: 2 }] }, appearance: 'guardian', mapLabel: 'Забытый алтарь' },
+  { id: 'twilight-heart', name: 'Сумеречное сердце', title: 'Пробудившаяся чаща', maxHealth: 46, behavior: { phase1: [{ kind: 'attack', name: 'Сумеречный импульс', damage: 6, target: 'mage' }, { kind: 'attack_all', name: 'Корневая волна', damage: 3, primaryTarget: 'warrior' }, { kind: 'defend', name: 'Оболочка чащи', armor: 5 }], phase2: [{ kind: 'attack', name: 'Гневное жало', damage: 7, target: 'warrior' }, { kind: 'attack_all', name: 'Всплеск сердца', damage: 4, primaryTarget: 'mage' }, { kind: 'defend', name: 'Сумеречный панцирь', armor: 6 }] }, appearance: 'heart', mapLabel: 'Сердце чащи' },
 ]
 
 export interface CardPreview {
   damage: number
+  armorDamage: number
+  healthDamage: number
   bonusDamage: number
   armor: Record<HeroId, number>
   draw: number
@@ -115,7 +125,7 @@ export interface BattleState {
   rngState: number
   nextActionId: number
   heroes: Record<HeroId, Hero>
-  enemy: { name: string; title: string; health: number; maxHealth: number; attack: number; intent: HeroId; appearance: EncounterDefinition['appearance'] }
+  enemy: EnemyState
   statuses: Partial<Record<StatusId, { expiresOnTurn: number }>>
   hand: CardInstance[]
   drawPile: CardInstance[]
