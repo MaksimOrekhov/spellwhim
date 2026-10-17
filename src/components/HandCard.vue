@@ -17,7 +17,7 @@ import frostboltArt from '../assets/art/frostbolt.svg'
 import arcaneInsightArt from '../assets/art/arcane-insight.svg'
 import iceWardArt from '../assets/art/ice-ward.svg'
 
-const props = defineProps<{ card: CardDefinition; instanceId: string; preview: CardPreview; reason: string | null; playing: boolean; index: number; artOverride?: string }>()
+const props = defineProps<{ card: CardDefinition; instanceId: string; preview: CardPreview; reason: string | null; playing: boolean; index: number; fan?: boolean; artOverride?: string }>()
 const emit = defineEmits<{ play: [instanceId: string] }>()
 const cardArt = { 'sword-strike': swordStrikeArt, fireball: fireballArt, guard: guardArt, 'quick-cut': quickCutArt, thunderbolt: thunderboltArt, bastion: bastionArt, parry: parryArt, 'shield-bash': shieldBashArt, interpose: interposeArt, frostbolt: frostboltArt, 'arcane-insight': arcaneInsightArt, 'ice-ward': iceWardArt }
 const theme = computed(() => getClassTheme(props.card.className))
@@ -29,7 +29,7 @@ function play() {
 </script>
 
 <template>
-  <GameTooltip :label="card.name" :disabled="playing" class="hand-card-wrap">
+  <GameTooltip :label="card.name" :disabled="playing" class="hand-card-wrap" :class="{ 'hand-card-wrap--fan': fan, 'hand-card-wrap--fan-first': fan && index === 0 }">
     <button :id="'card-' + instanceId" class="spell-card" :class="[`spell-card--${theme.ornament}`, { 'is-unavailable': !!reason, 'is-link-ready': preview.links.length > 0 && !reason, 'is-playing': playing }]" :style="themeStyle" :data-card-class="theme.id" :aria-disabled="!!reason || playing" :aria-label="(index === 9 ? 0 : index + 1) + '. ' + card.name + ', ' + card.cost + ' маны. Класс: ' + theme.name + '. ' + (reason ?? card.description)" @click="play">
       <span class="card-cost">{{ card.cost }}</span>
       <span class="card-class-emblem" aria-hidden="true"><img :src="theme.emblem" alt="" draggable="false" /></span>
@@ -57,8 +57,9 @@ function play() {
 <style scoped>
 .hand-card-wrap{position:relative;flex:0 0 clamp(150px,14vw,250px);height:var(--card-height);transition:transform .18s ease;transform-origin:bottom center}
 .hand-card-wrap:hover,.hand-card-wrap:focus-within{z-index:40;transform:translateY(-20px) scale(1.16)}
-:global(.hand-cards--fan) .hand-card-wrap{flex-basis:clamp(130px,10vw,190px);margin-left:clamp(-85px,-4.5vw,-54px)}
-:global(.hand-cards--fan) .hand-card-wrap:first-child{margin-left:0}
+.hand-card-wrap--fan{flex-basis:clamp(130px,10vw,190px);margin-left:clamp(-85px,-4.5vw,-54px)}
+.hand-card-wrap--fan-first{margin-left:0}
+@media(min-width:2400px){.hand-card-wrap--fan{margin-left:0}}
 .spell-card{position:relative;isolation:isolate;display:grid;grid-template-rows:minmax(0,1fr) 34px 3.72em 24px;gap:5px;width:100%;height:100%;padding:8px 9px 9px;border:2px solid var(--class-primary);border-radius:14px 14px 10px 10px;background:linear-gradient(150deg,color-mix(in srgb,var(--class-primary) 76%,var(--class-surface)),var(--class-surface) 30%,color-mix(in srgb,var(--class-surface) 86%,#080a12));box-shadow:0 6px 16px #0b202c70,inset 0 0 0 2px color-mix(in srgb,var(--class-accent) 38%,transparent);color:#fff0d3;text-align:center;cursor:pointer;transition:filter .16s,border-color .16s,box-shadow .16s}
 .spell-card::before{position:absolute;z-index:-1;inset:5px;border:1px solid color-mix(in srgb,var(--class-accent) 66%,transparent);border-radius:inherit;content:"";pointer-events:none}
 .spell-card--angular{border-radius:8px 14px 8px 14px}

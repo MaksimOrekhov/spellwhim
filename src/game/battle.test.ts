@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { createBattle, endTurn, forecastEnemyAttack, hasStatus, playCard, previewCard, resolveCardPlay, startCardPlay } from './battle'
 import { drawCards } from './deck'
 import { CARDS_DRAWN_PER_TURN, MAX_HAND_SIZE, OPENING_HAND_SIZE, cardDefinition, encounters, startingDeck } from './types'
-import type { BattleState, CardId } from './types'
+import type { BattleState, CardId, EnemyAction, HeroId } from './types'
 import { useBattle } from '../composables/useBattle'
 
 function fixture(deck: CardId[], health = 100) {
@@ -216,15 +216,38 @@ describe('deck, draw, recycle and exhaustion', () => {
     expect(state.blockedDraws).toBe(1)
   })
 
-  it('uses the announced enemy action to make Parry a situational counter', () => {
+  it.each([
+    ['attack', { kind: 'attack', name: 'Удар', damage: 4, target: 'warrior' }, 3],
+    ['attack_all', { kind: 'attack_all', name: 'Волна', damage: 4, primaryTarget: 'warrior' }, 3],
+    ['prepare', { kind: 'prepare', name: 'Готовит удар', prepared: { kind: 'attack', name: 'Удар', damage: 4, target: 'warrior' } }, 0],
+    ['defend', { kind: 'defend', name: 'Защита', armor: 3 }, 0],
+  ] as [string, EnemyAction, number][])('Parry deals its counter damage only for a current %s action', (_name, action, damage) => {
     const state = fixture(['parry'])
-    state.enemy.nextAction = { kind: 'attack', name: 'Удар', damage: 4, target: 'warrior' }
-    expect(previewCard(state, cardDefinition('parry'))).toMatchObject({ damage: 3, armor: { warrior: 3, mage: 0 } })
-    expect(cast(state, 'parry').ok).toBe(true)
-    expect(state.enemy.health).toBe(97)
-    const safe = fixture(['parry'])
-    safe.enemy.nextAction = { kind: 'defend', name: 'Защита', armor: 3 }
-    expect(previewCard(safe, cardDefinition('parry'))).toMatchObject({ damage: 0, armor: { warrior: 3, mage: 0 } })
+    state.enemy.nextAction = action
+    expect(previewCard(state, cardDefinition('parry'))).toMatchObject({ damage, armor: { warrior: 3, mage: 0 } })
+    expect(cast(state, 'parry')).toMatchObject({ ok: true, damageDealt: damage })
+    expect(state.enemy.health).toBe(100 - damage)
+  })
+
+  it.each(['warrior', 'mage'] as HeroId[])('Interpose always protects the mage when enemy focus is %s', focus => {
+    const state = fixture(['interpose'])
+    state.enemy.focus = focus
+    state.enemy.nextAction = { kind: 'attack', name: 'Удар', damage: 4, target: focus }
+    expect(previewCard(state, cardDefinition('interpose'))).toMatchObject({ armor: { warrior: 0, mage: 5 } })
+    expect(cast(state, 'interpose').ok).toBe(true)
+    expect(state.heroes).toMatchObject({ warrior: { armor: 0 }, mage: { armor: 5 } })
+  })
+
+  it.each([
+    ['warrior', { warrior: 6, mage: 3 }],
+    ['mage', { warrior: 3, mage: 6 }],
+  ] as [HeroId, Record<HeroId, number>][])('Bastion keeps its threatened-plus-partner armor split for focus %s', focus => {
+    const state = fixture(['bastion'])
+    state.enemy.focus = focus
+    state.enemy.nextAction = { kind: 'attack', name: 'Удар', damage: 4, target: focus }
+    expect(previewCard(state, cardDefinition('bastion')).armor).toEqual(focus === 'warrior' ? { warrior: 6, mage: 3 } : { warrior: 3, mage: 6 })
+    expect(cast(state, 'bastion').ok).toBe(true)
+    expect({ warrior: state.heroes.warrior.armor, mage: state.heroes.mage.armor }).toEqual(focus === 'warrior' ? { warrior: 6, mage: 3 } : { warrior: 3, mage: 6 })
   })
 
   it('draws no cards from empty zones and cannot draw the resolving copy itself', () => {

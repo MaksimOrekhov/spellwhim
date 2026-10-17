@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { endTurn, playCard } from './battle'
 import { simulateBalance, simulateRun, summarizeBalance } from './balance'
 import { advanceCampaign, addCampaignReward, campaignEncounter, campaignRewardOptions, campaignRewards, createCampaignBattle } from './campaign'
-import { cardDefinition, startingDeck } from './types'
+import { cardDefinition, encounters, startingDeck } from './types'
 
 describe('headless balance lab', () => {
   it('uses the real encounter sequence, carries hero health, and adds rewards to the next deck', () => {
@@ -47,9 +47,12 @@ describe('headless balance lab', () => {
     expect(new Set(first.filter(run => run.seed === 42).map(run => JSON.stringify(run.rewards))).size).toBeGreaterThan(1)
     const fullRun = simulateRun(42, 'balanced')
     expect(fullRun).toMatchObject({ status: 'victory', battlesCompleted: 3 })
+    expect(fullRun.battles).toHaveLength(encounters.length)
     expect(fullRun.battles.map(battle => battle.result)).toEqual(['victory', 'victory', 'victory'])
     expect(fullRun.rewards).toHaveLength(2)
     expect(fullRun.battles.map(battle => battle.deckSizeStart)).toEqual([18, 19, 20])
+    expect(fullRun.battles.every(battle => battle.averagePlayableCardsAtTurnStart <= battle.averageHandSizeAtTurnStart)).toBe(true)
+    expect(fullRun.battles.every(battle => battle.averageHandSizeAtTurnStart <= 10 && battle.averageHandSizeAfterActions <= 10)).toBe(true)
     expect(fullRun.battles[1]?.heroesStart).toEqual(fullRun.battles[0]?.heroesEnd)
     expect(fullRun.battles[2]?.heroesStart).toEqual(fullRun.battles[1]?.heroesEnd)
     expect(simulateRun(42, 'balanced')).toEqual(fullRun)
@@ -76,6 +79,8 @@ describe('headless balance lab', () => {
       { ...simulateRun(2, 'aggressive', { maxTurnsPerBattle: 0 }), status: 'defeat', turns: 5, finalHealth: { warrior: 2, mage: 0 } },
     ])
     expect(rows[0]).toMatchObject({ runs: 2, victories: 1, defeats: 1, timeouts: 0, averageTurns: 4, medianTurns: 4 })
+    expect(rows[0]?.battlesReached).toHaveLength(encounters.length)
+    expect(rows[0]?.battleWins).toHaveLength(encounters.length)
   })
 
   it('offers three reproducible reward options from the expanded pool', () => {

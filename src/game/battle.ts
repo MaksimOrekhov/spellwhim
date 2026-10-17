@@ -60,7 +60,7 @@ function buildPlan(state: BattleState, card: CardDefinition): Omit<PendingPlay, 
   const activeLinks = links.filter(link => hasStatus(state, link.status) && link.actor === card.className && card.tags.includes(link.tag))
   const bonusEffects = activeLinks.flatMap(link => link.effects)
   const enemyAction = state.enemy.nextAction
-  const enemyAttacking = enemyAction.kind === 'attack' || enemyAction.kind === 'attack_all' || enemyAction.kind === 'prepare' && (enemyAction.prepared.kind === 'attack' || enemyAction.prepared.kind === 'attack_all')
+  const enemyAttacking = enemyAction.kind === 'attack' || enemyAction.kind === 'attack_all'
   const allEffects = [...card.effects, ...bonusEffects].filter(effect => effect.type !== 'damage' || effect.when !== 'enemy-attacking' || enemyAttacking)
   const damage = allEffects.reduce((sum, effect) => sum + (effect.type === 'damage' ? effect.amount : 0), 0)
   const armorDamage = Math.min(state.enemy.armor, damage)
@@ -71,7 +71,7 @@ function buildPlan(state: BattleState, card: CardDefinition): Omit<PendingPlay, 
   const armor: Record<HeroId, number> = { warrior: 0, mage: 0 }
   for (const effect of effects) {
     if (effect.type !== 'armor') continue
-    const target = effect.target === 'threatened' ? state.enemy.focus : partnerOf(state.enemy.focus)
+    const target = armorTarget(effect.target, state.enemy.focus)
     armor[target] += effect.amount
   }
   return {
@@ -129,7 +129,7 @@ export function resolveCardPlay(state: BattleState, actionId: string): PlayResul
           state.enemy.behaviorIndex = 0
         }
       } else if (effect.type === 'armor') {
-        const target = effect.target === 'threatened' ? state.enemy.focus : partnerOf(state.enemy.focus)
+        const target = armorTarget(effect.target, state.enemy.focus)
         state.heroes[target].armor += effect.amount
       } else if (effect.type === 'draw') {
         drawn += drawCards(state, effect.amount).length
@@ -153,6 +153,9 @@ export function playCard(state: BattleState, instanceId: string): PlayResult {
 }
 
 function partnerOf(id: HeroId): HeroId { return id === 'warrior' ? 'mage' : 'warrior' }
+function armorTarget(target: 'threatened' | 'partner' | HeroId, threatened: HeroId): HeroId {
+  return target === 'threatened' ? threatened : target === 'partner' ? partnerOf(threatened) : target
+}
 
 export interface EnemyTargetForecast {
   target: HeroId

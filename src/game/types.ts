@@ -21,7 +21,7 @@ export interface Hero {
 
 export type CardEffect =
   | { type: 'damage'; amount: number; when?: 'enemy-attacking' }
-  | { type: 'armor'; amount: number; target: 'threatened' | 'partner' }
+  | { type: 'armor'; amount: number; target: 'threatened' | 'partner' | HeroId }
   | { type: 'draw'; amount: number }
   | { type: 'status'; status: StatusId; durationTurns: number }
 
@@ -66,9 +66,9 @@ export const cards: CardDefinition[] = [
   { id: 'sword-strike', name: 'Удар мечом', className: 'warrior', cost: 1, description: '6 урона. По метке Лиры: +3 урона и добор.', icon: '⚔', kind: 'attack', tags: ['strike'], effects: [{ type: 'damage', amount: 6 }] },
   { id: 'fireball', name: 'Огненный шар', className: 'mage', cost: 2, description: '8 урона. Метка: удар Бранна +3 и добор.', icon: '✹', kind: 'spell', tags: ['offensive-spell'], effects: [{ type: 'damage', amount: 8 }, { type: 'status', status: 'mark', durationTurns: 1 }] },
   { id: 'guard', name: 'Защитная стойка', className: 'warrior', cost: 1, description: '4 брони цели врага. Резонанс: заклинание Лиры +2.', icon: '⬡', kind: 'defense', tags: ['defense'], effects: [{ type: 'armor', amount: 4, target: 'threatened' }, { type: 'status', status: 'resonance', durationTurns: 1 }] },
-  { id: 'parry', name: 'Парирование', className: 'warrior', cost: 1, description: '3 брони цели. Если враг собирается атаковать — 3 урона.', icon: '⛨', kind: 'defense', tags: ['defense'], effects: [{ type: 'armor', amount: 3, target: 'threatened' }, { type: 'damage', amount: 3, when: 'enemy-attacking' }], reward: true },
+  { id: 'parry', name: 'Парирование', className: 'warrior', cost: 1, description: '3 брони цели. Если текущее действие врага — атака, наносит 3 урона.', icon: '⛨', kind: 'defense', tags: ['defense'], effects: [{ type: 'armor', amount: 3, target: 'threatened' }, { type: 'damage', amount: 3, when: 'enemy-attacking' }], reward: true },
   { id: 'shield-bash', name: 'Удар щитом', className: 'warrior', cost: 2, description: '5 урона и 3 брони цели. Использует метку Лиры.', icon: '⬡', kind: 'attack', tags: ['strike'], effects: [{ type: 'damage', amount: 5 }, { type: 'armor', amount: 3, target: 'threatened' }], reward: true },
-  { id: 'interpose', name: 'Прикрыть союзника', className: 'warrior', cost: 1, description: '5 брони напарнику. Создаёт защитный резонанс.', icon: '⬡', kind: 'defense', tags: ['defense'], effects: [{ type: 'armor', amount: 5, target: 'partner' }, { type: 'status', status: 'resonance', durationTurns: 1 }], reward: true },
+  { id: 'interpose', name: 'Прикрыть союзника', className: 'warrior', cost: 1, description: '5 брони союзнику-магу. Создаёт защитный резонанс.', icon: '⬡', kind: 'defense', tags: ['defense'], effects: [{ type: 'armor', amount: 5, target: 'mage' }, { type: 'status', status: 'resonance', durationTurns: 1 }], reward: true },
   { id: 'frostbolt', name: 'Ледяная стрела', className: 'mage', cost: 1, description: '4 урона. Создаёт магическую метку для удара Бранна.', icon: '❄', kind: 'spell', tags: ['offensive-spell'], effects: [{ type: 'damage', amount: 4 }, { type: 'status', status: 'mark', durationTurns: 1 }], reward: true },
   { id: 'arcane-insight', name: 'Тайное предвидение', className: 'mage', cost: 1, description: 'Добор карты. Следующий удар Бранна получает метку Лиры.', icon: '✦', kind: 'spell', tags: [], effects: [{ type: 'draw', amount: 1 }, { type: 'status', status: 'mark', durationTurns: 1 }], reward: true },
   { id: 'ice-ward', name: 'Ледяной покров', className: 'mage', cost: 1, description: '3 брони цели и 2 брони напарнику.', icon: '❄', kind: 'defense', tags: ['defense'], effects: [{ type: 'armor', amount: 3, target: 'threatened' }, { type: 'armor', amount: 2, target: 'partner' }], reward: true },

@@ -23,7 +23,7 @@ function reason(item: HandCardView): string | null {
     </aside>
     <section class="hand-area" aria-label="Карты в руке">
       <p class="hand-hint">{{ displayed.length }} / 10 карт · наведите для полного описания · клавиши 1–9, 0</p>
-      <div class="hand-scroll"><div class="hand-cards" :class="{ 'hand-cards--fan': displayed.length > 4 }"><HandCard v-for="(item, index) in displayed" :key="item.instanceId" :card="item.card" :instance-id="item.instanceId" :preview="item.preview" :reason="reason(item)" :index="index" :playing="outgoing?.instanceId === item.instanceId" @play="emit('play', $event)" /><p v-if="!displayed.length" class="empty-hand">Рука пуста.<br />Завершите ход, чтобы добрать карты.</p></div></div>
+      <div class="hand-scroll"><div class="hand-cards" :class="{ 'hand-cards--fan': displayed.length > 4 }"><HandCard v-for="(item, index) in displayed" :key="item.instanceId" :card="item.card" :instance-id="item.instanceId" :preview="item.preview" :reason="reason(item)" :index="index" :fan="displayed.length > 4" :playing="outgoing?.instanceId === item.instanceId" @play="emit('play', $event)" /><p v-if="!displayed.length" class="empty-hand">Рука пуста.<br />Завершите ход, чтобы добрать карты.</p></div></div>
     </section>
     <aside class="turn-controls"><button class="game-button end-turn" :disabled="phase !== 'player'" @click="emit('endTurn')"><span>{{ phase === 'enemy' ? 'Ход врага' : phase === 'card' ? 'Действие…' : 'Завершить ход' }}</span><kbd>Enter</kbd></button><small>{{ phase === 'player' ? 'После этого враг атакует' : 'Дождитесь окончания действия' }}</small></aside>
   </footer>

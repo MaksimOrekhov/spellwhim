@@ -49,7 +49,7 @@ try {
     const summary = summarizeBalance(runs)
     console.log('SPELLWHIM — BALANCE REPORT')
     console.log(`Runs: ${options.runs} per strategy | seeds: ${options.seed}–${(options.seed + options.runs - 1) >>> 0}`)
-    console.table(summary.map(row => ({ strategy: row.strategy, victories: row.victories, defeats: row.defeats, timeout: row.timeouts, 'win %': (row.winRate * 100).toFixed(1), 'avg turns': row.averageTurns.toFixed(1), 'cards / turn': row.averageCardsPlayedPerTurn.toFixed(2), 'avg hand': row.averageHandSize.toFixed(2), 'full hand turns': row.fullHandTurns, 'blocked draws': row.blockedDraws, 'median turns': row.medianTurns, 'Brann HP': row.averageBrannHp.toFixed(1), 'Lira HP': row.averageLiraHp.toFixed(1) })))
+    console.table(summary.map(row => ({ strategy: row.strategy, victories: row.victories, defeats: row.defeats, timeout: row.timeouts, 'win %': (row.winRate * 100).toFixed(1), 'avg turns': row.averageTurns.toFixed(1), 'cards / turn': row.averageCardsPlayedPerTurn.toFixed(2), 'hand start': row.averageHandSizeAtTurnStart.toFixed(2), 'playable start': row.averagePlayableCardsAtTurnStart.toFixed(2), 'hand after plays': row.averageHandSizeAfterActions.toFixed(2), 'full at start': row.fullHandAtTurnStart, 'full after plays': row.fullHandAfterActions, 'blocked draws': row.blockedDraws, 'median turns': row.medianTurns, 'Brann HP': row.averageBrannHp.toFixed(1), 'Lira HP': row.averageLiraHp.toFixed(1) })))
 
     console.log('Победы по встречам (победы / сколько дошло):')
     console.table(summary.flatMap(row => row.battlesReached.map((reached, index) => ({ strategy: row.strategy, encounter: index + 1, wins: row.battleWins[index], reached, 'win %': reached ? (row.battleWins[index] / reached * 100).toFixed(1) : '—' }))))
