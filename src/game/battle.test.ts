@@ -323,6 +323,11 @@ describe('terminal states and run adapter', () => {
     const battle = useBattle({ seed: 42 })
     battle.startBattle(encounters[0]!)
     const before = structuredClone(battle.state.value)
+    const sameSeedBattle = createBattle(encounters[0]!, undefined, { seed: 42, deck: startingDeck })
+    expect(before.seed).toBe(42)
+    expect(before.rngState).toBe(sameSeedBattle.rngState)
+    expect(before.hand.map(card => card.definitionId)).toEqual(sameSeedBattle.hand.map(card => card.definitionId))
+    expect(before.drawPile.map(card => card.definitionId)).toEqual(sameSeedBattle.drawPile.map(card => card.definitionId))
     const stale = battle.beginPlay(battle.cards.value.find(card => card.card.cost <= 3)!.instanceId)!
     battle.finishTurn()
     battle.restart()

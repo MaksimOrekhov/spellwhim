@@ -48,9 +48,16 @@ describe('headless balance lab', () => {
     const fullRun = simulateRun(42, 'balanced')
     expect(fullRun).toMatchObject({ status: 'victory', battlesCompleted: 3 })
     expect(fullRun.battles.map(battle => battle.result)).toEqual(['victory', 'victory', 'victory'])
+    expect(fullRun.rewards).toHaveLength(2)
+    expect(fullRun.battles.map(battle => battle.deckSizeStart)).toEqual([6, 7, 8])
+    expect(fullRun.battles[1]?.heroesStart).toEqual(fullRun.battles[0]?.heroesEnd)
+    expect(fullRun.battles[2]?.heroesStart).toEqual(fullRun.battles[1]?.heroesEnd)
+    expect(simulateRun(42, 'balanced')).toEqual(fullRun)
     const defeat = simulateRun(90, 'aggressive')
     expect(defeat).toMatchObject({ status: 'defeat', battlesCompleted: 2, failedEncounter: 'twilight-heart' })
     expect(defeat.battles).toHaveLength(3)
+    expect(defeat.battles[defeat.battles.length - 1]?.result).toBe('defeat')
+    expect(defeat.rewards).toHaveLength(2)
   })
 
   it('does not continue after a technical battle limit and reports timeouts separately', () => {

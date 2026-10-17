@@ -19,6 +19,7 @@ export interface CardStats {
 export interface BattleRecord {
   encounterId: string
   encounterName: string
+  deckSizeStart: number
   turns: number
   result: 'victory' | 'defeat' | 'timeout'
   heroesStart: Record<HeroId, number>
@@ -116,8 +117,8 @@ function chooseReward(state: BattleState, deck: readonly CardId[], strategy: Bal
   return reward.id
 }
 
-function recordBattle(state: BattleState, encounterId: string, encounterName: string, startHealth: Record<HeroId, number>, turns: number, result: BattleRecord['result'], cardsPlayed: Record<string, number>, enemyActions: Record<string, number>, healthDamageTaken: Record<HeroId, number>, armorDamagePrevented: Record<HeroId, number>, enemyHealthDamage: number, links: Record<string, number>, actionLog: string[]): BattleRecord {
-  return { encounterId, encounterName, turns, result, heroesStart: startHealth, heroesEnd: { warrior: state.heroes.warrior.health, mage: state.heroes.mage.health }, healthDamageTaken, armorDamagePrevented, enemyHealthDamage, cardsPlayed, enemyActions, linkTriggers: links, actionLog }
+function recordBattle(state: BattleState, encounterId: string, encounterName: string, deckSizeStart: number, startHealth: Record<HeroId, number>, turns: number, result: BattleRecord['result'], cardsPlayed: Record<string, number>, enemyActions: Record<string, number>, healthDamageTaken: Record<HeroId, number>, armorDamagePrevented: Record<HeroId, number>, enemyHealthDamage: number, links: Record<string, number>, actionLog: string[]): BattleRecord {
+  return { encounterId, encounterName, deckSizeStart, turns, result, heroesStart: startHealth, heroesEnd: { warrior: state.heroes.warrior.health, mage: state.heroes.mage.health }, healthDamageTaken, armorDamagePrevented, enemyHealthDamage, cardsPlayed, enemyActions, linkTriggers: links, actionLog }
 }
 
 export function simulateRun(seed: number, strategy: BalanceStrategy, limits: Partial<BalanceLimits> = {}): BalanceRun {
@@ -203,7 +204,7 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, limits: Par
     else if (battle.result === 'defeat') battleStatus = 'defeat'
     if (battle.result) actionLog.push(battle.result === 'victory' ? 'Бой выигран' : 'Бой проигран')
     else actionLog.push('Ограничение симуляции: бой остановлен техническим таймаутом')
-    battles.push(recordBattle(battle, encounter.id, encounter.name, startHealth, battleTurns, battleStatus, cardsPlayed, enemyActions, healthDamageTaken, armorDamagePrevented, enemyHealthDamage, localLinks, actionLog))
+    battles.push(recordBattle(battle, encounter.id, encounter.name, deck.length, startHealth, battleTurns, battleStatus, cardsPlayed, enemyActions, healthDamageTaken, armorDamagePrevented, enemyHealthDamage, localLinks, actionLog))
     if (!battle.result) {
       status = 'timeout'
       failedEncounter = encounter.id

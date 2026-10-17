@@ -17,13 +17,17 @@ export function useBattle(options: { seed?: number; deck?: readonly CardId[] } =
   let runGeneration = 0
   const ownedDeck = shallowRef<CardId[]>([...(options.deck ?? startingDeck)])
   const ownedCards = computed(() => ownedDeck.value.map(cardDefinition))
+  function previewBattle() {
+    return createCampaignBattle({ deck: ownedDeck.value, seed, battleId: 'run/' + seed + '/generation/' + runGeneration + '/preview' })
+  }
   function newBattle(encounter?: EncounterDefinition, heroes?: BattleState['heroes']) {
     const sequence = battleSequence++
     return createCampaignBattle({ encounter, heroes, deck: ownedDeck.value, seed: (seed + sequence) >>> 0,
       battleId: 'run/' + seed + '/generation/' + runGeneration + '/battle/' + sequence,
     })
   }
-  const current = shallowRef(newBattle())
+  // The map needs hero state, but its preview battle must not consume the first real battle seed.
+  const current = shallowRef(previewBattle())
   const state = computed(() => current.value)
   const log = shallowRef('Ваш ход. Разыграйте карты, затем завершите ход.')
   const isOver = computed(() => current.value.result !== null)
@@ -83,7 +87,7 @@ export function useBattle(options: { seed?: number; deck?: readonly CardId[] } =
     battleSequence = 0
     runGeneration += 1
     ownedDeck.value = [...(options.deck ?? startingDeck)]
-    current.value = newBattle()
+    current.value = previewBattle()
     log.value = 'Ваш ход. Разыграйте карты, затем завершите ход.'
   }
 

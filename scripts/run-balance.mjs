@@ -1,4 +1,5 @@
-import { writeFile } from 'node:fs/promises'
+import { mkdir, writeFile } from 'node:fs/promises'
+import { dirname } from 'node:path'
 import { createServer } from 'vite'
 
 function readArgs(args) {
@@ -17,6 +18,11 @@ function readArgs(args) {
   return options
 }
 
+async function writeJson(path, data) {
+  await mkdir(dirname(path), { recursive: true })
+  await writeFile(path, JSON.stringify(data, null, 2) + '\n')
+}
+
 const options = readArgs(process.argv.slice(2))
 if (options.help) {
   console.log('npm run balance -- [--runs 200] [--seed 42] [--strategy all|aggressive|defensive|balanced] [--json path] [--run seed]')
@@ -32,7 +38,7 @@ try {
   if (options.run !== null) {
     const run = simulateRun(options.run, strategies[0])
     console.log(JSON.stringify(run, null, 2))
-    if (options.json) await writeFile(options.json, JSON.stringify(run, null, 2) + '\n')
+    if (options.json) await writeJson(options.json, run)
     process.exitCode = run.status === 'timeout' ? 2 : 0
   } else {
     const runs = simulateBalance({ runs: options.runs, seed: options.seed, strategies })
@@ -64,7 +70,7 @@ try {
     console.table(Object.entries(linkTotals).map(([link, triggers]) => ({ link, triggers })))
     if (options.json) {
       const report = { schemaVersion: 1, options: { runs: options.runs, seed: options.seed, strategies }, summary, runs }
-      await writeFile(options.json, JSON.stringify(report, null, 2) + '\n')
+      await writeJson(options.json, report)
       console.log('JSON сохранён: ' + options.json)
     }
     if (runs.some(run => run.status === 'timeout')) process.exitCode = 2
