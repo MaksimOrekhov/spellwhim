@@ -51,7 +51,7 @@ function play() {
 <style scoped>
 .hand-card-wrap{flex:0 0 clamp(180px,14vw,250px);height:var(--card-height);transition:transform .18s ease;transform-origin:bottom center}
 .hand-card-wrap:hover,.hand-card-wrap:focus-within{z-index:12;transform:translateY(-12px) scale(1.035)}
-.spell-card{position:relative;isolation:isolate;display:grid;grid-template-rows:minmax(0,1fr) auto minmax(42px,auto) auto;gap:5px;width:100%;height:100%;padding:8px 9px 9px;border:2px solid var(--class-primary);border-radius:14px 14px 10px 10px;background:linear-gradient(150deg,color-mix(in srgb,var(--class-primary) 76%,var(--class-surface)),var(--class-surface) 30%,color-mix(in srgb,var(--class-surface) 86%,#080a12));box-shadow:0 6px 16px #0b202c70,inset 0 0 0 2px color-mix(in srgb,var(--class-accent) 38%,transparent);color:#fff0d3;text-align:center;cursor:pointer;transition:filter .16s,border-color .16s,box-shadow .16s}
+.spell-card{position:relative;isolation:isolate;display:grid;grid-template-rows:minmax(0,1fr) 34px 3.72em 24px;gap:5px;width:100%;height:100%;padding:8px 9px 9px;border:2px solid var(--class-primary);border-radius:14px 14px 10px 10px;background:linear-gradient(150deg,color-mix(in srgb,var(--class-primary) 76%,var(--class-surface)),var(--class-surface) 30%,color-mix(in srgb,var(--class-surface) 86%,#080a12));box-shadow:0 6px 16px #0b202c70,inset 0 0 0 2px color-mix(in srgb,var(--class-accent) 38%,transparent);color:#fff0d3;text-align:center;cursor:pointer;transition:filter .16s,border-color .16s,box-shadow .16s}
 .spell-card::before{position:absolute;z-index:-1;inset:5px;border:1px solid color-mix(in srgb,var(--class-accent) 66%,transparent);border-radius:inherit;content:"";pointer-events:none}
 .spell-card--angular{border-radius:8px 14px 8px 14px}
 .spell-card--angular::before{clip-path:polygon(0 0,100% 0,100% 100%,0 100%);border-radius:2px}
@@ -66,12 +66,12 @@ function play() {
 .spell-card--angular .card-class-emblem{width:38px;height:42px;padding:5px 6px;border:0;border-radius:0;clip-path:polygon(10% 0,90% 0,100% 30%,88% 82%,50% 100%,12% 82%,0 30%);background:var(--class-accent)}
 .card-class-emblem img{display:block;width:100%;height:100%}
 .spell-card--angular .card-class-emblem img{filter:brightness(0) opacity(.88)}
-.card-nameplate{display:grid;place-items:center;min-height:32px;padding:4px 8px;border:1px solid var(--class-accent);border-radius:12px;background:linear-gradient(110deg,color-mix(in srgb,var(--class-primary) 75%,var(--class-surface)),var(--class-surface) 82%);box-shadow:inset 0 1px #fff3;color:#fff0cb}
+.card-nameplate{display:grid;place-items:center;height:34px;min-height:34px;padding:4px 8px;border:1px solid var(--class-accent);border-radius:12px;background:linear-gradient(110deg,color-mix(in srgb,var(--class-primary) 75%,var(--class-surface)),var(--class-surface) 82%);box-shadow:inset 0 1px #fff3;color:#fff0cb}
 .spell-card--angular .card-nameplate{background:linear-gradient(110deg,color-mix(in srgb,var(--class-primary) 68%,var(--class-accent)),var(--class-surface) 84%)}
 .spell-card--arcane .card-nameplate{background:linear-gradient(110deg,color-mix(in srgb,var(--class-primary) 45%,var(--class-surface)),color-mix(in srgb,var(--class-accent) 26%,var(--class-surface)))}
 .card-name{display:block;min-width:0;max-width:100%;overflow:hidden;text-overflow:clip;white-space:nowrap;font:700 clamp(16px,1.05vw,20px)/1.1 var(--display)}
-.card-description{display:grid;align-content:center;min-height:0;padding:2px 5px;color:#f0e4cb;font-size:clamp(13px,.92vw,16px);line-height:1.24}
-.card-footer{display:flex;align-items:center;justify-content:space-between;gap:5px;min-height:19px;border-top:1px solid color-mix(in srgb,var(--class-accent) 36%,transparent);padding-top:4px;color:#d2c5a7;font-size:11px}
+.card-description{display:-webkit-box;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:3;padding:2px 5px;color:#f0e4cb;font-size:clamp(13px,.92vw,16px);line-height:1.24}
+.card-footer{display:flex;align-items:center;justify-content:space-between;gap:5px;height:24px;min-height:24px;border-top:1px solid color-mix(in srgb,var(--class-accent) 36%,transparent);padding-top:4px;color:#d2c5a7;font-size:11px}
 .card-class-label{color:var(--class-accent);font-weight:800;letter-spacing:.12em}
 .card-footer kbd{font:12px inherit;border:1px solid #ad9d7766;border-radius:4px;padding:0 4px}
 .card-link{display:flex;align-items:center;gap:5px;border:1px solid #edc6ff8c;border-radius:9px;background:#3b285088;padding:2px 7px;color:#f1d8ff;font-size:12px}
@@ -82,5 +82,5 @@ function play() {
 .is-unavailable .card-cost{filter:grayscale(.42);opacity:.78}
 .is-playing{pointer-events:none;animation:card-play .36s ease-in forwards}
 @keyframes card-play{to{transform:translateY(-100px) scale(.55);opacity:0}}
-@media(max-height:700px){.spell-card{grid-template-rows:minmax(0,1fr) auto minmax(39px,auto) auto;gap:3px;padding:7px 8px}.card-name{font-size:16px}.card-nameplate{min-height:27px}.card-description{font-size:13px}.card-footer{font-size:10px;padding-top:3px}.card-cost{width:31px;height:36px;font-size:23px}.card-class-emblem{width:33px;height:35px}}
+@media(max-height:700px){.spell-card{grid-template-rows:minmax(0,1fr) 29px 3.72em 22px;gap:3px;padding:7px 8px}.card-name{font-size:16px}.card-nameplate{height:29px;min-height:29px}.card-description{font-size:13px}.card-footer{height:22px;min-height:22px;font-size:10px;padding-top:3px}.card-cost{width:31px;height:36px;font-size:23px}.card-class-emblem{width:33px;height:35px}}
 </style>

@@ -64,16 +64,16 @@ function kindLabel(card: CardDefinition) {
 .reward-card--angular .reward-card-emblem{border:0;border-radius:0;clip-path:polygon(10% 0,90% 0,100% 30%,88% 82%,50% 100%,12% 82%,0 30%);background:var(--class-accent)}
 .reward-card-emblem img{width:100%;height:100%}
 .reward-card--angular .reward-card-emblem img{filter:brightness(0) opacity(.88)}
-.reward-card-art{position:relative;display:block;overflow:hidden;margin:0 0 10px;border:1px solid color-mix(in srgb,var(--class-accent) 76%,#fff);border-radius:10px 10px 4px 4px;background:var(--class-surface)}
+.reward-card-art{position:relative;display:block;flex:0 0 auto;overflow:hidden;margin:0 0 10px;border:1px solid color-mix(in srgb,var(--class-accent) 76%,#fff);border-radius:10px 10px 4px 4px;background:var(--class-surface)}
 .reward-card--angular .reward-card-art{border-radius:3px 9px 2px 2px}
 .reward-card--arcane .reward-card-art{border-radius:13px 13px 7px 7px}
 .reward-card-art img{display:block;width:100%;height:clamp(130px,20vh,250px);object-fit:cover}
-.reward-card-name{display:grid;place-items:center;min-width:0;max-width:100%;overflow:hidden;text-overflow:clip;white-space:nowrap;min-height:42px;padding:5px 8px;border:1px solid var(--class-accent);border-radius:13px;background:linear-gradient(110deg,color-mix(in srgb,var(--class-primary) 58%,var(--class-surface)),var(--class-surface));font:700 clamp(18px,1.5vw,24px)/1.1 var(--display);color:#ffebbd}
+.reward-card-name{display:grid;place-items:center;flex:0 0 42px;min-width:0;max-width:100%;overflow:hidden;text-overflow:clip;white-space:nowrap;height:42px;padding:5px 8px;border:1px solid var(--class-accent);border-radius:13px;background:linear-gradient(110deg,color-mix(in srgb,var(--class-primary) 58%,var(--class-surface)),var(--class-surface));font:700 clamp(18px,1.5vw,24px)/1.1 var(--display);color:#ffebbd}
 .reward-card--angular .reward-card-name{background:linear-gradient(110deg,color-mix(in srgb,var(--class-primary) 58%,var(--class-accent)),var(--class-surface))}
 .reward-card--arcane .reward-card-name{background:linear-gradient(110deg,color-mix(in srgb,var(--class-primary) 40%,var(--class-surface)),color-mix(in srgb,var(--class-accent) 25%,var(--class-surface)))}
-.reward-card-meta{display:flex;justify-content:center;gap:8px;margin:9px 0;color:#d5ceb7;font-size:11px;letter-spacing:.08em}
+.reward-card-meta{display:flex;flex:0 0 14px;justify-content:center;gap:8px;height:14px;margin:9px 0;color:#d5ceb7;font-size:11px;letter-spacing:.08em}
 .reward-card-meta b{color:var(--class-accent)}
-.reward-card-description{display:grid;align-content:start;min-height:62px;margin:4px 0 12px;font-size:clamp(14px,1.05vw,16px);line-height:1.35;color:#f0e4cb}
+.reward-card-description{display:-webkit-box;flex:0 0 4.05em;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:3;height:4.05em;min-height:4.05em;margin:4px 0 12px;font-size:clamp(14px,1.05vw,16px);line-height:1.35;color:#f0e4cb}
 .reward-select{margin-top:auto;padding:9px 16px;border:1px solid var(--class-accent);border-radius:7px;background:linear-gradient(110deg,color-mix(in srgb,var(--class-primary) 66%,var(--class-surface)),var(--class-surface));color:#fff0d1;font-size:14px;font-weight:800;letter-spacing:.07em}
 @media(max-height:700px){.reward-screen{padding:18px}.reward-spark{display:none}.reward-copy{margin:8px 0 18px;font-size:15px}.reward-card{padding:9px 11px 12px;max-width:250px}.reward-card-art img{height:125px}.reward-card-name{font-size:19px;min-height:36px}.reward-card-description{font-size:14px;min-height:55px}.reward-content h1{font-size:30px}}
 @media(max-width:800px){.reward-options{gap:12px}.reward-card{padding:8px}.reward-card-art img{height:105px}.reward-card-meta{font-size:9px}}
