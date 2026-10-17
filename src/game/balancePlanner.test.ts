@@ -1,10 +1,33 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { createBattle, endTurn, playCard } from './battle'
 import { allStrategies, classicStrategies, simulateBalance, simulateRun, summarizeBalance } from './balance'
-import { cloneBattleState, createTurnPlanner, determinize, planTurn } from './balancePlanner'
+import { cloneBattleState, createTurnPlanner, determinize, observableSeed, planTurn } from './balancePlanner'
 import { createCampaignBattle } from './campaign'
 import { cardDefinition, encounters, startingDeck } from './types'
 import type { BattleState, CardId } from './types'
+
+interface PlannerCall { snapshot: BattleState; fresh: boolean; chosen: string | undefined; options: unknown }
+/** Records every decision the Balance Lab asks its planner for, with the exact state it saw. */
+const calls = vi.hoisted(() => [] as PlannerCall[])
+vi.mock('./balancePlanner', async importOriginal => {
+  const actual = await importOriginal<typeof import('./balancePlanner')>()
+  return {
+    ...actual,
+    createTurnPlanner(options?: Parameters<typeof actual.createTurnPlanner>[0]) {
+      const planner = actual.createTurnPlanner(options)
+      return {
+        stats: planner.stats,
+        next(state: BattleState) {
+          const plans = planner.stats.plans
+          const snapshot = structuredClone(state)
+          const chosen = planner.next(state)
+          calls.push({ snapshot, fresh: planner.stats.plans > plans, chosen, options })
+          return chosen
+        },
+      }
+    },
+  }
+})
 
 /** Damage-only profile: with a passive enemy the planner should simply maximise health damage this turn. */
 const damageOnly = { health: 0, keep: 0, armorKeep: 0, lowHealth: 0 }
@@ -47,6 +70,24 @@ function identities(state: BattleState): string[] {
   return [...state.hand, ...state.drawPile, ...state.discardPile, ...state.exhausted].map(card => card.instanceId).sort()
 }
 
+/**
+ * The same game as seen by the player, but with every hidden or technical detail changed: reversed draw and discard
+ * order, other seed / RNG state / battle id, and every card instance renamed (in a different sort order).
+ */
+function equivalentView(state: BattleState): BattleState {
+  const view = structuredClone(state)
+  view.drawPile.reverse()
+  view.discardPile.reverse()
+  view.seed = (state.seed ^ 0x5bd1e995) >>> 0
+  view.rngState = (state.rngState + 12345) >>> 0
+  view.battleId = 'completely/different'
+  const zones = [view.hand, view.drawPile, view.discardPile, view.exhausted]
+  const total = zones.reduce((sum, zone) => sum + zone.length, 0)
+  let next = total
+  for (const zone of zones) for (const card of zone) { next -= 1; card.instanceId = 'renamed/' + String(next).padStart(4, '0') }
+  return view
+}
+
 describe('planner state copies', () => {
   it('matches structuredClone, shares no mutable zone, and refuses a play in progress', () => {
     const state = createBattle(encounters[2], undefined, { seed: 5 })
@@ -81,7 +122,7 @@ describe('planner honesty about hidden information', () => {
     expect(state).toEqual(before)
   })
 
-  it('gives the same plan whatever the hidden draw order, reshuffle order, seed or RNG state', () => {
+  it('gives the same plan whatever the hidden draw order, reshuffle order, seed, RNG state or card ids', () => {
     for (const seed of [1, 2, 3, 4, 5, 6]) {
       const state = createBattle(encounters[2], undefined, { seed })
       for (let turn = 0; turn < 2; turn += 1) {
@@ -90,21 +131,31 @@ describe('planner honesty about hidden information', () => {
       }
       expect(state.discardPile.length).toBeGreaterThan(0)
       expect(state.drawPile.length).toBeGreaterThan(1)
-      const other = structuredClone(state)
-      other.drawPile.reverse()
-      other.discardPile.reverse()
-      other.seed = 999_999
-      other.rngState = 123_456_789
-      other.battleId = 'completely/different'
+      const other = equivalentView(state)
       expect(other.drawPile.map(card => card.instanceId)).not.toEqual(state.drawPile.map(card => card.instanceId))
-      expect(planTurn(other, { entropy: 7 })).toEqual(planTurn(state, { entropy: 7 }))
+      expect(planTurn(other, { salt: 7 }).sequence).toEqual(planTurn(state, { salt: 7 }).sequence)
+      expect(planTurn(other)).toEqual(planTurn(state))
       // The planner's private copy is built from the visible zones only (labels such as seed/battleId are just copied).
       const mine = determinize(state, 7)
       const theirs = determinize(other, 7)
-      expect(theirs.drawPile).toEqual(mine.drawPile)
-      expect(theirs.discardPile).toEqual(mine.discardPile)
+      expect(theirs.drawPile.map(card => card.definitionId)).toEqual(mine.drawPile.map(card => card.definitionId))
+      expect(theirs.discardPile.map(card => card.definitionId)).toEqual(mine.discardPile.map(card => card.definitionId))
       expect(theirs.rngState).toBe(mine.rngState)
     }
+  })
+
+  it('seeds its sampling from the observable situation only', () => {
+    const state = createBattle(encounters[2], undefined, { seed: 11 })
+    const view = equivalentView(state)
+    expect(observableSeed(view)).toBe(observableSeed(state))
+    expect(observableSeed(state, 1)).not.toBe(observableSeed(state, 2))
+    // A genuinely different situation (one more point of enemy damage, one card fewer in hand) changes it.
+    const damaged = structuredClone(state)
+    damaged.enemy.health -= 1
+    expect(observableSeed(damaged)).not.toBe(observableSeed(state))
+    const smaller = structuredClone(state)
+    smaller.hand.pop()
+    expect(observableSeed(smaller)).not.toBe(observableSeed(state))
   })
 
   it('ignores the enemy script beyond the action it has announced', () => {
@@ -112,12 +163,12 @@ describe('planner honesty about hidden information', () => {
     const other = structuredClone(state)
     const decoy = { kind: 'attack' as const, name: 'Скрытый удар', damage: 99, target: 'warrior' as const }
     other.enemy.behavior = { phase1: other.enemy.behavior.phase1.map((action, index) => (index === 0 ? action : decoy)), phase2: [decoy] }
-    expect(planTurn(other, { entropy: 1 })).toEqual(planTurn(state, { entropy: 1 }))
+    expect(planTurn(other, { salt: 1 })).toEqual(planTurn(state, { salt: 1 }))
   })
 
-  it('changes with entropy only through the shuffle of unknown cards, and stays reproducible', () => {
+  it('changes with the salt only through the shuffle of unknown cards, and stays reproducible', () => {
     const state = createBattle(encounters[2], undefined, { seed: 4 })
-    expect(planTurn(state, { entropy: 2 })).toEqual(planTurn(state, { entropy: 2 }))
+    expect(planTurn(state, { salt: 2 })).toEqual(planTurn(state, { salt: 2 }))
     expect(determinize(state, 2).drawPile.map(card => card.instanceId)).not.toEqual(determinize(state, 3).drawPile.map(card => card.instanceId))
     expect(new Set(determinize(state, 2).drawPile.map(card => card.instanceId))).toEqual(new Set(state.drawPile.map(card => card.instanceId)))
   })
@@ -145,7 +196,7 @@ describe('planner choices', () => {
     for (let seed = 1; seed <= 40; seed += 1) {
       const state = createBattle({ ...encounters[2]!, maxHealth: 500 }, undefined, { deck: startingDeck, seed })
       const world = determinize(state, seed)
-      const plan = planTurn(state, { profile: damageOnly, limits: exhaustive, entropy: seed })
+      const plan = planTurn(state, { profile: damageOnly, limits: exhaustive, salt: seed })
       expect(damageOf(structuredClone(world), plan.sequence), 'seed ' + seed).toBe(bruteForceBestDamage(world))
     }
   })
@@ -154,7 +205,7 @@ describe('planner choices', () => {
     for (let seed = 1; seed <= 40; seed += 1) {
       const state = createBattle({ ...encounters[2]!, maxHealth: 500 }, undefined, { deck: startingDeck, seed })
       const world = determinize(state, seed)
-      const plan = planTurn(state, { profile: damageOnly, entropy: seed })
+      const plan = planTurn(state, { profile: damageOnly, salt: seed })
       expect(damageOf(structuredClone(world), plan.sequence), 'seed ' + seed).toBe(bruteForceBestDamage(world))
     }
   })
@@ -171,7 +222,7 @@ describe('planner legality and search limits', () => {
   it('only proposes plays the real engine accepts, across whole battles, and keeps every card accounted for', () => {
     for (let seed = 1; seed <= 25; seed += 1) {
       const state = createCampaignBattle({ encounter: encounters[seed % encounters.length], seed, deck: [...startingDeck, 'quick-cut', 'thunderbolt', 'bastion'] })
-      const planner = createTurnPlanner({ entropy: seed })
+      const planner = createTurnPlanner()
       const total = identities(state).length
       for (let turn = 0; turn < 40 && !state.result; turn += 1) {
         for (let guard = 0; guard < 20; guard += 1) {
@@ -252,5 +303,32 @@ describe('planner as a Balance Lab strategy', () => {
     expect(byName.planner!.timeouts).toBe(0)
     expect(byName.planner!.manaUtilization).toBeGreaterThan(0.9)
     expect(byName.planner!.planningTruncatedPlans).toBe(0)
+  })
+})
+
+describe('the integrated planner strategy cannot see hidden information', () => {
+  it('is given no seed-derived entropy by the Balance Lab', () => {
+    calls.length = 0
+    for (const seed of [42, 43, 44]) simulateRun(seed, 'planner')
+    expect(calls.length).toBeGreaterThan(50)
+    expect(calls.every(call => call.options === undefined)).toBe(true)
+  })
+
+  it('makes the same decision in every situation it meets when only hidden details differ', () => {
+    calls.length = 0
+    for (const seed of [42, 43, 44, 45, 46, 47]) simulateRun(seed, 'planner')
+    const decisions = calls.filter(call => call.fresh)
+    expect(decisions.length).toBeGreaterThan(60)
+    const definitionAt = (state: BattleState, id: string | undefined) => (id === undefined ? undefined : state.hand.find(card => card.instanceId === id)!.definitionId)
+    for (const decision of decisions) {
+      const view = equivalentView(decision.snapshot)
+      expect(definitionAt(view, createTurnPlanner().next(view))).toBe(definitionAt(decision.snapshot, decision.chosen))
+    }
+  })
+
+  it('reproduces whole runs, and changing the battle seed changes the draws but never the method', () => {
+    const first = simulateRun(42, 'planner')
+    expect(simulateRun(42, 'planner')).toEqual(first)
+    expect(simulateRun(43, 'planner')).not.toEqual(first)
   })
 })

@@ -12,10 +12,11 @@ import type { BattleState, CardId, CardInstance } from './types'
  *
  * Information discipline (what a player at the table can know when deciding):
  * - hand, mana, statuses, both discard zones, hero and enemy health/armor, and the enemy's CURRENT announced action;
- * - the CONTENTS of the draw pile (deck minus everything seen), but NOT its order. The copy is canonicalised and
- *   reshuffled with the planner's own RNG, so the real draw order and `rngState` can never influence a decision;
+ * - the CONTENTS of the draw pile (deck minus everything seen), but NOT its order. The copy is canonicalised (by card
+ *   definition, never by technical instance id) and reshuffled with an RNG seeded ONLY from the observable situation,
+ *   so the real draw order, `rngState`, `seed`, `battleId` and instance ids can never influence a decision;
  * - the enemy's later actions are not read: scoring never looks at the intent that will be announced next turn.
- * The planner is deterministic: the same visible state and `entropy` always give the same plan.
+ * The planner is deterministic: the same visible situation (and `salt`) always gives the same plan.
  */
 
 export interface PlannerProfile {
@@ -44,8 +45,11 @@ export const defaultPlannerLimits: PlannerLimits = { beamWidth: 30, maxNodes: 90
 export interface PlannerOptions {
   profile?: Partial<PlannerProfile>
   limits?: Partial<PlannerLimits>
-  /** Seeds the planner's private determinisation RNG. Never derive it from the battle's `rngState`. */
-  entropy?: number
+  /**
+   * Optional extra salt for the determinisation RNG (default 0), to draw a different sample of the unknown deck order.
+   * Never derive it from the battle's `seed` or `rngState`: the Balance Lab does not pass it at all.
+   */
+  salt?: number
 }
 
 export interface TurnPlan {
@@ -78,7 +82,10 @@ export function cloneBattleState(state: BattleState): BattleState {
   }
 }
 
-function byInstanceId(a: CardInstance, b: CardInstance): number { return a.instanceId < b.instanceId ? -1 : a.instanceId > b.instanceId ? 1 : 0 }
+/** Canonical order of a zone: by card definition. Instance ids are technical labels and must not matter. */
+function byDefinition(a: CardInstance, b: CardInstance): number {
+  return a.definitionId < b.definitionId ? -1 : a.definitionId > b.definitionId ? 1 : a.instanceId < b.instanceId ? -1 : a.instanceId > b.instanceId ? 1 : 0
+}
 
 function mix(a: number, b: number): number {
   let value = Math.imul(a ^ b, 0x9e3779b1) >>> 0
@@ -86,15 +93,39 @@ function mix(a: number, b: number): number {
   return (value ^ value >>> 13) >>> 0
 }
 
+/** FNV-1a over a string; used to turn the observable situation into a seed. */
+function hashText(text: string): number {
+  let hash = 0x811c9dc5
+  for (let index = 0; index < text.length; index += 1) hash = Math.imul(hash ^ text.charCodeAt(index), 0x01000193) >>> 0
+  return hash
+}
+
+/**
+ * A seed computed only from what the player can see: turn, mana, the multiset of cards in each zone, hero and enemy
+ * health/armor, statuses and the announced enemy action. Equivalent situations always give the same value, whatever the
+ * hidden draw order, RNG state, seed, battle id or instance ids.
+ */
+export function observableSeed(state: BattleState, salt = 0): number {
+  const zone = (cards: readonly CardInstance[]) => cards.map(card => card.definitionId).sort().join(',')
+  const statuses = Object.entries(state.statuses).map(([name, value]) => name + ':' + value!.expiresOnTurn).sort().join(',')
+  const text = [
+    state.turn, state.mana, state.maxMana, zone(state.hand), zone(state.drawPile), zone(state.discardPile), zone(state.exhausted), statuses,
+    state.heroes.warrior.health, state.heroes.warrior.armor, state.heroes.mage.health, state.heroes.mage.armor,
+    state.enemy.health, state.enemy.armor, state.enemy.nextAction.name,
+  ].join('|')
+  return mix(hashText(text), salt >>> 0)
+}
+
 /**
  * Builds the planner's working copy: same visible information, hidden order replaced by a fresh random one.
- * Zone contents are sorted before shuffling, so two states that differ only in hidden order give the same copy.
+ * Zones are sorted by definition before shuffling and the RNG comes from `observableSeed`, so two states that differ
+ * only in hidden information give the same copy.
  */
-export function determinize(state: BattleState, entropy = 0): BattleState {
+export function determinize(state: BattleState, salt = 0): BattleState {
   const copy = cloneBattleState(state)
-  const rng = { rngState: mix(mix(entropy >>> 0, copy.turn), copy.hand.length * 977 + copy.drawPile.length) }
-  copy.drawPile = shuffle(rng, [...copy.drawPile].sort(byInstanceId))
-  copy.discardPile = [...copy.discardPile].sort(byInstanceId)
+  const rng = { rngState: observableSeed(state, salt) }
+  copy.drawPile = shuffle(rng, [...copy.drawPile].sort(byDefinition))
+  copy.discardPile = [...copy.discardPile].sort(byDefinition)
   copy.rngState = rng.rngState
   return copy
 }
@@ -133,7 +164,7 @@ export function planTurn(state: BattleState, options: PlannerOptions = {}): Turn
   const limits = { ...defaultPlannerLimits, ...options.limits }
   if (state.result || state.pending) return { sequence: [], score: 0, nodesEvaluated: 0, truncated: false }
 
-  const root = determinize(state, options.entropy ?? 0)
+  const root = determinize(state, options.salt ?? 0)
   const reference = cloneBattleState(root)
   let evaluated = 0
   const evaluate = (node: BattleState): number => {

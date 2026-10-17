@@ -204,8 +204,8 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, limits: Par
     let cardsPlayedTotal = 0
     let manaAvailable = 0
     let manaSpent = 0
-    // The planner gets its own entropy (the run seed) and never reads the battle's RNG state or draw order.
-    const planner = strategy === 'planner' ? createTurnPlanner({ entropy: (seed + encounterIndex) >>> 0 }) : undefined
+    // The planner derives its own sampling from the observable situation only: no seed, RNG state, draw order or card ids.
+    const planner = strategy === 'planner' ? createTurnPlanner() : undefined
     const handMetrics: HandMetrics = { handSizeAtTurnStartTotal: 0, playableCardsAtTurnStartTotal: 0, handSizeAfterActionsTotal: 0, fullHandAtTurnStart: 0, fullHandAfterActions: 0 }
     let battleTurns = 0
     let battleStatus: BattleRecord['result'] = 'timeout'
