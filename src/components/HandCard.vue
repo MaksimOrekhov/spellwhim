@@ -4,9 +4,12 @@ import GameTooltip from './GameTooltip.vue'
 import swordStrikeArt from '../assets/art/sword-strike.jpg'
 import fireballArt from '../assets/art/fireball.jpg'
 import guardArt from '../assets/art/guard.jpg'
+import quickCutArt from '../assets/art/quick-cut.jpg'
+import thunderboltArt from '../assets/art/thunderbolt.jpg'
+import bastionArt from '../assets/art/bastion.jpg'
 const props = defineProps<{ card: CardDefinition; instanceId: string; preview: CardPreview; reason: string | null; playing: boolean; index: number }>()
 const emit = defineEmits<{ play: [instanceId: string] }>()
-const cardArt = { 'sword-strike': swordStrikeArt, fireball: fireballArt, guard: guardArt, 'quick-cut': swordStrikeArt, thunderbolt: fireballArt, bastion: guardArt }
+const cardArt = { 'sword-strike': swordStrikeArt, fireball: fireballArt, guard: guardArt, 'quick-cut': quickCutArt, thunderbolt: thunderboltArt, bastion: bastionArt }
 function play() {
   if (!props.reason && !props.playing) emit('play', props.instanceId)
 }
