@@ -8,7 +8,8 @@ import RunComplete from './components/RunComplete.vue'
 import { useBattle } from './composables/useBattle'
 import { useBattleControls } from './composables/useBattleControls'
 import { useBattleAnimation } from './composables/useBattleAnimation'
-import { cards as cardPool, encounters } from './game/types'
+import { encounters } from './game/types'
+import { advanceCampaign, campaignEncounter, campaignRewards } from './game/campaign'
 import type { CardDefinition, EncounterDefinition } from './game/types'
 
 const { state, isOver, cards, pendingCard, drawCount, discardCount, beginPlay, resolvePlay, finishTurn, startBattle, addCard, restart } = useBattle()
@@ -33,7 +34,7 @@ useBattleControls({ enabled: () => phase.value === 'battle' && battlePhase.value
 
 function enterEncounter(index: number) {
   if (phase.value !== 'map' || index !== activeIndex.value) return
-  const encounter = encounters[index]
+  const encounter = campaignEncounter(index)
   if (!encounter) return
   cancel()
   selectedEncounter.value = encounter
@@ -43,15 +44,16 @@ function enterEncounter(index: number) {
 
 function onBattleContinue() {
   cancel()
-  if (state.value.result === 'defeat') {
+  const advance = advanceCampaign(state.value, activeIndex.value)
+  if (advance.kind === 'defeat') {
     restartRun()
     return
   }
-  if (activeIndex.value >= encounters.length - 1) {
+  if (advance.kind === 'complete') {
     phase.value = 'complete'
     return
   }
-  rewardOptions.value = cardPool.filter(card => card.reward)
+  rewardOptions.value = campaignRewards()
   phase.value = 'reward'
 }
 

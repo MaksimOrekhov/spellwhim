@@ -1,5 +1,6 @@
 import { computed, shallowRef } from 'vue'
-import { createBattle, endTurn, previewCard, resolveCardPlay, startCardPlay } from '../game/battle'
+import { endTurn, previewCard, resolveCardPlay, startCardPlay } from '../game/battle'
+import { addCampaignReward, createCampaignBattle } from '../game/campaign'
 import { cardDefinition, startingDeck } from '../game/types'
 import type { BattleState, CardDefinition, CardId, CardInstance, CardPreview, EncounterDefinition } from '../game/types'
 
@@ -18,10 +19,8 @@ export function useBattle(options: { seed?: number; deck?: readonly CardId[] } =
   const ownedCards = computed(() => ownedDeck.value.map(cardDefinition))
   function newBattle(encounter?: EncounterDefinition, heroes?: BattleState['heroes']) {
     const sequence = battleSequence++
-    return createBattle(encounter, heroes, {
-      seed: (seed + sequence) >>> 0,
+    return createCampaignBattle({ encounter, heroes, deck: ownedDeck.value, seed: (seed + sequence) >>> 0,
       battleId: 'run/' + seed + '/generation/' + runGeneration + '/battle/' + sequence,
-      deck: ownedDeck.value,
     })
   }
   const current = shallowRef(newBattle())
@@ -76,8 +75,7 @@ export function useBattle(options: { seed?: number; deck?: readonly CardId[] } =
   }
 
   function addCard(card: CardDefinition): void {
-    // Copies are intentional; every encounter gives each one a distinct instance ID.
-    ownedDeck.value = [...ownedDeck.value, card.id]
+    ownedDeck.value = addCampaignReward(ownedDeck.value, card)
   }
 
   function restart(): void {
