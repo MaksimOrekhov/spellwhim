@@ -4,7 +4,7 @@ import mageEmblem from '../assets/art/mage-class-wizard-staff.svg'
 import type { CardClassId } from './types'
 
 export interface ClassTheme {
-  id: string
+  id: CardClassId
   name: string
   label: string
   primary: string
@@ -41,10 +41,10 @@ export const classThemes = {
     ornament: 'arcane',
     artDirection: 'Arcane & Wonder',
   },
-} as const satisfies Record<string, ClassTheme>
+} as const satisfies Record<CardClassId, ClassTheme>
 
 export function getClassTheme(classId: CardClassId): ClassTheme {
-  const theme = classThemes[classId as keyof typeof classThemes]
+  const theme = classThemes[classId]
   if (!theme) throw new Error(`Missing visual theme for card class "${classId}"`)
   return theme
 }

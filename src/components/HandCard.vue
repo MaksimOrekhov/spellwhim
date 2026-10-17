@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import type { CardDefinition, CardPreview } from '../game/types'
 import { classThemeStyle, getClassTheme } from '../game/classThemes'
+import vFitText from '../directives/fitText'
 import GameTooltip from './GameTooltip.vue'
 import swordStrikeArt from '../assets/art/sword-strike.jpg'
 import fireballArt from '../assets/art/fireball.jpg'
@@ -27,7 +28,7 @@ function play() {
       <span class="card-cost">{{ card.cost }}</span>
       <span class="card-class-emblem" aria-hidden="true"><img :src="theme.emblem" alt="" draggable="false" /></span>
       <span class="card-art"><img :src="artOverride ?? cardArt[card.id]" alt="" draggable="false" /></span>
-      <span class="card-nameplate"><strong class="card-name">{{ card.name }}</strong></span>
+      <span class="card-nameplate"><strong v-fit-text class="card-name">{{ card.name }}</strong></span>
       <span class="card-description">{{ card.description }}</span>
       <span class="card-footer">
         <span class="card-class-label">{{ theme.label }}</span>
@@ -64,10 +65,11 @@ function play() {
 .card-class-emblem{position:absolute;z-index:3;top:5px;right:6px;display:grid;place-items:center;width:38px;height:40px;padding:5px;border:1px solid var(--class-accent);border-radius:50%;background:color-mix(in srgb,var(--class-surface) 82%,transparent);filter:drop-shadow(0 2px 3px #1119)}
 .spell-card--angular .card-class-emblem{width:38px;height:42px;padding:5px 6px;border:0;border-radius:0;clip-path:polygon(10% 0,90% 0,100% 30%,88% 82%,50% 100%,12% 82%,0 30%);background:var(--class-accent)}
 .card-class-emblem img{display:block;width:100%;height:100%}
+.spell-card--angular .card-class-emblem img{filter:brightness(0) opacity(.88)}
 .card-nameplate{display:grid;place-items:center;min-height:32px;padding:4px 8px;border:1px solid var(--class-accent);border-radius:5px;background:linear-gradient(110deg,color-mix(in srgb,var(--class-primary) 75%,var(--class-surface)),var(--class-surface) 82%);box-shadow:inset 0 1px #fff3;color:#fff0cb}
 .spell-card--angular .card-nameplate{clip-path:polygon(5% 0,95% 0,100% 50%,95% 100%,5% 100%,0 50%);border-radius:0;background:linear-gradient(110deg,color-mix(in srgb,var(--class-primary) 68%,var(--class-accent)),var(--class-surface) 84%)}
 .spell-card--arcane .card-nameplate{border-radius:12px;background:linear-gradient(110deg,color-mix(in srgb,var(--class-primary) 45%,var(--class-surface)),color-mix(in srgb,var(--class-accent) 26%,var(--class-surface)))}
-.card-name{font:700 clamp(16px,1.05vw,20px)/1.1 var(--display)}
+.card-name{display:block;min-width:0;max-width:100%;overflow:hidden;text-overflow:clip;white-space:nowrap;font:700 clamp(16px,1.05vw,20px)/1.1 var(--display)}
 .card-description{display:grid;align-content:center;min-height:0;padding:2px 5px;color:#f0e4cb;font-size:clamp(13px,.92vw,16px);line-height:1.24}
 .card-footer{display:flex;align-items:center;justify-content:space-between;gap:5px;min-height:19px;border-top:1px solid color-mix(in srgb,var(--class-accent) 36%,transparent);padding-top:4px;color:#d2c5a7;font-size:11px}
 .card-class-label{color:var(--class-accent);font-weight:800;letter-spacing:.12em}

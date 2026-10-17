@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { classThemeStyle, getClassTheme } from '../game/classThemes'
+import vFitText from '../directives/fitText'
 import type { CardDefinition } from '../game/types'
 import swordArt from '../assets/art/sword-strike.jpg'
 import fireArt from '../assets/art/fireball.jpg'
@@ -32,7 +33,7 @@ function kindLabel(card: CardDefinition) {
           <span class="reward-card-cost">{{ card.cost }}</span>
           <span class="reward-card-emblem" aria-hidden="true"><img :src="themes[index]?.emblem" alt="" /></span>
           <span class="reward-card-art"><img :src="props.artOverrides?.[card.id] ?? artById[card.id]" alt="" aria-hidden="true" /></span>
-          <strong class="reward-card-name">{{ card.name }}</strong>
+          <strong v-fit-text class="reward-card-name">{{ card.name }}</strong>
           <span class="reward-card-meta"><b>{{ themes[index]?.label }}</b><span>{{ kindLabel(card) }}</span></span>
           <span class="reward-card-description">{{ card.description }}</span>
           <span class="reward-select">ВЗЯТЬ КАРТУ</span>
@@ -62,11 +63,12 @@ function kindLabel(card: CardDefinition) {
 .reward-card-emblem{position:absolute;z-index:2;top:14px;right:12px;display:grid;place-items:center;width:40px;height:42px;padding:5px;border:1px solid var(--class-accent);border-radius:50%;background:color-mix(in srgb,var(--class-surface) 82%,transparent);filter:drop-shadow(0 2px 3px #1119)}
 .reward-card--angular .reward-card-emblem{border:0;border-radius:0;clip-path:polygon(10% 0,90% 0,100% 30%,88% 82%,50% 100%,12% 82%,0 30%);background:var(--class-accent)}
 .reward-card-emblem img{width:100%;height:100%}
+.reward-card--angular .reward-card-emblem img{filter:brightness(0) opacity(.88)}
 .reward-card-art{position:relative;display:block;overflow:hidden;margin:0 0 10px;border:1px solid color-mix(in srgb,var(--class-accent) 76%,#fff);border-radius:10px 10px 4px 4px;background:var(--class-surface)}
 .reward-card--angular .reward-card-art{border-radius:3px 9px 2px 2px}
 .reward-card--arcane .reward-card-art{border-radius:13px 13px 7px 7px}
 .reward-card-art img{display:block;width:100%;height:clamp(130px,20vh,250px);object-fit:cover}
-.reward-card-name{display:grid;place-items:center;min-height:42px;padding:5px 8px;border:1px solid var(--class-accent);border-radius:6px;background:linear-gradient(110deg,color-mix(in srgb,var(--class-primary) 58%,var(--class-surface)),var(--class-surface));font:700 clamp(18px,1.5vw,24px)/1.1 var(--display);color:#ffebbd}
+.reward-card-name{display:grid;place-items:center;min-width:0;max-width:100%;overflow:hidden;text-overflow:clip;white-space:nowrap;min-height:42px;padding:5px 8px;border:1px solid var(--class-accent);border-radius:6px;background:linear-gradient(110deg,color-mix(in srgb,var(--class-primary) 58%,var(--class-surface)),var(--class-surface));font:700 clamp(18px,1.5vw,24px)/1.1 var(--display);color:#ffebbd}
 .reward-card--angular .reward-card-name{clip-path:polygon(5% 0,95% 0,100% 50%,95% 100%,5% 100%,0 50%);border-radius:0}
 .reward-card--arcane .reward-card-name{border-radius:13px;background:linear-gradient(110deg,color-mix(in srgb,var(--class-primary) 40%,var(--class-surface)),color-mix(in srgb,var(--class-accent) 25%,var(--class-surface)))}
 .reward-card-meta{display:flex;justify-content:center;gap:8px;margin:9px 0;color:#d5ceb7;font-size:11px;letter-spacing:.08em}

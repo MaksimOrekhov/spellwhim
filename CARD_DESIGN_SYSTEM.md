@@ -60,23 +60,31 @@
 | `mage-fireball.png` | Маг — огненный шар | тёплое пламя с аметистовым магическим контуром и сапфировой глубиной |
 | `mage-arcane-bolt.png` | Маг — арканный разряд | сапфир, аметист и светлая энергия, заметный направленный силуэт |
 
-## Заготовки промптов
+## Заготовка промпта способности: GLOBAL STYLE + CLASS ART DNA + CARD SCENE
 
-Если доступны портреты Вариана и Джайны, используй их только как референсы палитры, освещения и фактуры. В каждом запросе явно обозначай, что персонаж не нужен, если пользователь не попросил его изобразить.
+Собирай промпт способности из общего **GLOBAL STYLE**, одного блока **CLASS ART DNA** и конкретного **CARD SCENE**. Пользовательские портреты Вариана и Джайны можно использовать только как референсы палитры, освещения и фактуры, не копируя позы или композицию. Персонаж не обязателен; включай его, только когда без него действие нельзя ясно понять, и соблюдай канонические требования `ART_BIBLE.md`.
 
-**Общий стиль:**
+**GLOBAL STYLE:**
 
-> Original fan-made Warcraft fantasy card illustration, vibrant polished stylized hand-painted digital fantasy, bold readable silhouette, saturated jewel colors, clean expressive shapes, warm lantern highlights against cool mine shadows, lively adventurous tone, crisp painterly facets, square composition, no text, no logo, no card frame, no UI, no watermark, no photorealism, no anime.
+> Original fan-made Warcraft fantasy card illustration, vibrant stylized hand-painted fantasy, bold readable silhouette, warm adventurous humor, rich jewel colors, expressive clean shapes, polished painterly finish, dramatic but clear lighting, warm mine-lantern highlights against cool mine shadows, original composition, square composition, readable at thumbnail size, no text, no logo, no card frame, no emblem, no interface, no watermark, no photorealism, no anime, no grimdark.
 
-**Воин — парирование:**
+**CLASS ART DNA — Воин:**
+
+> Steel & Ember: angular physical motion, readable steel weapon silhouette, bronze fittings, charcoal depth, rust-red and bronze class accents, crisp amber sparks or a small steel glint. Keep metal visibly metallic and physical. Never depict a magical barrier created by Varian.
+
+**CLASS ART DNA — Маг:**
+
+> Arcane & Wonder: sapphire-blue depth, amethyst arcane contour, restrained turquoise-white luminous core, smooth arcs or fine rune-like particles. Preserve the natural main color of the spell: fire stays orange-gold, frost stays blue-white, and arcane energy stays sapphire-amethyst.
+
+**CARD SCENE — Воин, парирование:**
 
 > Square close-up card illustration of two steel blades meeting in a decisive defensive parry, one blade held across the incoming strike, bright amber sparks at impact, bronze fittings and charcoal shadows, angular physical motion, warm mine-lantern highlights against cool blue depth, no visible face or full character, one clear action readable at thumbnail size, original composition, no text, no frame, no emblem, no UI.
 
-**Маг — огненный шар:**
+**CARD SCENE — Маг, огненный шар:**
 
 > Square close-up card illustration of one large orange-gold fireball in flight, luminous core and painterly flame tongues, subtle amethyst arcane ribbons and sapphire-blue mine shadows identifying a mage, simple warm-lantern background, bold centered silhouette readable at thumbnail size, no character or hands, original composition, no text, no frame, no emblem, no UI.
 
-**Маг — арканный разряд:**
+**CARD SCENE — Маг, арканный разряд:**
 
 > Square close-up card illustration of one directed sapphire and amethyst arcane bolt with a bright cyan-white core, a short trail of rune-like fragments and a few particles, simple warm mine-lantern background with deep indigo shadows, bold diagonal silhouette readable at thumbnail size, no character or hands, original composition, no text, no frame, no emblem, no UI.
 
