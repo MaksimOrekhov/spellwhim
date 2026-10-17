@@ -4,13 +4,22 @@ import { Application, Container, Graphics, Text } from 'pixi.js'
 import type { HeroId } from '../game/types'
 
 type Effect = 'attack' | 'spell' | 'guard' | 'hit' | ''
-const props = defineProps<{ pulse: number; effect: Effect; target: HeroId | 'enemy'; damage: number }>()
-const emit = defineEmits<{ impact: [] }>()
+const props = defineProps<{ pulse: number; effect: Effect; target: HeroId | 'enemy'; damage: number; actionId: string | null; bonusDamage: number; partnerArmor: number }>()
+const emit = defineEmits<{ impact: [actionId: string] }>()
 const canvasHost = useTemplateRef<HTMLDivElement>('canvasHost')
 let app: Application | null = null
 let effects: Container | null = null
 let resizeObserver: ResizeObserver | null = null
 let disposed = false
+type EffectTick = (ticker: { deltaMS: number }) => void
+const effectTicks = new Set<EffectTick>()
+const effectTimers = new Set<ReturnType<typeof setTimeout>>()
+function addEffectTick(tick: EffectTick) { effectTicks.add(tick); app?.ticker.add(tick) }
+function removeEffectTick(tick: EffectTick) { effectTicks.delete(tick); app?.ticker.remove(tick) }
+function scheduleEffect(callback: () => void, delay: number) {
+  const timer = window.setTimeout(() => { effectTimers.delete(timer); if (!disposed) callback() }, delay)
+  effectTimers.add(timer)
+}
 
 function center(key: HeroId | 'enemy') {
   const width = canvasHost.value?.clientWidth ?? 0
@@ -21,6 +30,10 @@ function center(key: HeroId | 'enemy') {
 }
 
 function clearEffects() {
+  for (const tick of effectTicks) app?.ticker.remove(tick)
+  effectTicks.clear()
+  for (const timer of effectTimers) window.clearTimeout(timer)
+  effectTimers.clear()
   if (!effects) return
   for (const child of [...effects.children]) child.destroy()
 }
@@ -47,12 +60,12 @@ function popAt(x: number, y: number, color: number, amount: number) {
     label.rotation = Math.sin(progress * Math.PI) * -0.06
     label.alpha = 1 - progress
     if (progress >= 1) {
-      app?.ticker.remove(tick)
+      removeEffectTick(tick)
       ring.destroy()
       label.destroy()
     }
   }
-  app.ticker.add(tick)
+  addEffectTick(tick)
   for (let index = 0; index < 16; index += 1) {
     const angle = Math.PI * 2 * index / 16
     const distance = 45 + Math.random() * 55
@@ -65,9 +78,9 @@ function popAt(x: number, y: number, color: number, amount: number) {
       const p = Math.min(age / 440, 1)
       spark.position.set(x + Math.cos(angle) * distance * p, y + Math.sin(angle) * distance * p)
       spark.alpha = 1 - p
-      if (p >= 1) { app?.ticker.remove(fly); spark.destroy() }
+      if (p >= 1) { removeEffectTick(fly); spark.destroy() }
     }
-    app.ticker.add(fly)
+    addEffectTick(fly)
   }
 }
 
@@ -114,14 +127,14 @@ function swordSlashAt(x: number, y: number, onImpact: () => void, impactColor = 
       didImpact = true
       onImpact()
       impactFlashAt(x, y)
-      window.setTimeout(() => popAt(x, y, impactColor, props.damage), 65)
+      scheduleEffect(() => popAt(x, y, impactColor, props.damage), 65)
     }
     if (didImpact && impactHold >= 160) {
-      app?.ticker.remove(tick)
+      removeEffectTick(tick)
       slash.destroy()
     }
   }
-  app.ticker.add(tick)
+  addEffectTick(tick)
 }
 
 function impactFlashAt(x: number, y: number, color = 0xffc46b) {
@@ -140,12 +153,12 @@ function impactFlashAt(x: number, y: number, color = 0xffc46b) {
     ring.scale.set(0.45 + progress * 1.8)
     ring.alpha = 1 - progress
     if (progress >= 1) {
-      app?.ticker.remove(tick)
+      removeEffectTick(tick)
       flash.destroy()
       ring.destroy()
     }
   }
-  app.ticker.add(tick)
+  addEffectTick(tick)
 }
 
 function floatingLabelAt(x: number, y: number, text: string, color: string) {
@@ -162,14 +175,14 @@ function floatingLabelAt(x: number, y: number, text: string, color: string) {
     label.scale.set(0.82 + Math.min(elapsed / 100, 1) * 0.18)
     label.alpha = Math.min(elapsed / 70, 1) * (1 - progress)
     if (progress >= 1) {
-      app?.ticker.remove(tick)
+      removeEffectTick(tick)
       label.destroy()
     }
   }
-  app.ticker.add(tick)
+  addEffectTick(tick)
 }
 
-function guardAt(x: number, y: number, armor: number) {
+function guardAt(x: number, y: number, armor: number, onImpact: () => void) {
   if (!effects || !app) return
   const shield = new Graphics()
     .moveTo(0, -50).lineTo(36, -36).lineTo(31, 7)
@@ -209,16 +222,16 @@ function guardAt(x: number, y: number, armor: number) {
     shield.alpha = innerShield.alpha = glow.alpha = orbit.alpha = fade
     if (elapsed >= 250 && !impactSent) {
       impactSent = true
-      emit('impact')
+      onImpact()
       impactFlashAt(x, y, 0x72e8ff)
-      window.setTimeout(() => floatingLabelAt(x, y, `+${armor} БРОНИ`, '#bdf7ff'), 65)
+      scheduleEffect(() => floatingLabelAt(x, y, `+${armor} БРОНИ`, '#bdf7ff'), 65)
     }
-    if (p >= 1) { app?.ticker.remove(tick); shield.destroy(); innerShield.destroy(); glow.destroy(); orbit.destroy() }
+    if (p >= 1) { removeEffectTick(tick); shield.destroy(); innerShield.destroy(); glow.destroy(); orbit.destroy() }
   }
-  app.ticker.add(tick)
+  addEffectTick(tick)
 }
 
-function fireball(from: { x: number; y: number }, to: { x: number; y: number }) {
+function fireball(from: { x: number; y: number }, to: { x: number; y: number }, onImpact: () => void) {
   if (!effects || !app) return
   const trail = new Graphics()
   const emberTrail = Array.from({ length: 5 }, (_, index) => {
@@ -261,16 +274,16 @@ function fireball(from: { x: number; y: number }, to: { x: number; y: number }) 
       ember.alpha = p > 0 ? Math.max(0.18, 0.85 - index * 0.12) * (p < 0.96 ? 1 : 1 - (p - 0.96) / 0.04) : 0
     })
     if (p >= 1) {
-      app?.ticker.remove(tick)
+      removeEffectTick(tick)
       orb.destroy()
       trail.destroy()
       emberTrail.forEach(ember => ember.destroy())
-      emit('impact')
+      onImpact()
       fireballImpactAt(to.x, to.y)
-      window.setTimeout(() => popAt(to.x, to.y, 0xffab4d, props.damage), 75)
+      scheduleEffect(() => popAt(to.x, to.y, 0xffab4d, props.damage), 75)
     }
   }
-  app.ticker.add(tick)
+  addEffectTick(tick)
 }
 
 function fireballImpactAt(x: number, y: number) {
@@ -293,20 +306,20 @@ function fireballImpactAt(x: number, y: number) {
     magicRing.scale.set(0.35 + p * 1.9)
     magicRing.alpha = 0.8 * (1 - p)
     if (p >= 1) {
-      app?.ticker.remove(tick)
+      removeEffectTick(tick)
       core.destroy()
       flameRing.destroy()
       magicRing.destroy()
     }
   }
-  app.ticker.add(tick)
+  addEffectTick(tick)
 }
 
 onMounted(async () => {
   const instance = new Application()
-  app = instance
   await instance.init({ backgroundAlpha: 0, antialias: true, autoDensity: true, resolution: Math.min(window.devicePixelRatio || 1, 2), resizeTo: canvasHost.value! })
-  if (disposed || !canvasHost.value) { instance.destroy(true); app = null; return }
+  if (disposed || !canvasHost.value) { instance.destroy(true); return }
+  app = instance
   canvasHost.value.appendChild(instance.canvas)
   effects = new Container()
   instance.stage.addChild(effects)
@@ -314,11 +327,13 @@ onMounted(async () => {
     if (app && canvasHost.value) app.renderer.resize(canvasHost.value.clientWidth, canvasHost.value.clientHeight)
   })
   resizeObserver.observe(canvasHost.value)
+  trigger()
 })
 
 onUnmounted(() => {
   disposed = true
   resizeObserver?.disconnect()
+  clearEffects()
   if (app) {
     app.ticker.stop()
     app.destroy({ removeView: true }, { children: true, texture: true, textureSource: true })
@@ -328,13 +343,29 @@ onUnmounted(() => {
 })
 
 function trigger() {
-  if (!app || !effects || !canvasHost.value || !props.effect) return
   clearEffects()
+  if (!app || !effects || !canvasHost.value || !props.effect || !props.actionId) return
   const target = center(props.target)
-  if (props.effect === 'spell') { fireball({ x: canvasHost.value.clientWidth * 0.5, y: canvasHost.value.clientHeight * 0.96 }, target); return }
-  if (props.effect === 'attack') { swordSlashAt(target.x, target.y, () => emit('impact')); return }
-  if (props.effect === 'guard') { guardAt(target.x, target.y, props.damage); return }
-  if (props.effect === 'hit') { swordSlashAt(target.x, target.y, () => emit('impact'), 0xffa06e) }
+  const actionId = props.actionId
+  const bonus = props.bonusDamage
+  const partnerArmor = props.partnerArmor
+  const partner = center(props.target === 'mage' ? 'warrior' : 'mage')
+  const onImpact = () => {
+    if (disposed || props.actionId !== actionId) return
+    emit('impact', actionId)
+    if (bonus > 0) {
+      impactFlashAt(target.x, target.y, 0xce9aff)
+      floatingLabelAt(target.x - 50, target.y - 65, 'СВЯЗКА +' + bonus, '#ebc9ff')
+    }
+    if (props.effect === 'guard' && partnerArmor > 0) {
+      impactFlashAt(partner.x, partner.y, 0x72e8ff)
+      floatingLabelAt(partner.x, partner.y, '+' + partnerArmor + ' БРОНИ', '#bdf7ff')
+    }
+  }
+  if (props.effect === 'spell') { fireball(center('mage'), target, onImpact); return }
+  if (props.effect === 'attack') { swordSlashAt(target.x, target.y, onImpact); return }
+  if (props.effect === 'guard') { guardAt(target.x, target.y, props.damage, onImpact); return }
+  if (props.effect === 'hit') swordSlashAt(target.x, target.y, onImpact, 0xffa06e)
 }
 watch(() => props.pulse, trigger)
 </script>
