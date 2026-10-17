@@ -1,0 +1,1 @@
+{ "$schema": "../gen/schemas/desktop-schema.json", "identifier": "default", "description": "Default capabilities for the Spellwhim battle window", "windows": ["main"], "permissions": ["core:default"] }
