@@ -66,9 +66,9 @@ function play() {
 .spell-card--angular .card-class-emblem{width:38px;height:42px;padding:5px 6px;border:0;border-radius:0;clip-path:polygon(10% 0,90% 0,100% 30%,88% 82%,50% 100%,12% 82%,0 30%);background:var(--class-accent)}
 .card-class-emblem img{display:block;width:100%;height:100%}
 .spell-card--angular .card-class-emblem img{filter:brightness(0) opacity(.88)}
-.card-nameplate{display:grid;place-items:center;min-height:32px;padding:4px 8px;border:1px solid var(--class-accent);border-radius:5px;background:linear-gradient(110deg,color-mix(in srgb,var(--class-primary) 75%,var(--class-surface)),var(--class-surface) 82%);box-shadow:inset 0 1px #fff3;color:#fff0cb}
-.spell-card--angular .card-nameplate{clip-path:polygon(3% 0,97% 0,100% 50%,97% 100%,3% 100%,0 50%);border-radius:0;padding-inline:clamp(12px,1vw,18px);background:linear-gradient(110deg,color-mix(in srgb,var(--class-primary) 68%,var(--class-accent)),var(--class-surface) 84%)}
-.spell-card--arcane .card-nameplate{border-radius:12px;background:linear-gradient(110deg,color-mix(in srgb,var(--class-primary) 45%,var(--class-surface)),color-mix(in srgb,var(--class-accent) 26%,var(--class-surface)))}
+.card-nameplate{display:grid;place-items:center;min-height:32px;padding:4px 8px;border:1px solid var(--class-accent);border-radius:12px;background:linear-gradient(110deg,color-mix(in srgb,var(--class-primary) 75%,var(--class-surface)),var(--class-surface) 82%);box-shadow:inset 0 1px #fff3;color:#fff0cb}
+.spell-card--angular .card-nameplate{background:linear-gradient(110deg,color-mix(in srgb,var(--class-primary) 68%,var(--class-accent)),var(--class-surface) 84%)}
+.spell-card--arcane .card-nameplate{background:linear-gradient(110deg,color-mix(in srgb,var(--class-primary) 45%,var(--class-surface)),color-mix(in srgb,var(--class-accent) 26%,var(--class-surface)))}
 .card-name{display:block;min-width:0;max-width:100%;overflow:hidden;text-overflow:clip;white-space:nowrap;font:700 clamp(16px,1.05vw,20px)/1.1 var(--display)}
 .card-description{display:grid;align-content:center;min-height:0;padding:2px 5px;color:#f0e4cb;font-size:clamp(13px,.92vw,16px);line-height:1.24}
 .card-footer{display:flex;align-items:center;justify-content:space-between;gap:5px;min-height:19px;border-top:1px solid color-mix(in srgb,var(--class-accent) 36%,transparent);padding-top:4px;color:#d2c5a7;font-size:11px}
