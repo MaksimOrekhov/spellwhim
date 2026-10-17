@@ -57,9 +57,10 @@ function play() {
 <style scoped>
 .hand-card-wrap{position:relative;flex:0 0 clamp(150px,14vw,250px);height:var(--card-height);transition:transform .18s ease;transform-origin:bottom center}
 .hand-card-wrap:hover,.hand-card-wrap:focus-within{z-index:40;transform:translateY(-20px) scale(1.16)}
-.hand-card-wrap--fan{flex-basis:clamp(130px,10vw,190px);margin-left:clamp(-85px,-4.5vw,-54px)}
+.hand-card-wrap--fan{flex-basis:clamp(130px,10cqi,190px);margin-left:0}
 .hand-card-wrap--fan-first{margin-left:0}
-@media(min-width:2400px){.hand-card-wrap--fan{margin-left:0}}
+@container hand (min-width:1300px) and (max-width:1911px){.hand-card-wrap--fan:not(.hand-card-wrap--fan-first){margin-left:-2px}}
+@container hand (max-width:1299px){.hand-card-wrap--fan:not(.hand-card-wrap--fan-first){margin-left:clamp(-130px,calc(11.111cqi - 145.78px),0px)}}
 .spell-card{position:relative;isolation:isolate;display:grid;grid-template-rows:minmax(0,1fr) 34px 3.72em 24px;gap:5px;width:100%;height:100%;padding:8px 9px 9px;border:2px solid var(--class-primary);border-radius:14px 14px 10px 10px;background:linear-gradient(150deg,color-mix(in srgb,var(--class-primary) 76%,var(--class-surface)),var(--class-surface) 30%,color-mix(in srgb,var(--class-surface) 86%,#080a12));box-shadow:0 6px 16px #0b202c70,inset 0 0 0 2px color-mix(in srgb,var(--class-accent) 38%,transparent);color:#fff0d3;text-align:center;cursor:pointer;transition:filter .16s,border-color .16s,box-shadow .16s}
 .spell-card::before{position:absolute;z-index:-1;inset:5px;border:1px solid color-mix(in srgb,var(--class-accent) 66%,transparent);border-radius:inherit;content:"";pointer-events:none}
 .spell-card--angular{border-radius:8px 14px 8px 14px}
