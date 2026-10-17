@@ -19,6 +19,16 @@
 | `bg-lumber-workshop` | `src/assets/art/bg-lumber-workshop.jpg` | Мастерская с крошшером, пиломатериалами и строящимся корпусом корабля | 1920×1080, 16:9 JPEG | [Deadmines](https://warcraft.wiki.gg/wiki/Deadmines_%28Classic%29), [Sneed’s Shredder](https://warcraft.wiki.gg/wiki/Sneed%27s_Shredder); свободная зона под HUD | missing |
 | `bg-juggernaut-deck` | `src/assets/art/bg-juggernaut-deck.jpg` | Палуба незавершённого джаггернаута внутри копей | 1920×1080, 16:9 JPEG | [Deadmines](https://warcraft.wiki.gg/wiki/Deadmines_%28Classic%29); читаемые дерево, такелаж и корпус | missing |
 
+## Контрольные изображения классовых карт v0.1
+
+Эти временные изображения находятся вне `src/assets/art/`, показывают эффекты без персонажей и не подключены в игре. Они проверяют читаемость трёх классовых сцен; статус всех — **experimental / not approved**. См. также `CARD_DESIGN_SYSTEM.md`.
+
+| Файл | Назначение | Формат | Статус |
+|---|---|---|---|
+| `art-exploration/card-design-system-v01/warrior-defensive-parry.png` | Воин: парирование клинком, сталь, бронза и янтарные искры | квадратный PNG | experimental / not approved |
+| `art-exploration/card-design-system-v01/mage-fireball.png` | Маг: огненный шар с аметистовой дугой и сапфировой глубиной | квадратный PNG | experimental / not approved |
+| `art-exploration/card-design-system-v01/mage-arcane-bolt.png` | Маг: сине-фиолетовый арканный разряд | квадратный PNG | experimental / not approved |
+
 ## Сохранённые старые файлы
 
 В `src/assets/art/` уже находятся `brann.jpg`, `lira.jpg`, `guardian.jpg`, `sword-strike.jpg`, `fireball.jpg`, `guard.jpg`, `quick-cut.jpg`, `thunderbolt.jpg` и `bastion.jpg`. Все они — **draft/legacy**, не одобрены как Warcraft-образы. Старые файлы не удалять, не перезаписывать и не переименовывать; новые имена из таблицы уникальны и не конфликтуют с legacy-артом. Три старых врага были общими локациями/образами прототипа, отдельных утверждённых портретов Рак'Зора, Снида и Эдвина нет.

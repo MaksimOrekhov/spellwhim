@@ -1,4 +1,6 @@
 export type HeroId = 'warrior' | 'mage'
+// Kept separate from HeroId so class presentation can evolve independently of its current hero.
+export type CardClassId = 'warrior' | 'mage'
 export type GameResult = 'victory' | 'defeat' | null
 export type CardId = 'sword-strike' | 'fireball' | 'guard' | 'quick-cut' | 'thunderbolt' | 'bastion'
 export type StatusId = 'mark' | 'resonance'
@@ -23,7 +25,7 @@ export type CardEffect =
 export interface CardDefinition {
   id: CardId
   name: string
-  className: HeroId
+  className: CardClassId
   cost: number
   description: string
   icon: string
