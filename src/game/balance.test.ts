@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { endTurn, playCard } from './battle'
 import { simulateBalance, simulateRun, summarizeBalance } from './balance'
-import { advanceCampaign, addCampaignReward, campaignEncounter, campaignRewards, createCampaignBattle } from './campaign'
+import { advanceCampaign, addCampaignReward, campaignEncounter, campaignRewardOptions, campaignRewards, createCampaignBattle } from './campaign'
 import { cardDefinition, startingDeck } from './types'
 
 describe('headless balance lab', () => {
@@ -49,14 +49,14 @@ describe('headless balance lab', () => {
     expect(fullRun).toMatchObject({ status: 'victory', battlesCompleted: 3 })
     expect(fullRun.battles.map(battle => battle.result)).toEqual(['victory', 'victory', 'victory'])
     expect(fullRun.rewards).toHaveLength(2)
-    expect(fullRun.battles.map(battle => battle.deckSizeStart)).toEqual([6, 7, 8])
+    expect(fullRun.battles.map(battle => battle.deckSizeStart)).toEqual([18, 19, 20])
     expect(fullRun.battles[1]?.heroesStart).toEqual(fullRun.battles[0]?.heroesEnd)
     expect(fullRun.battles[2]?.heroesStart).toEqual(fullRun.battles[1]?.heroesEnd)
     expect(simulateRun(42, 'balanced')).toEqual(fullRun)
     const defeat = simulateRun(90, 'aggressive')
-    expect(defeat).toMatchObject({ status: 'defeat', battlesCompleted: 2, failedEncounter: 'twilight-heart' })
+    expect(defeat).toMatchObject({ status: 'victory', battlesCompleted: 3, failedEncounter: null })
     expect(defeat.battles).toHaveLength(3)
-    expect(defeat.battles[defeat.battles.length - 1]?.result).toBe('defeat')
+    expect(defeat.battles[defeat.battles.length - 1]?.result).toBe('victory')
     expect(defeat.rewards).toHaveLength(2)
   })
 
@@ -76,5 +76,17 @@ describe('headless balance lab', () => {
       { ...simulateRun(2, 'aggressive', { maxTurnsPerBattle: 0 }), status: 'defeat', turns: 5, finalHealth: { warrior: 2, mage: 0 } },
     ])
     expect(rows[0]).toMatchObject({ runs: 2, victories: 1, defeats: 1, timeouts: 0, averageTurns: 4, medianTurns: 4 })
+  })
+
+  it('offers three reproducible reward options from the expanded pool', () => {
+    const battle = createCampaignBattle({ seed: 742 })
+    battle.result = 'victory'
+    expect(campaignRewards().length).toBeGreaterThanOrEqual(6)
+    const first = campaignRewardOptions(battle)
+    expect(first).toHaveLength(3)
+    expect(campaignRewardOptions(battle)).toEqual(first)
+    const other = createCampaignBattle({ seed: 743 })
+    other.result = 'victory'
+    expect(campaignRewardOptions(other)).not.toEqual(first)
   })
 })

@@ -1,5 +1,5 @@
-import { cardDefinition, encounters, links, startingDeck } from './types'
-import { discardHand, drawCards, shuffle } from './deck'
+import { CARDS_DRAWN_PER_TURN, OPENING_HAND_SIZE, cardDefinition, encounters, links, startingDeck } from './types'
+import { drawCards, shuffle } from './deck'
 import type { BattleState, CardEffect, CardDefinition, CardId, CardPreview, EncounterDefinition, EnemyAction, EnemyHit, HeroId, PendingPlay, StatusId } from './types'
 
 export interface BattleOptions {
@@ -33,14 +33,14 @@ export function createBattle(encounter: EncounterDefinition = encounters[1]!, pr
   const state: BattleState = {
     battleId, seed, rngState: seed, nextActionId: 1, heroes,
     enemy: { name: encounter.name, title: encounter.title, health: encounter.maxHealth, maxHealth: encounter.maxHealth, armor: 0, appearance: encounter.appearance, phase: 1, nextActionPhase: 1, behavior: encounter.behavior, behaviorIndex: 1, nextAction: encounter.behavior.phase1[0]!, focus: initialFocus(encounter.behavior.phase1[0]!) },
-    statuses: {}, hand: [], drawPile: [], discardPile: [], exhausted: [], pending: null,
+    statuses: {}, hand: [], blockedDraws: 0, drawPile: [], discardPile: [], exhausted: [], pending: null,
     mana: 3, maxMana: 3, turn: 1, result: null,
   }
   state.drawPile = shuffle(state, (options.deck ?? startingDeck).map((id, index) => ({
     instanceId: battleId + '/card/' + (index + 1), definitionId: cardDefinition(id).id,
   })))
   updateResult(state)
-  drawCards(state, options.openingHandSize ?? 3)
+  drawCards(state, options.openingHandSize ?? OPENING_HAND_SIZE)
   return state
 }
 
@@ -59,7 +59,9 @@ export function hasStatus(state: BattleState, status: StatusId): boolean {
 function buildPlan(state: BattleState, card: CardDefinition): Omit<PendingPlay, 'actionId' | 'card' | 'handIndex'> {
   const activeLinks = links.filter(link => hasStatus(state, link.status) && link.actor === card.className && card.tags.includes(link.tag))
   const bonusEffects = activeLinks.flatMap(link => link.effects)
-  const allEffects = [...card.effects, ...bonusEffects]
+  const enemyAction = state.enemy.nextAction
+  const enemyAttacking = enemyAction.kind === 'attack' || enemyAction.kind === 'attack_all' || enemyAction.kind === 'prepare' && (enemyAction.prepared.kind === 'attack' || enemyAction.prepared.kind === 'attack_all')
+  const allEffects = [...card.effects, ...bonusEffects].filter(effect => effect.type !== 'damage' || effect.when !== 'enemy-attacking' || enemyAttacking)
   const damage = allEffects.reduce((sum, effect) => sum + (effect.type === 'damage' ? effect.amount : 0), 0)
   const armorDamage = Math.min(state.enemy.armor, damage)
   const healthDamage = Math.min(state.enemy.health, Math.max(0, damage - armorDamage))
@@ -203,7 +205,6 @@ export function forecastEnemyAttack(state: BattleState): EnemyAttackForecast {
 export function endTurn(state: BattleState): boolean {
   updateResult(state)
   if (state.result || state.pending) return false
-  discardHand(state)
   const forecast = forecastEnemyAction(state)
   const action = state.enemy.nextAction
   if (action.kind === 'defend' || action.kind === 'recover') state.enemy.armor = Math.min(ENEMY_ARMOR_CAP, state.enemy.armor + action.armor)
@@ -231,6 +232,6 @@ export function endTurn(state: BattleState): boolean {
     state.enemy.behaviorIndex = (index + 1) % actions.length
     state.enemy.focus = hitFocus(state.enemy.nextAction, state.enemy.focus)
   }
-  drawCards(state, 3)
+  drawCards(state, CARDS_DRAWN_PER_TURN)
   return true
 }

@@ -2,9 +2,12 @@ export type HeroId = 'warrior' | 'mage'
 // Kept separate from HeroId so class presentation can evolve independently of its current hero.
 export type CardClassId = 'warrior' | 'mage'
 export type GameResult = 'victory' | 'defeat' | null
-export type CardId = 'sword-strike' | 'fireball' | 'guard' | 'quick-cut' | 'thunderbolt' | 'bastion'
+export type CardId = 'sword-strike' | 'fireball' | 'guard' | 'quick-cut' | 'thunderbolt' | 'bastion' | 'parry' | 'shield-bash' | 'interpose' | 'frostbolt' | 'arcane-insight' | 'ice-ward'
 export type StatusId = 'mark' | 'resonance'
 export type CardTag = 'strike' | 'offensive-spell' | 'defense'
+export const MAX_HAND_SIZE = 10
+export const OPENING_HAND_SIZE = 8
+export const CARDS_DRAWN_PER_TURN = 2
 
 export interface Hero {
   id: HeroId
@@ -17,7 +20,7 @@ export interface Hero {
 }
 
 export type CardEffect =
-  | { type: 'damage'; amount: number }
+  | { type: 'damage'; amount: number; when?: 'enemy-attacking' }
   | { type: 'armor'; amount: number; target: 'threatened' | 'partner' }
   | { type: 'draw'; amount: number }
   | { type: 'status'; status: StatusId; durationTurns: number }
@@ -63,12 +66,22 @@ export const cards: CardDefinition[] = [
   { id: 'sword-strike', name: 'Удар мечом', className: 'warrior', cost: 1, description: '6 урона. По метке Лиры: +3 урона и добор.', icon: '⚔', kind: 'attack', tags: ['strike'], effects: [{ type: 'damage', amount: 6 }] },
   { id: 'fireball', name: 'Огненный шар', className: 'mage', cost: 2, description: '8 урона. Метка: удар Бранна +3 и добор.', icon: '✹', kind: 'spell', tags: ['offensive-spell'], effects: [{ type: 'damage', amount: 8 }, { type: 'status', status: 'mark', durationTurns: 1 }] },
   { id: 'guard', name: 'Защитная стойка', className: 'warrior', cost: 1, description: '4 брони цели врага. Резонанс: заклинание Лиры +2.', icon: '⬡', kind: 'defense', tags: ['defense'], effects: [{ type: 'armor', amount: 4, target: 'threatened' }, { type: 'status', status: 'resonance', durationTurns: 1 }] },
+  { id: 'parry', name: 'Парирование', className: 'warrior', cost: 1, description: '3 брони цели. Если враг собирается атаковать — 3 урона.', icon: '⛨', kind: 'defense', tags: ['defense'], effects: [{ type: 'armor', amount: 3, target: 'threatened' }, { type: 'damage', amount: 3, when: 'enemy-attacking' }], reward: true },
+  { id: 'shield-bash', name: 'Удар щитом', className: 'warrior', cost: 2, description: '5 урона и 3 брони цели. Использует метку Лиры.', icon: '⬡', kind: 'attack', tags: ['strike'], effects: [{ type: 'damage', amount: 5 }, { type: 'armor', amount: 3, target: 'threatened' }], reward: true },
+  { id: 'interpose', name: 'Прикрыть союзника', className: 'warrior', cost: 1, description: '5 брони напарнику. Создаёт защитный резонанс.', icon: '⬡', kind: 'defense', tags: ['defense'], effects: [{ type: 'armor', amount: 5, target: 'partner' }, { type: 'status', status: 'resonance', durationTurns: 1 }], reward: true },
+  { id: 'frostbolt', name: 'Ледяная стрела', className: 'mage', cost: 1, description: '4 урона. Создаёт магическую метку для удара Бранна.', icon: '❄', kind: 'spell', tags: ['offensive-spell'], effects: [{ type: 'damage', amount: 4 }, { type: 'status', status: 'mark', durationTurns: 1 }], reward: true },
+  { id: 'arcane-insight', name: 'Тайное предвидение', className: 'mage', cost: 1, description: 'Добор карты. Следующий удар Бранна получает метку Лиры.', icon: '✦', kind: 'spell', tags: [], effects: [{ type: 'draw', amount: 1 }, { type: 'status', status: 'mark', durationTurns: 1 }], reward: true },
+  { id: 'ice-ward', name: 'Ледяной покров', className: 'mage', cost: 1, description: '3 брони цели и 2 брони напарнику.', icon: '❄', kind: 'defense', tags: ['defense'], effects: [{ type: 'armor', amount: 3, target: 'threatened' }, { type: 'armor', amount: 2, target: 'partner' }], reward: true },
   { id: 'quick-cut', name: 'Быстрый выпад', className: 'warrior', cost: 0, description: '3 урона. Использует метку. Выбывает до конца боя.', icon: '⚔', kind: 'attack', tags: ['strike'], effects: [{ type: 'damage', amount: 3 }], exhaust: true, reward: true },
   { id: 'thunderbolt', name: 'Грозовой разряд', className: 'mage', cost: 1, description: '4 урона. Добор карты. Использует резонанс.', icon: '✹', kind: 'spell', tags: ['offensive-spell'], effects: [{ type: 'damage', amount: 4 }, { type: 'draw', amount: 1 }], reward: true },
   { id: 'bastion', name: 'Каменный бастион', className: 'warrior', cost: 2, description: '6 брони цели, 3 — напарнику. Создаёт резонанс.', icon: '⬡', kind: 'defense', tags: ['defense'], effects: [{ type: 'armor', amount: 6, target: 'threatened' }, { type: 'armor', amount: 3, target: 'partner' }, { type: 'status', status: 'resonance', durationTurns: 1 }], reward: true },
 ]
 
-export const startingDeck: CardId[] = ['sword-strike', 'sword-strike', 'fireball', 'fireball', 'guard', 'guard']
+export const startingDeck: CardId[] = [
+  'sword-strike', 'sword-strike', 'fireball', 'fireball', 'guard', 'guard',
+  'parry', 'parry', 'shield-bash', 'shield-bash', 'interpose', 'interpose',
+  'frostbolt', 'frostbolt', 'arcane-insight', 'arcane-insight', 'ice-ward', 'ice-ward',
+]
 
 export function cardDefinition(id: CardId): CardDefinition {
   const definition = cards.find(card => card.id === id)
@@ -130,6 +143,7 @@ export interface BattleState {
   enemy: EnemyState
   statuses: Partial<Record<StatusId, { expiresOnTurn: number }>>
   hand: CardInstance[]
+  blockedDraws: number
   drawPile: CardInstance[]
   discardPile: CardInstance[]
   exhausted: CardInstance[]

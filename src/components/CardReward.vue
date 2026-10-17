@@ -9,10 +9,16 @@ import guardArt from '../assets/art/guard.jpg'
 import quickCutArt from '../assets/art/quick-cut.jpg'
 import thunderboltArt from '../assets/art/thunderbolt.jpg'
 import bastionArt from '../assets/art/bastion.jpg'
+import parryArt from '../assets/art/parry.svg'
+import shieldBashArt from '../assets/art/shield-bash.svg'
+import interposeArt from '../assets/art/interpose.svg'
+import frostboltArt from '../assets/art/frostbolt.svg'
+import arcaneInsightArt from '../assets/art/arcane-insight.svg'
+import iceWardArt from '../assets/art/ice-ward.svg'
 
 const props = defineProps<{ options: CardDefinition[]; encounterName: string; artOverrides?: Partial<Record<CardDefinition['id'], string>> }>()
 const emit = defineEmits<{ choose: [card: CardDefinition] }>()
-const artById = { 'sword-strike': swordArt, fireball: fireArt, guard: guardArt, 'quick-cut': quickCutArt, thunderbolt: thunderboltArt, bastion: bastionArt }
+const artById = { 'sword-strike': swordArt, fireball: fireArt, guard: guardArt, 'quick-cut': quickCutArt, thunderbolt: thunderboltArt, bastion: bastionArt, parry: parryArt, 'shield-bash': shieldBashArt, interpose: interposeArt, frostbolt: frostboltArt, 'arcane-insight': arcaneInsightArt, 'ice-ward': iceWardArt }
 const themes = computed(() => props.options.map(card => getClassTheme(card.className)))
 const themeStyles = computed(() => props.options.map(card => classThemeStyle(card.className)))
 

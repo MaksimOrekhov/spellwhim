@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { createBattle, endTurn, forecastEnemyAttack, hasStatus, playCard, previewCard, resolveCardPlay, startCardPlay } from './battle'
 import { drawCards } from './deck'
-import { cardDefinition, encounters, startingDeck } from './types'
+import { CARDS_DRAWN_PER_TURN, MAX_HAND_SIZE, OPENING_HAND_SIZE, cardDefinition, encounters, startingDeck } from './types'
 import type { BattleState, CardId } from './types'
 import { useBattle } from '../composables/useBattle'
 
@@ -181,6 +181,52 @@ describe('dual-class links', () => {
 })
 
 describe('deck, draw, recycle and exhaustion', () => {
+  it('starts with eight cards from an 18-instance deck and holds the hand at ten', () => {
+    const state = createBattle(undefined, undefined, { seed: 4 })
+    expect(startingDeck).toHaveLength(18)
+    expect(state.hand).toHaveLength(OPENING_HAND_SIZE)
+    expect(MAX_HAND_SIZE).toBe(10)
+    expect(state.hand.length + state.drawPile.length).toBe(18)
+  })
+
+  it('keeps unplayed cards between turns, draws two, and leaves blocked draws in the pile', () => {
+    const state = createBattle(undefined, undefined, { seed: 23, deck: Array(18).fill('sword-strike') as CardId[] })
+    const originalHand = state.hand.map(card => card.instanceId)
+    expect(endTurn(state)).toBe(true)
+    expect(state.hand.slice(0, OPENING_HAND_SIZE).map(card => card.instanceId)).toEqual(originalHand)
+    expect(state.hand).toHaveLength(OPENING_HAND_SIZE + CARDS_DRAWN_PER_TURN)
+    expect(endTurn(state)).toBe(true)
+    expect(state.hand).toHaveLength(MAX_HAND_SIZE)
+    const remainingBefore = state.drawPile.length
+    expect(drawCards(state, 2)).toHaveLength(0)
+    expect(state.drawPile).toHaveLength(remainingBefore)
+    expect(state.blockedDraws).toBeGreaterThan(0)
+  })
+
+  it('counts blocked cards only when cards remain available to draw', () => {
+    const state = fixture(['sword-strike'])
+    state.hand = Array.from({ length: MAX_HAND_SIZE }, (_, index) => ({ instanceId: 'held-' + index, definitionId: 'sword-strike' }))
+    state.drawPile = [{ instanceId: 'waiting', definitionId: 'fireball' }]
+    expect(drawCards(state, 2)).toHaveLength(0)
+    expect(state.drawPile[0]?.instanceId).toBe('waiting')
+    expect(state.blockedDraws).toBe(1)
+    state.drawPile = []
+    state.discardPile = []
+    expect(drawCards(state, 2)).toHaveLength(0)
+    expect(state.blockedDraws).toBe(1)
+  })
+
+  it('uses the announced enemy action to make Parry a situational counter', () => {
+    const state = fixture(['parry'])
+    state.enemy.nextAction = { kind: 'attack', name: 'Удар', damage: 4, target: 'warrior' }
+    expect(previewCard(state, cardDefinition('parry'))).toMatchObject({ damage: 3, armor: { warrior: 3, mage: 0 } })
+    expect(cast(state, 'parry').ok).toBe(true)
+    expect(state.enemy.health).toBe(97)
+    const safe = fixture(['parry'])
+    safe.enemy.nextAction = { kind: 'defend', name: 'Защита', armor: 3 }
+    expect(previewCard(safe, cardDefinition('parry'))).toMatchObject({ damage: 0, armor: { warrior: 3, mage: 0 } })
+  })
+
   it('draws no cards from empty zones and cannot draw the resolving copy itself', () => {
     const state = fixture(['thunderbolt'])
     expect(cast(state, 'thunderbolt')).toMatchObject({ ok: true, drawn: 0 })
@@ -299,8 +345,8 @@ describe('terminal states and run adapter', () => {
     expect(state.result).toBe('defeat')
     expect(state.heroes.mage.health).toBe(0)
     expect(state.turn).toBe(1)
-    expect(state.hand).toHaveLength(0)
-    expect(state.discardPile).toHaveLength(1)
+    expect(state.hand).toHaveLength(1)
+    expect(state.discardPile).toHaveLength(0)
     expect(drawCards(state, 3)).toHaveLength(0)
     expect(startCardPlay(state, 'anything')).toEqual({ ok: false, reason: 'finished' })
   })

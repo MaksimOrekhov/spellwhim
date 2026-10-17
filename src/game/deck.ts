@@ -1,7 +1,8 @@
+import { MAX_HAND_SIZE } from './types'
 import type { BattleState, CardInstance } from './types'
 
 // Mulberry32: the RNG state is part of the battle, so a seed replays every shuffle.
-function nextRandom(state: BattleState): number {
+function nextRandom(state: Pick<BattleState, 'rngState'>): number {
   state.rngState = (state.rngState + 0x6d2b79f5) >>> 0
   let value = state.rngState
   value = Math.imul(value ^ value >>> 15, value | 1)
@@ -9,7 +10,7 @@ function nextRandom(state: BattleState): number {
   return ((value ^ value >>> 14) >>> 0) / 4294967296
 }
 
-export function shuffle(state: BattleState, cards: readonly CardInstance[]): CardInstance[] {
+export function shuffle<T>(state: Pick<BattleState, 'rngState'>, cards: readonly T[]): T[] {
   const deck = [...cards]
   for (let index = deck.length - 1; index > 0; index -= 1) {
     const other = Math.floor(nextRandom(state) * (index + 1))
@@ -21,7 +22,11 @@ export function shuffle(state: BattleState, cards: readonly CardInstance[]): Car
 export function drawCards(state: BattleState, count: number): CardInstance[] {
   if (state.result) return []
   const drawn: CardInstance[] = []
-  for (let index = 0; index < count; index += 1) {
+  const requested = Math.max(0, Math.floor(count))
+  const available = state.drawPile.length + state.discardPile.length
+  const room = Math.max(0, MAX_HAND_SIZE - state.hand.length)
+  state.blockedDraws += Math.max(0, Math.min(requested, available) - room)
+  for (let index = 0; index < Math.min(requested, room); index += 1) {
     if (state.drawPile.length === 0) {
       if (state.discardPile.length === 0) break
       state.drawPile = shuffle(state, state.discardPile)

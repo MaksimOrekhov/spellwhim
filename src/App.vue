@@ -9,7 +9,7 @@ import { useBattle } from './composables/useBattle'
 import { useBattleControls } from './composables/useBattleControls'
 import { useBattleAnimation } from './composables/useBattleAnimation'
 import { encounters } from './game/types'
-import { advanceCampaign, campaignEncounter, campaignRewards } from './game/campaign'
+import { advanceCampaign, campaignEncounter, campaignRewardOptions } from './game/campaign'
 import type { CardDefinition, EncounterDefinition } from './game/types'
 
 const { state, isOver, cards, pendingCard, drawCount, discardCount, beginPlay, resolvePlay, finishTurn, startBattle, addCard, restart } = useBattle()
@@ -53,7 +53,7 @@ function onBattleContinue() {
     phase.value = 'complete'
     return
   }
-  rewardOptions.value = campaignRewards()
+  rewardOptions.value = campaignRewardOptions(state.value)
   phase.value = 'reward'
 }
 

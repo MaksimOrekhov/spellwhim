@@ -4,8 +4,9 @@ export function useBattleControls(options: { enabled: () => boolean; cards: () =
     if (!options.enabled() || event.defaultPrevented || event.repeat || event.altKey || event.ctrlKey || event.metaKey || document.querySelector('dialog[open]')) return
     const target = event.target as HTMLElement | null
     if (target?.closest('input,textarea,select,[contenteditable="true"]')) return
-    if (/^[1-9]$/.test(event.key)) {
-      const card = options.cards()[Number(event.key) - 1]
+    if (/^[0-9]$/.test(event.key)) {
+      const index = event.key === '0' ? 9 : Number(event.key) - 1
+      const card = options.cards()[index]
       if (card) { event.preventDefault(); options.play(card.instanceId) }
     } else if (event.key === 'Enter' && !target?.closest('button,a')) { event.preventDefault(); options.endTurn() }
   }

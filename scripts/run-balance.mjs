@@ -32,7 +32,11 @@ const allStrategies = ['aggressive', 'defensive', 'balanced']
 const strategies = options.strategy === 'all' ? allStrategies : [options.strategy]
 if (strategies.some(strategy => !allStrategies.includes(strategy))) throw new Error('--strategy: aggressive, defensive, balanced или all')
 
-const server = await createServer({ server: { middlewareMode: true, ws: false, hmr: false }, appType: 'custom' })
+const server = await createServer({
+  optimizeDeps: { noDiscovery: true, include: [] },
+  server: { middlewareMode: true, ws: false, hmr: false },
+  appType: 'custom',
+})
 try {
   const { simulateBalance, simulateRun, summarizeBalance } = await server.ssrLoadModule('/src/game/balance.ts')
   if (options.run !== null) {
@@ -45,7 +49,7 @@ try {
     const summary = summarizeBalance(runs)
     console.log('SPELLWHIM — BALANCE REPORT')
     console.log(`Runs: ${options.runs} per strategy | seeds: ${options.seed}–${(options.seed + options.runs - 1) >>> 0}`)
-    console.table(summary.map(row => ({ strategy: row.strategy, victories: row.victories, defeats: row.defeats, timeout: row.timeouts, 'win %': (row.winRate * 100).toFixed(1), 'avg turns': row.averageTurns.toFixed(1), 'median turns': row.medianTurns, 'Brann HP': row.averageBrannHp.toFixed(1), 'Lira HP': row.averageLiraHp.toFixed(1) })))
+    console.table(summary.map(row => ({ strategy: row.strategy, victories: row.victories, defeats: row.defeats, timeout: row.timeouts, 'win %': (row.winRate * 100).toFixed(1), 'avg turns': row.averageTurns.toFixed(1), 'cards / turn': row.averageCardsPlayedPerTurn.toFixed(2), 'avg hand': row.averageHandSize.toFixed(2), 'full hand turns': row.fullHandTurns, 'blocked draws': row.blockedDraws, 'median turns': row.medianTurns, 'Brann HP': row.averageBrannHp.toFixed(1), 'Lira HP': row.averageLiraHp.toFixed(1) })))
 
     console.log('Победы по встречам (победы / сколько дошло):')
     console.table(summary.flatMap(row => row.battlesReached.map((reached, index) => ({ strategy: row.strategy, encounter: index + 1, wins: row.battleWins[index], reached, 'win %': reached ? (row.battleWins[index] / reached * 100).toFixed(1) : '—' }))))

@@ -1,5 +1,5 @@
 import { endTurn, forecastEnemyAction, playCard, previewCard } from './battle'
-import { addCampaignReward, advanceCampaign, campaignEncounter, campaignRewards, carriedHeroes, createCampaignBattle } from './campaign'
+import { addCampaignReward, advanceCampaign, campaignEncounter, campaignRewardOptions, campaignRewards, carriedHeroes, createCampaignBattle } from './campaign'
 import { cardDefinition, startingDeck } from './types'
 import type { BattleState, CardId, CardInstance, HeroId } from './types'
 
@@ -27,6 +27,11 @@ export interface BattleRecord {
   healthDamageTaken: Record<HeroId, number>
   armorDamagePrevented: Record<HeroId, number>
   enemyHealthDamage: number
+  cardsPlayedTotal: number
+  averageCardsPlayedPerTurn: number
+  averageHandSize: number
+  fullHandTurns: number
+  blockedDraws: number
   cardsPlayed: Record<string, number>
   enemyActions: Record<string, number>
   linkTriggers: Record<string, number>
@@ -108,17 +113,23 @@ function chooseReward(state: BattleState, deck: readonly CardId[], strategy: Bal
     'quick-cut': strategy === 'aggressive' ? 3.5 : strategy === 'defensive' ? 2.7 : 3.1,
     thunderbolt: strategy === 'aggressive' ? 3.35 : strategy === 'defensive' ? 2.7 : 3.1,
     bastion: strategy === 'aggressive' ? 2 : strategy === 'defensive' ? 3.15 : 3,
+    parry: strategy === 'defensive' ? 3.5 : 2.8,
+    'shield-bash': strategy === 'aggressive' ? 3.6 : 2.8,
+    interpose: strategy === 'defensive' ? 3.6 : 2.5,
+    frostbolt: strategy === 'aggressive' ? 3.2 : 2.9,
+    'arcane-insight': strategy === 'balanced' ? 3.6 : 2.8,
+    'ice-ward': strategy === 'defensive' ? 3.4 : 2.5,
   }
-  const reward = campaignRewards().map(card => {
-    const synergy = card.id === 'thunderbolt' ? (counts.get('fireball') ?? 0) * 0.1 : card.id === 'quick-cut' ? (counts.get('sword-strike') ?? 0) * 0.1 : (counts.get('guard') ?? 0) * 0.1
-    const urgency = card.id === 'bastion' ? recoveryNeed * (strategy === 'defensive' ? 2.2 : 1.3) : card.id === 'thunderbolt' ? (1 - recoveryNeed) * (strategy === 'defensive' ? 1.2 : 0.2) : 0
+  const reward = campaignRewardOptions(state).map(card => {
+    const synergy = card.className === 'warrior' ? (counts.get('fireball') ?? 0) * 0.08 : (counts.get('guard') ?? 0) * 0.08
+    const urgency = card.kind === 'defense' ? recoveryNeed * (strategy === 'defensive' ? 1.8 : 0.8) : 0
     return { card, score: (scores[card.id] ?? 0) + synergy + urgency }
   }).sort((a, b) => b.score - a.score)[0]!.card
   return reward.id
 }
 
-function recordBattle(state: BattleState, encounterId: string, encounterName: string, deckSizeStart: number, startHealth: Record<HeroId, number>, turns: number, result: BattleRecord['result'], cardsPlayed: Record<string, number>, enemyActions: Record<string, number>, healthDamageTaken: Record<HeroId, number>, armorDamagePrevented: Record<HeroId, number>, enemyHealthDamage: number, links: Record<string, number>, actionLog: string[]): BattleRecord {
-  return { encounterId, encounterName, deckSizeStart, turns, result, heroesStart: startHealth, heroesEnd: { warrior: state.heroes.warrior.health, mage: state.heroes.mage.health }, healthDamageTaken, armorDamagePrevented, enemyHealthDamage, cardsPlayed, enemyActions, linkTriggers: links, actionLog }
+function recordBattle(state: BattleState, encounterId: string, encounterName: string, deckSizeStart: number, startHealth: Record<HeroId, number>, turns: number, result: BattleRecord['result'], cardsPlayed: Record<string, number>, enemyActions: Record<string, number>, healthDamageTaken: Record<HeroId, number>, armorDamagePrevented: Record<HeroId, number>, enemyHealthDamage: number, cardsPlayedTotal: number, handSizeTotal: number, handSamples: number, fullHandTurns: number, blockedDraws: number, links: Record<string, number>, actionLog: string[]): BattleRecord {
+  return { encounterId, encounterName, deckSizeStart, turns, result, heroesStart: startHealth, heroesEnd: { warrior: state.heroes.warrior.health, mage: state.heroes.mage.health }, healthDamageTaken, armorDamagePrevented, enemyHealthDamage, cardsPlayedTotal, averageCardsPlayedPerTurn: cardsPlayedTotal / Math.max(1, turns), averageHandSize: handSizeTotal / Math.max(1, handSamples), fullHandTurns, blockedDraws, cardsPlayed, enemyActions, linkTriggers: links, actionLog }
 }
 
 export function simulateRun(seed: number, strategy: BalanceStrategy, limits: Partial<BalanceLimits> = {}): BalanceRun {
@@ -145,6 +156,7 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, limits: Par
       battleId: 'balance/' + (seed >>> 0) + '/' + strategy + '/' + encounter.id,
     })
     const startHealth = { warrior: battle.heroes.warrior.health, mage: battle.heroes.mage.health }
+    const blockedDrawsStart = battle.blockedDraws
     const cardsPlayed: Record<string, number> = {}
     const enemyActions: Record<string, number> = {}
     const healthDamageTaken: Record<HeroId, number> = { warrior: 0, mage: 0 }
@@ -152,6 +164,10 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, limits: Par
     const localLinks: Record<string, number> = {}
     const actionLog: string[] = []
     let enemyHealthDamage = 0
+    let cardsPlayedTotal = 0
+    let handSizeTotal = 0
+    let handSamples = 0
+    let fullHandTurns = 0
     let battleTurns = 0
     let battleStatus: BattleRecord['result'] = 'timeout'
 
@@ -166,6 +182,7 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, limits: Par
         const outcome = playCard(battle, chosen.instanceId)
         actionCount += 1
         playsThisTurn += 1
+        cardsPlayedTotal += 1
         if (!outcome.ok) break
         actionLog.push(`Карта: ${card.name}; урон здоровью врага ${outcome.damageDealt}; мана ${card.cost}`)
         const stats = ensureCard(cardStats, card.id)
@@ -185,6 +202,9 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, limits: Par
         cardsPlayed[card.id] = (cardsPlayed[card.id] ?? 0) + 1
         enemyHealthDamage += outcome.damageDealt
       }
+      handSizeTotal += battle.hand.length
+      handSamples += 1
+      if (battle.hand.length >= 10) fullHandTurns += 1
       if (battle.result) break
       if (playsThisTurn >= max.maxPlaysPerTurn || actionCount >= max.maxActionsPerRun) break
       const forecast = forecastEnemyAction(battle)
@@ -204,7 +224,7 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, limits: Par
     else if (battle.result === 'defeat') battleStatus = 'defeat'
     if (battle.result) actionLog.push(battle.result === 'victory' ? 'Бой выигран' : 'Бой проигран')
     else actionLog.push('Ограничение симуляции: бой остановлен техническим таймаутом')
-    battles.push(recordBattle(battle, encounter.id, encounter.name, deck.length, startHealth, battleTurns, battleStatus, cardsPlayed, enemyActions, healthDamageTaken, armorDamagePrevented, enemyHealthDamage, localLinks, actionLog))
+    battles.push(recordBattle(battle, encounter.id, encounter.name, deck.length, startHealth, battleTurns, battleStatus, cardsPlayed, enemyActions, healthDamageTaken, armorDamagePrevented, enemyHealthDamage, cardsPlayedTotal, handSizeTotal, handSamples, fullHandTurns, battle.blockedDraws - blockedDrawsStart, localLinks, actionLog))
     if (!battle.result) {
       status = 'timeout'
       failedEncounter = encounter.id
@@ -246,6 +266,10 @@ export function summarizeBalance(runs: BalanceRun[]) {
     return {
       strategy, runs: sample.length, victories: wins, defeats, timeouts, winRate: wins / denominator,
       averageTurns: sample.reduce((sum, run) => sum + run.turns, 0) / denominator,
+      averageCardsPlayedPerTurn: sample.reduce((sum, run) => sum + run.battles.reduce((total, battle) => total + battle.cardsPlayedTotal, 0), 0) / Math.max(1, sample.reduce((sum, run) => sum + run.turns, 0)),
+      averageHandSize: sample.reduce((sum, run) => sum + run.battles.reduce((total, battle) => total + battle.averageHandSize * battle.turns, 0), 0) / Math.max(1, sample.reduce((sum, run) => sum + run.turns, 0)),
+      fullHandTurns: sample.reduce((sum, run) => sum + run.battles.reduce((total, battle) => total + battle.fullHandTurns, 0), 0),
+      blockedDraws: sample.reduce((sum, run) => sum + run.battles.reduce((total, battle) => total + battle.blockedDraws, 0), 0),
       medianTurns: median(sample.map(run => run.turns)),
       averageBrannHp: hp.reduce((sum, run) => sum + run.finalHealth.warrior, 0) / hpDenominator,
       averageLiraHp: hp.reduce((sum, run) => sum + run.finalHealth.mage, 0) / hpDenominator,
