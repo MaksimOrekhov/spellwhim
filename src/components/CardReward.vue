@@ -2,11 +2,14 @@
 import swordArt from '../assets/art/sword-strike.jpg'
 import fireArt from '../assets/art/fireball.jpg'
 import guardArt from '../assets/art/guard.jpg'
+import quickCutArt from '../assets/art/quick-cut.jpg'
+import thunderboltArt from '../assets/art/thunderbolt.jpg'
+import bastionArt from '../assets/art/bastion.jpg'
 import type { CardDefinition } from '../game/types'
 
 defineProps<{ options: CardDefinition[]; encounterName: string }>()
 const emit = defineEmits<{ choose: [card: CardDefinition] }>()
-const artById = { 'sword-strike': swordArt, fireball: fireArt, guard: guardArt, 'quick-cut': swordArt, thunderbolt: fireArt, bastion: guardArt }
+const artById = { 'sword-strike': swordArt, fireball: fireArt, guard: guardArt, 'quick-cut': quickCutArt, thunderbolt: thunderboltArt, bastion: bastionArt }
 </script>
 
 <template>
