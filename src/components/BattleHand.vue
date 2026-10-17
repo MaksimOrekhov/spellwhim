@@ -1,30 +1,37 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import HandCard from './HandCard.vue'
+import GameTooltip from './GameTooltip.vue'
 import type { HandCardView } from '../composables/useBattle'
-
-const props = defineProps<{ cards: HandCardView[]; outgoing: HandCardView | null; outgoingIndex: number; drawCount: number; discardCount: number; exhaustedCount: number; busy: boolean }>()
-const emit = defineEmits<{ play: [instanceId: string] }>()
-const displayed = computed(() => {
-  const cards = [...props.cards]
-  if (props.outgoing) cards.splice(props.outgoingIndex, 0, props.outgoing)
-  return cards
-})
+import type { BattlePhase } from '../composables/useBattleAnimation'
+const props = defineProps<{ cards: HandCardView[]; outgoing: HandCardView | null; outgoingIndex: number; drawCount: number; discardCount: number; exhaustedCount: number; phase: BattlePhase; mana: number; maxMana: number }>()
+const emit = defineEmits<{ play: [instanceId: string]; endTurn: [] }>()
+const dragging = ref(false)
+const dragReady = ref(false)
+const displayed = computed(() => { const cards = [...props.cards]; if (props.outgoing) cards.splice(props.outgoingIndex, 0, props.outgoing); return cards })
+function reason(item: HandCardView): string | null {
+  if (props.phase === 'finished') return 'Бой завершён.'
+  if (props.phase === 'enemy') return 'Сейчас ход противника. Дождитесь начала хода отряда.'
+  if (props.phase === 'card') return 'Дождитесь завершения текущей способности.'
+  if (props.mana < item.card.cost) return 'Недостаточно маны: нужно ' + item.card.cost + ', доступно ' + props.mana + '.'
+  return item.playable ? null : 'Карта сейчас недоступна.'
+}
 </script>
-
 <template>
-  <div class="deck-summary" title="В начале хода добираются 3 карты. Пустая колода пополняется перемешанным сбросом.">
-    <strong>РУКА {{ cards.length }} · КОЛОДА {{ drawCount }}</strong>
-    <span>СБРОС {{ discardCount }} · ВЫБЫЛО {{ exhaustedCount }}</span>
-  </div>
-  <section class="hand-row" :class="{ 'hand-row--wide': displayed.length > 3 }" aria-label="Карты в руке">
-    <HandCard v-for="(item, index) in displayed" :key="item.instanceId" :card="item.card" :instance-id="item.instanceId" :preview="item.preview" :index="index" :playable="item.playable" :playing="outgoing?.instanceId === item.instanceId" :busy="busy" @play="emit('play', $event)" />
-    <p v-if="!displayed.length" class="empty-hand">Рука пуста · завершите ход для добора</p>
-  </section>
+  <footer class="battle-dock">
+    <aside class="hand-resources">
+      <div class="mana-pool" aria-label="Мана отряда"><span>Мана</span><strong>{{ mana }}<small>/{{ maxMana }}</small></strong><div class="mana-pips" aria-hidden="true"><i v-for="pip in maxMana" :key="pip" :class="{ 'is-spent': pip > mana }"></i></div></div>
+      <GameTooltip label="Общая колода"><button class="deck-counts" aria-label="Колода и сброс"><span>▤ Колода <b>{{ drawCount }}</b></span><span>↻ Сброс <b>{{ discardCount }}</b></span></button><template #content><p>В начале хода добираются 3 карты. Пустая колода пополняется перемешанным сбросом.</p><p>Выбывших до конца боя: {{ exhaustedCount }}.</p></template></GameTooltip>
+    </aside>
+    <section class="hand-area" aria-label="Карты в руке">
+      <p class="hand-hint" :class="{ 'hand-hint--dragging': dragging }">{{ dragging ? (dragReady ? 'Отпустите, чтобы разыграть' : 'Поднимите карту выше руки') : 'Кликните карту или потяните вверх' }}</p>
+      <div class="hand-scroll"><div class="hand-cards"><HandCard v-for="(item, index) in displayed" :key="item.instanceId" :card="item.card" :instance-id="item.instanceId" :preview="item.preview" :reason="reason(item)" :index="index" :playing="outgoing?.instanceId === item.instanceId" @play="emit('play', $event)" @dragging="(active, ready) => { dragging = active; dragReady = ready }" /><p v-if="!displayed.length" class="empty-hand">Рука пуста.<br />Завершите ход, чтобы добрать карты.</p></div></div>
+    </section>
+    <aside class="turn-controls"><button class="game-button end-turn" :disabled="phase !== 'player'" @click="emit('endTurn')"><span>{{ phase === 'enemy' ? 'Ход врага' : phase === 'card' ? 'Действие…' : 'Завершить ход' }}</span><kbd>Enter</kbd></button><small>{{ phase === 'player' ? 'После этого враг атакует' : 'Дождитесь окончания действия' }}</small></aside>
+  </footer>
 </template>
-
 <style scoped>
-.deck-summary{position:absolute;z-index:4;left:4%;bottom:25%;display:flex;flex-direction:column;gap:7px;padding:10px 13px;border:1px solid #cfbc8366;border-radius:5px;background:#152431dc;font:700 clamp(11px,.9vw,16px) Manrope,Arial,sans-serif;color:#f8e8bd}
-.deck-summary span{font-size:.85em;color:#c7d1d7}.empty-hand{margin:auto 0 35px;color:#e8d9be;font:600 clamp(13px,1vw,18px) Manrope,Arial,sans-serif}
-@media(max-width:800px){.deck-summary{left:3%;bottom:26%;padding:6px;font-size:10px;gap:4px}}
+.battle-dock{position:absolute;z-index:10;left:0;right:0;bottom:0;height:var(--hand-height);display:grid;grid-template-columns:150px minmax(0,1fr) 180px;align-items:center;gap:20px;padding:0 clamp(24px,3vw,70px);background:linear-gradient(#1c34332b,#172e30 28%);border-top:1px solid #c5b07b29}.hand-resources{display:grid;gap:18px;justify-items:start}.mana-pool{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;align-items:baseline}.mana-pool>span{font-size:16px;color:#d7e7de}.mana-pool strong{font-size:36px;color:#bce9ed;line-height:1}.mana-pool small{font-size:18px;color:#b4c7c3;font-weight:400}.mana-pips{grid-column:1/-1;display:flex;gap:5px}.mana-pips i{height:12px;width:22px;border-radius:4px;background:#7ac6cd;border:1px solid #b7edec}.mana-pips .is-spent{background:#38504f;border-color:#55716a}.deck-counts{display:grid;gap:7px;width:128px;padding:0;border:0;background:none;color:#ced4bd;font-size:14px;text-align:left}.deck-counts span{display:flex;align-items:center;gap:5px}.deck-counts b{margin-left:auto;color:#f3dfb3}.hand-area{min-width:0;height:100%;position:relative;display:grid;grid-template-rows:27px minmax(0,1fr)}.hand-hint{margin:0;align-self:end;text-align:center;color:#e0d9c2;font-size:13px;white-space:nowrap}.hand-hint--dragging{color:#ffe2a0;font-weight:700}.hand-scroll{overflow:auto;scrollbar-width:thin;scrollbar-color:#9e936c transparent;padding:23px 10px 8px;min-height:0}.hand-cards{display:flex;gap:12px;align-items:flex-end;justify-content:safe center;width:max-content;min-width:100%;height:100%}.empty-hand{text-align:center;align-self:center;font-size:16px;line-height:1.5;color:#d1cfba;padding:0 30px}.turn-controls{display:grid;gap:12px;text-align:center;align-content:center}.end-turn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;min-height:74px;padding:12px 14px;font-size:17px;white-space:nowrap}.end-turn kbd{font:12px 'Trebuchet MS',Arial,sans-serif;font-weight:400;opacity:.7}.turn-controls>small{font-size:12px;line-height:1.4;color:#c0caba}
+@media(min-width:1800px){.battle-dock{grid-template-columns:190px minmax(0,1fr) 220px;gap:35px}.mana-pool strong{font-size:42px}.hand-hint{font-size:15px}.deck-counts{width:155px;font-size:16px}.turn-controls>small{font-size:14px}.end-turn{font-size:20px}}
+@media(max-width:1100px){.battle-dock{grid-template-columns:110px minmax(0,1fr) 140px;gap:10px;padding:0 20px}.end-turn{font-size:14px;padding:10px 8px}.deck-counts{width:100px;font-size:13px}.mana-pool{gap:3px 7px}.mana-pool strong{font-size:30px}.mana-pool>span{font-size:14px}.turn-controls>small{font-size:12px}.hand-hint{font-size:12px}}
 </style>

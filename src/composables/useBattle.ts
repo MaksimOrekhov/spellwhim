@@ -13,13 +13,14 @@ export interface HandCardView {
 export function useBattle(options: { seed?: number; deck?: readonly CardId[] } = {}) {
   let seed = (options.seed ?? Date.now()) >>> 0
   let battleSequence = 0
+  let runGeneration = 0
   const ownedDeck = shallowRef<CardId[]>([...(options.deck ?? startingDeck)])
   const ownedCards = computed(() => ownedDeck.value.map(cardDefinition))
   function newBattle(encounter?: EncounterDefinition, heroes?: BattleState['heroes']) {
     const sequence = battleSequence++
     return createBattle(encounter, heroes, {
       seed: (seed + sequence) >>> 0,
-      battleId: 'run/' + seed + '/battle/' + sequence,
+      battleId: 'run/' + seed + '/generation/' + runGeneration + '/battle/' + sequence,
       deck: ownedDeck.value,
     })
   }
@@ -53,12 +54,13 @@ export function useBattle(options: { seed?: number; deck?: readonly CardId[] } =
     return result.play
   }
 
-  function resolvePlay(actionId: string): void {
+  function resolvePlay(actionId: string) {
     const next = structuredClone(current.value)
     const result = resolveCardPlay(next, actionId)
     if (!result.ok) return
     current.value = next
     log.value = result.outcome.links.length ? 'Связка! ' + result.outcome.damage + ' урона.' : 'Карта разыграна.'
+    return result
   }
 
   function finishTurn(): void {
@@ -80,6 +82,8 @@ export function useBattle(options: { seed?: number; deck?: readonly CardId[] } =
 
   function restart(): void {
     seed = (options.seed ?? Date.now()) >>> 0
+    battleSequence = 0
+    runGeneration += 1
     ownedDeck.value = [...(options.deck ?? startingDeck)]
     current.value = newBattle()
     log.value = 'Ваш ход. Разыграйте карты, затем завершите ход.'

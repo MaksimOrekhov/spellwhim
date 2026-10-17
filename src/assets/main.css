@@ -1,127 +1,38 @@
-
-:root{font-family:Manrope,Georgia,serif;color:#fff6dc;background:#101020;font-synthesis:none;text-rendering:optimizeLegibility}*{box-sizing:border-box}html,body,#app{width:100%;height:100%;margin:0}body{min-width:320px;overflow:hidden}.app-shell{height:100%;min-height:540px;display:grid;place-items:center;padding:0;background:radial-gradient(ellipse at center,#373451,#101020 82%)}button{font:inherit}.game-wrap{position:relative;width:min(100vw,177.78vh);height:min(100vh,56.25vw);min-height:540px;overflow:hidden;background:#181c27;box-shadow:0 0 100px #000b}.battle-scene{position:absolute;inset:0;overflow:hidden;background:linear-gradient(180deg,#22233b 0%,#39445a 35%,#283c45 68%,#152b32 100%)}.scene-vignette{position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse at 50% 48%,transparent 25%,#1015215e 68%,#090c16c9 100%);pointer-events:none}.moon{position:absolute;width:clamp(95px,12vw,220px);aspect-ratio:1;top:9%;left:50%;transform:translateX(-50%);border-radius:50%;background:radial-gradient(circle at 40% 38%,#fff4ce,#f2c788 39%,#ecae685c 60%,transparent 72%);filter:drop-shadow(0 0 34px #ffc7838a);opacity:.74}.forest{position:absolute;inset:auto -8% 21%;height:35%;background-repeat:repeat-x;background-size:300px 100%;opacity:.75}.forest--back{bottom:27%;background:linear-gradient(135deg,transparent 42%,#1d3035 43% 52%,transparent 53%) 0 0/130px 100%,linear-gradient(45deg,transparent 43%,#27343b 44% 53%,transparent 54%) 64px 0/170px 100%;filter:blur(2px);opacity:.7}.forest--front{height:33%;bottom:18%;background:linear-gradient(135deg,transparent 42%,#16292d 43% 54%,transparent 55%) 0 0/170px 100%,linear-gradient(45deg,transparent 42%,#193035 43% 56%,transparent 57%) 85px 0/190px 100%;opacity:.96}.ground-glow{position:absolute;bottom:17%;left:10%;right:10%;height:14%;border-radius:50%;background:radial-gradient(ellipse,#93b48f35,transparent 70%);filter:blur(20px)}.topbar{position:absolute;z-index:4;left:3.6%;right:3.6%;top:3.3%;display:flex;align-items:center;justify-content:space-between}.game-mark{display:flex;align-items:center;gap:12px}.mark-icon{display:grid;place-items:center;width:42px;height:42px;border:1px solid #e8c58b8c;border-radius:50%;font-size:23px;color:#ffe3a5;text-shadow:0 0 12px #ffc85d}.game-mark strong,.game-mark small{display:block;font-family:Cinzel,Georgia,serif;letter-spacing:.14em}.game-mark strong{font-size:clamp(10px,.8vw,14px);color:#fff2cd}.game-mark small{font:700 8px Manrope,sans-serif;color:#d6c49d9c;margin-top:5px;letter-spacing:.25em}.turn-ribbon{position:absolute;left:50%;transform:translateX(-50%);min-width:130px;text-align:center;padding:8px 22px;background:linear-gradient(90deg,transparent,#1c1b2bbd 18% 82%,transparent);color:#f6d69b;font:700 10px Cinzel,serif;letter-spacing:.2em}.turn-ribbon i{position:absolute;top:50%;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,#d2ae7144,transparent)}.turn-ribbon span{position:relative;z-index:1;padding:0 8px;background:#252437}.turn-ribbon small{display:block;color:#b7a983;font:600 7px Manrope;letter-spacing:.3em;margin-top:4px}.icon-button{width:36px;height:36px;background:#1516247a;color:#e8d6ad;border:1px solid #e8d6ad4a;border-radius:50%;cursor:pointer}.enemy-zone{position:absolute;z-index:2;top:13%;left:50%;transform:translateX(-50%);width:34%;height:40%;display:flex;align-items:center;flex-direction:column}.enemy-kicker{font:700 clamp(8px,.65vw,11px) Cinzel,serif;color:#f3d7a9;letter-spacing:.22em;white-space:nowrap;text-shadow:0 2px 8px #000}.enemy-kicker span{color:#e7ac71;margin:0 8px}.hero{position:relative;display:flex;align-items:center;flex-direction:column}.hero-art{position:relative;width:clamp(100px,12.4vw,214px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;margin-top:10px;background:radial-gradient(circle at 50% 42%,#fbda9c 0 2%,#b7815d 3% 6%,#524d67 25%,#222a3d 52%,#151b2b 64%);border:4px solid #c9ae7b;box-shadow:0 0 0 4px #242739,0 0 0 7px #d4bc874f,0 8px 30px #0009,inset 0 0 28px #ffdf9452;transition:transform .25s,filter .25s}.hero-art:before,.hero-art:after{content:"";position:absolute;inset:9%;border-radius:50%;border:1px solid #f6d99582;transform:rotate(-25deg) scaleX(.75)}.hero-art:after{transform:rotate(25deg) scaleX(.78);border-color:#abc8d563}.hero-art span{position:relative;z-index:1;font-size:clamp(42px,5vw,78px);color:#ffe5a0;text-shadow:0 0 14px #ffc873,0 5px 10px #000}.hero-art--mage{background:radial-gradient(circle at 45% 35%,#e8cfff,#986abf 10%,#463770 42%,#1d2441 68%);border-color:#c7a6e3;box-shadow:0 0 0 4px #242739,0 0 0 7px #c7a6e35c,0 0 34px #b17dff6b,inset 0 0 26px #e0c4ff40}.hero-art--mage span{color:#e8d4ff;text-shadow:0 0 16px #ba8aff}.hero-art--warrior{background:radial-gradient(circle at 45% 35%,#ffe5a0,#bb7244 12%,#695039 42%,#29313a 67%);border-color:#e2b77e}.hero-art--warrior span{color:#ffdda0;text-shadow:0 0 12px #ffab4a}.hero-label{position:relative;z-index:1;text-align:center;margin-top:-4px;padding:5px 16px 6px;min-width:142px;background:linear-gradient(90deg,transparent,#171926e8 18% 82%,transparent);text-shadow:0 2px 5px #000}.hero-label strong{display:block;font:700 clamp(12px,1vw,17px) Cinzel,serif;letter-spacing:.08em}.hero-label small{display:block;font-size:8px;color:#e4d2ad;letter-spacing:.12em;margin-top:3px}.health-orb{position:absolute;z-index:2;bottom:17%;right:6%;width:clamp(33px,3.2vw,48px);height:clamp(33px,3.2vw,48px);display:grid;place-items:center;background:radial-gradient(circle at 35% 25%,#ffbd9d,#b93d49 53%,#5d1c2c);border:2px solid #ffe2a9;box-shadow:0 2px 9px #000b,0 0 12px #ffb07375;border-radius:50%;font:bold clamp(13px,1.25vw,20px) Cinzel,serif;text-shadow:0 1px 3px #380d14}.health-orb i{position:absolute;right:-9px;bottom:-5px;color:#ffe0ab;font:12px serif;text-shadow:0 1px 3px #000}.health-orb--low{animation:lowPulse 1.3s infinite}.health-orb--low span{color:#fff0b5}.hero--enemy .hero-art{width:clamp(112px,13.7vw,230px);margin-top:5px}.hero--enemy .health-orb{bottom:27%;right:7%}.hero--enemy .hero-label{margin-top:-2px}.hero--player{width:43%}.hero--player .hero-art{width:clamp(90px,10vw,170px);margin-top:0}.hero--player .health-orb{bottom:25%;right:3%}.hero.is-targeted .hero-art{filter:drop-shadow(0 0 12px #ff9c64);animation:targetPulse 1.6s infinite}.hero.is-damaged .hero-art{animation:shake .34s ease}.armor-badge{position:absolute;z-index:2;left:4%;bottom:16%;padding:3px 8px;border:1px solid #a4d9ffbd;border-radius:12px;background:#225c77;color:#e1f4ff;font:700 13px Cinzel,serif;box-shadow:0 0 12px #57c6ff8a}.intent{position:absolute;top:82%;left:50%;transform:translateX(-50%);min-width:194px;padding:7px 14px 8px;text-align:center;border:1px solid #e5c38b75;border-radius:4px;background:linear-gradient(90deg,#161b25bd,#282536e8,#161b25bd);box-shadow:0 4px 14px #0005;color:#e4d1a6}.intent:before,.intent:after{content:"";position:absolute;top:50%;width:14px;height:1px;background:#e5c38b75}.intent:before{left:-10px}.intent:after{right:-10px}.intent span{font-size:8px;letter-spacing:.15em}.intent-glyph{color:#ffc18a;margin-right:5px}.intent b{display:block;font:600 10px Manrope;color:#fff1d0;margin-top:3px}.intent em{position:absolute;right:-12px;top:-7px;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#a44043;border:1px solid #efc799;color:#fff4ce;font:700 10px Manrope}.midline{position:absolute;z-index:2;top:53%;left:24%;right:24%;height:1px;background:linear-gradient(90deg,transparent,#d8c18d4c 25%,#dec99785 50%,#d8c18d4c 75%,transparent);display:flex;justify-content:center}.midline>span{position:relative;top:-10px;color:#ffe5ad;font-size:16px;text-shadow:0 0 12px #ffdf8b}.rune{position:absolute;top:-8px;color:#d4ba875e;font-size:14px}.rune--left{left:20%}.rune--right{right:20%}.party-zone{position:absolute;z-index:2;top:56%;left:50%;transform:translateX(-50%);width:51%;height:32%;display:flex;align-items:center;flex-direction:column}.party-heading{display:flex;align-items:center;gap:9px;color:#e8d6aa;font:700 9px Cinzel,serif;letter-spacing:.17em}.party-heading i{width:40px;height:1px;background:#d6b87968}.party-heading small{font:600 7px Manrope;color:#e4d5b5a1;letter-spacing:.17em}.heroes{display:flex;align-items:center;justify-content:center;gap:clamp(12px,2.5vw,40px);width:100%;margin-top:8px}.party-seal{display:grid;place-items:center;width:26px;height:26px;color:#f0d6a0;font-size:15px;border:1px solid #e7ce9b77;border-radius:50%;background:#25273c;box-shadow:0 0 16px #e3c58b46}.battle-fx{position:absolute;z-index:3;inset:0;pointer-events:none}.battle-fx canvas{width:100%;height:100%;display:block}.combat-toast{position:absolute;z-index:4;bottom:25%;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:10px;color:#edddbb8f;font:700 8px Cinzel,serif;letter-spacing:.24em;transition:color .2s}.combat-toast span{font-size:12px;color:#dcbf8369}.toast-active{color:#fff0c4;text-shadow:0 0 12px #ffd988}.toast-active span{color:#ffdc96}.bottom-hud{position:absolute;z-index:4;bottom:16.5%;left:4%;right:4%;display:flex;align-items:center;justify-content:space-between}.mana-panel{display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid #8fc5dc57;border-radius:5px;background:linear-gradient(135deg,#172537e8,#273148cf);box-shadow:0 5px 15px #0006}.mana-caption{font:700 8px Cinzel,serif;letter-spacing:.12em;color:#c6e9f2}.mana-gems{display:flex;gap:3px}.mana-gems i{display:grid;place-items:center;width:18px;height:22px;clip-path:polygon(50% 0,90% 22%,85% 75%,50% 100%,15% 75%,10% 22%);background:linear-gradient(145deg,#aaf3ff,#2386c9 70%);color:#eafcff;font-style:normal;font-size:10px;text-shadow:0 1px 3px #003b6d;filter:drop-shadow(0 0 4px #50c6ff)}.mana-gems i.spent{background:#303747;color:#59616c;filter:none}.mana-panel>strong{font:700 16px Cinzel,serif;color:#d8f4ff}.mana-panel>strong small{font-size:9px;color:#91abb6}.hand-top{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:9px;font:700 8px Cinzel,serif;letter-spacing:.17em;color:#f4dbaa}.hand-top i{width:52px;height:1px;background:#d1b27866}.hand-top small{font:600 7px Manrope;color:#decda9a6}.end-turn{display:flex;align-items:center;gap:8px;padding:9px 15px;border:1px solid #f3d08d;border-radius:4px;background:linear-gradient(#d89a4b,#9c572b);color:#fff1cd;box-shadow:0 3px 0 #60331c,0 5px 18px #0008,inset 0 1px #ffe8b1;cursor:pointer;transition:transform .16s,filter .16s}.end-turn:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.15)}.end-turn:disabled{opacity:.5;cursor:default}.end-turn span{font-size:14px}.end-turn b{font:700 9px Cinzel,serif;letter-spacing:.08em}.end-turn small{padding-left:6px;border-left:1px solid #ffe8b155;color:#ffdc9b}.hand-row{position:absolute;z-index:5;bottom:-1%;left:50%;transform:translateX(-50%);display:flex;align-items:flex-end;justify-content:center;width:56%;height:27%;perspective:1000px}.spell-card{position:relative;width:clamp(130px,13vw,220px);height:94%;margin:0 -1%;padding:0 10px 16px;border:0;border-radius:12px 12px 9px 9px;background:linear-gradient(140deg,#f5d99d,#774527 8%,#d3a45d 11%,#33263b 17% 84%,#c88d4f 89%,#f5d99d);color:#fef2d5;box-shadow:0 -5px 15px #0007,0 10px 22px #000b,inset 0 0 0 2px #4b2d28;transform:rotate(0deg);cursor:grab;transition:transform .24s cubic-bezier(.2,.8,.2,1),filter .2s,margin .2s;touch-action:none;overflow:hidden}.spell-card:before{content:"";position:absolute;inset:6px;border:1px solid #f3d08e;border-radius:8px 8px 5px 5px;pointer-events:none;z-index:2}.spell-card--left{transform:rotate(-5deg) translateY(5px)}.spell-card--right{transform:rotate(5deg) translateY(5px)}.spell-card:hover:not(:disabled){z-index:8;transform:translateY(-18%) rotate(0deg) scale(1.12);filter:brightness(1.12);margin:0 1%}.spell-card:disabled{cursor:not-allowed}.spell-card.is-unplayable{filter:grayscale(.75) brightness(.62);opacity:.8}.spell-card.is-dragging{z-index:10;cursor:grabbing;filter:brightness(1.2);transition:none}.spell-card--mage{background:linear-gradient(140deg,#ead8ff,#583782 9%,#bd8add 12%,#28243f 18% 84%,#865caf 89%,#ead8ff)}.card-cost{position:absolute;z-index:4;top:4%;left:1%;display:grid;place-items:center;width:30px;height:34px;background:linear-gradient(145deg,#b8f5ff,#237cb5);clip-path:polygon(50% 0,95% 25%,87% 77%,50% 100%,13% 77%,5% 25%);color:#fff;font:800 18px Cinzel,serif;text-shadow:0 2px 3px #174363;filter:drop-shadow(0 1px 3px #000)}.card-art{position:absolute;top:8%;left:10%;right:10%;height:49%;display:grid;place-items:center;border-radius:45% 45% 9px 9px;overflow:hidden;border:3px solid #e7c47e;background:radial-gradient(circle at 49% 42%,#ffe2a1,#b75435 14%,#543145 48%,#22283b 80%);box-shadow:inset 0 0 22px #ffdc8d7c}.spell-card--mage .card-art{background:radial-gradient(circle at 49% 42%,#ffe2bb,#d9783d 13%,#713f65 46%,#202a46 80%);border-color:#dfb8ff;box-shadow:inset 0 0 24px #ff9f627a,0 0 12px #9e69e966}.card-art i{z-index:1;font-style:normal;font-size:clamp(37px,4.5vw,70px);color:#fff0bd;text-shadow:0 0 16px #ffab4f,0 4px 3px #342234;transform:translateY(-2px)}.spell-card--warrior:first-child .card-art{background:radial-gradient(circle at 52% 38%,#e9cb8e,#927049 20%,#41434e 57%,#20252e)}.spell-card--warrior:last-child .card-art{background:radial-gradient(circle at 50% 42%,#e9f6ff,#76b2c9 14%,#33526b 50%,#202839)}.art-flare{position:absolute;inset:12%;border-radius:50%;background:radial-gradient(circle,transparent 20%,#fff5b333 60%,transparent 70%);animation:flare 4s ease-in-out infinite}.card-name{position:absolute;z-index:3;top:59%;left:3%;right:3%;min-height:26px;display:grid;place-items:center;border:1px solid #f5d89a;border-radius:12px;background:linear-gradient(90deg,#402c35,#77503a,#402c35);box-shadow:0 3px 7px #0007;color:#fff1cb;font:700 clamp(9px,.8vw,13px) Cinzel,serif;text-shadow:0 1px #321a20;white-space:nowrap}.spell-card--mage .card-name{background:linear-gradient(90deg,#352644,#75528b,#352644);border-color:#e0bfff}.card-class{position:absolute;top:73%;left:0;right:0;text-align:center;color:#e3c882;font:700 7px Cinzel,serif;letter-spacing:.16em;text-transform:uppercase}.card-description{position:absolute;top:78%;left:12%;right:12%;text-align:center;color:#f3e5ce;font:600 clamp(8px,.65vw,10px)/1.35 Manrope,sans-serif}.card-edge{position:absolute;bottom:8px;left:20%;right:20%;height:1px;background:linear-gradient(90deg,transparent,#d6b676,transparent)}.bottom-note{position:absolute;z-index:6;bottom:1.8%;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;max-width:55%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#e8d4ad9c;font:600 8px Manrope;letter-spacing:.035em;text-shadow:0 2px 4px #000}.bottom-note span{color:#d7b87b8c;font-size:8px}.result-screen{position:absolute;z-index:9;inset:0;display:grid;place-items:center;background:#111323bd;backdrop-filter:blur(7px)}.result-card{width:min(380px,80%);padding:34px 38px;text-align:center;border:1px solid #dfbd7d;border-radius:8px;background:radial-gradient(ellipse at 50% 0,#565071,#222333 67%);box-shadow:0 20px 60px #000b,inset 0 0 35px #d4b47420}.result-spark{font-size:32px;color:#ffe3a1;text-shadow:0 0 20px #ffc968}.result-card small{display:block;margin-top:8px;color:#d8c397;font:700 8px Cinzel;letter-spacing:.23em}.result-card h1{margin:10px 0;color:#ffedc4;font:700 36px Cinzel,serif}.result-card p{color:#dfd1b4;font:500 13px/1.6 Manrope}.restart-button{margin-top:15px;padding:12px 20px;border:1px solid #f0d397;border-radius:4px;background:linear-gradient(#d49b54,#98572e);color:#fff0ce;font:700 10px Cinzel;letter-spacing:.12em;cursor:pointer}.result-screen~.bottom-hud{pointer-events:none}.result-screen~.hand-row{pointer-events:none;filter:brightness(.5)}
-@keyframes flare{50%{transform:scale(1.18);opacity:.65}}@keyframes targetPulse{50%{filter:drop-shadow(0 0 22px #ffb56d)}}@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}@keyframes lowPulse{50%{box-shadow:0 2px 9px #000b,0 0 18px #ff3939c4}}@media(max-height:700px){.topbar{top:2%}.enemy-zone{top:11%;height:41%}.party-zone{top:55%;height:30%}.bottom-hud{bottom:15%}.hand-row{height:26%}.spell-card{height:90%}.bottom-note{font-size:7px}}@media(max-width:800px){.game-wrap{width:100vw;height:100vh;min-height:520px}.topbar{left:4%;right:4%}.enemy-zone{width:55%;top:13%;height:38%}.party-zone{width:78%;top:54%}.heroes{gap:2vw}.hero--player{width:44%}.hero--player .hero-art{width:clamp(82px,17vw,145px)}.hero--enemy .hero-art{width:clamp(100px,21vw,180px)}.hand-row{width:92%;height:24%;bottom:-1%}.spell-card{width:clamp(112px,28vw,180px);margin:0 -2%}.bottom-hud{left:3%;right:3%;bottom:16%}.mana-panel{gap:5px;padding:6px}.mana-caption{font-size:7px}.mana-gems i{width:14px;height:18px}.hand-top{display:none}.end-turn{padding:8px 9px;gap:5px}.end-turn b{font-size:8px}.bottom-note{max-width:80%;font-size:7px}.intent{top:84%}}@media(max-width:430px){.game-mark strong{font-size:8px}.game-mark small{font-size:6px}.mark-icon{width:33px;height:33px}.turn-ribbon{min-width:90px}.enemy-kicker{font-size:7px}.party-heading{font-size:7px;gap:5px}.party-heading small{font-size:6px}.hero-label{min-width:105px;padding:4px 6px}.hero-label strong{font-size:11px}.hero-label small{font-size:7px}.party-seal{width:20px;height:20px}.intent{min-width:160px;padding:6px 8px}.intent b{font-size:9px}.spell-card{width:31vw;padding:0 4px 10px}.card-art{left:8%;right:8%}.card-name{font-size:8px}.card-description{font-size:7px}.card-cost{width:25px;height:29px;font-size:15px}.bottom-hud{bottom:17%}.end-turn{padding:7px 7px}.end-turn span{font-size:11px}.end-turn b{font-size:7px}.mana-panel>strong{font-size:13px}}
-
-/* Readability pass: keep the decorative style while making game text legible. */
-.game-mark strong{font-size:clamp(13px,1vw,18px);letter-spacing:.1em}.game-mark small{font-size:10px;letter-spacing:.16em}.turn-ribbon{font-size:12px}.turn-ribbon small{font-size:9px}.enemy-kicker{font-size:clamp(11px,.75vw,15px);letter-spacing:.14em}.hero-label strong{font-size:clamp(15px,1.1vw,20px)}.hero-label small{font-size:10px;letter-spacing:.07em}.intent{min-width:220px;padding:9px 16px}.intent span{font-size:10px;letter-spacing:.1em}.intent b{font-size:13px}.intent em{font-size:12px}.party-heading{font-size:11px;letter-spacing:.12em}.party-heading small{font-size:9px;letter-spacing:.1em}.combat-toast{font-size:10px;letter-spacing:.16em}.mana-caption{font-size:10px}.mana-panel>strong{font-size:18px}.end-turn b{font-size:11px}.hand-top{font-size:10px;letter-spacing:.12em}.hand-top small{font-size:9px}.card-name{font-size:clamp(11px,.84vw,15px)}.card-class{font-size:9px;letter-spacing:.11em}.card-description{font-size:clamp(10px,.72vw,13px);line-height:1.4}.bottom-note{font-size:10px;letter-spacing:.02em}
-@media(max-width:800px){.game-mark strong{font-size:12px}.game-mark small{font-size:9px}.enemy-kicker{font-size:10px}.hero-label strong{font-size:14px}.hero-label small{font-size:9px}.intent{min-width:190px}.intent span{font-size:9px}.intent b{font-size:11px}.party-heading{font-size:9px}.party-heading small{font-size:8px}.mana-caption{font-size:9px}.end-turn b{font-size:9px}.card-name{font-size:11px}.card-class{font-size:8px}.card-description{font-size:9px}.bottom-note{font-size:9px}}
-@media(max-width:430px){.game-mark strong{font-size:10px}.game-mark small{font-size:8px}.enemy-kicker{font-size:9px}.hero-label strong{font-size:12px}.hero-label small{font-size:8px}.intent{min-width:165px}.intent span{font-size:8px}.intent b{font-size:10px}.party-heading{font-size:8px}.party-heading small{font-size:7px}.card-name{font-size:9px}.card-description{font-size:8px}.bottom-note{font-size:8px}}
-
-/* Second readability pass: prioritize readable labels over tiny ornamental type. */
-@media(min-width:801px){
-  .game-mark strong{font-size:clamp(17px,1.15vw,23px)}.game-mark small{font-size:13px;letter-spacing:.1em}
-  .turn-ribbon{font-size:16px}.turn-ribbon small{font-size:12px}
-  .enemy-kicker{font-size:clamp(15px,.95vw,20px);letter-spacing:.1em}
-  .hero-label strong{font-size:clamp(20px,1.35vw,27px)}.hero-label small{font-size:14px}
-  .health-orb{font-size:clamp(18px,1.45vw,25px)}
-  .intent{min-width:280px;padding:12px 20px}.intent span{font-size:13px}.intent b{font-size:16px}.intent em{font-size:15px;width:30px;height:30px}
-  .party-heading{font-size:15px}.party-heading small{font-size:12px}
-  .combat-toast{font-size:14px}.mana-caption{font-size:13px}.mana-panel>strong{font-size:23px}.mana-panel>strong small{font-size:13px}
-  .end-turn{padding:12px 18px}.end-turn b{font-size:15px}.end-turn small{font-size:13px}
-  .hand-top{font-size:14px}.hand-top small{font-size:12px}
-  .card-name{font-size:clamp(14px,1.05vw,20px);min-height:34px}.card-class{font-size:12px}.card-description{font-size:clamp(12px,.9vw,17px);line-height:1.35}
-  .bottom-note{font-size:14px}
+:root {
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  color: #fff0d2;
+  background: #172a2d;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --ink: #fff1d5;
+  --muted: #c4c8ba;
+  --gold: #e9bd72;
+  --line: #d7b57970;
+  --panel: #203436f5;
+  --display: Georgia, 'Times New Roman', serif;
+  --card-height: clamp(224px, 27vh, 354px);
+  --hand-height: calc(var(--card-height) + 60px);
+  --enemy-size: clamp(124px, 19vh, 250px);
+  --hero-size: clamp(96px, 14vh, 184px);
 }
-@media(max-width:800px){
-  .game-mark strong{font-size:14px}.game-mark small{font-size:10px}.turn-ribbon{font-size:13px}.turn-ribbon small{font-size:10px}
-  .enemy-kicker{font-size:12px}.hero-label strong{font-size:17px}.hero-label small{font-size:11px}
-  .intent{min-width:215px;padding:8px 12px}.intent span{font-size:10px}.intent b{font-size:13px}
-  .party-heading{font-size:11px}.party-heading small{font-size:9px}.combat-toast{font-size:11px}
-  .mana-caption{font-size:10px}.mana-panel>strong{font-size:17px}.end-turn b{font-size:11px}
-  .card-name{font-size:12px;min-height:27px}.card-class{font-size:9px}.card-description{font-size:10px;line-height:1.25}.bottom-note{font-size:10px}
+* { box-sizing: border-box; }
+html, body, #app { width: 100%; height: 100%; margin: 0; }
+body { overflow: auto; }
+button, input { font: inherit; }
+button { color: inherit; }
+button:not(:disabled) { cursor: pointer; }
+button:focus-visible, [tabindex]:focus-visible { outline: 3px solid #b0eff5; outline-offset: 4px; }
+.app-shell { width: 100%; height: 100dvh; min-width: 760px; min-height: 560px; background: #172a2d; }
+.game-wrap { position: relative; width: 100%; height: 100%; overflow: hidden; isolation: isolate; }
+.game-button { min-height: 48px; padding: 12px 24px; border: 1px solid #ffe1a2; border-radius: 10px; background: linear-gradient(#c78d49, #8c532d); box-shadow: 0 4px 0 #5c3627, inset 0 1px #fff3b94d; color: #fff7dd; font-weight: 700; font-size: 16px; transition: filter .15s, transform .15s; }
+.game-button:hover:not(:disabled) { filter: brightness(1.12); transform: translateY(-1px); }
+.game-button:disabled { cursor: default; opacity: .5; }
+.game-button--quiet { background: #233b3b; border-color: #c3ac785e; box-shadow: none; }
+.battle-fx { position: absolute; z-index: 5; inset: 0; pointer-events: none; }
+.battle-fx canvas { display: block; width: 100%; height: 100%; }
+@media (max-height: 700px) {
+  :root { --card-height: 204px; --hand-height: 264px; --enemy-size: 108px; --hero-size: 78px; }
 }
-@media(max-width:430px){
-  .game-mark strong{font-size:12px}.game-mark small{font-size:9px}.enemy-kicker{font-size:10px}
-  .hero-label strong{font-size:14px}.hero-label small{font-size:9px}.intent{min-width:180px}.intent span{font-size:9px}.intent b{font-size:11px}
-  .party-heading{font-size:9px}.party-heading small{font-size:8px}.card-name{font-size:10px}.card-description{font-size:9px}.bottom-note{font-size:9px}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
-
-/* Combat feedback: turn ownership, card state and impact motion. */
-.turn-ribbon{padding:10px 28px;border:1px solid #e3c68b4d;border-radius:5px;background:linear-gradient(90deg,#171b2de8,#302a3de8,#171b2de8);box-shadow:0 4px 18px #0005}
-.turn-ribbon span{background:transparent;color:#fff0c7;font-size:1.15em}
-.intent{border-color:#ffd58b;background:linear-gradient(90deg,#342a2bd9,#503431f2,#342a2bd9);box-shadow:0 0 16px #ffb56642,0 4px 14px #0008}
-.intent b{font-size:1.15em;color:#fff4dc}
-.hero.is-targeted .hero-art{filter:drop-shadow(0 0 18px #ff9c64);animation:targetPulse 1.2s infinite}
-.hero.is-damaged .hero-art{animation:shake .34s ease, hit-flash .35s ease}
-.spell-card.is-played{filter:grayscale(.9) brightness(.42);opacity:.55;cursor:default;transform:translateY(3%) scale(.94)}
-.spell-card.is-played:hover{margin:0 -1%;transform:translateY(3%) scale(.94)}
-.card-played-label{position:absolute;z-index:5;top:48%;left:9%;right:9%;padding:7px 3px;border:1px solid #d9c18d;border-radius:4px;background:#171725eF;color:#ffebc1;text-align:center;font:800 12px Cinzel,Georgia,serif;letter-spacing:.12em;box-shadow:0 2px 8px #0009}
-.combat-toast{bottom:26%;padding:9px 18px;border:1px solid #e4c88955;border-radius:4px;background:#171a28ad;color:#fff1c8;white-space:nowrap;box-shadow:0 5px 18px #0004}
-.combat-toast.toast-active{border-color:#f8d68c;background:#211e2bdc;color:#fff3d0;box-shadow:0 0 22px #f4bf6852}
-.hand-top{padding:7px 13px;border:1px solid #e5cb925c;border-radius:4px;background:#171926c9;color:#fff0c7;white-space:nowrap}
-.mana-panel{border-color:#a3deef9c;box-shadow:0 0 14px #49b7df2c,0 5px 15px #0006}
-.end-turn:not(:disabled){animation:button-ready 2.4s ease-in-out infinite}
-@keyframes hit-flash{0%{filter:brightness(2) drop-shadow(0 0 22px #fff1ad)}100%{filter:brightness(1)}}
-@keyframes button-ready{50%{box-shadow:0 3px 0 #60331c,0 0 19px #ffc35e9c,inset 0 1px #ffe8b1}}
-@media(max-width:800px){.card-played-label{font-size:10px;padding:5px 2px}.combat-toast{bottom:25%;white-space:normal;max-width:92%;text-align:center}.turn-ribbon{padding:7px 14px}}
-
-/* Keep character health badges on the portrait, away from nameplates. */
-.hero--enemy .health-orb{bottom:27%;right:7%}.hero--player .health-orb{bottom:25%;right:3%}
-
-/* Character art: the imported portraits stay replaceable and clipped to the frame. */
-.hero-art{overflow:hidden;isolation:isolate;background:#24263b}
-.hero-art .hero-image{position:absolute;z-index:0;inset:0;width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:center 36%;transition:transform .35s ease,filter .35s ease}
-.hero--player:hover .hero-image{transform:scale(1.06)}
-.hero--enemy .hero-image{object-position:center 34%}
-.hero-art:before,.hero-art:after{z-index:1;pointer-events:none}
-.portrait-sheen{position:absolute;z-index:2;inset:0;border-radius:50%;background:linear-gradient(145deg,#fff3 0%,transparent 38%,#080d1d55 100%);pointer-events:none}
-.hero-art--warrior,.hero-art--mage{background:#20243a}
-.hero-art--warrior span,.hero-art--mage span{display:none}
-.hero-art::before,.hero-art::after{display:none}
-.hero--appearance-root .hero-image{filter:hue-rotate(42deg) saturate(1.2) brightness(.86)}
-.hero--appearance-heart .hero-image{filter:hue-rotate(285deg) saturate(1.35) brightness(.82)}
-.hand-row--wide{width:82%}
-.hand-row--wide .spell-card{width:clamp(112px,11vw,190px);margin:0 -0.7%}
-@media(max-width:800px){.hand-row--wide{width:96%}.hand-row--wide .spell-card{width:clamp(78px,17vw,140px);margin:0 -1.4%}}
-
-/* Increase in-game type for readability at ordinary desktop window sizes. */
-.game-mark strong{font-size:clamp(12px,.95vw,16px)}
-.game-mark small{font-size:10px}
-.enemy-kicker{font-size:clamp(11px,.85vw,14px)}
-.hero-label strong{font-size:clamp(15px,1.25vw,21px)}
-.hero-label small{font-size:10px}
-.health-orb{font-size:clamp(15px,1.4vw,22px)}
-.intent span{font-size:11px}
-.intent b{font-size:13px}
-.intent em{font-size:12px}
-.party-heading{font-size:11px}
-.party-heading small{font-size:9px}
-.combat-toast{font-size:10px}
-.hand-top{font-size:10px}
-.hand-top small{font-size:9px}
-.mana-caption{font-size:10px}
-.end-turn b{font-size:11px}
-.spell-card .card-name{font-size:clamp(11px,1vw,15px)}
-.spell-card .card-class{font-size:9px}
-.spell-card .card-description{font-size:clamp(10px,.8vw,13px)}
-.bottom-note{font-size:10px}
-@media(max-width:800px){
-  .game-mark strong{font-size:12px}.game-mark small{font-size:9px}
-  .enemy-kicker{font-size:10px}.hero-label strong{font-size:14px}.hero-label small{font-size:9px}
-  .intent span{font-size:9px}.intent b{font-size:11px}.intent em{font-size:11px}
-  .party-heading{font-size:9px}.party-heading small{font-size:8px}
-  .combat-toast{font-size:9px}.mana-caption{font-size:9px}.end-turn b{font-size:9px}
-  .spell-card .card-name{font-size:10px}.spell-card .card-class{font-size:8px}.spell-card .card-description{font-size:9px}
-  .bottom-note{font-size:9px}
-}
-@media(max-width:430px){
-  .game-mark strong{font-size:9px}.game-mark small{font-size:7px}
-  .enemy-kicker{font-size:8px}.hero-label strong{font-size:12px}.hero-label small{font-size:8px}
-  .intent span{font-size:8px}.intent b{font-size:10px}.intent em{font-size:10px}
-  .party-heading{font-size:8px}.party-heading small{font-size:7px}
-  .spell-card .card-name{font-size:9px}.spell-card .card-class{font-size:7px}.spell-card .card-description{font-size:8px}
-}
-.card-illustration{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;border-radius:inherit;z-index:0;transition:transform .35s ease,filter .35s ease}
-.spell-card:hover:not(:disabled) .card-illustration{transform:scale(1.08);filter:saturate(1.12) brightness(1.05)}
-.card-art i{display:none}
-
-/* Played cards travel from the hand to their target, then leave the hand. */
-.spell-card.is-playing{z-index:30;pointer-events:none;transform-origin:center center;animation:card-launch .32s cubic-bezier(.2,.7,.25,1) forwards;}
-.spell-card--id-guard.is-playing{animation-name:card-guard;animation-duration:.36s;}
-.spell-card--id-fireball.is-playing{animation-duration:.58s;}
-@keyframes card-launch{0%{transform:translateY(0) scale(1);opacity:1}68%{transform:translateY(-42vh) scale(.72);opacity:1}100%{transform:translateY(-55vh) scale(.34);opacity:0}}
-@keyframes card-guard{0%{transform:translate(0,0) scale(1);opacity:1}68%{transform:translate(-10vw,-17vh) scale(.72);opacity:1}100%{transform:translate(-13vw,-21vh) scale(.34);opacity:0}}
-.enemy-mark{z-index:3;margin-top:6px;padding:5px 9px;border:1px solid #d9a8ff;border-radius:12px;background:#33224de8;color:#f3d8ff;font:800 clamp(9px,.72vw,13px) Manrope,sans-serif;letter-spacing:.04em;text-shadow:0 0 8px #c284ff;box-shadow:0 0 16px #a666e95c;white-space:nowrap}
-.hand-top{top:-54px;gap:11px;font-size:clamp(11px,.76vw,14px);box-shadow:0 4px 14px #0006}
-@media(max-width:800px){.hand-top{top:-44px;font-size:10px;gap:6px}.enemy-mark{font-size:9px;padding:4px 7px}}
-@media(prefers-reduced-motion:reduce){.spell-card.is-playing{animation-duration:.01ms}}

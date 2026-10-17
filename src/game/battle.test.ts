@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createBattle, endTurn, hasStatus, playCard, previewCard, resolveCardPlay, startCardPlay } from './battle'
+import { createBattle, endTurn, forecastEnemyAttack, hasStatus, playCard, previewCard, resolveCardPlay, startCardPlay } from './battle'
 import { drawCards } from './deck'
 import { cardDefinition, encounters, startingDeck } from './types'
 import type { BattleState, CardId } from './types'
@@ -276,6 +276,40 @@ describe('terminal states and run adapter', () => {
     expect(next.statuses).toEqual({})
     previous.heroes.mage.health = 0
     expect(createBattle(encounters[0]!, previous.heroes).result).toBe('defeat')
+  })
+
+  it('restarts a fixed-seed run with the same draws but fresh action identities', () => {
+    const battle = useBattle({ seed: 42 })
+    battle.startBattle(encounters[0]!)
+    const before = structuredClone(battle.state.value)
+    const stale = battle.beginPlay(battle.cards.value.find(card => card.card.cost <= 3)!.instanceId)!
+    battle.finishTurn()
+    battle.restart()
+    battle.startBattle(encounters[0]!)
+    const after = battle.state.value
+    expect(after.seed).toBe(before.seed)
+    expect(after.rngState).toBe(before.rngState)
+    expect(after.hand.map(card => card.definitionId)).toEqual(before.hand.map(card => card.definitionId))
+    expect(after.drawPile.map(card => card.definitionId)).toEqual(before.drawPile.map(card => card.definitionId))
+    expect(after.battleId).not.toBe(before.battleId)
+    const current = battle.beginPlay(battle.cards.value[0]!.instanceId)!
+    battle.resolvePlay(stale.actionId)
+    expect(battle.state.value.pending?.actionId).toBe(current.actionId)
+    expect(battle.state.value.enemy.health).toBe(24)
+  })
+
+  it('uses the same armor forecast for UI and actual incoming health loss', () => {
+    const state = fixture(['guard'])
+    state.enemy.attack = 7
+    state.enemy.intent = 'mage'
+    state.heroes.mage.armor = 4
+    const forecast = forecastEnemyAttack(state)
+    expect(forecast).toEqual({ target: 'mage', attack: 7, absorbed: 4, healthLoss: 3, lethal: false })
+    endTurn(state)
+    expect(state.heroes.mage.health).toBe(18 - forecast.healthLoss)
+    const lethal = fixture([])
+    lethal.heroes.warrior.health = 2
+    expect(forecastEnemyAttack(lethal)).toMatchObject({ healthLoss: 2, lethal: true })
   })
 
   it('supports duplicate rewards and ignores a stale impact from a previous encounter', () => {

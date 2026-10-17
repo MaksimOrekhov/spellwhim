@@ -135,13 +135,31 @@ export function playCard(state: BattleState, instanceId: string): PlayResult {
 
 function partnerOf(id: HeroId): HeroId { return id === 'warrior' ? 'mage' : 'warrior' }
 
+export interface EnemyAttackForecast {
+  target: HeroId
+  attack: number
+  absorbed: number
+  healthLoss: number
+  lethal: boolean
+}
+
+export function forecastEnemyAttack(state: BattleState): EnemyAttackForecast {
+  const target = state.enemy.intent
+  const hero = state.heroes[target]
+  const attack = state.enemy.attack
+  const absorbed = Math.min(attack, hero.armor)
+  const remaining = Math.max(0, attack - absorbed)
+  return { target, attack, absorbed, healthLoss: Math.min(hero.health, remaining), lethal: remaining >= hero.health }
+}
+
 export function endTurn(state: BattleState): boolean {
   updateResult(state)
   if (state.result || state.pending) return false
   discardHand(state)
-  const target = state.enemy.intent
+  const forecast = forecastEnemyAttack(state)
+  const target = forecast.target
   const hero = state.heroes[target]
-  hero.health = Math.max(0, hero.health - Math.max(0, state.enemy.attack - hero.armor))
+  hero.health -= forecast.healthLoss
   // Only the attacked hero loses remaining armor; party shields can protect the next target.
   hero.armor = 0
   for (const status of Object.keys(state.statuses) as StatusId[]) {

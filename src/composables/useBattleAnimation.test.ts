@@ -22,7 +22,7 @@ function mountAnimation() {
   app.mount({})
   const start = startCardPlay(state.value, state.value.hand[0]!.instanceId)
   if (!start.ok) throw new Error('Expected a card')
-  return { controls, app, play: start.play, resolvePlay, finishTurn }
+  return { controls, app, state, play: start.play, resolvePlay, finishTurn }
 }
 
 beforeEach(() => { vi.useFakeTimers(); vi.stubGlobal('window', globalThis) })
@@ -66,6 +66,28 @@ describe('animation action correlation', () => {
     fixture.controls.impact(id)
     vi.advanceTimersByTime(2000)
     expect(fixture.finishTurn).toHaveBeenCalledTimes(1)
+    fixture.app.unmount()
+  })
+
+  it('keeps explicit card/enemy phases through impact and recovery independently of effect type', () => {
+    const fixture = mountAnimation()
+    expect(fixture.controls.phase.value).toBe('player')
+    fixture.controls.play(fixture.play)
+    expect(fixture.controls.phase.value).toBe('card')
+    fixture.controls.animation.value = { ...fixture.controls.animation.value, effect: '' }
+    expect(fixture.controls.phase.value).toBe('card')
+    fixture.controls.impact(fixture.controls.animation.value.actionId!)
+    expect(fixture.controls.phase.value).toBe('card')
+    vi.advanceTimersByTime(880)
+    expect(fixture.controls.phase.value).toBe('player')
+    fixture.controls.enemyTurn()
+    expect(fixture.controls.phase.value).toBe('enemy')
+    fixture.controls.impact(fixture.controls.animation.value.actionId!)
+    expect(fixture.controls.phase.value).toBe('enemy')
+    vi.advanceTimersByTime(880)
+    expect(fixture.controls.phase.value).toBe('player')
+    fixture.state.value = { ...fixture.state.value, result: 'victory' }
+    expect(fixture.controls.phase.value).toBe('finished')
     fixture.app.unmount()
   })
 

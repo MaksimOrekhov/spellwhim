@@ -4,7 +4,7 @@ import { Application, Container, Graphics, Text } from 'pixi.js'
 import type { HeroId } from '../game/types'
 
 type Effect = 'attack' | 'spell' | 'guard' | 'hit' | ''
-const props = defineProps<{ pulse: number; effect: Effect; target: HeroId | 'enemy'; damage: number; actionId: string | null; bonusDamage: number; partnerArmor: number }>()
+const props = defineProps<{ pulse: number; effect: Effect; target: HeroId | 'enemy'; source: HeroId | 'enemy' | null; damage: number; actionId: string | null; bonusDamage: number; partnerArmor: number }>()
 const emit = defineEmits<{ impact: [actionId: string] }>()
 const canvasHost = useTemplateRef<HTMLDivElement>('canvasHost')
 let app: Application | null = null
@@ -22,11 +22,12 @@ function scheduleEffect(callback: () => void, delay: number) {
 }
 
 function center(key: HeroId | 'enemy') {
-  const width = canvasHost.value?.clientWidth ?? 0
-  const height = canvasHost.value?.clientHeight ?? 0
-  const points = { enemy: [0.5, 0.27], warrior: [0.36, 0.64], mage: [0.64, 0.64] } as const
-  const [x, y] = points[key]
-  return { x: width * x, y: height * y }
+  const canvas = canvasHost.value
+  const anchor = canvas?.closest('[data-battle-scene]')?.querySelector<HTMLElement>('[data-fx-anchor="' + key + '"]')
+  if (!canvas || !anchor) return null
+  const hostRect = canvas.getBoundingClientRect()
+  const targetRect = anchor.getBoundingClientRect()
+  return { x: targetRect.left + targetRect.width / 2 - hostRect.left, y: targetRect.top + targetRect.height / 2 - hostRect.top }
 }
 
 function clearEffects() {
@@ -43,9 +44,9 @@ function popAt(x: number, y: number, color: number, amount: number) {
   const ring = new Graphics().circle(0, 0, 30).stroke({ color, width: 6, alpha: 0.95 })
   ring.position.set(x, y)
   effects.addChild(ring)
-  const label = new Text({ text: amount === 0 ? 'БЛОК' : `−${amount}`, style: { fontFamily: 'Georgia, serif', fontSize: 42, fontWeight: 'bold', fill: '#fff4d6', stroke: { color: 0x38222b, width: 6 }, dropShadow: { color: 0x120e20, blur: 10, distance: 4 } } })
+  const label = new Text({ text: amount === 0 ? 'БЛОК' : `−${amount}`, style: { fontFamily: 'Georgia, serif', fontSize: Math.max(28, Math.min(46, (canvasHost.value?.clientHeight ?? 720) * .04)), fontWeight: 'bold', fill: '#fff4d6', stroke: { color: 0x38222b, width: 6 }, dropShadow: { color: 0x120e20, blur: 10, distance: 4 } } })
   label.anchor.set(0.5)
-  label.position.set(x + 58, y - 34)
+  label.position.set(x, y - 10)
   effects.addChild(label)
   let elapsed = 0
   const tick = (ticker: { deltaMS: number }) => {
@@ -56,7 +57,7 @@ function popAt(x: number, y: number, color: number, amount: number) {
     ring.scale.set(0.35 + progress * 1.9)
     ring.alpha = 1 - progress
     label.scale.set((0.7 + entrance * 0.3) * pop)
-    label.position.y = y - 34 - 54 * progress
+    label.position.y = y - 10 - 54 * progress
     label.rotation = Math.sin(progress * Math.PI) * -0.06
     label.alpha = 1 - progress
     if (progress >= 1) {
@@ -165,7 +166,7 @@ function floatingLabelAt(x: number, y: number, text: string, color: string) {
   if (!effects || !app) return
   const label = new Text({ text, style: { fontFamily: 'Georgia, serif', fontSize: 26, fontWeight: 'bold', fill: color, stroke: { color: 0x102333, width: 5 }, dropShadow: { color: 0x071521, blur: 8, distance: 3 } } })
   label.anchor.set(0.5)
-  label.position.set(x + 68, y - 30)
+  label.position.set(x, y - 30)
   effects.addChild(label)
   let elapsed = 0
   const tick = (ticker: { deltaMS: number }) => {
@@ -346,6 +347,8 @@ function trigger() {
   clearEffects()
   if (!app || !effects || !canvasHost.value || !props.effect || !props.actionId) return
   const target = center(props.target)
+  if (!target) return
+  const source = center(props.source ?? 'mage')
   const actionId = props.actionId
   const bonus = props.bonusDamage
   const partnerArmor = props.partnerArmor
@@ -355,19 +358,19 @@ function trigger() {
     emit('impact', actionId)
     if (bonus > 0) {
       impactFlashAt(target.x, target.y, 0xce9aff)
-      floatingLabelAt(target.x - 50, target.y - 65, 'СВЯЗКА +' + bonus, '#ebc9ff')
+      floatingLabelAt(target.x, target.y + 52, 'Связка +' + bonus, '#ebc9ff')
     }
-    if (props.effect === 'guard' && partnerArmor > 0) {
+    if (props.effect === 'guard' && partnerArmor > 0 && partner) {
       impactFlashAt(partner.x, partner.y, 0x72e8ff)
       floatingLabelAt(partner.x, partner.y, '+' + partnerArmor + ' БРОНИ', '#bdf7ff')
     }
   }
-  if (props.effect === 'spell') { fireball(center('mage'), target, onImpact); return }
+  if (props.effect === 'spell' && source) { fireball(source, target, onImpact); return }
   if (props.effect === 'attack') { swordSlashAt(target.x, target.y, onImpact); return }
   if (props.effect === 'guard') { guardAt(target.x, target.y, props.damage, onImpact); return }
   if (props.effect === 'hit') swordSlashAt(target.x, target.y, onImpact, 0xffa06e)
 }
-watch(() => props.pulse, trigger)
+watch(() => props.pulse, trigger, { flush: 'post' })
 </script>
 
 <template><div ref="canvasHost" class="battle-fx" aria-hidden="true" /></template>
