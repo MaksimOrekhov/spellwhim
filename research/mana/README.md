@@ -1,0 +1,55 @@
+# research/mana — изолированный симулятор экономики маны
+
+Исследовательский слой для `docs/mana-progression-research.md`. **Правила игры не изменены**: код в `src/` не тронут. Симулятор вызывает настоящие `createBattle`, `playCard`, `endTurn`, `forecastEnemyAction` и накладывает экспериментальные правила снаружи (кривая маны, HP врагов, стоимость карт, дополнительный добор). Ветка исследовательская, в `main` не вливается.
+
+## Файлы
+
+| Файл | Что делает |
+|---|---|
+| `core.ts` | Модели маны, обёртка над правилами боя, боты (жадные из Balance Lab и планировщики), симуляция похода, метрики по ходам. |
+| `stats.ts` | Агрегирование записей похода в сводку. |
+| `suites.ts`, `suites.extra.ts` | Наборы экспериментов (s1 — модели маны; s2 — сетка HP/урона; s3/s3b — равное напряжение; s4/s5 — карты и добор). |
+| `calibrate.ts` | Автоподбор HP и урона врагов под заданную длительность боёв и потерю HP, четыре рычага сложности. |
+| `encounters.ts` | Переписанные паттерны трёх встреч (только для исследования). |
+| `variants.ts` | Концептуальные карты 3–5 маны, правки стоимости, варианты добора. |
+| `reach.ts` | Точный перебор: какие цепочки связок достижимы за ход при данной мане (без ботов). |
+| `curve.ts` | Дуга боя по ходам: мана, расход, карты, связки, рука для откалиброванных конфигураций. |
+| `validate.ts` | Сверка с Balance Lab (`main`) и проверка детерминизма; результат — `reports/validation.md`. |
+| `tables.ts` | Печатает таблицы отчёта прямо из файлов результатов (`reports/doc-tables.md`). |
+| `calibrations.json` | Подобранные HP/урон врагов для всех моделей, рычагов и вариантов — перезапуск наборов без калибровки. |
+| `export-calibrations.ts` | Собирает `calibrations.json` из `results/calib-*`. |
+| `run.ts` | CLI: `job`, `report`, `pressure`, `compare`, `grid`, `calibrate`, `trace`. |
+| `launch.sh` | Запуск набора в 12 параллельных процессах. |
+
+## Как запускать
+
+Нужен только установленный проект (`npm install`). Сначала сверка с Balance Lab на `main`: `npm run balance -- --runs 200 --seed 42` даёт те же 195/200, 200/200, 200/200.
+
+```bash
+# набор экспериментов: <suite> <runs> <seed> [probe]
+research/mana/launch.sh s1 300 42 probe
+npx vite-node research/mana/run.ts report   --suite s1 --bots plan-even
+npx vite-node research/mana/run.ts pressure --suite s1 --bots plan-even
+npx vite-node research/mana/run.ts compare  --suite s3
+
+# проверка совпадения с Balance Lab и детерминизма
+npx vite-node research/mana/validate.ts
+
+# калибровка врагов под модель маны: длительность боёв 4/5/8 ходов, потеря ~20 HP
+npx vite-node research/mana/run.ts calibrate --model B --lever hp --tag std
+
+# пошаговый пример боя (одинаковый seed — одинаковая стартовая рука)
+npx vite-node research/mana/run.ts trace --config B --calib 1 --seed 11 --turns 4 --encounter 0
+
+# достижимость связок по мане (без ботов)
+npx vite-node research/mana/reach.ts --hands 300
+```
+
+Сырые результаты (`research/mana/results/`) и логи не коммитятся; сводные таблицы лежат в `research/mana/reports/`, калибровки — в `calibrations.json` (набор `s3`–`s11` сам подхватит их, если `results/` пуст).
+
+## Боты
+
+- `greedy-aggressive|defensive|balanced` — копия эвристик Balance Lab (учёт скидки «эхо связки»).
+- `plan-aggro|even|safe` — планировщики: перебирают последовательности карт всего хода на копии настоящих правил (поиск пучком), оценивают состояние после ответа врага. Порядок будущего добора скрыт: колода в планировщике перемешивается заново.
+
+Это эвристики, а не модель человека. См. раздел «Ограничения» отчёта.
