@@ -92,3 +92,20 @@
   /* ── Spacing (4-px base) ────────────────────────────────────────────────── */
   --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px; --sp-6: 32px; --sp-7: 48px; --sp-8: 64px;
 }
+
+/* ── Battle scene (Combat Overhaul stage B): portraits, health plates, threat display ───────────── */
+:root {
+  --mat-hp-track: linear-gradient(#1c0a0c, #2d1114);
+  --mat-hp-fill: linear-gradient(#ff8a73, var(--c-health) 45%, var(--c-health-deep));
+  --mat-hp-fill-low: linear-gradient(#ffb27b, var(--c-threat) 45%, #9a2412);
+  --mat-threat-plate: linear-gradient(#52150b, #2b0906);
+  --mat-later-plate: linear-gradient(#3b2411, #22140a);
+  --mat-intent-plate: linear-gradient(100deg, #2a1710f2, #3d2518f2);
+  --mat-armor-badge: linear-gradient(#e4f1fc, #a9c8e6);
+  --c-threat-line: #ff9a6d;      /* outline of a threat that lands this turn */
+  --c-later-line: #e8b273;       /* outline of a prepared (next-turn) threat */
+  --c-lethal: #e23b22;
+  --c-ghost-threat-a: #ffb199; --c-ghost-threat-b: #c2290f;
+  --c-ghost-strike-a: #fff3b8; --c-ghost-strike-b: #e09a1f;
+  --glow-lethal: 0 0 18px #ff4a2bb0;
+}

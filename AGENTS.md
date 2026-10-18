@@ -14,6 +14,7 @@ src/
   main.ts                    Создание Vue-приложения; fonts.css → tokens.css → main.css, предзагрузка шрифтов
   ui/typography.ts           fontFamily(токен) для canvas/Pixi и preloadFonts()
   ui/cardDisplay.ts          Чистая модель карты для UI: числа, условия, расчёт урона из CardPreview (правил не дублирует)
+  ui/threatDisplay.ts        Модель угроз из forecastEnemyAction (now/later, блок, смертельно); ui/battleScenes.ts — воспроизводимые сцены боя
   ui/handLayout.ts           Чистая геометрия руки: порядок, перекрытие, увеличение; ui/cardArt.ts — иллюстрации карт
   assets/
     tokens.css               Дизайн-токены: цвета, материалы, типографика, мягкие формы, тени, движение, отступы
@@ -24,7 +25,7 @@ src/
   components/
     BattleBoard.vue          Поле боя, намерение врага, здоровье, мана, конец хода
     BattleFx.vue             PixiJS-эффекты, impact с ID действия, очистка callbacks
-    EnemyIntent.vue          Прогноз атаки, защиты, подготовки, восстановления и фазы босса
+    IntentBanner.vue         Баннер намерения врага: что, сколько и по кому; «сейчас» и «следом» различаются; ThreatRays.vue — лучи от баннера к целям
     GameTooltip.vue          Контекстные подсказки мышью и фокусом
     BattleHelp.vue           Модальная справка об управлении
     BattleResult.vue         Модальный результат боя
@@ -36,7 +37,7 @@ src/
     CompactCard.vue          Компактная плитка в руке при 8–10 картах (имя, стоимость, главные числа)
     SpellCard.vue            Единая лицевая сторона карты в em (рука и награда); CardNotes.vue — свиток с полным описанием; CardGlyph.vue — Lucide-иконки эффектов
     HandLab.vue              Dev-лаборатория (card-preview.html): реальные доска/рука/награда в воспроизводимых состояниях
-    HeroPortrait.vue         Переиспользуемая рамка и подписи портрета
+    HeroFrame.vue / EnemyFrame.vue / VitalBar.vue   Арка героя, медальон врага, полоса здоровья с «призраком» потери; StatusChip.vue, ArtifactChip.vue
     RunComplete.vue          Экран завершения похода
   composables/
     useBattle.ts             Реактивный адаптер правил и колоды похода

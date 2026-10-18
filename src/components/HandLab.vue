@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // Dev-only lab (card-preview.html): the real board, hand and reward screen driven by the real rules engine
 // in reproducible states. Query: ?view=hand|reward  &hand=8|10  &bonus=1  &mana=N  &elite=1  &ids=a,b,c
+// &scene=normal|both|lethal|prepared|absorbed|phase2|artifacts (battle scenes of src/ui/battleScenes.ts; replaces &enemy)
 import { computed, shallowRef } from 'vue'
 import BattleBoard from './BattleBoard.vue'
 import BattleHand from './BattleHand.vue'
@@ -10,6 +11,8 @@ import { applyStatus } from '../game/statuses'
 import { useBattleAnimation } from '../composables/useBattleAnimation'
 import { useBattleControls } from '../composables/useBattleControls'
 import { cardDefinition, cards, encounters } from '../game/types'
+import { battleScene } from '../ui/battleScenes'
+import type { BattleSceneId } from '../ui/battleScenes'
 import type { BattleState, CardDefinition, CardId } from '../game/types'
 import type { HandCardView } from '../composables/useBattle'
 
@@ -20,8 +23,9 @@ const mixed: CardId[] = ['sword-strike', 'frostbolt', 'bastion', 'parry', 'thund
 const ids = (query.get('ids')?.split(',') as CardId[] | undefined) ?? mixed.slice(0, handSize)
 
 function labState(): BattleState {
+  const scene = query.get('scene') as BattleSceneId | null
   const encounter = encounters.find(item => item.id === (query.get('enemy') ?? 'root-sentinel'))!
-  const state = createBattle(encounter, undefined, { seed: 7 })
+  const state = scene ? battleScene(scene) : createBattle(encounter, undefined, { seed: 7 })
   state.hand = ids.map((id, index) => ({ instanceId: `lab/${index + 1}`, definitionId: id }))
   state.drawPile = state.drawPile.slice(0, 8)
   if (query.get('mana')) { state.mana = Number(query.get('mana')); state.maxMana = Math.max(state.maxMana, state.mana) }
