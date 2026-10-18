@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { forecastEnemyAction } from '../game/battle'
-import { statusViews } from '../game/statuses'
+import { pendingTickDamage, statusViews } from '../game/statuses'
 import type { BattleState } from '../game/types'
 import type { BattlePhase, BattlePresentation } from '../composables/useBattleAnimation'
 import { heroThreats, lethalLater, lethalNow } from '../ui/threatDisplay'
@@ -15,6 +15,8 @@ import BattleHelp from './BattleHelp.vue'
 const props = defineProps<{ state: BattleState; animation: BattlePresentation; phase: BattlePhase; artifactNotices?: string[]; continueLabel?: string }>()
 const emit = defineEmits<{ impact: [actionId: string]; endTurn: []; continue: [] }>()
 const enemyStatuses = computed(() => statusViews(props.state, 'enemy'))
+// Health the enemy loses to ticking statuses at the start of its turn (Bleeding), drawn as a ghost on its health bar.
+const bleedTick = computed(() => props.state.result ? 0 : Math.min(props.state.enemy.health, pendingTickDamage(props.state, 'enemy')))
 // While the enemy acts, the forecast the player saw is kept (it was computed before the hit and is what gets executed).
 const forecast = computed(() => props.phase === 'enemy' && props.animation.incoming ? props.animation.incoming : forecastEnemyAction(props.state))
 const threats = computed(() => heroThreats(forecast.value))
@@ -49,7 +51,7 @@ const rayTick = computed(() => [props.state.turn, props.phase, forecast.value.ac
         <HeroFrame :hero="state.heroes.warrior" :statuses="statusViews(state, 'warrior')" :artifacts="state.artifacts" :turn="state.turn" :threat="threats.warrior" :hit="animation.impactTarget === 'warrior' || animation.impactTarget === 'both'" :acting="phase === 'card' && animation.source === 'warrior'" />
       </section>
       <section class="enemy-encounter" aria-label="Противник">
-        <EnemyFrame :enemy="state.enemy" :statuses="enemyStatuses" :acting="phase === 'enemy'" :hit="animation.impactTarget === 'enemy'" />
+        <EnemyFrame :enemy="state.enemy" :statuses="enemyStatuses" :bleed-tick="bleedTick" :acting="phase === 'enemy'" :hit="animation.impactTarget === 'enemy'" />
         <IntentBanner :forecast="forecast" :hero-names="heroNames" :executing="phase === 'enemy'" />
       </section>
       <section class="party party--second" aria-label="Джайна Праудмур">

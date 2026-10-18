@@ -1,5 +1,5 @@
 import { endTurn, forecastEnemyAction, hasStatus, playCard, previewCard } from './battle'
-import { addCampaignReward, advanceCampaign, campaignEncounter, campaignEncounters, campaignRewardOptions, campaignRewards, carriedHeroes, createCampaignBattle } from './campaign'
+import { addCampaignReward, advanceCampaign, campaignEncounter, campaignEncounters, OVERHAUL_CARD_IDS, campaignRewardOptions, campaignRewards, carriedHeroes, createCampaignBattle } from './campaign'
 import { baselineEconomy } from './economy'
 import type { EconomyConfig } from './economy'
 import { createTurnPlanner } from './balancePlanner'
@@ -161,7 +161,7 @@ function evaluateCard(state: BattleState, instance: CardInstance, strategy: Clas
   const preview = previewCard(state, card)
   const forecast = opponentForecast(state)
   const remainingEnemyHp = state.enemy.health + state.enemy.armor
-  const damage = Math.min(preview.damage, remainingEnemyHp)
+  const damage = Math.min(preview.damage + preview.statusDamage, remainingEnemyHp)
   const lethal = damage >= remainingEnemyHp
   const incomingHealth = forecast.reduce((sum, hit) => sum + hit.healthLoss, 0)
   const block = forecast.reduce((sum, hit) => {
@@ -170,7 +170,7 @@ function evaluateCard(state: BattleState, instance: CardInstance, strategy: Clas
   }, 0)
   const lethalThreat = forecast.some(hit => hit.lethal || hit.healthLoss >= state.heroes[hit.target].health)
   const blocksLethal = forecast.some(hit => hit.lethal && preview.armor[hit.target] >= hit.healthLoss)
-  const bonusValue = preview.bonusDamage + preview.draw * 1.4 + preview.bonuses.length * 1.2
+  const bonusValue = preview.bonusDamage + preview.draw * 1.4 + preview.bonuses.length * 1.2 + preview.statusFuture * 0.6
   const drawValue = preview.draw * 1.7
   if (strategy === 'aggressive') {
     if (lethal) return 10_000 + damage
@@ -416,7 +416,7 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, options: Ru
     if (advance.kind === 'defeat') { status = 'defeat'; failedEncounter = encounter.id; break }
     if (advance.kind === 'complete') { status = 'victory'; break }
     const rewardId = chooseReward(battle, deck, rewardStrategy)
-    const reward = campaignRewards().find(card => card.id === rewardId)!
+    const reward = campaignRewards(OVERHAUL_CARD_IDS).find(card => card.id === rewardId)!
     deck = addCampaignReward(deck, reward)
     rewards.push(rewardId)
     actionLog.push(`Награда похода: ${reward.name}`)

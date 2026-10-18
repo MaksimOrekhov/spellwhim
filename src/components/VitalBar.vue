@@ -6,7 +6,7 @@ import { computed } from 'vue'
 import { Heart, Shield } from '@lucide/vue'
 import GameTooltip from './GameTooltip.vue'
 
-const props = defineProps<{ name: string; subtitle?: string; health: number; max: number; armor: number; ghost?: number; side: 'hero' | 'enemy' }>()
+const props = defineProps<{ name: string; subtitle?: string; health: number; max: number; armor: number; ghost?: number; ghostTone?: 'threat' | 'strike'; side: 'hero' | 'enemy' }>()
 const pct = computed(() => Math.max(0, Math.min(100, props.health / props.max * 100)))
 const ghostPct = computed(() => Math.max(0, Math.min(pct.value, (props.ghost ?? 0) / props.max * 100)))
 const low = computed(() => props.health / props.max <= 0.35)
@@ -17,7 +17,7 @@ const low = computed(() => props.health / props.max <= 0.35)
     <div class="nameplate"><strong>{{ name }}</strong><small v-if="subtitle">{{ subtitle }}</small></div>
     <div class="bar" role="img" :aria-label="`${name}: здоровье ${health} из ${max}${armor ? ', броня ' + armor : ''}${ghost ? ', в этот ход потеряет ' + ghost : ''}`">
       <span class="fill" :style="{ width: pct + '%' }"></span>
-      <span v-if="ghostPct > 0" class="ghost" :style="{ left: (pct - ghostPct) + '%', width: ghostPct + '%' }"></span>
+      <span v-if="ghostPct > 0" class="ghost" :class="'ghost--' + (ghostTone ?? 'threat')" :style="{ left: (pct - ghostPct) + '%', width: ghostPct + '%' }"></span>
       <span class="hp"><Heart :size="15" :stroke-width="2.6" aria-hidden="true" /><b>{{ health }}</b><i>/{{ max }}</i><em v-if="ghost" :key="ghost">−{{ ghost }}</em></span>
     </div>
     <GameTooltip v-if="armor" label="Броня" class="armor-tip">
@@ -38,6 +38,9 @@ const low = computed(() => props.health / props.max <= 0.35)
 .fill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#0000 75%,#fff3)}
 .is-low .fill{background:var(--mat-hp-fill-low)}
 .ghost{position:absolute;top:0;bottom:0;background-color:#1a0000;background-image:repeating-linear-gradient(135deg,var(--c-ghost-threat-a) 0 5px,var(--c-ghost-threat-b) 5px 10px);box-shadow:inset 0 0 8px var(--c-threat);animation:ghost-blink 1s ease-in-out infinite;transition:left var(--dur-slow) var(--ease-out),width var(--dur-slow) var(--ease-out)}
+/* "strike": health the enemy is about to lose on its own (Bleeding at the start of its turn), in gold like the card-damage preview. */
+.ghost--strike{background-color:#2a1a00;background-image:repeating-linear-gradient(135deg,var(--c-ghost-strike-a) 0 5px,var(--c-ghost-strike-b) 5px 10px);box-shadow:inset 0 0 8px var(--c-bonus)}
+.ghost--strike~.hp em{color:var(--c-ghost-strike-a)}
 @keyframes ghost-blink{50%{opacity:.62}}
 .hp{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:5px;color:#fff;text-shadow:0 1px 2px #000,0 0 5px #000a}
 .hp svg{color:#ffd0c8;fill:currentColor}

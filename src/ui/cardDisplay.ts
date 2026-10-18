@@ -7,11 +7,11 @@ import { createBattle, previewCard } from '../game/battle'
 import { characterGenitive } from '../game/party'
 import { getClassTheme } from '../game/classThemes'
 
-export type GlyphKind = 'damage' | 'armor' | 'draw' | 'vulnerable' | 'exhaust' | 'bonus' | 'lock'
+export type GlyphKind = 'damage' | 'armor' | 'draw' | 'vulnerable' | 'exhaust' | 'bonus' | 'lock' | 'bleeding'
 export type Tone = 'on' | 'off' | 'plain'
 
 export interface StatChip {
-  kind: 'damage' | 'armor' | 'draw'
+  kind: 'damage' | 'armor' | 'draw' | 'bleeding'
   value: number
   /** One word under the number: who gets it. */
   caption: string
@@ -82,6 +82,15 @@ export function statChips(card: CardDefinition, preview: CardPreview): StatChip[
     if (effect.type === 'armor') chips.push({ kind: 'armor', value: effect.amount, caption: armorCaption(effect.target, preview), base: 0, boosted: false, inactive: false, spoken: `${effect.amount} брони ${armorCaption(effect.target, preview)}` })
   }
   if (preview.draw > 0) chips.push({ kind: 'draw', value: preview.draw, caption: cardsWord(preview.draw), base: 0, boosted: false, inactive: false, spoken: `добор: ${preview.draw} ${cardsWord(preview.draw)}` })
+  // Bleeding: applied strength (a number to wait for), or the damage a tick card takes at once.
+  for (const effect of card.effects) {
+    if (effect.type === 'status' && effect.status === 'bleeding') chips.push({ kind: 'bleeding', value: effect.amount ?? 1, caption: 'Кровь', base: 0, boosted: false, inactive: false, spoken: `Кровотечение ${effect.amount ?? 1}` })
+    if (effect.type === 'status-tick' && effect.status === 'bleeding') {
+      chips.push(preview.statusDamage > 0
+        ? { kind: 'bleeding', value: preview.statusDamage, caption: 'сквозь броню', base: 0, boosted: false, inactive: false, spoken: `${preview.statusDamage} ${damageWord(preview.statusDamage)} сквозь броню` }
+        : { kind: 'bleeding', value: 1, caption: 'при Крови', base: 0, boosted: false, inactive: true, spoken: 'урон равен силе Кровотечения врага, если оно есть' })
+    }
+  }
   if (preview.damage === 0 && totalBase > 0) {
     chips.push({ kind: 'damage', value: totalBase, caption: 'врагу', base: totalBase, boosted: false, inactive: true, spoken: `${totalBase} ${damageWord(totalBase)} врагу, если враг атакует` })
   }
@@ -100,6 +109,12 @@ export function ruleLines(card: CardDefinition, preview: CardPreview): RuleLine[
     lines.push(preview.armorBonus > 0
       ? { tone: 'on', glyph: 'armor', text: `+${preview.armorBonus} — броня ${bonusOwnerGenitive(preview)}`, short: `+${preview.armorBonus} броня` }
       : { tone: 'off', glyph: 'armor', text: `+${card.damageBonus.amount} при броне ${bonusOwnerGenitive(preview)}`, short: `+${card.damageBonus.amount} при броне` })
+  }
+  if (card.effects.some(effect => effect.type === 'status-burst')) {
+    const burst = preview.damageParts.find(part => part.id === 'bleeding-burst')
+    lines.push(burst
+      ? { tone: 'on', glyph: 'bleeding', text: `+${burst.amount} — Кровотечение врага`, short: `+${burst.amount} Кровь` }
+      : { tone: 'off', glyph: 'bleeding', text: '+2 за каждую силу Кровотечения', short: '+2 за Кровь' })
   }
   if (preview.vulnerabilityBonus > 0) lines.push({ tone: 'on', glyph: 'vulnerable', text: `+${preview.vulnerabilityBonus} — враг Уязвим`, short: `+${preview.vulnerabilityBonus} Уязвим` })
   if (preview.artifactDamage > 0) lines.push({ tone: 'on', glyph: 'bonus', text: `+${preview.artifactDamage} — первая атакующая карта отряда: Натяжной шкив`, short: `+${preview.artifactDamage} шкив` })
@@ -156,6 +171,12 @@ export function cardNotes(card: CardDefinition, preview: CardPreview, context: '
       glyph: 'vulnerable', name: status.name,
       text: status.description + (appliesVulnerability && preview.vulnerabilityBonus > 0 ? ' Эта карта сначала расходует текущую Уязвимость; новая остаётся, если враг выживет.' : ''),
     })
+  }
+  if (card.effects.some(effect => (effect.type === 'status' || effect.type === 'status-burst' || effect.type === 'status-tick') && effect.status === 'bleeding')) {
+    const status = statusDefinitions.bleeding
+    const burst = card.effects.some(effect => effect.type === 'status-burst')
+    const tick = card.effects.some(effect => effect.type === 'status-tick')
+    keywords.push({ glyph: 'bleeding', name: status.name, text: status.description + (burst ? ' Эта карта забирает всё Кровотечение сразу: будущих тиков не будет.' : tick ? ' Тик, сработавший сейчас, не повторится в начале хода врага: общий урон Кровотечения не растёт.' : '') })
   }
   const armor = context === 'neutral'
     ? card.effects.flatMap(effect => effect.type === 'armor' ? [{ hero: effect.target, name: armorRecipient(effect.target, preview, 'цели врага'), amount: effect.amount }] : [])

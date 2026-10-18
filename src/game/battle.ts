@@ -5,7 +5,7 @@ import { drawCards, shuffle } from './deck'
 import { artifactDefinition } from './artifacts'
 import { composeHit, splitDamage, sumParts } from './damage'
 import { cardOwner, characterGenitive, heroForClass, heroIdsInPartyOrder, partnerOf as partnerOfHero, resolveArmorTarget } from './party'
-import { applyStatus, carrierHasStatus, clearStatuses, consumeStatus, createStatuses, decayStatus, dueTicks, hitBonuses } from './statuses'
+import { applyStatus, carrierHasStatus, clearStatuses, cloneStatuses, consumeStatus, createStatuses, decayStatus, dueTicks, hitBonuses, lifetimeTickDamage, statusDefinition, statusValue } from './statuses'
 import type { ArtifactInstance, BattleArtifactState, BattleState, CardClassId, CardEffect, CardDefinition, CardId, CardPreview, ConsumedStatus, EncounterDefinition, EnemyAction, EnemyHit, HeroId, HitPart, PendingArtifactTrigger, PendingPlay, StatusCarrierId, StatusId } from './types'
 
 export interface BattleOptions {
@@ -109,15 +109,21 @@ function damageEnemy(state: BattleState, amount: number, ignoresArmor = false): 
   return split.healthLoss
 }
 
+/** Runs one tick of an enemy status: damage (through `damageEnemy`, so phases and victory stay in step), then decay. Returns the health lost. */
+function tickEnemyStatus(state: BattleState, due: { id: StatusId; value: number; tick: { damage: boolean; ignoresArmor: boolean; decay: number } }): number {
+  const lost = due.tick.damage ? damageEnemy(state, due.value, due.tick.ignoresArmor) : 0
+  decayStatus(state, 'enemy', due.id, due.tick.decay)
+  return lost
+}
+
 /**
- * Start of the enemy's turn, after "end turn" and before its announced action. Statuses with a `tick` rule act here.
- * The loop is data-driven: no gameplay status declares a tick yet, so today it does nothing.
+ * Start of the enemy's turn, after "end turn" and before its announced action. Statuses with a `tick` rule act here
+ * (today Bleeding): the loop is data-driven, and the same tick is what a `status-tick` card runs ahead of time.
  */
 function runEnemyTurnStart(state: BattleState): void {
   for (const due of dueTicks(state, 'enemy', 'enemy-turn-start')) {
     if (state.result) return
-    if (due.tick.damage) damageEnemy(state, due.value, due.tick.ignoresArmor)
-    decayStatus(state, 'enemy', due.id, due.tick.decay)
+    tickEnemyStatus(state, due)
     updateResult(state)
   }
 }
@@ -141,6 +147,14 @@ function buildPlan(state: BattleState, card: CardDefinition): Omit<PendingPlay, 
       parts.push({ kind: 'status', id: bonus.id, label: bonus.label, amount: bonus.amount })
       consumedStatuses.push({ carrier: 'enemy', id: bonus.id })
     }
+    for (const effect of allEffects) {
+      if (effect.type !== 'status-burst') continue
+      const value = statusValue(state, 'enemy', effect.status)
+      if (value <= 0) continue
+      const name = statusDefinition(effect.status).name
+      parts.push({ kind: 'status', id: effect.status + '-burst', label: name, detail: `${name} · ${value} × ${effect.perPoint}`, amount: value * effect.perPoint })
+      consumedStatuses.push({ carrier: 'enemy', id: effect.status, amount: value })
+    }
     if (spool) parts.push({ kind: 'artifact', id: 'tension-spool', label: 'Натяжной шкив', detail: 'Натяжной шкив · первая атакующая карта отряда', amount: 2 })
   }
   const hit = composeHit(parts)
@@ -162,7 +176,7 @@ function buildPlan(state: BattleState, card: CardDefinition): Omit<PendingPlay, 
   const split = splitDamage(state.enemy, damage)
   const armorDamage = split.absorbed
   const healthDamage = split.healthLoss
-  const effects: CardEffect[] = allEffects.filter(effect => effect.type !== 'damage')
+  const effects: CardEffect[] = allEffects.filter(effect => effect.type !== 'damage' && effect.type !== 'status-burst')
   // Deal the entire hit together, before secondary effects. A lethal hit stops the action.
   if (damage > 0) effects.unshift({ type: 'damage', amount: damage })
   const armor = zeroArmor(state.heroes)
@@ -192,6 +206,17 @@ function buildPlan(state: BattleState, card: CardDefinition): Omit<PendingPlay, 
     }
   }
   for (const id of heroIdsInPartyOrder(state.heroes)) armor[id] += artifactArmor[id]
+  // Statuses: what a tick card takes at once, and what applied statuses will take later (the part this card adds to the lifetime total).
+  let statusDamage = 0
+  let statusFuture = 0
+  for (const effect of effects) {
+    if (effect.type === 'status-tick') statusDamage += Math.min(state.enemy.health, statusValue(state, 'enemy', effect.status))
+    else if (effect.type === 'status') {
+      const probe = { statuses: cloneStatuses(state.statuses) }
+      applyStatus(probe, 'enemy', effect.status, effect.amount ?? 1)
+      statusFuture += lifetimeTickDamage(effect.status, statusValue(probe, 'enemy', effect.status)) - lifetimeTickDamage(effect.status, statusValue(state, 'enemy', effect.status))
+    }
+  }
   const usesClassTarget = effects.some(effect => effect.type === 'armor' && effect.target.startsWith('class:'))
   return {
     effects,
@@ -203,7 +228,7 @@ function buildPlan(state: BattleState, card: CardDefinition): Omit<PendingPlay, 
       draw: effects.reduce((sum, effect) => sum + (effect.type === 'draw' ? effect.amount : 0), 0),
       bonuses: bonusLabels,
       artifactBonuses: artifactTriggers.map(trigger => trigger.reason),
-      appliedStatuses: effects.flatMap(effect => effect.type === 'status' ? [effect.status] : []),
+      appliedStatuses: effects.flatMap(effect => effect.type === 'status' ? [effect.status] : []), statusDamage, statusFuture,
       damageParts: hit.parts,
       bonusOwner: card.damageBonus && owner.ok ? { hero: owner.hero, characterId: state.heroes[owner.hero].characterId } : null,
       classHeroes: usesClassTarget ? resolvedClassHeroes(state.heroes) : {},
@@ -241,7 +266,7 @@ export function resolveCardPlay(state: BattleState, actionId: string): PlayResul
   let drawn = 0
   let damageDealt = 0
   if (!state.result) {
-    for (const spent of pending.consumedStatuses) consumeStatus(state, spent.carrier, spent.id)
+    for (const spent of pending.consumedStatuses) consumeStatus(state, spent.carrier, spent.id, spent.amount ?? 1)
     for (const effect of pending.effects) {
       if (effect.type === 'damage') {
         damageDealt += damageEnemy(state, effect.amount)
@@ -268,7 +293,10 @@ export function resolveCardPlay(state: BattleState, actionId: string): PlayResul
         }
       } else if (effect.type === 'draw') {
         drawn += drawCards(state, effect.amount).length
-      } else {
+      } else if (effect.type === 'status-tick') {
+        const due = dueTicks(state, 'enemy', 'enemy-turn-start').find(item => item.id === effect.status)
+        if (due) damageDealt += tickEnemyStatus(state, due)
+      } else if (effect.type === 'status') {
         applyStatus(state, 'enemy', effect.status, effect.amount ?? 1)
       }
       updateResult(state)

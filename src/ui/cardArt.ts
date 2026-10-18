@@ -16,4 +16,6 @@ import type { CardId } from '../game/types'
 export const cardArt: Record<CardId, string> = {
   'sword-strike': swordStrike, fireball, guard, 'quick-cut': quickCut, thunderbolt, bastion, parry,
   'shield-bash': shieldBash, interpose, frostbolt, 'arcane-insight': arcaneInsight, 'ice-ward': iceWard,
+  // Temporary illustrations for the Bleeding cards: new art is a separate task (see docs/combat-overhaul-v02.md).
+  rend: quickCut, 'reaping-blow': swordStrike, 'boil-blood': fireball,
 }

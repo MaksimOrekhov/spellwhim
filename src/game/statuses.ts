@@ -22,7 +22,7 @@ export type StatusReading = 'charges' | 'intensity'
 export type StatusStacking = 'refresh' | 'add'
 export type StatusTriggerGroup = 'player-card' | 'enemy-action' | 'turn-tick'
 /** UI key; the Vue layer maps it to an actual icon, so definitions carry no markup. */
-export type StatusIconKey = 'vulnerability'
+export type StatusIconKey = 'vulnerability' | 'bleeding'
 
 /** A point of the turn at which the engine evaluates tick rules. Only phases that exist in `endTurn` are listed. */
 export type StatusTickPhase = 'enemy-turn-start'
@@ -64,6 +64,14 @@ export const statusDefinitions: Record<StatusId, StatusDefinition> = {
     note: 'Состояние сохраняется между ходами.',
     spoken: { enemy: 'Противник уязвим', hero: 'Герой уязвим' },
     polarity: 'negative', carriers: ['enemy', 'hero'], reading: 'charges', stacking: 'refresh', maxValue: 1, hitBonus: 3, icon: 'vulnerability',
+  },
+  bleeding: {
+    id: 'bleeding', name: 'Кровотечение', shortName: 'Кровь',
+    description: 'В начале хода врага он теряет здоровье, равное силе Кровотечения (броня не поглощает), затем сила падает на 1.',
+    note: 'Повторное наложение складывает силу, не больше 5. Кровотечение может добить врага до его действия.',
+    spoken: { enemy: 'Противник истекает кровью', hero: 'Герой истекает кровью' },
+    polarity: 'negative', carriers: ['enemy'], reading: 'intensity', stacking: 'add', maxValue: 5,
+    tick: { phase: 'enemy-turn-start', damage: true, ignoresArmor: true, decay: 1 }, icon: 'bleeding',
   },
 }
 
@@ -223,4 +231,18 @@ export function dueTicks(state: StatusHolder, carrier: StatusCarrierId, phase: S
 /** Lowers the value after a tick; the status ends at 0. */
 export function decayStatus(state: StatusHolder, carrier: StatusCarrierId, id: StatusId, amount: number): void {
   consumeStatus(state, carrier, id, amount)
+}
+
+/** Health the carrier will lose to ticks at `phase` if nothing changes (the order of the definitions decides; decay is ignored). */
+export function pendingTickDamage(state: StatusHolder, carrier: StatusCarrierId, phase: StatusTickPhase = 'enemy-turn-start'): number {
+  return dueTicks(state, carrier, phase).reduce((sum, due) => sum + (due.tick.damage ? due.value : 0), 0)
+}
+
+/** Total health that `value` points of a ticking, decaying status take over its whole life: value + (value - decay) + … */
+export function lifetimeTickDamage(id: StatusId, value: number): number {
+  const tick = statusDefinition(id).tick
+  if (!tick?.damage || tick.decay <= 0) return 0
+  let total = 0
+  for (let left = value; left > 0; left -= tick.decay) total += left
+  return total
 }

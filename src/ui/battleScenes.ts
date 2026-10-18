@@ -91,8 +91,11 @@ export function battleScene(id: BattleSceneId, seed = 7): BattleState {
       return state
     }
     case 'bleeding': {
-      const state = base('defias-cutpurse')
-      state.enemy.health = 24
+      // Bleeding 3 and Vulnerability on a wounded, armored enemy: the bar shows the 3 health that the tick will take at the turn's end.
+      const state = base('mine-overseer')
+      state.enemy.health = 30
+      state.enemy.armor = 4
+      applyStatus(state, 'enemy', 'bleeding', 3)
       applyStatus(state, 'enemy', 'vulnerability')
       return state
     }

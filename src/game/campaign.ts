@@ -39,14 +39,17 @@ export function campaignEncounter(index: number, economy: EconomyConfig = gameEc
   return campaignEncounters(economy)[index]
 }
 
-export function campaignRewards(): CardDefinition[] {
-  return cards.filter(card => card.reward)
+/** Cards added by Combat Overhaul v0.2 (Bleeding). The legacy Balance Lab keeps its older reward pool so its control numbers do not move. */
+export const OVERHAUL_CARD_IDS: readonly CardId[] = ['rend', 'reaping-blow', 'boil-blood']
+
+export function campaignRewards(excluded: readonly CardId[] = []): CardDefinition[] {
+  return cards.filter(card => card.reward && !excluded.includes(card.id))
 }
 
 /** Seeded reward offer shared by the app and Balance Lab. */
 export function campaignRewardOptions(battle: BattleState, count = 3): CardDefinition[] {
   const random = { rngState: (battle.rngState ^ 0x51f15e) >>> 0 }
-  return shuffle(random, campaignRewards()).slice(0, Math.max(0, count))
+  return shuffle(random, campaignRewards(OVERHAUL_CARD_IDS)).slice(0, Math.max(0, count))
 }
 
 export function addCampaignReward(deck: readonly CardId[], reward: CardDefinition): CardId[] {
@@ -126,6 +129,8 @@ export interface DungeonRunState {
   artifacts: ArtifactInstance[]
   status: DungeonRunStatus
   pendingReward: DungeonRewardOffer | null
+  /** Cards that never appear in this run's reward offers (Balance Lab controls); empty in the game. */
+  excludedRewards?: CardId[]
 }
 
 const dungeonLayerTypes: DungeonNodeType[][] = [
@@ -299,7 +304,7 @@ function createDungeonRewardOffer(run: DungeonRunState, node: DungeonMapNode): D
   const artifactPool = elite ? artifactDefinitions.filter(definition => !run.artifacts.some(owned => owned.definitionId === definition.id)) : []
   return {
     nodeId: node.id, seed, artifactSeed, count, elite,
-    cardIds: seededOffer(seed, campaignRewards(), count).map(card => card.id),
+    cardIds: seededOffer(seed, campaignRewards(run.excludedRewards), count).map(card => card.id),
     artifactIds: seededOffer(artifactSeed, artifactPool, Math.min(3, artifactPool.length)).map(item => item.id),
   }
 }

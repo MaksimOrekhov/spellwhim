@@ -110,7 +110,7 @@ describe('planner state copies', () => {
     expect(state.heroes.mage.health).toBe(mageHealth)
 
     const pending = createBattle(encounters[2], undefined, { seed: 5 })
-    pending.pending = { actionId: 'x', card: pending.hand[0]!, handIndex: 0, effects: [], consumedStatuses: [], artifactTriggers: [], preview: { damage: 0, armorDamage: 0, healthDamage: 0, bonusDamage: 0, vulnerabilityBonus: 0, armorBonus: 0, artifactDamage: 0, artifactArmor: { warrior: 0, mage: 0 }, artifactBonuses: [], armor: { warrior: 0, mage: 0 }, draw: 0, bonuses: [], appliedStatuses: [], damageParts: [], bonusOwner: null, classHeroes: {} } }
+    pending.pending = { actionId: 'x', card: pending.hand[0]!, handIndex: 0, effects: [], consumedStatuses: [], artifactTriggers: [], preview: { damage: 0, armorDamage: 0, healthDamage: 0, bonusDamage: 0, vulnerabilityBonus: 0, armorBonus: 0, artifactDamage: 0, artifactArmor: { warrior: 0, mage: 0 }, artifactBonuses: [], armor: { warrior: 0, mage: 0 }, draw: 0, bonuses: [], appliedStatuses: [], damageParts: [], bonusOwner: null, classHeroes: {}, statusDamage: 0, statusFuture: 0 } }
     expect(() => cloneBattleState(pending)).toThrow()
   })
 })

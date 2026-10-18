@@ -95,7 +95,7 @@ const style = computed(() => ({ ...classThemeStyle(props.card.className), '--vis
 .chip-disc .glyph{width:.95em;height:.95em}
 .chip-num{font:700 1.65em/1 var(--font-num);text-shadow:0 .06em .1em #000a}
 .chip-cap{grid-column:1/-1;margin-top:.05em;font:800 .62em/1.1 var(--font-ui);letter-spacing:.06em;text-align:center;text-transform:uppercase;color:var(--text-dim);white-space:nowrap}
-.chip--damage{--chip-c:var(--c-health)}.chip--armor{--chip-c:var(--c-armor-deep)}.chip--draw{--chip-c:var(--brass-3)}
+.chip--damage{--chip-c:var(--c-health)}.chip--armor{--chip-c:var(--c-armor-deep)}.chip--draw{--chip-c:var(--brass-3)}.chip--bleeding{--chip-c:var(--c-ghost-threat-b)}
 .chip.is-boosted{border-color:var(--c-bonus);box-shadow:inset 0 .08em .1em #fff3,var(--glow-bonus)}
 .chip.is-boosted .chip-num{color:var(--c-bonus)}
 .chip-up{position:absolute;right:-.3em;top:-.4em;width:1em;height:1em;padding:.1em;border-radius:50%;background:var(--c-bonus);color:var(--parch-ink)}

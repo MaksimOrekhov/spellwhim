@@ -51,7 +51,7 @@ const style = computed(() => classThemeStyle(props.card.className))
 .chip{display:inline-flex;align-items:center;gap:.2em;padding:.15em .45em .15em .25em;border-radius:var(--r-pill);background:linear-gradient(180deg,var(--wood-2),var(--wood-1));border:.08em solid var(--brass-3);color:var(--ink)}
 .chip .glyph{width:1.2em;height:1.2em;padding:.18em;border-radius:50%;color:#fff;background:var(--chip-c)}
 .chip b{font:700 1.45em/1 var(--font-num)}
-.chip--damage{--chip-c:var(--c-health)}.chip--armor{--chip-c:var(--c-armor-deep)}.chip--draw{--chip-c:var(--brass-3)}
+.chip--damage{--chip-c:var(--c-health)}.chip--armor{--chip-c:var(--c-armor-deep)}.chip--draw{--chip-c:var(--brass-3)}.chip--bleeding{--chip-c:var(--c-ghost-threat-b)}
 .chip.is-boosted{border-color:var(--c-bonus)}.chip.is-boosted b{color:var(--c-bonus)}
 .chip.is-inactive{opacity:.55;border-style:dashed}
 .tc-foot{display:flex;align-items:center;gap:.3em;padding:.1em .3em 0;border-radius:0 0 .6em .6em;background:linear-gradient(165deg,var(--parch-2),var(--parch-2));font:800 .62em/1 var(--font-ui);letter-spacing:var(--ls-caps);color:color-mix(in srgb,var(--class-primary) 70%,var(--parch-ink))}

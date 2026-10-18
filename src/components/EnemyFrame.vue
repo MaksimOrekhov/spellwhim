@@ -9,7 +9,7 @@ import StatusChip from './StatusChip.vue'
 import type { StatusView } from '../game/statuses'
 import type { EnemyState } from '../game/types'
 
-const props = defineProps<{ enemy: EnemyState; statuses?: StatusView[]; acting?: boolean; hit?: boolean }>()
+const props = defineProps<{ enemy: EnemyState; statuses?: StatusView[]; bleedTick?: number; acting?: boolean; hit?: boolean }>()
 const hasPhases = computed(() => !!props.enemy.behavior.phase2)
 const phase2 = computed(() => hasPhases.value && props.enemy.phase === 2)
 const vulnerable = computed(() => props.statuses?.some(item => item.id === 'vulnerability') ?? false)
@@ -25,7 +25,7 @@ const vulnerable = computed(() => props.statuses?.some(item => item.id === 'vuln
       <span v-if="hasPhases" class="phase" :class="{ 'phase--2': phase2 }" role="status"><span v-for="n in 2" :key="n" class="phase-pip" :class="{ on: enemy.phase >= n }"></span> Фаза {{ phase2 ? 'II' : 'I' }}</span>
       <div v-if="statuses?.length" class="status-rack"><StatusChip v-for="status in statuses" :key="status.id" :status="status" /></div>
     </div>
-    <div class="plate"><VitalBar :name="enemy.name" :subtitle="enemy.title" :health="enemy.health" :max="enemy.maxHealth" :armor="enemy.armor" side="enemy" /></div>
+    <div class="plate"><VitalBar :name="enemy.name" :subtitle="enemy.title" :health="enemy.health" :max="enemy.maxHealth" :armor="enemy.armor" :ghost="bleedTick" ghost-tone="strike" side="enemy" /></div>
   </article>
 </template>
 

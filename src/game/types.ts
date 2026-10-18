@@ -6,8 +6,8 @@ export type CardClassId = 'warrior' | 'mage'
 export type PartySlotId = 'first' | 'second'
 export type ArtifactId = 'reliable-wedge' | 'double-pulley' | 'weakpoint-lens' | 'shift-whistle' | 'tension-spool'
 export type GameResult = 'victory' | 'defeat' | null
-export type CardId = 'sword-strike' | 'fireball' | 'guard' | 'quick-cut' | 'thunderbolt' | 'bastion' | 'parry' | 'shield-bash' | 'interpose' | 'frostbolt' | 'arcane-insight' | 'ice-ward'
-export type StatusId = 'vulnerability'
+export type CardId = 'sword-strike' | 'fireball' | 'guard' | 'quick-cut' | 'thunderbolt' | 'bastion' | 'parry' | 'shield-bash' | 'interpose' | 'frostbolt' | 'arcane-insight' | 'ice-ward' | 'rend' | 'reaping-blow' | 'boil-blood'
+export type StatusId = 'vulnerability' | 'bleeding'
 /** Who can hold a status. `'enemy'` is the current opponent; hero keys follow the legacy engine key (`Hero.id`). */
 export type StatusCarrierId = 'enemy' | HeroId
 /** A status held by one carrier. `value` is read according to the definition: charges or intensity. */
@@ -51,6 +51,10 @@ export type CardEffect =
   | { type: 'draw'; amount: number }
   /** Applies the status to the enemy; `amount` (default 1) is charges or intensity by the status definition. */
   | { type: 'status'; status: StatusId; amount?: number }
+  /** Adds `perPoint` damage to this card's hit for every point of the enemy's status, then removes the whole status. */
+  | { type: 'status-burst'; status: StatusId; perPoint: number }
+  /** Runs the enemy's tick rule of the status right now (damage, then decay): the same tick, earlier. */
+  | { type: 'status-tick'; status: StatusId }
 
 export interface CardDefinition {
   id: CardId
@@ -116,6 +120,9 @@ export const cards: CardDefinition[] = [
   { id: 'ice-ward', name: 'Ледяной покров', className: 'mage', cost: 1, description: '3 брони цели и 2 брони напарнику.', icon: '❄', kind: 'defense', tags: ['defense'], effects: [{ type: 'armor', amount: 3, target: 'threatened' }, { type: 'armor', amount: 2, target: 'partner' }], reward: true },
   { id: 'quick-cut', name: 'Быстрый выпад', className: 'warrior', cost: 0, description: '3 урона. Выбывает до конца боя.', icon: '⚔', kind: 'attack', tags: ['strike'], effects: [{ type: 'damage', amount: 3 }], exhaust: true, reward: true },
   { id: 'thunderbolt', name: 'Грозовой разряд', className: 'mage', cost: 1, description: '4 урона. Добор карты. При броне Джайны: +2 урона.', icon: '✹', kind: 'spell', tags: ['offensive-spell'], effects: [{ type: 'damage', amount: 4 }, { type: 'draw', amount: 1 }], damageBonus: { condition: 'owner-has-armor', amount: 2 }, reward: true },
+  { id: 'rend', name: 'Рассекающий удар', className: 'warrior', cost: 1, description: '5 урона. Накладывает Кровотечение 3.', icon: '⚔', kind: 'attack', tags: ['strike'], effects: [{ type: 'damage', amount: 5 }, { type: 'status', status: 'bleeding', amount: 3 }], reward: true },
+  { id: 'reaping-blow', name: 'Кровавая расплата', className: 'warrior', cost: 2, description: '4 урона и ещё 2 за каждую силу Кровотечения врага. Снимает Кровотечение.', icon: '⚔', kind: 'attack', tags: ['strike'], effects: [{ type: 'damage', amount: 4 }, { type: 'status-burst', status: 'bleeding', perPoint: 2 }], reward: true },
+  { id: 'boil-blood', name: 'Жар в венах', className: 'mage', cost: 1, description: 'Кровотечение врага срабатывает сразу: он теряет здоровье, равное силе (броня не поглощает), сила падает на 1. Добор карты.', icon: '✹', kind: 'spell', tags: ['offensive-spell'], effects: [{ type: 'status-tick', status: 'bleeding' }, { type: 'draw', amount: 1 }], reward: true },
   { id: 'bastion', name: 'Каменный бастион', className: 'warrior', cost: 2, description: '6 брони цели, 3 — напарнику.', icon: '⬡', kind: 'defense', tags: ['defense'], effects: [{ type: 'armor', amount: 6, target: 'threatened' }, { type: 'armor', amount: 3, target: 'partner' }], reward: true },
 ]
 
@@ -175,6 +182,8 @@ export interface HitPart {
 export interface ConsumedStatus {
   carrier: StatusCarrierId
   id: StatusId
+  /** Charges spent; one when omitted. A burst card spends the whole value it read when the play started. */
+  amount?: number
 }
 
 export interface CardPreview {
@@ -191,6 +200,10 @@ export interface CardPreview {
   draw: number
   bonuses: string[]
   appliedStatuses: StatusId[]
+  /** Health the enemy loses at once through a status (a `status-tick` card): armor does not stop it. */
+  statusDamage: number
+  /** Health that statuses applied by this card will take over the coming turns if the enemy lives (bleeding). */
+  statusFuture: number
   /** The same total as `damage`, itemised in rule order. Empty when the card deals no damage now. */
   damageParts: HitPart[]
   /** Party member whose armor drives the card's class bonus, when the card has one and the owner is unambiguous. */
