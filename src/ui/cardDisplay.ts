@@ -89,7 +89,7 @@ export function ruleLines(card: CardDefinition, preview: CardPreview): RuleLine[
       : { tone: 'off', glyph: 'armor', text: `+${card.damageBonus.amount} при броне Джайны`, short: `+${card.damageBonus.amount} при броне` })
   }
   if (preview.vulnerabilityBonus > 0) lines.push({ tone: 'on', glyph: 'vulnerable', text: `+${preview.vulnerabilityBonus} — враг Уязвим`, short: `+${preview.vulnerabilityBonus} Уязвим` })
-  if (preview.artifactDamage > 0) lines.push({ tone: 'on', glyph: 'bonus', text: `+${preview.artifactDamage} — Натяжной шкив`, short: `+${preview.artifactDamage} шкив` })
+  if (preview.artifactDamage > 0) lines.push({ tone: 'on', glyph: 'bonus', text: `+${preview.artifactDamage} — первая атакующая карта отряда: Натяжной шкив`, short: `+${preview.artifactDamage} шкив` })
   return lines
 }
 
@@ -110,7 +110,7 @@ export function damageParts(preview: CardPreview): DamagePart[] {
   const parts: DamagePart[] = [{ label: 'Урон карты', amount: preview.damage - preview.bonusDamage, kind: 'base' }]
   if (preview.armorBonus > 0) parts.push({ label: 'Броня Джайны', amount: preview.armorBonus, kind: 'armor' })
   if (preview.vulnerabilityBonus > 0) parts.push({ label: 'Уязвимость', amount: preview.vulnerabilityBonus, kind: 'vulnerability' })
-  if (preview.artifactDamage > 0) parts.push({ label: 'Натяжной шкив', amount: preview.artifactDamage, kind: 'artifact' })
+  if (preview.artifactDamage > 0) parts.push({ label: 'Натяжной шкив · первая атакующая карта отряда', amount: preview.artifactDamage, kind: 'artifact' })
   return parts
 }
 

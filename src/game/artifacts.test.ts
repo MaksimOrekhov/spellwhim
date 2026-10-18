@@ -57,6 +57,15 @@ describe('artifact combat effects', () => {
     expect(forecastEnemyAction(single).targets[0]).toMatchObject({ attack: 3, lethal: true, healthLoss: 2 })
     endTurn(single)
     expect(single.result).toBe('defeat')
+    expect(single.artifacts[0]).toMatchObject({ usedThisBattle: true })
+
+    const armored = battleWith('reliable-wedge', 'warrior')
+    armored.heroes.warrior.armor = 8
+    armored.enemy.nextAction = { kind: 'attack', name: 'Удар', damage: 5, target: 'warrior' }
+    expect(forecastEnemyAction(armored).targets[0]).toMatchObject({ attack: 3, absorbed: 3, healthLoss: 0 })
+    endTurn(armored)
+    expect(armored.heroes.warrior.health).toBe(25)
+    expect(armored.artifacts[0]).toMatchObject({ usedThisBattle: true })
 
     const area = createBattle(encounters[1]!, undefined, { seed: 18 })
     area.artifacts = (['warrior', 'mage'] as HeroId[]).map((owner, index) => ({ instanceId: `wedge-${index}`, definitionId: 'reliable-wedge', ownerInstanceId: area.heroes[owner].instanceId, usedThisBattle: false, lastTriggeredTurn: null, armedThisTurn: false }))
@@ -114,7 +123,7 @@ describe('artifact combat effects', () => {
     expect(forecastEnemyAction(state).targets[0]).toMatchObject({ attack: 8, absorbed: 3, healthLoss: 5 })
   })
 
-  it('arms the spool only from armor held at the start of a turn and applies it once to the first damage card', () => {
+  it('applies to the first damage card played by the party, then can trigger again on a later armored turn', () => {
     const state = battleWith('tension-spool', 'mage', ['quick-cut', 'sword-strike'])
     state.heroes.mage.armor = 1
     state.enemy.nextAction = { kind: 'defend', name: 'Защита', armor: 0 }
@@ -122,9 +131,16 @@ describe('artifact combat effects', () => {
     expect(state.artifacts[0]?.armedThisTurn).toBe(true)
     const attack = state.hand.find(item => item.definitionId === 'quick-cut')!
     expect(previewCard(state, cardDefinition('quick-cut'))).toMatchObject({ damage: 5, artifactDamage: 2, bonuses: ['Натяжной шкив'] })
+    expect(previewCard(state, cardDefinition('sword-strike')).artifactDamage).toBe(2)
     playCard(state, attack.instanceId)
     expect(state.artifacts[0]?.lastTriggeredTurn).toBe(2)
     expect(previewCard(state, cardDefinition('sword-strike')).artifactDamage).toBe(0)
+
+    state.heroes.mage.armor = 1
+    state.enemy.nextAction = { kind: 'defend', name: 'Защита', armor: 0 }
+    endTurn(state)
+    expect(state.artifacts[0]?.armedThisTurn).toBe(true)
+    expect(previewCard(state, cardDefinition('sword-strike'))).toMatchObject({ artifactDamage: 2, damage: 8 })
   })
 
   it('resets battle charges while preserving run ownership and never carries combat armor', () => {

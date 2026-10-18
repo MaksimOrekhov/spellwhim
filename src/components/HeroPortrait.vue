@@ -15,7 +15,7 @@ const role = computed(() => props.hero.title)
 const artifact = computed(() => props.artifacts?.find(item => item.ownerInstanceId === props.hero.instanceId))
 const artifactDetails = computed(() => artifact.value ? artifactDefinition(artifact.value.definitionId) : null)
 const artifactIcon = computed(() => artifactDetails.value ? ({ shield: Shield, link: Link2, crosshair: Crosshair, bell: Bell, gauge: Gauge })[artifactDetails.value.icon] : Shield)
-const artifactStatus = computed(() => !artifact.value ? '' : artifact.value.usedThisBattle ? 'заряд использован' : artifact.value.definitionId === 'tension-spool' ? artifact.value.lastTriggeredTurn === props.turn ? 'сработал в этом ходу' : artifact.value.armedThisTurn ? 'готов усилить карту' : 'ждёт броню в начале хода' : artifact.value.definitionId === 'double-pulley' && artifact.value.lastTriggeredTurn === props.turn ? 'сработал в этом ходу' : 'заряд готов')
+const artifactStatus = computed(() => !artifact.value ? '' : artifact.value.usedThisBattle ? 'заряд использован' : artifact.value.definitionId === 'tension-spool' ? artifact.value.lastTriggeredTurn === props.turn ? 'сработал в этом ходу' : artifact.value.armedThisTurn ? 'готов усилить первую атакующую карту отряда' : 'ждёт броню владельца в начале хода' : artifact.value.definitionId === 'double-pulley' && artifact.value.lastTriggeredTurn === props.turn ? 'сработал в этом ходу' : 'заряд готов')
 </script>
 <template>
   <article class="hero" :class="['hero--' + side, 'hero--' + (appearance ?? hero.id), { 'is-targeted': targeted, 'is-damaged': damaged, 'is-acting': active, 'is-vulnerable': vulnerable, 'is-enraged': bossPhase === 2 }]" :aria-label="hero.name + ', здоровье ' + hero.health + ' из ' + hero.maxHealth + ', броня ' + hero.armor">

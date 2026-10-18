@@ -98,7 +98,7 @@ function buildPlan(state: BattleState, card: CardDefinition): Omit<PendingPlay, 
   const artifactTriggers: PendingArtifactTrigger[] = []
   if (spool) {
     const owner = heroForArtifact(state, spool)
-    if (owner) artifactTriggers.push({ artifactInstanceId: spool.instanceId, reason: 'Шкив усилил первую атакующую карту хода', kind: 'turn-damage', owner, amount: 2 })
+    if (owner) artifactTriggers.push({ artifactInstanceId: spool.instanceId, reason: 'Натяжной шкив: +2 к первой наносящей урон карте отряда этого хода', kind: 'turn-damage', owner, amount: 2 })
   }
   for (const artifact of state.artifacts) {
     const owner = heroForArtifact(state, artifact)
