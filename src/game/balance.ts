@@ -1,5 +1,5 @@
 import { endTurn, forecastEnemyAction, hasStatus, playCard, previewCard } from './battle'
-import { addCampaignReward, advanceCampaign, campaignEncounter, campaignEncounters, OVERHAUL_CARD_IDS, campaignRewardOptions, campaignRewards, carriedHeroes, createCampaignBattle } from './campaign'
+import { addCampaignReward, advanceCampaign, campaignEncounter, campaignEncounters, HISTORICAL_BALANCE_REWARD_EXCLUSIONS, campaignRewardOptions, campaignRewards, carriedHeroes, createCampaignBattle } from './campaign'
 import { baselineEconomy } from './economy'
 import type { EconomyConfig } from './economy'
 import { createTurnPlanner } from './balancePlanner'
@@ -416,7 +416,7 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, options: Ru
     if (advance.kind === 'defeat') { status = 'defeat'; failedEncounter = encounter.id; break }
     if (advance.kind === 'complete') { status = 'victory'; break }
     const rewardId = chooseReward(battle, deck, rewardStrategy)
-    const reward = campaignRewards(OVERHAUL_CARD_IDS).find(card => card.id === rewardId)!
+    const reward = campaignRewards(HISTORICAL_BALANCE_REWARD_EXCLUSIONS).find(card => card.id === rewardId)!
     deck = addCampaignReward(deck, reward)
     rewards.push(rewardId)
     actionLog.push(`Награда похода: ${reward.name}`)

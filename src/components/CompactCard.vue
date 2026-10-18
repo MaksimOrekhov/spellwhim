@@ -12,6 +12,7 @@ import CardGlyph from './CardGlyph.vue'
 const props = defineProps<{ card: CardDefinition; preview: CardPreview; block?: CardBlock | null; hotkey?: string }>()
 const theme = computed(() => getClassTheme(props.card.className))
 const face = computed(() => cardFace(props.card, props.preview))
+const artUrl = computed(() => cardArt[props.card.id])
 const locked = computed(() => props.block?.kind === 'mana')
 const bonus = computed(() => !props.block && props.preview.bonusDamage > 0)
 const style = computed(() => classThemeStyle(props.card.className))
@@ -20,7 +21,8 @@ const style = computed(() => classThemeStyle(props.card.className))
 <template>
   <span class="tc" :class="[`tc--${theme.ornament}`, { 'is-locked': locked, 'is-dim': block?.kind === 'phase', 'is-bonus': bonus }]" :style="style" :data-card-class="theme.id">
     <span class="tc-art">
-      <img :src="cardArt[card.id]" alt="" draggable="false" />
+      <img v-if="artUrl" :src="artUrl" alt="" draggable="false" />
+      <span v-else class="tc-art-pending" aria-label="Иллюстрация ожидает утверждения">Арт ожидает утверждения</span>
       <span class="tc-marks"><CardGlyph v-for="tag in face.tags" :key="tag.id" :kind="tag.glyph" /></span>
       <CardGlyph v-if="locked" kind="lock" class="tc-lock" />
     </span>
@@ -40,6 +42,7 @@ const style = computed(() => classThemeStyle(props.card.className))
 .tc-art{position:relative;display:block;overflow:hidden;border-radius:.8em .7em .3em .3em;background:var(--class-surface);border:.1em solid color-mix(in srgb,var(--class-accent) 80%,#fff)}
 .tc--arcane .tc-art{border-radius:1.2em 1.2em .3em .3em}
 .tc-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 45%}
+.tc-art-pending{position:absolute;inset:0;display:grid;place-items:center;padding:.35em;background:var(--class-surface);color:var(--class-accent);font:800 .58em/1.05 var(--font-ui);letter-spacing:.025em;text-align:center;text-transform:uppercase}
 .tc-marks{position:absolute;right:.2em;top:.2em;display:flex;gap:.15em}
 .tc-marks .glyph{width:1.25em;height:1.25em;padding:.2em;border-radius:50%;background:#1b1210d0;color:var(--c-vulnerable)}
 .tc-marks .glyph--exhaust{color:var(--muted)}

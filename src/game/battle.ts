@@ -43,7 +43,7 @@ export function createBattle(encounter: EncounterDefinition = encounters[1]!, pr
   const artifacts: BattleArtifactState[] = (options.artifacts ?? []).map(item => ({ ...item, usedThisBattle: false, lastTriggeredTurn: null, armedThisTurn: false }))
   const state: BattleState = {
     battleId, seed, rngState: seed, nextActionId: 1, heroes, statuses: createStatuses(), artifacts, artifactNotices: [],
-    enemy: { name: encounter.name, title: encounter.title, health: encounter.maxHealth, maxHealth: encounter.maxHealth, armor: 0, appearance: encounter.appearance, phase: 1, nextActionPhase: 1, behavior: encounter.behavior, behaviorIndex: 1, nextAction: encounter.behavior.phase1[0]!, focus: initialFocus(heroes, encounter.behavior.phase1[0]!) },
+    enemy: { encounterId: encounter.id, name: encounter.name, title: encounter.title, health: encounter.maxHealth, maxHealth: encounter.maxHealth, armor: 0, appearance: encounter.appearance, phase: 1, nextActionPhase: 1, behavior: encounter.behavior, behaviorIndex: 1, nextAction: encounter.behavior.phase1[0]!, focus: initialFocus(heroes, encounter.behavior.phase1[0]!) },
     hand: [], blockedDraws: 0, drawPile: [], discardPile: [], exhausted: [], pending: null,
     economy, mana: manaForTurn(economy, 1), maxMana: manaForTurn(economy, 1), turn: 1, result: null,
   }

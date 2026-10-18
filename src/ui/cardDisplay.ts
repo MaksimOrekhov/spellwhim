@@ -110,11 +110,12 @@ export function ruleLines(card: CardDefinition, preview: CardPreview): RuleLine[
       ? { tone: 'on', glyph: 'armor', text: `+${preview.armorBonus} — броня ${bonusOwnerGenitive(preview)}`, short: `+${preview.armorBonus} броня` }
       : { tone: 'off', glyph: 'armor', text: `+${card.damageBonus.amount} при броне ${bonusOwnerGenitive(preview)}`, short: `+${card.damageBonus.amount} при броне` })
   }
-  if (card.effects.some(effect => effect.type === 'status-burst')) {
+  const burstEffect = card.effects.find((effect): effect is Extract<CardEffect, { type: 'status-burst' }> => effect.type === 'status-burst')
+  if (burstEffect) {
     const burst = preview.damageParts.find(part => part.id === 'bleeding-burst')
     lines.push(burst
       ? { tone: 'on', glyph: 'bleeding', text: `+${burst.amount} — Кровотечение врага`, short: `+${burst.amount} Кровь` }
-      : { tone: 'off', glyph: 'bleeding', text: '+2 за каждую силу Кровотечения', short: '+2 за Кровь' })
+      : { tone: 'off', glyph: 'bleeding', text: `+${burstEffect.perPoint} за каждую силу Кровотечения`, short: `+${burstEffect.perPoint} за Кровь` })
   }
   if (preview.vulnerabilityBonus > 0) lines.push({ tone: 'on', glyph: 'vulnerable', text: `+${preview.vulnerabilityBonus} — враг Уязвим`, short: `+${preview.vulnerabilityBonus} Уязвим` })
   if (preview.artifactDamage > 0) lines.push({ tone: 'on', glyph: 'bonus', text: `+${preview.artifactDamage} — первая атакующая карта отряда: Натяжной шкив`, short: `+${preview.artifactDamage} шкив` })

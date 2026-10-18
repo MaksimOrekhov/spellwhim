@@ -13,7 +13,8 @@ import iceWard from '../assets/art/ice-ward.svg'
 import type { CardId } from '../game/types'
 
 /** Single place that maps a card to its illustration; hand and reward screens both read it. */
-export const cardArt: Record<CardId, string> = {
+/** New v0.1 illustrations stay out of the game until the pilot set is approved. Components render a clear art-pending fallback. */
+export const cardArt: Partial<Record<CardId, string>> = {
   'sword-strike': swordStrike, fireball, guard, 'quick-cut': quickCut, thunderbolt, bastion, parry,
   'shield-bash': shieldBash, interpose, frostbolt, 'arcane-insight': arcaneInsight, 'ice-ward': iceWard,
   // Temporary illustrations for the Bleeding cards: new art is a separate task (see docs/combat-overhaul-v02.md).

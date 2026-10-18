@@ -20,6 +20,7 @@ const props = defineProps<{
 }>()
 const theme = computed(() => getClassTheme(props.card.className))
 const face = computed(() => cardFace(props.card, props.preview))
+const artUrl = computed(() => cardArt[props.card.id])
 const locked = computed(() => props.block?.kind === 'mana')
 const bonus = computed(() => !props.block && props.preview.bonusDamage > 0)
 const dense = computed(() => (props.vis ?? 1) < 0.9)
@@ -31,8 +32,9 @@ const style = computed(() => ({ ...classThemeStyle(props.card.className), '--vis
     <span class="sc-rim" aria-hidden="true"></span>
     <span class="sc-body">
       <span class="sc-art">
-        <img :src="cardArt[card.id]" alt="" draggable="false" />
-        <span class="sc-shade"></span>
+        <img v-if="artUrl" :src="artUrl" alt="" draggable="false" />
+        <span v-else class="sc-art-pending" aria-label="Иллюстрация ожидает утверждения"><small>Арт ожидает утверждения</small></span>
+        <span v-if="artUrl" class="sc-shade"></span>
         <span v-if="locked" class="sc-lock"><CardGlyph kind="lock" /> нужно {{ card.cost }}</span>
       </span>
       <span class="sc-plate"><strong class="sc-name">{{ card.name }}</strong></span>
@@ -72,6 +74,8 @@ const style = computed(() => ({ ...classThemeStyle(props.card.className), '--vis
 .sc--arcane .sc-body{border-radius:1.9em 1.9em 1.1em 1.2em/1.7em 2em 1.2em 1.1em}
 .sc-art{position:relative;display:block;flex:none;height:5.6em;overflow:hidden;border-bottom:.14em solid color-mix(in srgb,var(--class-accent) 82%,#fff);background:var(--class-surface)}
 .sc-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 45%}
+.sc-art-pending{position:absolute;inset:0;display:grid;place-items:center;padding:.4em;background:var(--class-surface);color:var(--class-accent);text-shadow:none;text-align:center}
+.sc-art-pending small{font:800 .72em/1.1 var(--font-ui);letter-spacing:.03em;color:var(--ink);text-transform:uppercase}
 .sc-shade{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,#0000 58%,#0006),linear-gradient(#0000 62%,#000a)}
 .sc-lock{position:absolute;left:50%;top:50%;z-index:2;display:flex;align-items:center;gap:.35em;translate:-50% -50%;padding:.3em .8em;border-radius:var(--r-pill);background:#1b1210e0;border:.1em solid var(--c-health);color:var(--ink);font:800 .85em/1 var(--font-ui);white-space:nowrap}
 .sc-lock .glyph{width:1.05em;height:1.05em;color:var(--c-health)}

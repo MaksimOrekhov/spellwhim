@@ -454,9 +454,11 @@ describe('Balance Lab with economies', () => {
     expect(advanceCampaign(last, 1)).toEqual({ kind: 'reward', nextEncounter: 2 })
   })
 
-  it('knows every card it can draw: the starting deck is untouched by the economy', () => {
+  it('keeps the starting deck unchanged and limits 3-mana cards to the reward pool', () => {
     expect(startingDeck).toHaveLength(18)
-    expect(cards.every(card => card.cost <= 2)).toBe(true)
+    expect(startingDeck.every(id => cardDefinition(id).cost <= 2)).toBe(true)
+    expect(cards.filter(card => card.cost > 2).map(card => card.id)).toEqual(['crushing-swing'])
+    expect(cards.filter(card => card.cost > 2).every(card => card.reward)).toBe(true)
   })
 })
 

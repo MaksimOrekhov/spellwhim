@@ -6,7 +6,7 @@ export type CardClassId = 'warrior' | 'mage'
 export type PartySlotId = 'first' | 'second'
 export type ArtifactId = 'reliable-wedge' | 'double-pulley' | 'weakpoint-lens' | 'shift-whistle' | 'tension-spool'
 export type GameResult = 'victory' | 'defeat' | null
-export type CardId = 'sword-strike' | 'fireball' | 'guard' | 'quick-cut' | 'thunderbolt' | 'bastion' | 'parry' | 'shield-bash' | 'interpose' | 'frostbolt' | 'arcane-insight' | 'ice-ward' | 'rend' | 'reaping-blow' | 'boil-blood'
+export type CardId = 'sword-strike' | 'fireball' | 'guard' | 'quick-cut' | 'thunderbolt' | 'bastion' | 'parry' | 'shield-bash' | 'interpose' | 'frostbolt' | 'arcane-insight' | 'ice-ward' | 'rend' | 'reaping-blow' | 'boil-blood' | 'stance-strike' | 'wound-clamp' | 'covering-counter' | 'crushing-swing' | 'arcane-mark' | 'ice-echo' | 'frost-seal' | 'blood-resonance'
 export type StatusId = 'vulnerability' | 'bleeding'
 /** Who can hold a status. `'enemy'` is the current opponent; hero keys follow the legacy engine key (`Hero.id`). */
 export type StatusCarrierId = 'enemy' | HeroId
@@ -124,6 +124,14 @@ export const cards: CardDefinition[] = [
   { id: 'reaping-blow', name: 'Кровавая расплата', className: 'warrior', cost: 2, description: '4 урона и ещё 2 за каждую силу Кровотечения врага. Снимает Кровотечение.', icon: '⚔', kind: 'attack', tags: ['strike'], effects: [{ type: 'damage', amount: 4 }, { type: 'status-burst', status: 'bleeding', perPoint: 2 }], reward: true },
   { id: 'boil-blood', name: 'Жар в венах', className: 'mage', cost: 1, description: 'Кровотечение врага срабатывает сразу: он теряет здоровье, равное силе (броня не поглощает), сила падает на 1. Добор карты.', icon: '✹', kind: 'spell', tags: ['offensive-spell'], effects: [{ type: 'status-tick', status: 'bleeding' }, { type: 'draw', amount: 1 }], reward: true },
   { id: 'bastion', name: 'Каменный бастион', className: 'warrior', cost: 2, description: '6 брони цели, 3 — напарнику.', icon: '⬡', kind: 'defense', tags: ['defense'], effects: [{ type: 'armor', amount: 6, target: 'threatened' }, { type: 'armor', amount: 3, target: 'partner' }], reward: true },
+  { id: 'stance-strike', name: 'Удар из стойки', className: 'warrior', cost: 1, description: '3 урона и 2 брони напарнику. При броне Воина: +2 урона.', icon: '⚔', kind: 'attack', tags: ['strike'], effects: [{ type: 'damage', amount: 3 }, { type: 'armor', amount: 2, target: 'partner' }], damageBonus: { condition: 'owner-has-armor', amount: 2 }, reward: true },
+  { id: 'wound-clamp', name: 'Зажать рану', className: 'warrior', cost: 1, description: 'Кровотечение срабатывает сейчас (сила −1). 3 брони цели врага.', icon: '⛨', kind: 'defense', tags: ['defense'], effects: [{ type: 'status-tick', status: 'bleeding' }, { type: 'armor', amount: 3, target: 'threatened' }], reward: true },
+  { id: 'covering-counter', name: 'Перехват удара', className: 'warrior', cost: 2, description: '7 брони цели врага. Если враг атакует, наносит 3 урона.', icon: '⛨', kind: 'defense', tags: ['defense'], effects: [{ type: 'armor', amount: 7, target: 'threatened' }, { type: 'damage', amount: 3, when: 'enemy-attacking' }], reward: true },
+  { id: 'crushing-swing', name: 'Сокрушительный замах', className: 'warrior', cost: 3, description: '9 урона. Накладывает Уязвимость.', icon: '⚔', kind: 'attack', tags: ['strike'], effects: [{ type: 'damage', amount: 9 }, { type: 'status', status: 'vulnerability' }], reward: true },
+  { id: 'arcane-mark', name: 'Арканная метка', className: 'mage', cost: 1, description: 'Накладывает Уязвимость. Добор карты.', icon: '✦', kind: 'spell', tags: [], effects: [{ type: 'status', status: 'vulnerability' }, { type: 'draw', amount: 1 }], reward: true },
+  { id: 'ice-echo', name: 'Ледяное эхо', className: 'mage', cost: 1, description: '2 урона. Добор карты.', icon: '❄', kind: 'spell', tags: ['offensive-spell'], effects: [{ type: 'damage', amount: 2 }, { type: 'draw', amount: 1 }], reward: true },
+  { id: 'frost-seal', name: 'Синяя печать', className: 'mage', cost: 1, description: 'Кровотечение срабатывает сейчас (сила −1). Накладывает Уязвимость.', icon: '❄', kind: 'spell', tags: ['offensive-spell'], effects: [{ type: 'status-tick', status: 'bleeding' }, { type: 'status', status: 'vulnerability' }], reward: true },
+  { id: 'blood-resonance', name: 'Кровавый резонанс', className: 'mage', cost: 2, description: '3 урона и добор карты. Снимает Кровотечение: +1 урон за каждую силу.', icon: '✹', kind: 'spell', tags: ['offensive-spell'], effects: [{ type: 'damage', amount: 3 }, { type: 'status-burst', status: 'bleeding', perPoint: 1 }, { type: 'draw', amount: 1 }], reward: true },
 ]
 
 export const startingDeck: CardId[] = [
@@ -154,6 +162,8 @@ export type EnemyHit = { kind: 'attack'; name: string; damage: number; target: H
 export type EnemyAction = EnemyHit | { kind: 'defend'; name: string; armor: number } | { kind: 'prepare'; name: string; prepared: EnemyHit } | { kind: 'recover'; name: string; armor: number }
 export interface EnemyBehavior { phase1: EnemyAction[]; phase2?: EnemyAction[] }
 export interface EnemyState {
+  /** Stable encounter identity; portrait lookup never depends on localized display text or phase. */
+  encounterId: string
   name: string; title: string; health: number; maxHealth: number; armor: number
   appearance: EncounterDefinition['appearance']; phase: 1 | 2; nextActionPhase: 1 | 2; behavior: EnemyBehavior
   behaviorIndex: number; nextAction: EnemyAction; focus: HeroId
