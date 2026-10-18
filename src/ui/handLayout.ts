@@ -39,3 +39,26 @@ export function zoomShift(center: number, zoomedWidth: number, viewport: number,
 export function zoomFactor(trackBottom: number, dockTop: number, cardHeight: number, lift: number, maxZoom = 1.32, minZoom = 1.1, allowance = 10): number {
   return Math.max(minZoom, Math.min(maxZoom, (trackBottom - dockTop + allowance) / (cardHeight + lift)))
 }
+
+/** Below this visible fraction a fan hides too much of every card; the hand switches to compact tiles instead. */
+export const COMPACT_BELOW = 0.75
+export const TILE_EM_WIDTH = 7.2
+export const TILE_EM_HEIGHT = 10
+
+export interface HandMode {
+  compact: boolean
+  /** Width of one slot: the full card in a fan, the tile in compact mode. */
+  slotWidth: number
+  layout: FanLayout
+}
+
+/**
+ * Full cards in an overlapping fan while enough of each stays visible; otherwise one row of non-overlapping tiles
+ * (name, cost, main numbers) whose full card opens on hover/focus. Every card is always reachable.
+ */
+export function handMode(count: number, width: number, cardWidth: number, gap: number): HandMode {
+  const fan = fanLayout(count, width, cardWidth, gap)
+  if (count === 0 || fan.visible >= COMPACT_BELOW) return { compact: false, slotWidth: cardWidth, layout: fan }
+  const tile = Math.min(cardWidth * 0.8, (width - (count - 1) * gap) / count)
+  return { compact: true, slotWidth: tile, layout: fanLayout(count, width, tile, gap) }
+}

@@ -6,7 +6,7 @@ import GameTooltip from './GameTooltip.vue'
 import type { HandCardView } from '../composables/useBattle'
 import type { BattlePhase } from '../composables/useBattleAnimation'
 import type { CardBlock } from '../ui/cardDisplay'
-import { fanLayout, handOrder, zoomFactor, zoomShift } from '../ui/handLayout'
+import { handMode, handOrder, TILE_EM_HEIGHT, TILE_EM_WIDTH, zoomFactor, zoomShift } from '../ui/handLayout'
 
 const props = defineProps<{ cards: HandCardView[]; outgoing: HandCardView | null; outgoingIndex: number; drawCount: number; discardCount: number; exhaustedCount: number; phase: BattlePhase; mana: number; maxMana: number; nextMana?: number; nextDraw?: number; drawBoostFrom?: number; drawBoostAmount?: number }>()
 const emit = defineEmits<{ play: [instanceId: string]; endTurn: [] }>()
@@ -58,17 +58,22 @@ const zoom = computed(() => {
   const g = geometry.value
   return zoomFactor(g.bottom, g.dockTop, CARD_HEIGHT_EM * g.em, LIFT_EM * g.em, MAX_ZOOM)
 })
-const fan = computed(() => fanLayout(displayed.value.length, geometry.value.width, cardWidth.value, 0.5 * geometry.value.em))
-const visible = computed(() => fan.value.visible)
-const overlapped = computed(() => fan.value.overlapped)
-const slotX = (index: number) => fan.value.x(index)
+const mode = computed(() => handMode(displayed.value.length, geometry.value.width, cardWidth.value, 0.45 * geometry.value.em))
+const compact = computed(() => mode.value.compact)
+const slotWidth = computed(() => mode.value.slotWidth)
+const visible = computed(() => (compact.value ? 1 : mode.value.layout.visible))
+const overlapped = computed(() => !compact.value && mode.value.layout.overlapped)
+const tileEm = computed(() => slotWidth.value / TILE_EM_WIDTH)
+const slotX = (index: number) => mode.value.layout.x(index)
 
 const active = shallowRef<string | null>(null)
 const activeIndex = computed(() => displayed.value.findIndex(item => item.instanceId === active.value))
 const activeItem = computed(() => (activeIndex.value >= 0 && props.outgoing?.instanceId !== active.value ? displayed.value[activeIndex.value]! : null))
-const shiftFor = (index: number) => zoomShift(geometry.value.left + slotX(index) + cardWidth.value / 2, cardWidth.value * zoom.value, geometry.value.viewport)
+// Kept inside the hand row, so a zoomed end card does not climb over the end-turn button or the mana panel.
+const shiftFor = (index: number) => zoomShift(slotX(index) + slotWidth.value / 2, cardWidth.value * zoom.value, geometry.value.width, 0)
 function slotStyle(index: number) {
-  return { width: cardWidth.value + 'px', transform: `translateX(${slotX(index).toFixed(1)}px)`, zIndex: index === activeIndex.value ? 60 : index + 1 }
+  const tile = compact.value ? { height: TILE_EM_HEIGHT * tileEm.value + 'px', fontSize: tileEm.value + 'px' } : {}
+  return { ...tile, width: slotWidth.value + 'px', transform: `translateX(${slotX(index).toFixed(1)}px)`, zIndex: index === activeIndex.value ? 60 : index + 1 }
 }
 function holderStyle(index: number) {
   const middle = (displayed.value.length - 1) / 2
@@ -81,12 +86,14 @@ const notesStyle = computed(() => {
   const index = activeIndex.value
   if (index < 0) return {}
   const zoomed = cardWidth.value * zoom.value
-  const left = g.left + slotX(index) + shiftFor(index) - (zoomed - cardWidth.value) / 2
+  const left = g.left + slotX(index) + shiftFor(index) - (zoomed - slotWidth.value) / 2
   const right = left + zoomed
   const bottom = Math.max(8, window.innerHeight - g.bottom + LIFT_EM * g.em)
   const base = { bottom: bottom + 'px', maxHeight: `calc(100vh - ${bottom + 16}px)`, fontSize: `${Math.max(13, Math.min(16, g.em * 1.05))}px` }
   return g.viewport - right - 14 >= NOTES_WIDTH ? { ...base, left: right + 14 + 'px' } : { ...base, right: g.viewport - left + 14 + 'px' }
 })
+// Little height above the hand (short screens): fold the notes instead of letting them cover the heroes.
+const briefNotes = computed(() => geometry.value.bottom + LIFT_EM * geometry.value.em - geometry.value.dockTop < 340)
 function enter(item: HandCardView) { if (props.outgoing?.instanceId !== item.instanceId) active.value = item.instanceId }
 function leave(item: HandCardView) { if (active.value === item.instanceId) active.value = null }
 function focusOut(item: HandCardView, event: FocusEvent) {
@@ -106,11 +113,11 @@ watch(() => displayed.value.length, () => { if (activeIndex.value < 0) active.va
     </aside>
     <section class="hand-area" aria-label="Карты в руке">
       <p class="hand-hint">{{ displayed.length }} / 10 карт · наведите для полного описания · клавиши 1–9, 0</p>
-      <div ref="track" class="hand-track" :class="{ 'is-overlapped': overlapped }">
+      <div ref="track" class="hand-track" :class="{ 'is-overlapped': overlapped, 'is-compact': compact }">
         <TransitionGroup name="deal">
           <div v-for="(item, index) in displayed" :key="item.instanceId" class="slot" :class="{ 'is-active': index === activeIndex }" :style="slotStyle(index)" @mouseenter="enter(item)" @mouseleave="leave(item)" @focusin="enter(item)" @focusout="focusOut(item, $event)">
             <div class="holder" :style="holderStyle(index)">
-              <HandCard :card="item.card" :instance-id="item.instanceId" :preview="item.preview" :block="block(item)" :index="index" :vis="index === displayed.length - 1 || index === activeIndex ? 1 : visible" :playing="outgoing?.instanceId === item.instanceId" @play="emit('play', $event)" />
+              <HandCard :card="item.card" :instance-id="item.instanceId" :preview="item.preview" :block="block(item)" :index="index" :vis="index === displayed.length - 1 || index === activeIndex ? 1 : visible" :compact="compact" :active="index === activeIndex" :full-shift="index === activeIndex ? shiftFor(index) : 0" :full-scale="zoom" :full-em="geometry.em" :playing="outgoing?.instanceId === item.instanceId" @play="emit('play', $event)" />
             </div>
           </div>
         </TransitionGroup>
@@ -121,7 +128,7 @@ watch(() => displayed.value.length, () => { if (activeIndex.value < 0) active.va
     <Teleport to="body">
       <Transition name="notes">
         <div v-if="activeItem" class="card-notes-pop" :style="notesStyle" aria-hidden="true">
-          <CardNotes :card="activeItem.card" :preview="activeItem.preview" :block="block(activeItem)" :hotkey="String(activeIndex === 9 ? 0 : activeIndex + 1)" />
+          <CardNotes :brief="briefNotes" :card="activeItem.card" :preview="activeItem.preview" :block="block(activeItem)" :hotkey="String(activeIndex === 9 ? 0 : activeIndex + 1)" />
         </div>
       </Transition>
     </Teleport>
@@ -134,8 +141,8 @@ watch(() => displayed.value.length, () => { if (activeIndex.value < 0) active.va
 .hand-track{position:relative;align-self:end;height:calc(var(--card-height) + 4px);margin-bottom:8px;font-size:calc(var(--card-height) / 16.6)}
 .slot{position:absolute;left:0;bottom:0;height:16.6em;transition:transform var(--dur-base) var(--ease-out),opacity var(--dur-base)}
 .holder{width:100%;height:100%;transform-origin:50% 100%;transform:translateY(var(--drop,0)) rotate(var(--rot,0deg));transition:transform var(--dur-base) var(--ease-out)}
-.slot.is-active .holder{transform:translate(var(--shift,0),calc(-1 * var(--lift))) scale(var(--zoom));transition-duration:var(--dur-fast)}
-.slot.is-active .holder :deep(.sc-rim){box-shadow:0 .9em 1.6em #04101299,inset 0 .1em .12em #fff7,inset 0 -.18em .3em #0006}
+.hand-track:not(.is-compact) .slot.is-active .holder{transform:translate(var(--shift,0),calc(-1 * var(--lift))) scale(var(--zoom));transition-duration:var(--dur-fast)}
+.hand-track:not(.is-compact) .slot.is-active .holder :deep(.sc-rim){box-shadow:0 .9em 1.6em #04101299,inset 0 .1em .12em #fff7,inset 0 -.18em .3em #0006}
 .deal-enter-from,.deal-leave-to{opacity:0}
 .deal-enter-from .holder{transform:translateY(5em) scale(.9)}
 .deal-leave-active{transition:opacity .12s}

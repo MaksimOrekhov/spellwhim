@@ -8,13 +8,13 @@ import type { CardBlock } from '../ui/cardDisplay'
 import { classThemeStyle } from '../game/classThemes'
 import CardGlyph from './CardGlyph.vue'
 
-const props = defineProps<{ card: CardDefinition; preview: CardPreview; block?: CardBlock | null; hotkey?: string; mode?: 'play' | 'choose' }>()
+const props = defineProps<{ card: CardDefinition; preview: CardPreview; block?: CardBlock | null; hotkey?: string; mode?: 'play' | 'choose'; brief?: boolean }>()
 const notes = computed(() => cardNotes(props.card, props.preview, props.mode === 'choose' ? 'neutral' : 'board'))
 const footer = computed(() => props.block?.text ?? (props.mode === 'choose' ? 'Нажмите, чтобы взять карту.' : `Нажмите или клавиша ${props.hotkey ?? ''} — разыграть.`))
 </script>
 
 <template>
-  <aside class="notes" :style="classThemeStyle(card.className)">
+  <aside class="notes" :class="{ 'notes--brief': brief }" :style="classThemeStyle(card.className)">
     <header><strong v-if="mode !== 'choose'">{{ notes.title }}</strong><small>{{ notes.subtitle }}</small></header>
     <p class="notes-text">{{ notes.description }}</p>
     <div v-if="notes.damage" class="notes-math notes-math--damage">
@@ -59,6 +59,9 @@ header small{font:var(--fw-bold) .68em/1.2 var(--font-ui);letter-spacing:.1em;te
 .notes-keys dt{display:flex;align-items:center;gap:.4em;font:var(--fw-bold) .82em/1.2 var(--font-ui)}
 .notes-keys dt .glyph{width:1.2em;height:1.2em;color:var(--brass-4)}
 .notes-keys dd{margin:.15em 0 0;font:var(--fw-semibold) .76em/1.3 var(--font-ui);color:var(--parch-ink-soft)}
+/* Short screens: the scroll must not climb over the heroes, so the keyword explanations (also on the enemy portrait) fold to titles. */
+.notes--brief .notes-keys dd,.notes--brief .notes-sub{display:none}
+.notes--brief .notes-keys div{padding:.25em .6em}
 footer{margin-top:.55em;padding-top:.4em;border-top:.08em solid #8a622c88;font:var(--fw-bold) .76em/1.3 var(--font-ui);color:#4f6d2a}
 footer.bad{color:#9a2a1c}
 </style>

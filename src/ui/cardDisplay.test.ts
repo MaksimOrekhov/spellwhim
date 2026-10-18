@@ -3,10 +3,10 @@ import { createSSRApp, h } from 'vue'
 import { renderToString } from 'vue/server-renderer'
 import { createBattle, previewCard } from '../game/battle'
 import { availableDungeonNodes, claimDungeonReward, createCampaignBattle, createDungeonRun, deriveDungeonSeed, dungeonEncounter, dungeonNode, dungeonRewardOptions, enterDungeonNode, resolveDungeonBattle } from '../game/campaign'
-import { cardDefinition, cards, encounters, MAX_HAND_SIZE } from '../game/types'
+import { cardDefinition, cards, encounters } from '../game/types'
 import type { BattleState, CardDefinition, CardId } from '../game/types'
 import { cardFace, cardNotes, damageParts, neutralPreview, ruleLines, spokenSummary, statChips } from './cardDisplay'
-import { fanLayout, handOrder, zoomFactor, zoomShift } from './handLayout'
+import { COMPACT_BELOW, fanLayout, handMode, handOrder, zoomFactor, zoomShift } from './handLayout'
 import SpellCard from '../components/SpellCard.vue'
 import CardReward from '../components/CardReward.vue'
 
@@ -28,7 +28,8 @@ describe('damage chips mirror the engine preview', () => {
     expect(damageParts(p).map(part => [part.kind, part.amount])).toEqual([['base', 4], ['armor', 2], ['vulnerability', 3]])
     const notes = cardNotes(card('frostbolt'), p)
     expect(notes.damage?.formula).toBe('4 + 2 + 3 = 9')
-    expect(notes.conditions.map(line => line.tone)).toEqual(['on', 'on'])
+    expect(notes.conditions).toEqual([])
+    expect(notes.keywords.map(key => key.name)).toEqual(['Уязвимость'])
   })
 
   it('adds only the bonuses that are active', () => {
@@ -95,7 +96,6 @@ describe('armor, draw, exhaust and keywords', () => {
     expect(chips).toHaveLength(1)
     expect(chips[0]).toMatchObject({ kind: 'draw', value: 1, caption: 'карта' })
     expect(cardNotes(card('thunderbolt'), preview('thunderbolt', board())).draw).toBe(1)
-    expect(cardNotes(card('arcane-insight'), preview('arcane-insight', board())).keywords.some(key => key.glyph === 'draw' && key.text.includes(String(MAX_HAND_SIZE)))).toBe(true)
   })
 
   it('marks exhaust and explains it', () => {
@@ -224,5 +224,20 @@ describe('hand layout', () => {
     expect(zoomFactor(712, 436, 224, 7)).toBeLessThan(1.32)
     expect(zoomFactor(712, 436, 224, 7)).toBeGreaterThanOrEqual(1.1)
     expect(zoomFactor(900, 100, 224, 7)).toBe(1.32)
+  })
+
+  it('switches to non-overlapping tiles when a fan would hide too much, and every tile stays reachable', () => {
+    const wide = handMode(10, 1380, 210, 9)
+    const narrow = handMode(10, 950, 162, 7)
+    expect(narrow.compact).toBe(true)
+    expect(narrow.layout.overlapped).toBe(false)
+    expect(narrow.slotWidth).toBeLessThanOrEqual(162 * 0.8)
+    for (let i = 1; i < 10; i += 1) expect(narrow.layout.x(i) - narrow.layout.x(i - 1)).toBeGreaterThanOrEqual(narrow.slotWidth)
+    expect(narrow.layout.x(9) + narrow.slotWidth).toBeLessThanOrEqual(950 + 0.001)
+    expect(narrow.slotWidth).toBeGreaterThan(80)
+    // a roomy row keeps full cards; the rule is the visible fraction of the fan
+    expect(handMode(3, 950, 162, 7).compact).toBe(false)
+    expect(wide.compact).toBe(fanLayout(10, 1380, 210, 9).visible < COMPACT_BELOW)
+    expect(handMode(0, 950, 162, 7).compact).toBe(false)
   })
 })

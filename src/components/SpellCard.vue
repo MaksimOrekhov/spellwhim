@@ -115,7 +115,7 @@ const style = computed(() => ({ ...classThemeStyle(props.card.className), '--vis
 .sc-class{display:flex;align-items:center;gap:.35em;font:800 .64em/1 var(--font-ui);letter-spacing:var(--ls-caps);color:color-mix(in srgb,var(--class-primary) 70%,var(--parch-ink))}
 .sc-emblem{display:grid;place-items:center;width:1.9em;height:1.9em;padding:.28em;border-radius:50%;background:var(--class-surface);border:.1em solid var(--class-accent)}
 .sc-emblem img{width:100%;height:100%;display:block}
-.sc-cost{position:absolute;z-index:3;left:-.45em;top:-.45em;display:grid;place-items:center;width:2.7em;height:2.7em;border-radius:var(--shape-medallion);background:var(--mat-gem-mana);border:.14em solid var(--brass-1);box-shadow:0 .2em .4em #000a,inset 0 .1em .15em #fff9,inset 0 -.2em .3em #0b2a6a88,var(--glow-mana);color:#fff}
+.sc-cost{position:absolute;z-index:3;left:-.45em;top:-.45em;display:grid;place-items:center;width:2.7em;height:2.7em;border-radius:var(--shape-medallion);background:var(--mat-gem-mana);border:.14em solid var(--brass-1);box-shadow:0 .2em .4em #000a,inset 0 .1em .15em #fff9,inset 0 -.2em .3em #0b2a6a88;color:#fff}
 .sc-cost b{font:700 1.6em/1 var(--font-num);text-shadow:0 .06em .1em #0b2a6a}
 .is-locked .sc-rim,.is-locked .sc-body{filter:saturate(.45) brightness(.78)}
 .is-locked .sc-cost{background:linear-gradient(150deg,#8a7f86,#4b4249);box-shadow:0 .2em .4em #000a,inset 0 .1em .15em #fff6;border-color:var(--c-health)}

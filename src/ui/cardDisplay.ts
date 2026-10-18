@@ -1,7 +1,7 @@
 // Presentation model for a card: turns a CardDefinition plus the engine's CardPreview into glanceable chips,
 // short rule lines and the detailed notes shown on hover. It only presents numbers the engine already computed
 // (previewCard); it never re-implements damage rules. New cards need effects/tags in types.ts, not UI code.
-import { encounters, MAX_HAND_SIZE, statusDefinitions } from '../game/types'
+import { encounters, statusDefinitions } from '../game/types'
 import type { BattleState, CardDefinition, CardEffect, CardPreview, HeroId } from '../game/types'
 import { createBattle, previewCard } from '../game/battle'
 
@@ -142,10 +142,11 @@ export function cardNotes(card: CardDefinition, preview: CardPreview, context: '
   const armor = context === 'neutral'
     ? card.effects.flatMap(effect => effect.type === 'armor' ? [{ hero: effect.target, name: effect.target === 'threatened' ? 'цели врага' : effect.target === 'partner' ? 'напарнику' : heroDative[effect.target], amount: effect.amount }] : [])
     : (['warrior', 'mage'] as const).map(hero => ({ hero, name: heroName[hero], amount: preview.armor[hero] })).filter(item => item.amount > 0)
-  if (armor.length && context === 'board') keywords.push({ glyph: 'armor', name: 'Броня', text: 'Поглощает урон и исчезает после следующей атаки по герою. «Цель» — герой, которого атакует противник.' })
+  if (context === 'board' && card.effects.some(effect => effect.type === 'armor' && effect.target === 'threatened')) keywords.push({ glyph: 'armor', name: 'Броня', text: 'Поглощает урон и исчезает после следующей атаки по герою. «Цель» — герой, которого атакует противник.' })
   if (card.exhaust) keywords.push({ glyph: 'exhaust', name: 'Выбывает', text: 'Эта копия не вернётся в колоду до конца боя.' })
-  if (preview.draw > 0 && context === 'board') keywords.push({ glyph: 'draw', name: 'Добор', text: `Берёт карты из колоды; в руке не больше ${MAX_HAND_SIZE}, лишние остаются в колоде.` })
 
+  // The sum above already names every active bonus, so repeating them as sentences only makes the notes taller.
+  const shownConditions = parts.length > 1 ? conditions.filter(line => line.tone !== 'on' || line.glyph === 'damage') : conditions
   return {
     title: card.name,
     subtitle: `${card.className === 'warrior' ? 'Воин' : 'Маг'} · ${kindLabel[card.kind]} · ${card.cost} ${plural(card.cost, 'мана', 'маны', 'маны')}`,
@@ -153,7 +154,7 @@ export function cardNotes(card: CardDefinition, preview: CardPreview, context: '
     damage: preview.damage > 0
       ? { total: preview.damage, parts, formula: parts.length > 1 ? `${parts.map(part => part.amount).join(' + ')} = ${preview.damage}` : String(preview.damage), armorDamage: preview.armorDamage, healthDamage: preview.healthDamage }
       : null,
-    armor, draw: preview.draw, conditions, keywords,
+    armor, draw: preview.draw, conditions: shownConditions, keywords,
   }
 }
 
