@@ -2,7 +2,8 @@ import { cardDefinition, encounters, startingDeck } from './types'
 import { drawForTurn, gameEconomy, manaForTurn } from './economy'
 import type { EconomyConfig } from './economy'
 import { drawCards, shuffle } from './deck'
-import type { BattleState, CardEffect, CardDefinition, CardId, CardPreview, EncounterDefinition, EnemyAction, EnemyHit, HeroId, PendingPlay, StatusId } from './types'
+import { artifactDefinition } from './artifacts'
+import type { ArtifactInstance, BattleArtifactState, BattleState, CardEffect, CardDefinition, CardId, CardPreview, EncounterDefinition, EnemyAction, EnemyHit, HeroId, PendingArtifactTrigger, PendingPlay, StatusId } from './types'
 
 export interface BattleOptions {
   deck?: readonly CardId[]
@@ -11,6 +12,7 @@ export interface BattleOptions {
   openingHandSize?: number
   /** Mana curve and draw schedule; standard model B when omitted. Balance Lab passes model A explicitly. */
   economy?: EconomyConfig
+  artifacts?: readonly ArtifactInstance[]
 }
 const ENEMY_ARMOR_CAP = 8
 
@@ -32,11 +34,12 @@ export function createBattle(encounter: EncounterDefinition = encounters[1]!, pr
   const heroes = previousHeroes
     ? { warrior: { ...previousHeroes.warrior, armor: 0 }, mage: { ...previousHeroes.mage, armor: 0 } }
     : {
-      warrior: { id: 'warrior' as const, name: 'Вариан Ринн', title: 'Король Штормграда', health: 25, maxHealth: 25, armor: 0, icon: '⚔' },
-      mage: { id: 'mage' as const, name: 'Джайна Праудмур', title: 'Верховная волшебница Кирин-Тора', health: 18, maxHealth: 18, armor: 0, icon: '✦' },
+      warrior: { id: 'warrior' as const, characterId: 'varian', classId: 'warrior' as const, partySlot: 'first' as const, instanceId: battleId + '/hero/first', name: 'Вариан Ринн', title: 'Король Штормграда', health: 25, maxHealth: 25, armor: 0, icon: '⚔' },
+      mage: { id: 'mage' as const, characterId: 'jaina', classId: 'mage' as const, partySlot: 'second' as const, instanceId: battleId + '/hero/second', name: 'Джайна Праудмур', title: 'Верховная волшебница Кирин-Тора', health: 18, maxHealth: 18, armor: 0, icon: '✦' },
     }
+  const artifacts: BattleArtifactState[] = (options.artifacts ?? []).map(item => ({ ...item, usedThisBattle: false, lastTriggeredTurn: null, armedThisTurn: false }))
   const state: BattleState = {
-    battleId, seed, rngState: seed, nextActionId: 1, heroes,
+    battleId, seed, rngState: seed, nextActionId: 1, heroes, artifacts, artifactNotices: [],
     enemy: { name: encounter.name, title: encounter.title, health: encounter.maxHealth, maxHealth: encounter.maxHealth, armor: 0, vulnerable: false, appearance: encounter.appearance, phase: 1, nextActionPhase: 1, behavior: encounter.behavior, behaviorIndex: 1, nextAction: encounter.behavior.phase1[0]!, focus: initialFocus(encounter.behavior.phase1[0]!) },
     hand: [], blockedDraws: 0, drawPile: [], discardPile: [], exhausted: [], pending: null,
     economy, mana: manaForTurn(economy, 1), maxMana: manaForTurn(economy, 1), turn: 1, result: null,
@@ -56,6 +59,16 @@ function hitFocus(action: EnemyAction, fallback: HeroId): HeroId {
 function schedule(state: BattleState): EnemyAction[] { return state.enemy.phase === 2 ? state.enemy.behavior.phase2 ?? state.enemy.behavior.phase1 : state.enemy.behavior.phase1 }
 function initialFocus(action: EnemyAction): HeroId { return hitFocus(action, 'warrior') }
 
+function heroForArtifact(state: BattleState, artifact: BattleArtifactState): HeroId | undefined {
+  return (Object.keys(state.heroes) as HeroId[]).find(id => state.heroes[id].instanceId === artifact.ownerInstanceId)
+}
+
+function markArtifactUsed(state: BattleState, artifact: BattleArtifactState, reason: string, perTurn = false): void {
+  if (perTurn) artifact.lastTriggeredTurn = state.turn
+  else artifact.usedThisBattle = true
+  state.artifactNotices.push(`${artifactDefinition(artifact.definitionId).name}: ${reason}`)
+}
+
 export function hasStatus(state: BattleState, status: StatusId): boolean {
   return status === 'vulnerability' && !state.result && state.enemy.vulnerable
 }
@@ -67,7 +80,9 @@ function buildPlan(state: BattleState, card: CardDefinition): Omit<PendingPlay, 
   const baseDamage = allEffects.reduce((sum, effect) => sum + (effect.type === 'damage' ? effect.amount : 0), 0)
   const vulnerabilityBonus = state.enemy.vulnerable && baseDamage > 0 ? 3 : 0
   const armorBonus = card.damageBonus?.condition === 'hero-has-armor' && state.heroes[card.damageBonus.hero].armor > 0 && baseDamage > 0 ? card.damageBonus.amount : 0
-  const damage = baseDamage + vulnerabilityBonus + armorBonus
+  const spool = state.artifacts.find(artifact => artifact.definitionId === 'tension-spool' && artifact.armedThisTurn && artifact.lastTriggeredTurn !== state.turn && baseDamage > 0)
+  const artifactDamage = spool ? 2 : 0
+  const damage = baseDamage + vulnerabilityBonus + armorBonus + artifactDamage
   const armorDamage = Math.min(state.enemy.armor, damage)
   const healthDamage = Math.min(state.enemy.health, Math.max(0, damage - armorDamage))
   const effects: CardEffect[] = allEffects.filter(effect => effect.type !== 'damage')
@@ -79,14 +94,37 @@ function buildPlan(state: BattleState, card: CardDefinition): Omit<PendingPlay, 
     const target = armorTarget(effect.target, state.enemy.focus)
     armor[target] += effect.amount
   }
+  const artifactArmor: Record<HeroId, number> = { warrior: 0, mage: 0 }
+  const artifactTriggers: PendingArtifactTrigger[] = []
+  if (spool) {
+    const owner = heroForArtifact(state, spool)
+    if (owner) artifactTriggers.push({ artifactInstanceId: spool.instanceId, reason: 'Шкив усилил первую атакующую карту хода', kind: 'turn-damage', owner, amount: 2 })
+  }
+  for (const artifact of state.artifacts) {
+    const owner = heroForArtifact(state, artifact)
+    if (!owner) continue
+    if (artifact.definitionId === 'weakpoint-lens' && vulnerabilityBonus > 0 && state.enemy.health - healthDamage > 0 && !artifact.usedThisBattle) {
+      artifactArmor[owner] += 2
+      artifactTriggers.push({ artifactInstanceId: artifact.instanceId, reason: 'Уязвимость была израсходована', kind: 'armor', owner, amount: 2, target: owner })
+    }
+    if (artifact.definitionId === 'double-pulley' && armor[owner] > 0 && artifact.lastTriggeredTurn !== state.turn) {
+      const partner = partnerOf(owner)
+      artifactArmor[partner] += 2
+      artifactTriggers.push({ artifactInstanceId: artifact.instanceId, reason: 'Карта укрепила владельца', kind: 'armor', owner, amount: 2, target: partner })
+    }
+  }
+  armor.warrior += artifactArmor.warrior
+  armor.mage += artifactArmor.mage
   return {
     effects,
     consumeVulnerability: vulnerabilityBonus > 0,
+    artifactTriggers,
     preview: {
-      damage, armorDamage, healthDamage, armor,
-      bonusDamage: vulnerabilityBonus + armorBonus, vulnerabilityBonus, armorBonus,
+      damage, armorDamage, healthDamage, armor, artifactDamage, artifactArmor,
+      bonusDamage: vulnerabilityBonus + armorBonus + artifactDamage, vulnerabilityBonus, armorBonus,
       draw: effects.reduce((sum, effect) => sum + (effect.type === 'draw' ? effect.amount : 0), 0),
-      bonuses: [vulnerabilityBonus ? 'Уязвимость' : '', armorBonus ? 'Броня Джайны' : ''].filter(Boolean),
+      bonuses: [vulnerabilityBonus ? 'Уязвимость' : '', armorBonus ? 'Броня Джайны' : '', artifactDamage ? 'Натяжной шкив' : ''].filter(Boolean),
+      artifactBonuses: artifactTriggers.map(trigger => trigger.reason),
       appliedStatuses: effects.flatMap(effect => effect.type === 'status' ? [effect.status] : []),
     },
   }
@@ -97,6 +135,7 @@ export function previewCard(state: BattleState, card: CardDefinition): CardPrevi
 }
 
 export function startCardPlay(state: BattleState, instanceId: string): PlayStartResult {
+  state.artifactNotices = []
   updateResult(state)
   if (state.result) return { ok: false, reason: 'finished' }
   if (state.pending) return { ok: false, reason: 'busy' }
@@ -129,6 +168,18 @@ export function resolveCardPlay(state: BattleState, actionId: string): PlayResul
         const healthDamage = Math.min(state.enemy.health, effect.amount - absorbed)
         damageDealt += healthDamage
         state.enemy.health = Math.max(0, state.enemy.health - (effect.amount - absorbed))
+        for (const trigger of pending.artifactTriggers.filter(item => item.kind === 'turn-damage')) {
+          const artifact = state.artifacts.find(item => item.instanceId === trigger.artifactInstanceId)
+          if (artifact && artifact.lastTriggeredTurn !== state.turn) markArtifactUsed(state, artifact, trigger.reason, true)
+        }
+        if (pending.consumeVulnerability && state.enemy.health > 0) {
+          for (const trigger of pending.artifactTriggers.filter(item => item.kind === 'armor' && item.reason === 'Уязвимость была израсходована')) {
+            const artifact = state.artifacts.find(item => item.instanceId === trigger.artifactInstanceId)
+            if (!artifact || artifact.usedThisBattle) continue
+            state.heroes[trigger.owner].armor += trigger.amount
+            markArtifactUsed(state, artifact, trigger.reason)
+          }
+        }
         if (state.enemy.phase === 1 && state.enemy.behavior.phase2 && state.enemy.health * 2 <= state.enemy.maxHealth) {
           state.enemy.phase = 2
           state.enemy.behaviorIndex = 0
@@ -136,6 +187,12 @@ export function resolveCardPlay(state: BattleState, actionId: string): PlayResul
       } else if (effect.type === 'armor') {
         const target = armorTarget(effect.target, state.enemy.focus)
         state.heroes[target].armor += effect.amount
+        for (const trigger of pending.artifactTriggers.filter(item => item.kind === 'armor' && item.reason === 'Карта укрепила владельца' && item.owner === target)) {
+          const artifact = state.artifacts.find(item => item.instanceId === trigger.artifactInstanceId)
+          if (!artifact || artifact.lastTriggeredTurn === state.turn) continue
+          state.heroes[trigger.target!].armor += trigger.amount
+          markArtifactUsed(state, artifact, trigger.reason, true)
+        }
       } else if (effect.type === 'draw') {
         drawn += drawCards(state, effect.amount).length
       } else {
@@ -168,6 +225,7 @@ export interface EnemyTargetForecast {
   absorbed: number
   healthLoss: number
   lethal: boolean
+  artifactReduction: number
 }
 
 export interface EnemyActionForecast {
@@ -184,10 +242,12 @@ function forecastHit(state: BattleState, hit: EnemyHit): EnemyTargetForecast[] {
   // Every AoE hit reads the same pre-hit armor/health snapshot.
   return targets.map(target => {
   const hero = state.heroes[target]
-  const attack = hit.damage
+  const wedge = state.artifacts.find(artifact => artifact.definitionId === 'reliable-wedge' && !artifact.usedThisBattle && heroForArtifact(state, artifact) === target)
+  const artifactReduction = wedge ? Math.min(2, hit.damage) : 0
+  const attack = hit.damage - artifactReduction
   const absorbed = Math.min(attack, hero.armor)
   const remaining = Math.max(0, attack - absorbed)
-  return { target, attack, absorbed, healthLoss: Math.min(hero.health, remaining), lethal: remaining >= hero.health }
+  return { target, attack, absorbed, healthLoss: Math.min(hero.health, remaining), lethal: remaining >= hero.health, artifactReduction }
   })
 }
 
@@ -207,10 +267,11 @@ export interface EnemyAttackForecast extends EnemyTargetForecast { action?: Enem
 export function forecastEnemyAttack(state: BattleState): EnemyAttackForecast {
   const forecast = forecastEnemyAction(state)
   const item = forecast.targets[0] ?? forecast.futureTargets[0] ?? { target: state.enemy.focus, attack: 0, absorbed: 0, healthLoss: 0, lethal: false }
-  return { ...item, ...forecast }
+  return { artifactReduction: 0, ...item, ...forecast }
 }
 
 export function endTurn(state: BattleState): boolean {
+  state.artifactNotices = []
   updateResult(state)
   if (state.result || state.pending) return false
   const forecast = forecastEnemyAction(state)
@@ -218,16 +279,32 @@ export function endTurn(state: BattleState): boolean {
   if (action.kind === 'defend' || action.kind === 'recover') state.enemy.armor = Math.min(ENEMY_ARMOR_CAP, state.enemy.armor + action.armor)
   for (const incoming of forecast.targets) {
     const hero = state.heroes[incoming.target]
+    if (incoming.artifactReduction > 0) {
+      const wedge = state.artifacts.find(artifact => artifact.definitionId === 'reliable-wedge' && !artifact.usedThisBattle && heroForArtifact(state, artifact) === incoming.target)
+      if (wedge) markArtifactUsed(state, wedge, `удар по владельцу ослаблен на ${incoming.artifactReduction}`)
+    }
     hero.health -= incoming.healthLoss
     // Only hit heroes consume armor; a partner shield remains available until that hero is hit.
     hero.armor = 0
   }
   updateResult(state)
   if (state.result) return true
+  if (action.kind === 'prepare' && action.prepared.kind === 'attack') {
+    for (const artifact of state.artifacts) {
+      const owner = heroForArtifact(state, artifact)
+      if (artifact.definitionId !== 'shift-whistle' || !owner || artifact.usedThisBattle || action.prepared.target !== owner) continue
+      state.heroes[owner].armor += 3
+      markArtifactUsed(state, artifact, 'враг готовит удар по владельцу')
+    }
+  }
   state.turn += 1
   // The curve grows at the start of the turn and the pool is refilled completely.
   state.maxMana = manaForTurn(state.economy, state.turn)
   state.mana = state.maxMana
+  for (const artifact of state.artifacts) {
+    const owner = heroForArtifact(state, artifact)
+    artifact.armedThisTurn = artifact.definitionId === 'tension-spool' && !!owner && state.heroes[owner].armor > 0
+  }
   if (action.kind === 'prepare') {
     state.enemy.nextAction = action.prepared
     state.enemy.focus = hitFocus(action.prepared, state.enemy.focus)

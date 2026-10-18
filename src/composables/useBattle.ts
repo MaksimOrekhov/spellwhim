@@ -3,6 +3,7 @@ import { endTurn, previewCard, resolveCardPlay, startCardPlay } from '../game/ba
 import { addCampaignReward, createCampaignBattle } from '../game/campaign'
 import { gameEconomy } from '../game/economy'
 import type { EconomyConfig } from '../game/economy'
+import type { ArtifactInstance } from '../game/types'
 import { cardDefinition, startingDeck } from '../game/types'
 import type { BattleState, CardDefinition, CardId, CardInstance, CardPreview, EncounterDefinition } from '../game/types'
 
@@ -59,7 +60,9 @@ export function useBattle(options: { seed?: number; deck?: readonly CardId[]; ec
     const result = resolveCardPlay(next, actionId)
     if (!result.ok) return
     current.value = next
-    log.value = result.outcome.bonuses.length ? result.outcome.bonuses.join(' · ') + ': ' + result.outcome.damage + ' урона.' : 'Карта разыграна.'
+    log.value = next.artifactNotices.length
+      ? next.artifactNotices.join(' · ')
+      : result.outcome.bonuses.length ? result.outcome.bonuses.join(' · ') + ': ' + result.outcome.damage + ' урона.' : 'Карта разыграна.'
     return result
   }
 
@@ -70,12 +73,13 @@ export function useBattle(options: { seed?: number; deck?: readonly CardId[]; ec
     log.value = next.result === 'defeat' ? 'Отряд пал…' : next.result === 'victory' ? 'Противник повержен.' : 'Ваш ход. Намерение: ' + next.enemy.nextAction.name + '.'
   }
 
-  function startBattle(encounter: EncounterDefinition, heroes?: BattleState['heroes'], battleSeed?: number, nodeId?: string): void {
+  function startBattle(encounter: EncounterDefinition, heroes?: BattleState['heroes'], battleSeed?: number, nodeId?: string, artifacts: readonly ArtifactInstance[] = []): void {
     const sequence = battleSequence++
     current.value = createCampaignBattle({
       encounter, heroes: heroes ?? current.value.heroes, deck: ownedDeck.value,
       seed: battleSeed ?? (seed + sequence) >>> 0, economy,
       battleId: 'run/' + seed + '/generation/' + runGeneration + '/battle/' + (nodeId ?? sequence),
+      artifacts,
     })
     log.value = encounter.name + ' преграждает путь.'
   }

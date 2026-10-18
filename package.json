@@ -13,6 +13,7 @@
     "dungeon:routes": "node scripts/run-dungeon-routes.mjs",
     "balance": "node scripts/run-balance.mjs",
     "balance:smoke": "node scripts/run-balance.mjs --runs 5 --seed 42",
+    "artifacts:lab": "node scripts/run-artifact-lab.mjs",
     "economy": "node scripts/run-economy.mjs"
   },
   "dependencies": {

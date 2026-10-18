@@ -4,12 +4,13 @@ import BattleBoard from './components/BattleBoard.vue'
 import BattleHand from './components/BattleHand.vue'
 import CampaignMap from './components/CampaignMap.vue'
 import CardReward from './components/CardReward.vue'
+import EliteReward from './components/EliteReward.vue'
 import RestSite from './components/RestSite.vue'
 import RunComplete from './components/RunComplete.vue'
 import { useBattle } from './composables/useBattle'
 import { useBattleControls } from './composables/useBattleControls'
 import { useBattleAnimation } from './composables/useBattleAnimation'
-import { availableDungeonNodes, claimDungeonReward, createDungeonRun, deriveDungeonSeed, dungeonEncounter, dungeonNode, dungeonRewardOptions, enterDungeonNode, resolveDungeonBattle, resolveDungeonRest } from './game/campaign'
+import { availableDungeonNodes, claimDungeonArtifact, claimDungeonReward, createDungeonRun, deriveDungeonSeed, dungeonArtifactOptions, dungeonEncounter, dungeonNode, dungeonRewardOptions, enterDungeonNode, resolveDungeonBattle, resolveDungeonRest } from './game/campaign'
 import { drawForTurn, economyFromSearch, gameEconomy, manaForTurn } from './game/economy'
 import type { CardDefinition, HeroId } from './game/types'
 
@@ -52,7 +53,7 @@ function enterNode(nodeId: string) {
   cancel()
   const encounter = dungeonEncounter(node, economy)
   const battleSeed = deriveDungeonSeed(nextRun.seed, `battle:${node.id}`)
-  startBattle(encounter, nextRun.heroes, battleSeed, node.id)
+  startBattle(encounter, nextRun.heroes, battleSeed, node.id, nextRun.artifacts)
   phase.value = 'battle'
 }
 
@@ -66,8 +67,16 @@ function onBattleContinue() {
 }
 
 function chooseReward(card: CardDefinition) {
+  if (phase.value !== 'reward' || !run.value.pendingReward) return
   run.value = claimDungeonReward(run.value, card)
   addCard(card)
+  selectedNodeId.value = null
+  phase.value = 'map'
+}
+
+function chooseArtifact(artifactId: Parameters<typeof claimDungeonArtifact>[1], ownerInstanceId: string, replaceInstanceId?: string) {
+  if (phase.value !== 'reward' || !run.value.pendingReward) return
+  run.value = claimDungeonArtifact(run.value, artifactId, ownerInstanceId, replaceInstanceId)
   selectedNodeId.value = null
   phase.value = 'map'
 }
@@ -93,11 +102,12 @@ function restartRun() {
     <div class="game-wrap">
       <p v-if="experimental" class="economy-badge" :title="economy.label">Режим сравнения · модель {{ economy.manaCurve }} · {{ economy.label }}</p>
       <CampaignMap v-if="phase === 'map'" :map="run.map" :run="run" @enter="enterNode" @restart="restartRun" />
-      <CardReward v-else-if="phase === 'reward'" :options="rewardOptions" :encounter-name="state.enemy.name" :elite="run.pendingReward?.elite ?? false" @choose="chooseReward" />
+      <EliteReward v-else-if="phase === 'reward' && run.pendingReward?.elite" :options="rewardOptions" :artifacts="dungeonArtifactOptions(run)" :heroes="run.heroes" :owned-artifacts="run.artifacts" :encounter-name="state.enemy.name" @choose-card="chooseReward" @choose-artifact="chooseArtifact" />
+      <CardReward v-else-if="phase === 'reward'" :options="rewardOptions" :encounter-name="state.enemy.name" @choose="chooseReward" />
       <RestSite v-else-if="phase === 'rest'" :heroes="run.heroes" :heal-amount="selectedNodeId ? dungeonNode(run.map, selectedNodeId)?.healAmount ?? 6 : 6" @choose="chooseRestTarget" />
       <RunComplete v-else-if="phase === 'complete'" :result="run.status === 'defeat' ? 'defeat' : 'victory'" @restart="restartRun" />
       <template v-else>
-        <BattleBoard :state="state" :animation="animation" :phase="battlePhase" :continue-label="dungeonNode(run.map, selectedNodeId ?? '')?.type === 'final' ? 'Завершить поход' : 'Выбрать награду'" @impact="impact" @end-turn="onEndTurn" @continue="onBattleContinue" />
+        <BattleBoard :state="state" :animation="animation" :phase="battlePhase" :artifact-notices="state.artifactNotices" :continue-label="dungeonNode(run.map, selectedNodeId ?? '')?.type === 'final' ? 'Завершить поход' : 'Выбрать награду'" @impact="impact" @end-turn="onEndTurn" @continue="onBattleContinue" />
         <BattleHand v-if="!isOver" :cards="cards" :outgoing="pendingCard" :outgoing-index="state.pending?.handIndex ?? 0" :draw-count="drawCount" :discard-count="discardCount" :exhausted-count="state.exhausted.length" :phase="battlePhase" :mana="state.mana" :max-mana="state.maxMana" :next-mana="manaForTurn(state.economy, state.turn + 1)" :next-draw="drawForTurn(state.economy, state.turn + 1)" :draw-boost-from="state.economy.drawSchedule.boost?.fromTurn" :draw-boost-amount="state.economy.drawSchedule.boost?.amount" @play="playCard" @end-turn="onEndTurn" />
       </template>
     </div>

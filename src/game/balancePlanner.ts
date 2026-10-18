@@ -75,6 +75,8 @@ export function cloneBattleState(state: BattleState): BattleState {
   return {
     ...state,
     heroes: { warrior: { ...state.heroes.warrior }, mage: { ...state.heroes.mage } },
+    artifacts: state.artifacts.map(artifact => ({ ...artifact })),
+    artifactNotices: [...state.artifactNotices],
     enemy: { ...state.enemy },
     economy: cloneEconomy(state.economy),
     hand: [...state.hand], drawPile: [...state.drawPile], discardPile: [...state.discardPile], exhausted: [...state.exhausted],
@@ -99,6 +101,13 @@ function hashText(text: string): number {
   return hash
 }
 
+function visibleArtifactState(state: BattleState): string {
+  return state.artifacts.map(artifact => {
+    const owner = Object.values(state.heroes).find(hero => hero.instanceId === artifact.ownerInstanceId)
+    return `${artifact.definitionId}:${owner?.partySlot ?? 'missing'}:${artifact.usedThisBattle}:${artifact.lastTriggeredTurn}:${artifact.armedThisTurn}`
+  }).sort().join(',')
+}
+
 /**
  * A seed computed only from what the player can see: turn, mana, the multiset of cards in each zone, hero and enemy
  * health/armor, statuses and the announced enemy action. Equivalent situations always give the same value, whatever the
@@ -109,6 +118,7 @@ export function observableSeed(state: BattleState, salt = 0): number {
   const text = [
     state.turn, state.mana, state.maxMana, zone(state.hand), zone(state.drawPile), zone(state.discardPile), zone(state.exhausted), state.enemy.vulnerable,
     state.heroes.warrior.health, state.heroes.warrior.armor, state.heroes.mage.health, state.heroes.mage.armor,
+    ...(state.artifacts.length ? [visibleArtifactState(state)] : []),
     state.enemy.health, state.enemy.armor, state.enemy.nextAction.name,
   ].join('|')
   return mix(hashText(text), salt >>> 0)
@@ -133,6 +143,7 @@ function digest(state: BattleState): string {
   return [
     state.mana, [...state.hand].map(card => card.definitionId).sort().join(','), state.enemy.vulnerable, state.enemy.health, state.enemy.armor,
     state.heroes.warrior.armor, state.heroes.warrior.health, state.heroes.mage.armor, state.heroes.mage.health,
+    ...(state.artifacts.length ? [visibleArtifactState(state)] : []),
     ids(state.drawPile), [...state.exhausted].map(card => card.definitionId).sort().join(','), state.rngState,
   ].join('|')
 }

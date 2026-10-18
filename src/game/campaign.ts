@@ -1,10 +1,11 @@
 import { createBattle } from './battle'
+import { artifactDefinitions } from './artifacts'
 import { cards, startingDeck } from './types'
 import { economyEncounters, gameEconomy } from './economy'
 import { dungeonEncounterById, eliteEncountersForLayer, encounterPoolForLayer, normalEncounterCatalog } from './encountersV09'
 import type { EconomyConfig } from './economy'
 import { shuffle } from './deck'
-import type { BattleState, CardDefinition, CardId, EncounterDefinition, Hero, HeroId } from './types'
+import type { ArtifactDefinition, ArtifactId, ArtifactInstance, BattleState, CardDefinition, CardId, EncounterDefinition, Hero, HeroId } from './types'
 
 export interface CampaignBattleOptions {
   encounter?: EncounterDefinition
@@ -13,6 +14,7 @@ export interface CampaignBattleOptions {
   seed?: number
   battleId?: string
   economy?: EconomyConfig
+  artifacts?: readonly ArtifactInstance[]
 }
 
 /** Shared campaign rules used by the playable app and the headless balance lab. */
@@ -23,6 +25,7 @@ export function createCampaignBattle(options: CampaignBattleOptions = {}): Battl
     seed: options.seed,
     battleId: options.battleId,
     economy,
+    artifacts: options.artifacts,
   })
 }
 
@@ -101,9 +104,13 @@ export type DungeonRunStatus = 'active' | 'victory' | 'defeat'
 
 export interface DungeonRewardOffer {
   nodeId: string
+  /** Independent named seeds keep reward generation away from combat and deck RNG. */
   seed: number
+  artifactSeed: number
   count: number
   elite: boolean
+  cardIds: CardId[]
+  artifactIds: ArtifactId[]
 }
 
 export interface DungeonRunState {
@@ -115,6 +122,7 @@ export interface DungeonRunState {
   completedNodeIds: string[]
   deck: CardId[]
   heroes: BattleState['heroes']
+  artifacts: ArtifactInstance[]
   status: DungeonRunStatus
   pendingReward: DungeonRewardOffer | null
 }
@@ -235,7 +243,7 @@ export function createDungeonRun(seed: number, economy: EconomyConfig = gameEcon
   const preview = createCampaignBattle({ seed: deriveDungeonSeed(runSeed, 'starting-heroes'), economy })
   return {
     seed: runSeed, mapSeed, map: createDungeonMap(mapSeed, economy), currentNodeId: null,
-    visitedNodeIds: [], completedNodeIds: [], deck: [...deck],
+    visitedNodeIds: [], completedNodeIds: [], deck: [...deck], artifacts: [],
     heroes: { warrior: { ...preview.heroes.warrior }, mage: { ...preview.heroes.mage } },
     status: 'active', pendingReward: null,
   }
@@ -275,25 +283,58 @@ export function resolveDungeonBattle(run: DungeonRunState, battle: BattleState):
   if (current.type === 'final') return { ...base, status: 'victory' }
   return {
     ...base,
-    pendingReward: {
-      nodeId: current.id,
-      seed: deriveDungeonSeed(run.seed, `reward:${current.id}`),
-      count: current.type === 'elite' ? ELITE_REWARD_CHOICES : NORMAL_REWARD_CHOICES,
-      elite: current.type === 'elite',
-    },
+    pendingReward: createDungeonRewardOffer(run, current),
+  }
+}
+
+function seededOffer<T>(seed: number, pool: readonly T[], count: number): T[] {
+  return shuffle({ rngState: seed >>> 0 }, pool).slice(0, count)
+}
+
+function createDungeonRewardOffer(run: DungeonRunState, node: DungeonMapNode): DungeonRewardOffer {
+  const elite = node.type === 'elite'
+  const seed = deriveDungeonSeed(run.seed, `reward:${node.id}`)
+  const artifactSeed = deriveDungeonSeed(run.seed, `artifact-reward:${node.id}`)
+  const count = elite ? ELITE_REWARD_CHOICES : NORMAL_REWARD_CHOICES
+  const artifactPool = elite ? artifactDefinitions.filter(definition => !run.artifacts.some(owned => owned.definitionId === definition.id)) : []
+  return {
+    nodeId: node.id, seed, artifactSeed, count, elite,
+    cardIds: seededOffer(seed, campaignRewards(), count).map(card => card.id),
+    artifactIds: seededOffer(artifactSeed, artifactPool, Math.min(3, artifactPool.length)).map(item => item.id),
   }
 }
 
 export function dungeonRewardOptions(run: DungeonRunState): CardDefinition[] {
   const offer = run.pendingReward
   if (!offer) return []
-  const random = { rngState: offer.seed >>> 0 }
-  return shuffle(random, campaignRewards()).slice(0, offer.count)
+  return offer.cardIds.map(id => campaignRewards().find(card => card.id === id)).filter((card): card is CardDefinition => !!card)
+}
+
+export function dungeonArtifactOptions(run: DungeonRunState): ArtifactDefinition[] {
+  const offer = run.pendingReward
+  if (!offer?.elite) return []
+  return offer.artifactIds.map(id => artifactDefinitions.find(item => item.id === id)).filter((item): item is ArtifactDefinition => !!item)
 }
 
 export function claimDungeonReward(run: DungeonRunState, reward: CardDefinition): DungeonRunState {
-  if (!run.pendingReward || !campaignRewards().some(card => card.id === reward.id)) throw new Error('There is no matching dungeon reward to claim')
+  if (!run.pendingReward?.cardIds.includes(reward.id)) throw new Error('This card was not in the current dungeon reward offer')
   return { ...run, deck: addCampaignReward(run.deck, reward), pendingReward: null }
+}
+
+export function claimDungeonArtifact(run: DungeonRunState, artifactId: ArtifactId, ownerInstanceId: string, replaceInstanceId?: string): DungeonRunState {
+  const offer = run.pendingReward
+  const definition = artifactDefinitions.find(item => item.id === artifactId)
+  const owner = Object.values(run.heroes).find(hero => hero.instanceId === ownerInstanceId)
+  if (!offer?.elite || !offer.artifactIds.includes(artifactId) || !definition) throw new Error('This artifact was not in the current elite reward offer')
+  if (run.artifacts.some(item => item.definitionId === artifactId)) throw new Error('Duplicate artifacts are not allowed in one run')
+  if (!owner) throw new Error('Artifact owner is not a member of this run')
+  const occupied = run.artifacts.find(item => item.ownerInstanceId === ownerInstanceId)
+  if (occupied && occupied.instanceId !== replaceInstanceId) throw new Error('The chosen hero already has an artifact; confirm its replacement')
+  if (!occupied && replaceInstanceId) throw new Error('There is no artifact in this hero slot to replace')
+  const artifacts = occupied ? run.artifacts.filter(item => item.instanceId !== occupied.instanceId) : [...run.artifacts]
+  artifacts.push({ instanceId: `run/${run.seed}/artifact/${offer.nodeId}/${artifactId}`, definitionId: artifactId, ownerInstanceId })
+  if (artifacts.length > 2) throw new Error('A party can carry at most two artifacts')
+  return { ...run, artifacts, pendingReward: null }
 }
 
 export function resolveDungeonRest(run: DungeonRunState, heroId: HeroId | null): DungeonRunState {

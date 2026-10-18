@@ -24,7 +24,7 @@ export interface StatChip {
 /** `short` is used when the card is partly covered by its neighbour and only a narrow strip is visible. */
 export interface RuleLine { tone: Tone; glyph?: GlyphKind; text: string; short: string }
 export interface CardTag { id: 'vulnerability' | 'exhaust'; glyph: GlyphKind; text: string; short: string }
-export interface DamagePart { label: string; amount: number; kind: 'base' | 'armor' | 'vulnerability' }
+export interface DamagePart { label: string; amount: number; kind: 'base' | 'armor' | 'vulnerability' | 'artifact' }
 export interface Keyword { glyph: GlyphKind; name: string; text: string }
 export interface CardNotesModel {
   title: string
@@ -89,6 +89,7 @@ export function ruleLines(card: CardDefinition, preview: CardPreview): RuleLine[
       : { tone: 'off', glyph: 'armor', text: `+${card.damageBonus.amount} при броне Джайны`, short: `+${card.damageBonus.amount} при броне` })
   }
   if (preview.vulnerabilityBonus > 0) lines.push({ tone: 'on', glyph: 'vulnerable', text: `+${preview.vulnerabilityBonus} — враг Уязвим`, short: `+${preview.vulnerabilityBonus} Уязвим` })
+  if (preview.artifactDamage > 0) lines.push({ tone: 'on', glyph: 'bonus', text: `+${preview.artifactDamage} — Натяжной шкив`, short: `+${preview.artifactDamage} шкив` })
   return lines
 }
 
@@ -109,6 +110,7 @@ export function damageParts(preview: CardPreview): DamagePart[] {
   const parts: DamagePart[] = [{ label: 'Урон карты', amount: preview.damage - preview.bonusDamage, kind: 'base' }]
   if (preview.armorBonus > 0) parts.push({ label: 'Броня Джайны', amount: preview.armorBonus, kind: 'armor' })
   if (preview.vulnerabilityBonus > 0) parts.push({ label: 'Уязвимость', amount: preview.vulnerabilityBonus, kind: 'vulnerability' })
+  if (preview.artifactDamage > 0) parts.push({ label: 'Натяжной шкив', amount: preview.artifactDamage, kind: 'artifact' })
   return parts
 }
 
@@ -129,6 +131,7 @@ export function cardNotes(card: CardDefinition, preview: CardPreview, context: '
       : { tone: 'off', glyph: 'armor', text: `Бонус не активен: +${card.damageBonus.amount} урона, пока у Джайны есть броня.`, short: '' })
   }
   if (preview.vulnerabilityBonus > 0) conditions.push({ tone: 'on', glyph: 'vulnerable', text: `Враг Уязвим: +${preview.vulnerabilityBonus} урона. Уязвимость будет снята.`, short: '' })
+  if (preview.artifactBonuses.length) conditions.push({ tone: 'on', glyph: 'bonus', text: `Артефакт сработает: ${preview.artifactBonuses.join('; ')}.`, short: '' })
 
   const keywords: Keyword[] = []
   const appliesVulnerability = preview.appliedStatuses.includes('vulnerability')

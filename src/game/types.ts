@@ -3,6 +3,8 @@ import type { EconomyConfig } from './economy'
 export type HeroId = 'warrior' | 'mage'
 // Kept separate from HeroId so class presentation can evolve independently of its current hero.
 export type CardClassId = 'warrior' | 'mage'
+export type PartySlotId = 'first' | 'second'
+export type ArtifactId = 'reliable-wedge' | 'double-pulley' | 'weakpoint-lens' | 'shift-whistle' | 'tension-spool'
 export type GameResult = 'victory' | 'defeat' | null
 export type CardId = 'sword-strike' | 'fireball' | 'guard' | 'quick-cut' | 'thunderbolt' | 'bastion' | 'parry' | 'shield-bash' | 'interpose' | 'frostbolt' | 'arcane-insight' | 'ice-ward'
 export type StatusId = 'vulnerability'
@@ -17,7 +19,13 @@ export const OPENING_HAND_SIZE = 8
 export const CARDS_DRAWN_PER_TURN = 2
 
 export interface Hero {
+  /** Legacy engine key. Party System will replace this key with a roster-independent participant map. */
   id: HeroId
+  /** Stable roster identity, combat class and party position are separate from the run instance. */
+  characterId: string
+  classId: CardClassId
+  partySlot: PartySlotId
+  instanceId: string
   name: string
   title: string
   health: number
@@ -50,6 +58,36 @@ export interface CardDefinition {
 export interface CardInstance {
   instanceId: string
   definitionId: CardId
+}
+
+export interface ArtifactDefinition {
+  id: ArtifactId
+  name: string
+  description: string
+  icon: 'shield' | 'link' | 'crosshair' | 'bell' | 'gauge'
+  trigger: 'incoming-hit' | 'owner-armor' | 'vulnerability-consumed' | 'prepared-hit' | 'armor-at-turn-start'
+}
+
+/** Run-lifetime ownership. Combat charges are held separately and reset for each battle. */
+export interface ArtifactInstance {
+  instanceId: string
+  definitionId: ArtifactId
+  ownerInstanceId: string
+}
+
+export interface BattleArtifactState extends ArtifactInstance {
+  usedThisBattle: boolean
+  lastTriggeredTurn: number | null
+  armedThisTurn: boolean
+}
+
+export interface PendingArtifactTrigger {
+  artifactInstanceId: string
+  reason: string
+  kind: 'armor' | 'turn-damage'
+  owner: HeroId
+  amount: number
+  target?: HeroId
 }
 
 export const statusDefinitions: Record<StatusId, { name: string; shortName: string; description: string }> = {
@@ -117,6 +155,9 @@ export interface CardPreview {
   bonusDamage: number
   vulnerabilityBonus: number
   armorBonus: number
+  artifactDamage: number
+  artifactArmor: Record<HeroId, number>
+  artifactBonuses: string[]
   armor: Record<HeroId, number>
   draw: number
   bonuses: string[]
@@ -129,6 +170,7 @@ export interface PendingPlay {
   handIndex: number
   effects: CardEffect[]
   consumeVulnerability: boolean
+  artifactTriggers: PendingArtifactTrigger[]
   preview: CardPreview
 }
 
@@ -138,6 +180,8 @@ export interface BattleState {
   rngState: number
   nextActionId: number
   heroes: Record<HeroId, Hero>
+  artifacts: BattleArtifactState[]
+  artifactNotices: string[]
   enemy: EnemyState
   hand: CardInstance[]
   blockedDraws: number
