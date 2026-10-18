@@ -13,6 +13,8 @@ src/
   App.vue                    Сборка экрана и координация действий/анимаций
   main.ts                    Создание Vue-приложения; fonts.css → tokens.css → main.css, предзагрузка шрифтов
   ui/typography.ts           fontFamily(токен) для canvas/Pixi и preloadFonts()
+  ui/cardDisplay.ts          Чистая модель карты для UI: числа, условия, расчёт урона из CardPreview (правил не дублирует)
+  ui/handLayout.ts           Чистая геометрия руки: порядок, перекрытие, увеличение; ui/cardArt.ts — иллюстрации карт
   assets/
     tokens.css               Дизайн-токены: цвета, материалы, типографика, мягкие формы, тени, движение, отступы
     fonts.css                Локальные @font-face (El Messiri, Nunito, Rubik; лицензии — LICENSES/FONT-*.txt)
@@ -26,11 +28,13 @@ src/
     GameTooltip.vue          Контекстные подсказки мышью и фокусом
     BattleHelp.vue           Модальная справка об управлении
     BattleResult.vue         Модальный результат боя
-    BattleHand.vue           Рука экземпляров, исходящая карта и счётчики зон
+    BattleHand.vue           Рука экземпляров веером (перекрытие, увеличение, подсказка сбоку), исходящая карта, счётчики зон
     CampaignMap.vue          Слоистая карта штреков, доступные узлы, пройденный маршрут и здоровье отряда
     CardReward.vue           Выбор карты после победы
     RestSite.vue             Распределение лечения на привале
-    HandCard.vue             Карта, доступность, наведение, клик и перетаскивание
+    HandCard.vue             Кнопка карты в руке (клик/клавиатура) вокруг SpellCard
+    SpellCard.vue            Единая лицевая сторона карты в em (рука и награда); CardNotes.vue — свиток с полным описанием; CardGlyph.vue — Lucide-иконки эффектов
+    HandLab.vue              Dev-лаборатория (card-preview.html): реальные доска/рука/награда в воспроизводимых состояниях
     HeroPortrait.vue         Переиспользуемая рамка и подписи портрета
     RunComplete.vue          Экран завершения похода
   composables/
