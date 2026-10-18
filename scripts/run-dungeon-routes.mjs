@@ -2,7 +2,8 @@ import { createServer } from 'vite'
 
 const args = process.argv.slice(2)
 const flag = name => { const index = args.indexOf(name); return index < 0 ? undefined : Number(args[index + 1]) }
-const seedArg = args.find((value, index) => !value.startsWith('--') && (index === 0 || args[index - 1] !== '--runs' && args[index - 1] !== '--archetype-runs'))
+const rosterId = args.includes('--roster') ? args[args.indexOf('--roster') + 1] : 'E'
+const seedArg = args.find((value, index) => !value.startsWith('--') && (index === 0 || !['--runs', '--archetype-runs', '--roster'].includes(args[index - 1])))
 const baseSeed = Number(seedArg ?? 42) >>> 0
 const positionalRunCount = args.slice(args.indexOf(seedArg) + 1).find(value => /^\d+$/.test(value))
 const runCount = Math.max(1, Math.floor(flag('--runs') ?? (Number(positionalRunCount) || 100)))
@@ -17,10 +18,20 @@ try {
   const plannerModule = await server.ssrLoadModule('/src/game/balancePlanner.ts')
   const types = await server.ssrLoadModule('/src/game/types.ts')
   const economy = await server.ssrLoadModule('/src/game/economy.ts')
-  const roster = await server.ssrLoadModule('/src/game/encountersV09.ts')
+  const experiments = await server.ssrLoadModule('/src/game/encounterExperiments.ts')
+  const roster = experiments.rosterFromSpec(rosterId)
+  const artifactRank = { 'reliable-wedge': 6, 'shift-whistle': 5, 'double-pulley': 5, 'weakpoint-lens': 4, 'tension-spool': 4 }
+  const artifactOwner = { 'reliable-wedge': 'mage', 'shift-whistle': 'mage', 'double-pulley': 'warrior', 'weakpoint-lens': 'mage', 'tension-spool': 'warrior' }
 
   function addReward(run, strategy) {
     if (!run.pendingReward) return run
+    if (run.pendingReward.elite && run.artifacts.length < 2) {
+      // Elite rewards offer a card or an artifact: the bot takes the best artifact for a free hero slot.
+      const choice = [...campaign.dungeonArtifactOptions(run)].sort((a, b) => (artifactRank[b.id] ?? 0) - (artifactRank[a.id] ?? 0))[0]
+      const taken = new Set(run.artifacts.map(item => item.ownerInstanceId))
+      const owner = ['warrior', 'mage'].map(key => run.heroes[key]).find(hero => hero.id === artifactOwner[choice?.id] && !taken.has(hero.instanceId)) ?? ['warrior', 'mage'].map(key => run.heroes[key]).find(hero => !taken.has(hero.instanceId))
+      if (choice && owner) return campaign.claimDungeonArtifact(run, choice.id, owner.instanceId)
+    }
     const offers = campaign.dungeonRewardOptions(run)
     const rank = { thunderbolt: 8, frostbolt: 7, parry: 6, 'shield-bash': 6, bastion: strategy === 'defensive' ? 7 : 5, interpose: strategy === 'defensive' ? 7 : 4, 'ice-ward': strategy === 'defensive' ? 7 : 5, 'quick-cut': 5, 'arcane-insight': 4 }
     return campaign.claimDungeonReward(run, [...offers].sort((a, b) => (rank[b.id] ?? 0) - (rank[a.id] ?? 0))[0])
@@ -47,7 +58,7 @@ try {
   }
 
   function simulate(seed, policy, strategy) {
-    let run = campaign.createDungeonRun(seed, economy.gameEconomy)
+    let run = campaign.createDungeonRun(seed, economy.gameEconomy, types.startingDeck, roster)
     let battles = 0, elites = 0, rests = 0, turns = 0, cards = 0, mana = 0
     let normalLosses = 0, eliteLosses = 0, bossLosses = 0, totalHealthAfterFights = 0, healthAfterFightCount = 0, bossHealth = null
     let normalTurns = 0, normalFightCount = 0, eliteTurns = 0, eliteFightCount = 0
@@ -70,7 +81,7 @@ try {
         rests += 1
         continue
       }
-      const encounter = campaign.dungeonEncounter(node, economy.gameEconomy)
+      const encounter = campaign.dungeonEncounter(node, economy.gameEconomy, roster)
       if (node.type === 'final') {
         bossHealth = run.heroes.warrior.health + run.heroes.mage.health
         bossWarriorHealth = run.heroes.warrior.health; bossMageHealth = run.heroes.mage.health
@@ -80,7 +91,7 @@ try {
       seenEncounterTypes.add(node.encounterId)
       routeEncounters.push(node.encounterId)
       previousBattleLayer = node.layer
-      const state = campaign.createCampaignBattle({ encounter, heroes: run.heroes, deck: run.deck, seed: campaign.deriveDungeonSeed(seed, `battle:${node.id}`), battleId: `route/${seed}/${policy}/${strategy}/${node.id}`, economy: economy.gameEconomy })
+      const state = campaign.createCampaignBattle({ encounter, heroes: run.heroes, deck: run.deck, artifacts: run.artifacts, seed: campaign.deriveDungeonSeed(seed, `battle:${node.id}`), battleId: `route/${seed}/${policy}/${strategy}/${node.id}`, economy: economy.gameEconomy })
       const outcome = playBattle(state, strategy)
       battles += 1; elites += Number(node.type === 'elite'); turns += outcome.turns; cards += outcome.cardsPlayed; mana += outcome.manaSpent
       if (node.type === 'elite') { eliteTurns += outcome.turns; eliteFightCount += 1 }
@@ -120,7 +131,7 @@ try {
       })
     }
   }
-  console.log(`Dungeon routes · ${runCount} seeds per route/strategy · seed range ${baseSeed}–${(baseSeed + runCount - 1) >>> 0} · economy B`)
+  console.log(`Dungeon routes · ${runCount} seeds per route/strategy · seed range ${baseSeed}–${(baseSeed + runCount - 1) >>> 0} · economy B · roster ${roster.id}`)
   console.table(routeRows)
   const policySummary = ['safe', 'risky', 'mixed'].map(policy => {
     const rows = routeRows.filter(row => row.policy === policy)
@@ -131,7 +142,7 @@ try {
 
   console.log(`\nArchetype Balance Lab · ${archetypeRuns} shuffled-deck seeds per enemy and strategy`)
   const labRows = []
-  for (const encounter of [...roster.normalEncounterCatalog, ...roster.eliteEncounterCatalog]) {
+  for (const encounter of [...roster.normal, ...roster.elite]) {
     for (const strategy of ['balanced', 'defensive', 'planner']) {
       const samples = []
       for (let sample = 0; sample < archetypeRuns; sample += 1) {
@@ -139,7 +150,7 @@ try {
         const item = playBattle(state, strategy)
         samples.push({ ...item, healthLeft: state.heroes.warrior.health + state.heroes.mage.health })
       }
-      labRows.push({ enemy: encounter.name, tier: roster.eliteEncounterCatalog.includes(encounter) ? 'elite' : 'normal', strategy, samples: samples.length, wins: samples.filter(item => item.result === 'victory').length, winRate: +(100 * samples.filter(item => item.result === 'victory').length / samples.length).toFixed(1), avgTurns: +(samples.reduce((sum, item) => sum + item.turns, 0) / samples.length).toFixed(2), avgHPLeft: +(samples.reduce((sum, item) => sum + item.healthLeft, 0) / samples.length).toFixed(1) })
+      labRows.push({ enemy: encounter.name, tier: roster.elite.includes(encounter) ? 'elite' : 'normal', strategy, samples: samples.length, wins: samples.filter(item => item.result === 'victory').length, winRate: +(100 * samples.filter(item => item.result === 'victory').length / samples.length).toFixed(1), avgTurns: +(samples.reduce((sum, item) => sum + item.turns, 0) / samples.length).toFixed(2), avgHPLeft: +(samples.reduce((sum, item) => sum + item.healthLeft, 0) / samples.length).toFixed(1) })
     }
   }
   console.table(labRows)
