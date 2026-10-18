@@ -1,7 +1,7 @@
 import { createBattle } from './battle'
 import { cards, startingDeck } from './types'
 import { economyEncounters, gameEconomy } from './economy'
-import { dungeonEncounterById, eliteEncounterCatalog, encounterPoolsByLayer, normalEncounterCatalog } from './encountersV09'
+import { dungeonEncounterById, eliteEncounterCatalog, encounterPoolForLayer, normalEncounterCatalog } from './encountersV09'
 import type { EconomyConfig } from './economy'
 import { shuffle } from './deck'
 import type { BattleState, CardDefinition, CardId, EncounterDefinition, Hero, HeroId } from './types'
@@ -177,7 +177,7 @@ export function createDungeonMap(seed: number, economy: EconomyConfig = gameEcon
       }
       const pool = type === 'elite'
         ? eliteEncounterCatalog
-        : normalEncounterCatalog.filter(encounter => (encounterPoolsByLayer[Math.min(layerIndex, encounterPoolsByLayer.length - 1)] ?? []).includes(encounter.id))
+        : normalEncounterCatalog.filter(encounter => encounterPoolForLayer(layerIndex).includes(encounter.id))
       const previousIds = new Set(layers[layerIndex - 1]?.filter(previous => Math.abs(previous.column - column) <= 1).map(previous => previous.encounterId))
       const withoutAdjacentRepeat = pool.filter(encounter => !previousIds.has(encounter.id))
       const choices = withoutAdjacentRepeat.length ? withoutAdjacentRepeat : pool
@@ -324,7 +324,7 @@ export function validateDungeonMap(map: DungeonMap): string[] {
   for (const node of nodes) {
     if (node.type === 'elite' && node.layer < 2) errors.push(`Elite ${node.id} appears before layer 3`)
     if (node.type === 'battle' && node.encounterId) {
-      const pool = encounterPoolsByLayer[Math.min(node.layer, encounterPoolsByLayer.length - 1)] ?? []
+      const pool = encounterPoolForLayer(node.layer)
       if (!pool.includes(node.encounterId)) errors.push(`Normal encounter ${node.encounterId} is not available on layer ${node.layer + 1}`)
     }
     if (node.type === 'elite' && !eliteEncounterCatalog.some(encounter => encounter.id === node.encounterId)) errors.push(`Elite node ${node.id} does not use an elite encounter`)

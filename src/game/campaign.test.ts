@@ -7,7 +7,8 @@ import {
 import { createCampaignBattle } from './campaign'
 import { deriveDungeonSeed } from './campaign'
 import { forecastEnemyAction, playCard } from './battle'
-import { eliteEncounterCatalog, encounterPoolsByLayer, normalEncounterCatalog } from './encountersV09'
+import { eliteEncounterCatalog, encounterPoolForLayer, normalEncounterCatalog } from './encountersV09'
+import { chooseDungeonRouteNode, publicDungeonNodeView } from './dungeonRoutePolicy'
 import { cardDefinition } from './types'
 import type { EnemyAction, EnemyHit } from './types'
 
@@ -60,7 +61,7 @@ describe('dungeon map generation', () => {
     for (let seed = 0; seed < 1_000; seed += 1) {
       const map = createDungeonMap(seed)
       for (const node of map.layers.flat()) {
-        if (node.type === 'battle') expect(encounterPoolsByLayer[Math.min(node.layer, 2)]).toContain(node.encounterId)
+        if (node.type === 'battle') expect(encounterPoolForLayer(node.layer)).toContain(node.encounterId)
         if (node.type === 'elite') expect(eliteEncounterCatalog.map(item => item.id)).toContain(node.encounterId)
       }
     }
@@ -70,7 +71,8 @@ describe('dungeon map generation', () => {
     const mechanic = eliteEncounterCatalog.find(item => item.id === 'goblin-foundry-chief')!
     const battle = createCampaignBattle({ encounter: mechanic, deck: ['fireball'], seed: 81 })
     expect(forecastEnemyAction(battle).futureTargets).toMatchObject([{ target: 'warrior', attack: 4 }, { target: 'mage', attack: 4 }])
-    battle.enemy.health = 30
+    battle.enemy.health = 31
+    expect(battle.enemy.phase).toBe(1)
     battle.hand = [{ instanceId: 'test-fireball', definitionId: 'fireball' }]
     battle.mana = 3
     expect(playCard(battle, 'test-fireball').ok).toBe(true)
@@ -78,6 +80,18 @@ describe('dungeon map generation', () => {
     expect(battle.enemy.nextAction).toMatchObject({ kind: 'prepare', name: 'Разогревает котёл' })
     expect(battle.enemy.behavior.phase2?.[0]).toMatchObject({ kind: 'prepare', name: 'Переводит котёл в красную зону' })
     expect(cardDefinition('fireball').effects[0]).toMatchObject({ type: 'damage', amount: 8 })
+  })
+
+  it('keeps the veteran as a distinct elite with two announced single-target strikes', () => {
+    const veteran = eliteEncounterCatalog.find(item => item.id === 'defias-veteran')!
+    const battle = createCampaignBattle({ encounter: veteran, seed: 82 })
+    expect(battle.enemy.maxHealth).toBe(54)
+    expect(forecastEnemyAction(battle).futureTargets).toMatchObject([{ target: 'warrior', attack: 11 }])
+    expect(veteran.behavior.phase1.filter(action => action.kind === 'prepare').map(action => action.kind === 'prepare' ? action.prepared : null)).toMatchObject([
+      { kind: 'attack', name: 'Удар ветерана', damage: 11, target: 'warrior' },
+      { kind: 'attack', name: 'Рубящий выпад', damage: 10, target: 'mage' },
+    ])
+    expect(veteran.behavior.phase2).toBeUndefined()
   })
 
   it('keeps enemy-facing display data out of map nodes while fixing each encounter by seed', () => {
@@ -105,6 +119,21 @@ describe('dungeon map generation', () => {
     expect(profiles.some(item => item.rests > 0 && item.elites === 0)).toBe(true)
     expect(profiles.some(item => item.elites > 0)).toBe(true)
     expect(new Set(profiles.map(item => `${item.battles}/${item.elites}/${item.rests}`)).size).toBeGreaterThan(1)
+  })
+
+  it('keeps route choices unchanged when hidden encounter IDs and health change', () => {
+    const options = availableDungeonNodes(createDungeonRun(2468))
+    const altered = options.map((node, index) => ({
+      ...node,
+      encounterId: `hidden-${index}`,
+      encounterHealth: 1_000 - index,
+    }))
+    const heroes = { warrior: { health: 18, maxHealth: 25 }, mage: { health: 14, maxHealth: 18 } }
+    for (const policy of ['safe', 'risky', 'mixed'] as const) {
+      const originalChoice = chooseDungeonRouteNode(options.map(publicDungeonNodeView), heroes, policy)
+      const alteredChoice = chooseDungeonRouteNode(altered.map(publicDungeonNodeView), heroes, policy)
+      expect(alteredChoice?.id).toBe(originalChoice?.id)
+    }
   })
 })
 
