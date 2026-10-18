@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { Crown, Flame, Skull, Swords } from '@lucide/vue'
 import { availableDungeonNodes } from '../game/campaign'
 import type { DungeonMap, DungeonMapNode, DungeonRunState } from '../game/campaign'
 
@@ -29,12 +30,18 @@ function nodeStyle(node: DungeonMapNode) {
   return { left: `${((node.column + 0.5) / 3) * 100}%`, top: `${90 - node.layer * 13.8}%` }
 }
 
-function glyph(node: DungeonMapNode) {
-  if (visited.value.has(node.id)) return '✓'
-  if (node.type === 'rest') return '♨'
-  if (node.type === 'elite') return '♜'
-  if (node.type === 'final') return '✹'
-  return '⚔'
+function categoryIcon(node: DungeonMapNode) {
+  if (node.type === 'rest') return Flame
+  if (node.type === 'elite') return Crown
+  if (node.type === 'final') return Skull
+  return Swords
+}
+
+function categoryLabel(node: DungeonMapNode) {
+  if (node.type === 'rest') return 'Привал'
+  if (node.type === 'elite') return 'Элитный бой'
+  if (node.type === 'final') return 'Босс'
+  return 'Обычный бой'
 }
 
 function layerLabel(node: DungeonMapNode) {
@@ -43,7 +50,7 @@ function layerLabel(node: DungeonMapNode) {
 
 function ariaLabel(node: DungeonMapNode) {
   const state = visited.value.has(node.id) ? 'пройдено' : available.value.has(node.id) ? 'доступно' : 'закрыто'
-  return `${layerLabel(node)}. ${node.title}. ${node.detail}. ${state}.`
+  return `${layerLabel(node)}. ${categoryLabel(node)}. ${state}.`
 }
 </script>
 
@@ -72,15 +79,11 @@ function ariaLabel(node: DungeonMapNode) {
           :aria-label="ariaLabel(node)"
           @click="emit('enter', node.id)"
         >
-          <span class="node-glyph" aria-hidden="true">{{ glyph(node) }}</span>
+          <component :is="categoryIcon(node)" class="node-glyph" aria-hidden="true" :stroke-width="2.2" />
           <span class="node-content">
             <small>{{ layerLabel(node) }}</small>
-            <strong>{{ node.title }}</strong>
-            <em>{{ node.detail }}</em>
+            <strong>{{ categoryLabel(node) }}</strong>
           </span>
-          <span v-if="node.type === 'rest'" class="node-ribbon">+{{ node.healAmount }} HP</span>
-          <span v-else-if="node.type === 'elite'" class="node-ribbon">5 КАРТ</span>
-          <span v-else-if="node.type === 'battle'" class="node-ribbon">3 КАРТЫ</span>
         </button>
       </div>
     </section>
@@ -116,27 +119,25 @@ function ariaLabel(node: DungeonMapNode) {
 .mine-rail{position:absolute;z-index:-1;top:2%;bottom:5%;width:9px;border-left:2px solid #bd985659;border-right:2px solid #bd985659;opacity:.48;transform:skewY(-4deg)}
 .mine-rail::after{position:absolute;top:0;right:-7px;bottom:0;left:-7px;background:repeating-linear-gradient(180deg,transparent 0 18px,#d2ab6b52 19px 21px,transparent 22px 42px);content:""}
 .mine-rail--left{left:15%}.mine-rail--right{right:15%}
-.map-node{position:absolute;display:flex;align-items:center;gap:8px;width:30%;min-height:56px;padding:7px 10px;border:1px solid #ddc58a70;border-radius:12px;background:linear-gradient(145deg,#263c39f2,#374d43f2);color:#fff1d0;text-align:left;box-shadow:0 7px 18px #0c282a88,inset 0 0 0 2px #e3c87b0c;transform:translate(-50%,-50%);transition:filter .18s,transform .18s,border-color .18s,box-shadow .18s;cursor:default}
+.map-node{position:absolute;display:flex;align-items:center;justify-content:center;gap:11px;width:23%;min-height:50px;padding:7px 12px;border:1px solid #ddc58a70;border-radius:12px;background:linear-gradient(145deg,#263c39f2,#374d43f2);color:#fff1d0;text-align:left;box-shadow:0 7px 18px #0c282a88,inset 0 0 0 2px #e3c87b0c;transform:translate(-50%,-50%);transition:filter .18s,transform .18s,border-color .18s,box-shadow .18s;cursor:default}
 .map-node.is-available{border-color:#ffdc91;box-shadow:0 0 0 2px #ffe19a24,0 0 25px #ffc95a55,inset 0 0 15px #f4cf7420;cursor:pointer;animation:node-glow 2.6s ease-in-out infinite}
 .map-node.is-available:hover,.map-node.is-available:focus-visible{z-index:3;outline:none;filter:brightness(1.16);transform:translate(-50%,-50%) scale(1.04);box-shadow:0 0 0 3px #ffe8b255,0 0 34px #ffd36d77}
 .map-node.is-visited{border-color:#f3d282;background:linear-gradient(145deg,#55462e,#394b3e);box-shadow:0 0 18px #e6bd5d40}
 .map-node.is-locked{filter:saturate(.55) brightness(.78);opacity:.8}
 .map-node--rest{background:linear-gradient(145deg,#294a47f2,#4b5a45f2)}
 .map-node--elite{border-color:#df9c6d;background:linear-gradient(145deg,#4a3331f5,#543f3cf5)}
-.map-node--final{width:34%;border-color:#ffe08f;background:linear-gradient(145deg,#725033,#4a3540);box-shadow:0 0 28px #ffbb5477}
-.node-glyph{display:grid;place-items:center;flex:0 0 34px;width:34px;height:34px;border:1px solid #edcf8a;border-radius:50%;background:radial-gradient(circle at 35% 25%,#6a5a3c,#252d32);color:#ffe09a;font:700 19px var(--display);text-shadow:0 0 11px #ffc85c}
-.map-node--rest .node-glyph{color:#ffcd71}.map-node--elite .node-glyph{color:#ffb091;border-color:#e2a281}.map-node--final .node-glyph{color:#fff0a4;font-size:21px}
-.node-content{display:flex;flex:1;flex-direction:column;gap:2px;min-width:0}
+.map-node--battle{border-color:#d8bb79a0;background:linear-gradient(145deg,#423d30f5,#35453df5)}
+.map-node--final{width:25%;border-color:#c5a7e5;background:linear-gradient(145deg,#51405e,#4a3540);box-shadow:0 0 28px #c19be777}
+.node-glyph{flex:0 0 25px;width:25px;height:25px;color:#ffe09a;filter:drop-shadow(0 0 7px #ffc85c66)}
+.map-node--rest .node-glyph{color:#bfe5a2;filter:drop-shadow(0 0 7px #a9df9866)}.map-node--elite .node-glyph{color:#ffb091;filter:drop-shadow(0 0 7px #ff977866)}.map-node--final .node-glyph{color:#e2c9ff;filter:drop-shadow(0 0 8px #c69aff88)}
+.node-content{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
 .node-content small{color:#e5c984;font:700 9px var(--display);letter-spacing:.1em}
-.node-content strong{overflow:hidden;color:#fff0cf;font:700 clamp(12px,1vw,15px) var(--display);text-overflow:ellipsis;white-space:nowrap}
-.node-content em{overflow:hidden;color:#ded1b8;font:500 clamp(9px,.74vw,11px)/1.2 'Trebuchet MS',Arial,sans-serif;font-style:normal;text-overflow:ellipsis;white-space:nowrap}
-.node-ribbon{position:absolute;right:7px;top:-8px;padding:3px 6px;border:1px solid #e9cd88;border-radius:8px;background:#273a37;color:#ffe6ab;font:800 8px var(--display);letter-spacing:.05em}
-.map-node--elite .node-ribbon{border-color:#d59a79;color:#ffc3a2}.map-node--rest .node-ribbon{border-color:#9fc4a0;color:#d6efbd}
+.node-content strong{color:#fff0cf;font:800 clamp(12px,1vw,15px) var(--display);white-space:nowrap}
 .party-status{display:flex;align-items:center;justify-content:center;gap:clamp(12px,2vw,28px);width:min(1000px,100%);flex:0 0 auto;padding:9px 18px;border:1px solid #d8bb7b5c;border-radius:10px;background:linear-gradient(90deg,#203b38ed,#314b40ed,#203b38ed);box-shadow:0 8px 22px #102a2b70}
 .party-hero{display:flex;align-items:center;gap:9px;min-width:145px}.party-hero>span:last-child{display:grid;gap:2px}.party-hero small{color:#ddc38d;font:700 9px var(--display);letter-spacing:.06em}.party-hero strong{color:#fff1d2;font:700 14px 'Trebuchet MS',Arial,sans-serif}
 .hero-medallion{display:grid;place-items:center;width:31px;height:31px;border:1px solid #d5b46e;border-radius:50%;background:#423b31;color:#ffdc8d}.hero-medallion--mage{border-color:#b6a3d7;background:#302e49;color:#d7caff}
 .party-divider{color:#e6c678;font-size:14px}.route-progress{margin-left:auto;color:#d9cbab;font:700 9px var(--display);letter-spacing:.08em;text-align:right}
 @keyframes node-glow{0%,100%{box-shadow:0 0 0 2px #ffe19a24,0 0 18px #ffc95a40,inset 0 0 15px #f4cf7418}50%{box-shadow:0 0 0 2px #ffe19a42,0 0 28px #ffc95a70,inset 0 0 17px #f4cf7428}}
 @media(max-height:760px) and (min-width:701px){.campaign-screen{padding-top:10px;padding-bottom:10px}.campaign-header h1{font-size:28px}.campaign-header p{font-size:12px}.map-viewport{height:min(64vh,500px);min-height:390px;margin:4px 0}.party-status{padding:7px 14px}}
-@media(max-width:700px){.campaign-screen{align-items:stretch;padding:14px 12px;overflow-y:auto}.campaign-header{margin-bottom:10px}.campaign-topline{flex-wrap:wrap;gap:8px;font-size:9px}.campaign-header h1{font-size:28px}.campaign-header p{font-size:12px;line-height:1.4}.map-viewport{width:100%;height:500px;min-height:500px;overflow-x:auto;overflow-y:hidden}.dungeon-graph{width:680px;min-height:500px}.map-node{width:30%;min-height:62px;padding:7px}.node-content small{font-size:8px}.node-content strong{font-size:12px}.node-content em{font-size:9px}.party-status{flex-wrap:wrap;justify-content:space-evenly;gap:8px;padding:9px}.party-hero{min-width:120px}.route-progress{width:100%;margin:0;text-align:center}.mine-rail--left{left:15%}.mine-rail--right{right:15%}}
+@media(max-width:700px){.campaign-screen{align-items:stretch;padding:14px 12px;overflow-y:auto}.campaign-header{margin-bottom:10px}.campaign-topline{flex-wrap:wrap;gap:8px;font-size:9px}.campaign-header h1{font-size:28px}.campaign-header p{font-size:12px;line-height:1.4}.map-viewport{width:100%;height:500px;min-height:500px;overflow-x:auto;overflow-y:hidden}.dungeon-graph{width:680px;min-height:500px}.map-node{width:30%;min-height:62px;padding:7px}.node-content small{font-size:8px}.node-content strong{font-size:12px}.party-status{flex-wrap:wrap;justify-content:space-evenly;gap:8px;padding:9px}.party-hero{min-width:120px}.route-progress{width:100%;margin:0;text-align:center}.mine-rail--left{left:15%}.mine-rail--right{right:15%}}
 </style>

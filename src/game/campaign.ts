@@ -82,8 +82,6 @@ export interface DungeonMapNode {
   layer: number
   column: number
   type: DungeonNodeType
-  title: string
-  detail: string
   edges: string[]
   encounterId?: string
   encounterHealth?: number
@@ -174,7 +172,7 @@ export function createDungeonMap(seed: number, economy: EconomyConfig = gameEcon
     return arrangedTypes.map((type, column): DungeonMapNode => {
       const id = nodeId(layerIndex, column)
       if (type === 'rest') {
-        return { id, layer: layerIndex, column, type, title: 'Привал', detail: `До +${REST_HEAL_AMOUNT} HP одному герою`, edges: [], healAmount: REST_HEAL_AMOUNT }
+        return { id, layer: layerIndex, column, type, edges: [], healAmount: REST_HEAL_AMOUNT }
       }
       const baseEncounter = type === 'elite'
         ? regularEncounters[Math.floor(random() * regularEncounters.length)]!
@@ -184,8 +182,6 @@ export function createDungeonMap(seed: number, economy: EconomyConfig = gameEcon
       const rewardCount = type === 'elite' ? ELITE_REWARD_CHOICES : NORMAL_REWARD_CHOICES
       return {
         id, layer: layerIndex, column, type,
-        title: type === 'elite' ? `Элита · ${baseEncounter.name}` : baseEncounter.name,
-        detail: `${type === 'elite' ? 'Элитный бой' : 'Обычный бой'} · ${health} HP`,
         edges: [], encounterId: baseEncounter.id, encounterHealth: health, rewardCount,
       }
     })
@@ -193,8 +189,6 @@ export function createDungeonMap(seed: number, economy: EconomyConfig = gameEcon
 
   const finalNode: DungeonMapNode = {
     id: 'final', layer: DUNGEON_LAYER_COUNT, column: 1, type: 'final',
-    title: finalEncounter.name,
-    detail: `Финальная встреча · ${finalEncounter.maxHealth} HP`,
     edges: [], encounterId: finalEncounter.id, encounterHealth: finalEncounter.maxHealth,
   }
   layers.push([finalNode])

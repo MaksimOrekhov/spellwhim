@@ -35,6 +35,18 @@ describe('dungeon map generation', () => {
     }
   })
 
+  it('keeps enemy-facing display data out of map nodes while fixing each encounter by seed', () => {
+    const map = createDungeonMap(321)
+    for (const node of map.layers.flat()) {
+      expect(node).not.toHaveProperty('title')
+      expect(node).not.toHaveProperty('detail')
+      if (node.type !== 'rest') {
+        const regenerated = dungeonNode(createDungeonMap(321), node.id)!
+        expect(dungeonEncounter(node)).toEqual(dungeonEncounter(regenerated))
+      }
+    }
+  })
+
   it('offers materially different safe, healing and elite routes', () => {
     const paths = enumerateDungeonPaths(createDungeonMap(2026))
     const profile = (path: typeof paths[number]) => ({

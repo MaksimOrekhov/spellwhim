@@ -93,7 +93,7 @@ function restartRun() {
     <div class="game-wrap">
       <p v-if="experimental" class="economy-badge" :title="economy.label">Режим сравнения · модель {{ economy.manaCurve }} · {{ economy.label }}</p>
       <CampaignMap v-if="phase === 'map'" :map="run.map" :run="run" @enter="enterNode" @restart="restartRun" />
-      <CardReward v-else-if="phase === 'reward'" :options="rewardOptions" :encounter-name="selectedNodeId ? dungeonNode(run.map, selectedNodeId)?.title ?? 'Победа' : 'Победа'" :elite="run.pendingReward?.elite ?? false" @choose="chooseReward" />
+      <CardReward v-else-if="phase === 'reward'" :options="rewardOptions" :encounter-name="state.enemy.name" :elite="run.pendingReward?.elite ?? false" @choose="chooseReward" />
       <RestSite v-else-if="phase === 'rest'" :heroes="run.heroes" :heal-amount="selectedNodeId ? dungeonNode(run.map, selectedNodeId)?.healAmount ?? 6 : 6" @choose="chooseRestTarget" />
       <RunComplete v-else-if="phase === 'complete'" :result="run.status === 'defeat' ? 'defeat' : 'victory'" @restart="restartRun" />
       <template v-else>

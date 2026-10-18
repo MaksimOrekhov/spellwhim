@@ -15,6 +15,8 @@ The design research document is retained at [roguelike-adventure-design-research
 - At a rest, choose one injured hero to heal by up to 6 HP, capped at that hero's maximum. If both heroes are full, continue without healing.
 - Current HP carries forward between fights; temporary armor is cleared. A defeat ends the run, and defeating the final encounter completes it.
 - The map displays the run seed and offers a new-run action. Run state and map generation are reproducible from the same seed.
+- Unvisited nodes show only their category and route state; their deterministic encounter data stays in the run map and is resolved unchanged when entered. The map does not reveal enemy names, health, behavior, or exact reward counts. The battle screen reveals the selected enemy normally; the post-battle reward screen may name the opponent.
+- Node-category icons use Lucide Vue (`Swords`, `Crown`, `Flame`, `Skull`). A future `?` event category is only a design direction until real event mechanics exist.
 
 ## Determinism and route inspection
 
@@ -36,6 +38,7 @@ The displayed seed can be copied into the core API or CLI to reproduce a route. 
 - The screen and route choices live in `src/components/CampaignMap.vue`; rest healing is presented by `src/components/RestSite.vue`.
 - Battles still use the shared battle engine and selected economy. The experimental economy flags and Balance Lab's legacy linear campaign helpers remain available.
 - The map uses the currently configured encounter package, which is still the prototype package rather than new Deadmines-specific encounters.
+- New UI icons use the locally installed open-source Lucide Vue package. The dependency version declares ISC; its distributed license notice also includes the Feather-derived icon list and the associated MIT notice. The map's chosen icons are `Swords`, `Crown`, `Flame`, and `Skull`. The complete notice is retained at `LICENSES/LUCIDE.txt`; no external CDN is used.
 - Run persistence across app restarts, route events, shops, artifacts, and additional reward types are outside v0.1.
 
 ## Validation

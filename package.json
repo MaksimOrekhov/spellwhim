@@ -16,6 +16,7 @@
     "economy": "node scripts/run-economy.mjs"
   },
   "dependencies": {
+    "@lucide/vue": "^1.59.0",
     "@tauri-apps/api": "^2.8.0",
     "pixi.js": "^8.14.0",
     "vue": "^3.5.22"
