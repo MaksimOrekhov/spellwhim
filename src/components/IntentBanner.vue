@@ -5,8 +5,8 @@
 // draw a number that the player must not know. `caption` is the alternative layout with the action's name under the icon.
 import { computed } from 'vue'
 import { Hourglass, Shield, ShieldCheck, ShieldPlus, Skull, Swords, Sword } from '@lucide/vue'
-import varianPortrait from '../assets/art/varian.jpg'
-import jainaPortrait from '../assets/art/jaina.jpg'
+import varianPortrait from '../assets/art/varian-krea.webp'
+import jainaPortrait from '../assets/art/jaina-krea.webp'
 import GameTooltip from './GameTooltip.vue'
 import { intentSpoken, intentTooltip } from '../ui/threatDisplay'
 import type { HeroNames, PublicIntent } from '../ui/threatDisplay'

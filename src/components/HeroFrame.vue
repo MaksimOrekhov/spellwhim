@@ -5,8 +5,8 @@
 // mark carries no figure to show. It receives HeroMark (ui/threatDisplay.ts), not the engine's forecast.
 import { computed } from 'vue'
 import { Crosshair, Hourglass, ShieldCheck, Skull } from '@lucide/vue'
-import varianPortrait from '../assets/art/varian.jpg'
-import jainaPortrait from '../assets/art/jaina.jpg'
+import varianPortrait from '../assets/art/varian-krea.webp'
+import jainaPortrait from '../assets/art/jaina-krea.webp'
 import { classThemeStyle } from '../game/classThemes'
 import VitalBar from './VitalBar.vue'
 import StatusChip from './StatusChip.vue'

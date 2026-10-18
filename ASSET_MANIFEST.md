@@ -9,8 +9,8 @@
 | `class-mage-emblem` | `src/assets/art/mage-class-wizard-staff.svg` | Классовая эмблема Мага — магический посох | SVG, viewBox 512×512, прозрачный фон | [Wizard staff — Lorc / Game-icons.net](https://game-icons.net/1x1/lorc/wizard-staff.html), CC BY 3.0 | present |
 | `style-reference-varian` | `art-exploration/v01/varian.png` | Исходный пользовательский портрет Вариана; временный игровой вариант хранится отдельно в `src/assets/art/varian.jpg` | PNG, квадратный | Пользовательский ассет, не внешний ресурс | present — source/reference |
 | `style-reference-jaina` | `art-exploration/v01/jaina.png` | Исходный пользовательский портрет Джайны; временный игровой вариант хранится отдельно в `src/assets/art/jaina.jpg` | PNG, квадратный | Пользовательский ассет, не внешний ресурс | present — source/reference |
-| `hero-varian` | `src/assets/art/varian.jpg` | Временный игровой портрет Вариана, уменьшенная JPEG-копия пользовательского изображения из `art-exploration/v01/varian.png` | 768×768, 1:1 JPEG | Пользовательский ассет; подключён в `HeroPortrait.vue` | present — temporary in-game |
-| `hero-jaina` | `src/assets/art/jaina.jpg` | Временный игровой портрет классической Джайны, уменьшенная JPEG-копия пользовательского изображения из `art-exploration/v01/jaina.png` | 768×768, 1:1 JPEG | Пользовательский ассет; подключён в `HeroPortrait.vue` | present — temporary in-game |
+| `hero-varian` | `src/assets/art/varian-krea.webp` | Игровой портрет Вариана, оптимизированная копия нового пользовательского Krea PNG; прежний `varian.jpg` оставлен как legacy | 768×768, WebP | Пользовательский Krea draft; подключён в `HeroFrame.vue` и `IntentBanner.vue`; не финальное утверждение |
+| `hero-jaina` | `src/assets/art/jaina-krea.webp` | Игровой портрет классической Джайны, оптимизированная копия нового пользовательского Krea PNG; прежний `jaina.jpg` оставлен как legacy | 768×768, WebP | Пользовательский Krea draft; подключён в `HeroFrame.vue` и `IntentBanner.vue`; не финальное утверждение |
 | `enemy-rhahkzor` | `src/assets/art/rhahkzor.jpg` | Огр-бригадир в шахте, массивный силуэт и признаки надсмотрщика | 768×768, 1:1 JPEG | [Rhahk’Zor](https://warcraft.wiki.gg/wiki/Rhahk%27Zor); огр, рабочая среда | missing |
 | `enemy-sneed` | `src/assets/art/sneed.jpg` | Снид, ясно видимый в кабине крошшера; механика рядом не заслоняет гоблина | 768×768, 1:1 JPEG | [Sneed](https://warcraft.wiki.gg/wiki/Sneed), [Shredder](https://warcraft.wiki.gg/wiki/Sneed%27s_Shredder); узнаваемый пилот и машина | missing |
 | `enemy-edwin` | `src/assets/art/edwin-vancleef.jpg` | Эдвин на палубе строящегося корабля; образ лидера, без карикатурного злодейства | 768×768, 1:1 JPEG | [Edwin VanCleef](https://warcraft.wiki.gg/wiki/Edwin_VanCleef); канонические черты и эпоха | missing |
@@ -177,6 +177,28 @@
 | `blood-resonance` | Кровавый резонанс | нет; арт-pending fallback | prompt ready; не сгенерировано |
 
 Для шести legacy JPEG в таблице уже есть базовые `CARD SCENE` ниже; при новой генерации всегда собирать их с нейтральным `GLOBAL STYLE`, без леса или другой adventure-specific локации.
+
+## Интеграция пользовательских портретов Krea v0.1
+
+Исходные PNG предоставлены пользователем и сохранены без изменений в `src/assets/art/`. Игровые компоненты импортируют только перечисленные ниже оптимизированные WebP 768×768; Vite включает только импортированные файлы, поэтому исходные PNG и неиспользованные варианты не попадают в production bundle. Все Krea-изображения — рабочие варианты, не финально утверждённые портреты. Стабильные encounter ID и fallback сохранены.
+
+| Персонаж / encounter ID | Прежний игровой арт | Новый игровой файл | Исходник | Статус и решение |
+|---|---|---|---|---|
+| Вариан (`warrior`) | `src/assets/art/varian.jpg` | `src/assets/art/varian-krea.webp` | `src/assets/art/varian-krea.png` | Пользовательский Krea draft; подключён в HeroFrame и IntentBanner; не финальное утверждение |
+| Джайна (`mage`) | `src/assets/art/jaina.jpg` | `src/assets/art/jaina-krea.webp` | `src/assets/art/jaina-krea.png` | Пользовательский Krea draft классической Джайны; подключён в HeroFrame и IntentBanner; не финальное утверждение |
+| `mine-overseer` — шахтёр-надсмотрщик | `src/assets/art/enemy-mine-overseer.jpg` | `src/assets/art/enemy-mine-overseer-krea.webp` | `src/assets/art/01_mine_reaver.png` | Подходит по человеческому шахтёрскому силуэту, броне и кирке; square crop из вертикального исходника; черновик |
+| `defias-veteran` — ветеран Братства | `src/assets/art/enemy-defias-veteran.jpg` | без замены | `src/assets/art/02_scarlet_swordsman.png` не использован | Krea-вариант выглядит молодым и силуэтно близок палубному бойцу; Codex draft точнее сохраняет седину, бороду и возраст ветерана |
+| `goblin-powder-runner` — гоблин-пороховщик | `src/assets/art/enemy-goblin-powder-runner.jpg` | `src/assets/art/enemy-goblin-powder-runner-krea.webp` | `src/assets/art/03_goblin_powderman.png` | Гоблин, фитиль и взрывчатка соответствуют роли; черновик |
+| `defias-lookout` — дозорный Братства | `src/assets/art/enemy-defias-lookout.jpg` | `src/assets/art/enemy-defias-lookout-krea.webp` | `src/assets/art/07_crossbow_hunter.png` | Арбалет и дозорный силуэт читаются; черновик |
+| `defias-cutpurse` — карманница Братства | `src/assets/art/enemy-defias-cutpurse.jpg` | `src/assets/art/enemy-defias-cutpurse-krea.webp` | `src/assets/art/08_scarlet_duelist.png` | Женский силуэт, два клинка и красный шарф сохраняют класс вора; черновик |
+| `defias-deckhand` — палубный боец Братства | `src/assets/art/enemy-defias-deckhand.jpg` | `src/assets/art/enemy-defias-deckhand-krea.webp` | `src/assets/art/12_scarlet_enforcer.png` | Сабля, крепкое снаряжение и корабельные канаты поддерживают палубную роль; черновик |
+| `foundry-tinkerer` — гоблин-механик | `src/assets/art/enemy-foundry-tinkerer.jpg` | без замены | `src/assets/art/05_forge_mechanic.png` не использован | Krea-вариант изображает человека, а encounter — гоблина; оставлен Codex draft |
+| `goblin-foundry-chief` — начальник литейной | `src/assets/art/enemy-goblin-foundry-chief.jpg` | без замены | `src/assets/art/06_iron_cyber_smith.png` не использован | Krea-вариант изображает человека; оставлен Codex draft |
+| `twilight-heart` — босс | `src/assets/art/enemy-twilight-heart.jpg` | без замены | нет подходящего Krea-входа | Боссовый портрет не менялся |
+
+Неиспользованные пользовательские варианты сохранены в исходном виде: `02_scarlet_swordsman.png` (не передаёт возраст и силуэт ветерана), `04_goblin_saboteur.png` (дублирует роль пороховщика), `05_forge_mechanic.png` и `06_iron_cyber_smith.png` (не совпадает вид существа), `09_tunnel_brute.png`, `10_mad_alchemist.png`, `11_scarlet_battlecaster.png` (нет соответствующих встреч в текущем ростере). Они остаются входными черновиками, не подключены и не считаются утверждёнными. Выбор финальных изображений врагов остаётся отдельным этапом, в том числе с альтернативами Crimson Oath.
+
+Реальные снимки боевого экрана для проверки портретов и кадрирования: `docs/data/krea-character-portraits-v01/battle-1280x720.png` и `docs/data/krea-character-portraits-v01/battle-1920x1080.png`. Контактный лист игровых вариантов для быстрой проверки: `art-exploration/krea-character-portraits-v01/selected-portraits-review.jpg`.
 
 ## Англоязычные промпты
 
