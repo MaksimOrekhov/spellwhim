@@ -18,7 +18,8 @@
     "status:baseline": "node scripts/record-status-baseline.mjs",
     "challenge:lab": "node scripts/run-combat-challenge.mjs",
     "card-pool:compare": "node scripts/run-card-pool-compare.mjs",
-    "card-pool:synergy": "node scripts/run-card-synergy-lab.mjs"
+    "card-pool:synergy": "node scripts/run-card-synergy-lab.mjs",
+    "information:lab": "node scripts/run-information-comparison.mjs"
   },
   "dependencies": {
     "@lucide/vue": "^1.59.0",

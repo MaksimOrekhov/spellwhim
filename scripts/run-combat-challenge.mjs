@@ -4,6 +4,8 @@ import { createServer } from 'vite'
 import { writeFileSync } from 'node:fs'
 
 const args = process.argv.slice(2)
+const information = args.includes('--information') ? args[args.indexOf('--information') + 1] : 'public'
+if (!['public', 'omniscient'].includes(information)) throw new Error('--information: public (default, fair) или omniscient (историческая диагностика)')
 const option = (name, fallback) => { const index = args.indexOf(name); return index < 0 ? fallback : args[index + 1] }
 const runs = Math.max(1, Math.floor(Number(option('--runs', 100))))
 const seed = Number(option('--seed', 42)) >>> 0
@@ -70,7 +72,7 @@ try {
       let plays = 0
       while (!state.result && plays < 14) {
         const id = planner?.next(state)
-        const card = id ? state.hand.find(item => item.instanceId === id) : strategy === 'planner' ? undefined : balance.chooseCard(state, strategy)
+        const card = id ? state.hand.find(item => item.instanceId === id) : strategy === 'planner' ? undefined : balance.chooseCard(state, strategy, information)
         if (!card) break
         const definition = types.cardDefinition(card.definitionId)
         const preview = rules.previewCard(state, definition)

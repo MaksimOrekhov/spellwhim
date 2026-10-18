@@ -91,7 +91,7 @@ export function traceBattle(spec: BattleTraceSpec, maxTurns = 40): BattleTrace {
       const playable = state.hand.filter(card => cardDefinition(card.definitionId).cost <= state.mana)
       // About one turn in six ends early so the trace also covers held cards and unspent mana.
       chosenId = playable.length && random() > 0.16 ? playable[Math.floor(random() * playable.length)]!.instanceId : undefined
-    } else chosenId = chooseCard(state, spec.strategy as ClassicStrategy)?.instanceId
+    } else chosenId = chooseCard(state, spec.strategy as ClassicStrategy, 'omniscient')?.instanceId
     if (chosenId) {
       const instance = state.hand.find(card => card.instanceId === chosenId)!
       const preview = stablePreview(state, instance.definitionId)
