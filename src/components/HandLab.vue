@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Dev-only lab (card-preview.html): the real board, hand and reward screen driven by the real rules engine
-// in reproducible states. Query: ?view=hand|reward  &hand=8|10  &bonus=1  &mana=N  &elite=1  &ids=a,b,c
+// in reproducible states. Query: ?view=hand|reward  &hand=8|10  &bonus=1  &mana=N  &elite=1  &ids=a,b,c  &rewardIds=a,b,c
 // &scene=<id of battleSceneIds> (battle scenes of src/ui/battleScenes.ts; replaces &enemy)  &intent=caption (banner variant with the action name)
 import { computed, shallowRef } from 'vue'
 import BattleBoard from './BattleBoard.vue'
@@ -12,6 +12,7 @@ import { useBattleAnimation } from '../composables/useBattleAnimation'
 import { useBattleControls } from '../composables/useBattleControls'
 import { cardDefinition, cards, encounters } from '../game/types'
 import { battleScene } from '../ui/battleScenes'
+import { defaultDungeonRoster } from '../game/encountersV10'
 import type { BattleSceneId } from '../ui/battleScenes'
 import type { BattleState, CardDefinition, CardId } from '../game/types'
 import type { HandCardView } from '../composables/useBattle'
@@ -24,8 +25,16 @@ const ids = (query.get('ids')?.split(',') as CardId[] | undefined) ?? mixed.slic
 
 function labState(): BattleState {
   const scene = query.get('scene') as BattleSceneId | null
-  const encounter = encounters.find(item => item.id === (query.get('enemy') ?? 'root-sentinel'))!
+  const encounterId = query.get('enemy') ?? 'root-sentinel'
+  const currentEncounters = [...defaultDungeonRoster.normal, ...defaultDungeonRoster.elite, ...(defaultDungeonRoster.final ? [defaultDungeonRoster.final] : [])]
+  const encounter = [...currentEncounters, ...encounters].find(item => item.id === encounterId)!
   const state = scene ? battleScene(scene) : createBattle(encounter, undefined, { seed: 7 })
+  if (query.get('phase') === '2' && state.enemy.behavior.phase2) {
+    state.enemy.phase = 2
+    state.enemy.nextActionPhase = 2
+    state.enemy.behaviorIndex = 0
+    state.enemy.nextAction = state.enemy.behavior.phase2[0]!
+  }
   state.hand = ids.map((id, index) => ({ instanceId: `lab/${index + 1}`, definitionId: id }))
   state.drawPile = state.drawPile.slice(0, 8)
   if (query.get('mana')) { state.mana = Number(query.get('mana')); state.maxMana = Math.max(state.maxMana, state.mana) }
@@ -62,7 +71,8 @@ function playCard(instanceId: string) {
 function onEndTurn() { if (!animation.value.busy) enemyTurn() }
 useBattleControls({ enabled: () => view === 'hand' && phase.value === 'player', cards: () => views.value, play: playCard, endTurn: onEndTurn })
 
-const rewardOptions = computed<CardDefinition[]>(() => (query.get('elite') === '1' ? ['bastion', 'frostbolt', 'thunderbolt', 'interpose', 'quick-cut'] : ['parry', 'frostbolt', 'bastion']).map(id => cards.find(card => card.id === id)!))
+const rewardIds = query.get('rewardIds')?.split(',') as CardId[] | undefined
+const rewardOptions = computed<CardDefinition[]>(() => (rewardIds ?? (query.get('elite') === '1' ? ['bastion', 'frostbolt', 'thunderbolt', 'interpose', 'quick-cut'] : ['parry', 'frostbolt', 'bastion'])).map(id => cards.find(card => card.id === id)!).filter(Boolean))
 const chosen = shallowRef('')
 </script>
 

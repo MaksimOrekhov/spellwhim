@@ -102,7 +102,7 @@ try {
   function simulate(runSeed, roster, policy, strategy, artifactMode, cardPackage) {
     const deck = cardPackage === 'swap' ? (() => { const copy = [...types.startingDeck]; copy[copy.indexOf('sword-strike')] = 'rend'; return copy })() : types.startingDeck
     let run = campaign.createDungeonRun(runSeed, economy.gameEconomy, deck, roster)
-    if (cardPackage === 'base') run = { ...run, excludedRewards: [...campaign.OVERHAUL_CARD_IDS] }
+    if (cardPackage === 'base') run = { ...run, excludedRewards: [...campaign.HISTORICAL_BALANCE_REWARD_EXCLUSIONS] }
     const out = { status: 'active', fights: [], rests: 0, artifactsTaken: 0, bossEntry: null }
     while (run.status === 'active') {
       const available = campaign.availableDungeonNodes(run)

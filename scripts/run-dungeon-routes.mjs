@@ -1,4 +1,5 @@
 import { createServer } from 'vite'
+import { dungeonRewardRank } from './lib/dungeonRewardRank.mjs'
 
 const args = process.argv.slice(2)
 const flag = name => { const index = args.indexOf(name); return index < 0 ? undefined : Number(args[index + 1]) }
@@ -33,8 +34,7 @@ try {
       if (choice && owner) return campaign.claimDungeonArtifact(run, choice.id, owner.instanceId)
     }
     const offers = campaign.dungeonRewardOptions(run)
-    const rank = { thunderbolt: 8, frostbolt: 7, parry: 6, 'shield-bash': 6, bastion: strategy === 'defensive' ? 7 : 5, interpose: strategy === 'defensive' ? 7 : 4, 'ice-ward': strategy === 'defensive' ? 7 : 5, 'quick-cut': 5, 'arcane-insight': 4 }
-    return campaign.claimDungeonReward(run, [...offers].sort((a, b) => (rank[b.id] ?? 0) - (rank[a.id] ?? 0))[0])
+    return campaign.claimDungeonReward(run, [...offers].sort((a, b) => dungeonRewardRank(b.id, strategy) - dungeonRewardRank(a.id, strategy))[0])
   }
 
   function playBattle(state, strategy) {
