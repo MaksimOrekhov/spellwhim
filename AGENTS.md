@@ -43,6 +43,8 @@ src/
     economy.ts               Combat Economy v0.7: кривая маны, расписание добора, пакет врагов (A — стандарт, B/U — эксперимент)
     encountersV07.ts         Усиленные враги v0.7 (только данные)
     economy.test.ts          Тесты экономики, врагов v0.7 и Balance Lab с экономиками
+ux-prototype.html, src/ux-prototype/   Изолированный прототип нового UI (npm run dev → /ux-prototype.html); не подключён к App.vue
+docs/ux-ui-redesign-research.md  UX/UI-аудит, концепции, план внедрения; снимки — docs/screenshots/ux-redesign/
 scripts/run-combat-scenarios.mjs CLI сценариев через существующий Vite
 scripts/run-economy.mjs          Balance Lab: сравнение экономик (npm run economy), --trace показывает ходы одного похода
 scripts/whatif-expensive-cards.mjs Что-если: дорогие карты в памяти, игру не меняет

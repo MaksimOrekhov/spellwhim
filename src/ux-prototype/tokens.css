@@ -1,0 +1,53 @@
+/* Spellwhim UX prototype — design tokens.
+   Everything is sized in rem; 1rem = 16 "design px" on a 1920×1080 stage, so the whole scene scales with the window.
+   Class colours are NOT defined here: they come from src/game/classThemes.ts via classThemeStyle(). */
+:root {
+  /* typography (system stacks only — bundled OFL fonts are a later, separate asset task) */
+  --f-display: 'Palatino Linotype', 'Book Antiqua', Palatino, Constantia, Georgia, serif;
+  --f-ui: 'Segoe UI', 'Trebuchet MS', system-ui, sans-serif;
+  --f-num: 'Bahnschrift SemiBold', 'Bahnschrift', 'Trebuchet MS', system-ui, sans-serif;
+
+  /* chrome materials: wood, brass, parchment */
+  --wood-0: #170f0a;
+  --wood-1: #261912;
+  --wood-2: #3d2a1b;
+  --wood-3: #5d4128;
+  --brass-1: #fbe3a0;
+  --brass-2: #d2a24f;
+  --brass-3: #8a6228;
+  --brass-4: #4f3716;
+  --parch-1: #f6e8c6;
+  --parch-2: #dcc48e;
+  --ink: #2b1f14;
+  --text: #fff1d3;
+  --text-dim: #cdbd9b;
+
+  /* game semantics — one colour = one meaning, on every screen */
+  --mana: #62d0ff;
+  --mana-deep: #1c62b5;
+  --hp: #e2554a;
+  --hp-deep: #7d1f27;
+  --armor: #b3cde8;
+  --armor-deep: #4a6a8c;
+  --threat: #ff6a3d;
+  --bonus: #ffd56b;
+  --vuln: #ffb23d;
+  --good: #8ad66f;
+
+  --ease-out: cubic-bezier(.2, .8, .2, 1);
+  --ease-snap: cubic-bezier(.3, 1.5, .5, 1);
+}
+
+html { font-size: max(calc(min(100vw / 1920, 100vh / 1080) * 16), 11.5px); }
+*, *::before, *::after { box-sizing: border-box; }
+html, body, #app { width: 100%; height: 100%; margin: 0; }
+body { overflow: hidden; background: var(--wood-0); color: var(--text); font-family: var(--f-ui); font-size: 1rem; text-rendering: optimizeLegibility; }
+button { font: inherit; color: inherit; }
+button:not(:disabled) { cursor: pointer; }
+button:focus-visible, [tabindex]:focus-visible { outline: .2rem solid #b0efff; outline-offset: .25rem; }
+kbd { font-family: var(--f-num); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+.reduce-motion *, .reduce-motion *::before, .reduce-motion *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
