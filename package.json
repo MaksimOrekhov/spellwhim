@@ -10,11 +10,13 @@
     "test": "vitest run",
     "tauri": "tauri",
     "scenarios": "node scripts/run-combat-scenarios.mjs",
+    "dungeon:routes": "node scripts/run-dungeon-routes.mjs",
     "balance": "node scripts/run-balance.mjs",
     "balance:smoke": "node scripts/run-balance.mjs --runs 5 --seed 42",
     "economy": "node scripts/run-economy.mjs"
   },
   "dependencies": {
+    "@lucide/vue": "^1.59.0",
     "@tauri-apps/api": "^2.8.0",
     "pixi.js": "^8.14.0",
     "vue": "^3.5.22"

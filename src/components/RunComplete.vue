@@ -1,14 +1,15 @@
 <script setup lang="ts">
+defineProps<{ result: 'victory' | 'defeat' }>()
 const emit = defineEmits<{ restart: [] }>()
 </script>
 
 <template>
   <main class="run-complete">
     <section class="complete-card">
-      <span>✦</span>
-      <small>СУМЕРЕЧНАЯ ЧАЩА</small>
-      <h1>Чаща уснула</h1>
-      <p>Отряд прошёл путь и усмирил Сумеречное сердце.</p>
+      <span>{{ result === 'victory' ? '✦' : '◇' }}</span>
+      <small>МЁРТВЫЕ КОПИ</small>
+      <h1>{{ result === 'victory' ? 'Поход завершён' : 'Отряд пал' }}</h1>
+      <p>{{ result === 'victory' ? 'Вы прошли штреки и одолели Сумеречное сердце.' : 'Выберите другой путь и попробуйте пройти шахту снова.' }}</p>
       <button @click="emit('restart')">НАЧАТЬ НОВЫЙ ПОХОД</button>
     </section>
   </main>

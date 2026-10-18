@@ -23,12 +23,6 @@ export function useBattle(options: { seed?: number; deck?: readonly CardId[]; ec
   function previewBattle() {
     return createCampaignBattle({ deck: ownedDeck.value, seed, economy, battleId: 'run/' + seed + '/generation/' + runGeneration + '/preview' })
   }
-  function newBattle(encounter?: EncounterDefinition, heroes?: BattleState['heroes']) {
-    const sequence = battleSequence++
-    return createCampaignBattle({ encounter, heroes, deck: ownedDeck.value, seed: (seed + sequence) >>> 0, economy,
-      battleId: 'run/' + seed + '/generation/' + runGeneration + '/battle/' + sequence,
-    })
-  }
   // The map needs hero state, but its preview battle must not consume the first real battle seed.
   const current = shallowRef(previewBattle())
   const state = computed(() => current.value)
@@ -76,8 +70,13 @@ export function useBattle(options: { seed?: number; deck?: readonly CardId[]; ec
     log.value = next.result === 'defeat' ? 'Отряд пал…' : next.result === 'victory' ? 'Противник повержен.' : 'Ваш ход. Намерение: ' + next.enemy.nextAction.name + '.'
   }
 
-  function startBattle(encounter: EncounterDefinition): void {
-    current.value = newBattle(encounter, current.value.heroes)
+  function startBattle(encounter: EncounterDefinition, heroes?: BattleState['heroes'], battleSeed?: number, nodeId?: string): void {
+    const sequence = battleSequence++
+    current.value = createCampaignBattle({
+      encounter, heroes: heroes ?? current.value.heroes, deck: ownedDeck.value,
+      seed: battleSeed ?? (seed + sequence) >>> 0, economy,
+      battleId: 'run/' + seed + '/generation/' + runGeneration + '/battle/' + (nodeId ?? sequence),
+    })
     log.value = encounter.name + ' преграждает путь.'
   }
 
@@ -85,8 +84,8 @@ export function useBattle(options: { seed?: number; deck?: readonly CardId[]; ec
     ownedDeck.value = addCampaignReward(ownedDeck.value, card)
   }
 
-  function restart(): void {
-    seed = (options.seed ?? Date.now()) >>> 0
+  function restart(nextSeed = options.seed ?? Date.now()): void {
+    seed = nextSeed >>> 0
     battleSequence = 0
     runGeneration += 1
     ownedDeck.value = [...(options.deck ?? startingDeck)]
