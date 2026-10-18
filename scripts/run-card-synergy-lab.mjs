@@ -14,9 +14,9 @@ const strategies = option('--strategies', 'aggressive,balanced,defensive,planner
 
 const specs = [
   { id: 'control', name: 'Стартовая колода', cards: [], replace: [] },
-  { id: 'vulnerability', name: 'Уязвимость и добор', cards: ['arcane-mark', 'arcane-mark', 'ice-echo', 'ice-echo', 'crushing-swing', 'crushing-swing'], replace: ['sword-strike', 'sword-strike', 'guard', 'guard', 'parry', 'parry'] },
-  { id: 'vulnerability-lens', name: 'Уязвимость + Линза слабой точки', cards: ['arcane-mark', 'arcane-mark', 'ice-echo', 'ice-echo', 'crushing-swing', 'crushing-swing'], replace: ['sword-strike', 'sword-strike', 'guard', 'guard', 'parry', 'parry'], artifact: { id: 'weakpoint-lens', owner: 'mage' } },
-  { id: 'bleeding', name: 'Кровотечение: тик и взрыв', cards: ['rend', 'rend', 'wound-clamp', 'wound-clamp', 'frost-seal', 'frost-seal', 'blood-resonance', 'blood-resonance'], replace: ['sword-strike', 'sword-strike', 'fireball', 'fireball', 'guard', 'guard', 'frostbolt', 'frostbolt'] },
+  { id: 'vulnerability', name: 'Уязвимость и добор', cards: ['arcane-mark', 'arcane-mark', 'frostbolt', 'frostbolt', 'crushing-swing', 'crushing-swing'], replace: ['sword-strike', 'sword-strike', 'guard', 'guard', 'parry', 'parry'] },
+  { id: 'vulnerability-lens', name: 'Уязвимость + Линза слабой точки', cards: ['arcane-mark', 'arcane-mark', 'frostbolt', 'frostbolt', 'crushing-swing', 'crushing-swing'], replace: ['sword-strike', 'sword-strike', 'guard', 'guard', 'parry', 'parry'], artifact: { id: 'weakpoint-lens', owner: 'mage' } },
+  { id: 'bleeding', name: 'Кровотечение: тик, эхо и взрыв', cards: ['rend', 'rend', 'wound-clamp', 'wound-clamp', 'ice-echo', 'ice-echo', 'blood-resonance', 'blood-resonance', 'frost-seal', 'frost-seal'], replace: ['sword-strike', 'sword-strike', 'fireball', 'fireball', 'guard', 'guard', 'frostbolt', 'frostbolt', 'arcane-insight', 'arcane-insight'] },
   { id: 'armor-counter', name: 'Броня и контратака', cards: ['stance-strike', 'stance-strike', 'stance-strike', 'covering-counter', 'covering-counter', 'covering-counter'], replace: ['sword-strike', 'sword-strike', 'fireball', 'fireball', 'arcane-insight', 'arcane-insight'] },
   { id: 'armor-counter-pulley', name: 'Броня + контратака + Сдвоенный полиспаст', cards: ['stance-strike', 'stance-strike', 'stance-strike', 'covering-counter', 'covering-counter', 'covering-counter'], replace: ['sword-strike', 'sword-strike', 'fireball', 'fireball', 'arcane-insight', 'arcane-insight'], artifact: { id: 'double-pulley', owner: 'warrior' } },
 ]

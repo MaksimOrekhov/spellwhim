@@ -15,10 +15,12 @@ const items = computed(() => props.options.map(card => ({ card, preview: neutral
 <template>
   <main class="reward-screen">
     <div class="reward-content">
-      <span class="reward-spark" aria-hidden="true">✦</span>
-      <p class="reward-kicker">{{ elite ? 'ЦЕННАЯ НАГРАДА ЭЛИТЫ' : 'НАГРАДА ЗА ПОБЕДУ' }} · {{ encounterName.toUpperCase() }}</p>
-      <h1>{{ elite ? 'Заберите трофей' : 'Найдите новую силу' }}</h1>
-      <p class="reward-copy">Выберите одну карту из {{ options.length }}. Она останется с отрядом до конца похода.</p>
+      <header class="reward-heading">
+        <span class="reward-spark" aria-hidden="true">✦</span>
+        <p class="reward-kicker">{{ elite ? 'ЦЕННАЯ НАГРАДА ЭЛИТЫ' : 'НАГРАДА ЗА ПОБЕДУ' }} · {{ encounterName.toUpperCase() }}</p>
+        <h1>{{ elite ? 'Заберите трофей' : 'Найдите новую силу' }}</h1>
+        <p class="reward-copy">Выберите одну карту из {{ options.length }}. Она останется с отрядом до конца похода.</p>
+      </header>
       <div class="reward-options" :style="{ '--n': options.length }">
         <button v-for="{ card, preview } in items" :key="card.id" class="reward-option" :data-card-id="card.id" :aria-label="'Взять карту: ' + card.name + ', ' + card.cost + ' маны. ' + card.description" @click="emit('choose', card)">
           <SpellCard :card="card" :preview="preview" />
@@ -31,7 +33,8 @@ const items = computed(() => props.options.map(card => ({ card, preview: neutral
 
 <style scoped>
 .reward-screen{position:absolute;z-index:8;inset:0;display:grid;place-items:center;overflow:auto;padding:3vh 3vw;background:radial-gradient(ellipse at 50% 30%,#758768,#35564e 62%,#203c3a);color:var(--ink)}
-.reward-content{width:min(1320px,96vw);text-align:center}
+.reward-content{width:min(1320px,100%);text-align:center}
+.reward-heading{display:block}
 .reward-spark{font-size:30px;color:#ffe1a0}
 .reward-kicker{margin:6px 0;font-size:14px;color:#e1d4b4}
 .reward-content h1{margin:0;font:700 clamp(28px,3vw,46px) var(--font-display);color:#fff0ca}
@@ -43,6 +46,21 @@ const items = computed(() => props.options.map(card => ({ card, preview: neutral
 .reward-option:focus-visible{outline:var(--focus-ring);outline-offset:.2em}
 .reward-option:hover :deep(.sc-rim),.reward-option:focus-visible :deep(.sc-rim){box-shadow:0 .9em 1.6em #04101299,0 0 0 .12em var(--c-focus),inset 0 .1em .12em #fff7}
 .reward-notes{font-size:.82em;pointer-events:none}
-@media(max-height:800px){.reward-spark{display:none}.reward-copy{margin-bottom:12px}.reward-kicker{margin:0 0 2px}}
-@media(max-width:800px){.reward-options{flex-wrap:wrap}}
+@media(min-width:801px) and (max-height:800px){
+  .reward-screen{padding:6px 3vw}
+  .reward-heading{display:grid;grid-template-columns:max-content auto minmax(0,1fr);align-items:center;gap:0 1rem;margin-bottom:4px;text-align:left}
+  .reward-spark{display:none}
+  .reward-kicker{margin:0;text-align:left;white-space:nowrap;font-size:12px}
+  .reward-content h1{font-size:clamp(26px,2.8vw,40px);white-space:nowrap}
+  .reward-copy{margin:0;text-align:left;line-height:1.25}
+  .reward-option{gap:.25em}
+}
+@media(min-width:801px) and (min-height:801px) and (max-height:1200px){
+  .reward-heading{display:grid;grid-template-columns:max-content auto minmax(0,1fr);align-items:center;gap:0 1.5rem;margin-bottom:16px;text-align:left}
+  .reward-spark{display:none}
+  .reward-kicker{margin:0;text-align:left;white-space:nowrap}
+  .reward-content h1{font-size:clamp(32px,2.4vw,46px);white-space:nowrap}
+  .reward-copy{margin:0;text-align:left;line-height:1.3}
+}
+@media(max-width:800px){.reward-heading{display:block;margin-bottom:0;text-align:center}.reward-copy{margin:8px 0 12px;text-align:center}.reward-options{flex-wrap:wrap}}
 </style>

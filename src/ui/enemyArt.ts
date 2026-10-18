@@ -9,7 +9,7 @@ import veteran from '../assets/art/enemy-defias-veteran.jpg'
 import foundryChief from '../assets/art/enemy-goblin-foundry-chief.jpg'
 import twilightHeart from '../assets/art/enemy-twilight-heart.jpg'
 
-/** Portrait art is keyed by stable encounter ID; the source drafts stay in art-exploration for review. */
+/** Provisional Codex drafts are keyed by stable encounter ID for UI testing; no portrait is marked final/approved. */
 export const enemyPortraitsByEncounterId: Readonly<Partial<Record<string, string>>> = Object.freeze({
   'defias-cutpurse': cutpurse,
   'mine-overseer': overseer,

@@ -118,6 +118,16 @@ describe('armor, draw, exhaust and keywords', () => {
 })
 
 describe('every card definition', () => {
+  it('keeps Ice Echo at two face chips and shows Bleeding as a third mechanic line', () => {
+    const echo = card('ice-echo')
+    const preview = neutralPreview(echo)
+    const face = cardFace(echo, preview)
+
+    expect(face.chips.map(chip => chip.kind)).toEqual(['damage', 'draw'])
+    expect(face.lines.map(line => line.short)).toContain('Кровь +1')
+    expect(cardNotes(echo, preview).keywords.map(keyword => keyword.name)).toContain('Кровотечение')
+  })
+
   it('has a face that fits: at most two numbers, two lines and short labels', () => {
     for (const bonusBoard of [board(), board({ vulnerable: true, mageArmor: 4 }), board({ enemy: 'twilight-guardian' })]) {
       for (const definition of cards) {

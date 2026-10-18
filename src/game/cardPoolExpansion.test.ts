@@ -131,6 +131,51 @@ describe('Card Pool Expansion v0.1', () => {
     playCard(state, 'drawn-echo')
     expect(state.enemy.health).toBe(35)
     expect(statusValue(state, 'enemy', 'vulnerability')).toBe(0)
+    expect(statusValue(state, 'enemy', 'bleeding')).toBe(1)
+  })
+
+  it('gives Ice Echo a Bleeding setup and draw role without raising its existing damage', () => {
+    const state = fight(['ice-echo', 'blood-resonance'])
+    applyStatus(state, 'enemy', 'bleeding', 3)
+    state.drawPile = [{ instanceId: 'drawn-after-echo', definitionId: 'guard' }]
+
+    const echo = previewCard(state, cardDefinition('ice-echo'))
+    expect(echo).toMatchObject({ damage: 2, draw: 1 })
+    expect(cardNotes(cardDefinition('ice-echo'), echo).keywords.map(item => item.name)).toContain('Кровотечение')
+    playCard(state, 'card/0')
+    expect(statusValue(state, 'enemy', 'bleeding')).toBe(4)
+    expect(state.hand).toEqual([
+      { instanceId: 'card/1', definitionId: 'blood-resonance' },
+      { instanceId: 'drawn-after-echo', definitionId: 'guard' },
+    ])
+
+    const resonance = previewCard(state, cardDefinition('blood-resonance'))
+    expect(resonance.damage).toBe(7)
+    playCard(state, 'card/1')
+    expect(state.enemy.health).toBe(31)
+    expect(statusValue(state, 'enemy', 'bleeding')).toBe(0)
+  })
+
+  it('keeps Crushing Swing viable as a 3→4→5 mana setup and follow-up line', () => {
+    const standalone = fight(['crushing-swing'])
+    standalone.mana = 3
+    expect(playCard(standalone, 'card/0')).toMatchObject({ ok: true })
+    expect(standalone.enemy.health).toBe(31)
+    expect(statusValue(standalone, 'enemy', 'vulnerability')).toBe(1)
+
+    const fourMana = fight(['crushing-swing', 'sword-strike'])
+    fourMana.mana = 4
+    playCard(fourMana, 'card/0')
+    playCard(fourMana, 'card/1')
+    expect(fourMana.enemy.health).toBe(22)
+    expect(statusValue(fourMana, 'enemy', 'vulnerability')).toBe(0)
+
+    const fiveMana = fight(['crushing-swing', 'fireball'])
+    fiveMana.mana = 5
+    playCard(fiveMana, 'card/0')
+    playCard(fiveMana, 'card/1')
+    expect(fiveMana.enemy.health).toBe(20)
+    expect(statusValue(fiveMana, 'enemy', 'vulnerability')).toBe(0)
   })
 
   it('bridges Bleeding into Vulnerability and spends both statuses in a mage payoff', () => {

@@ -71,7 +71,7 @@ function damageEffects(card: CardDefinition) {
   return card.effects.filter((effect): effect is Extract<CardEffect, { type: 'damage' }> => effect.type === 'damage')
 }
 
-/** Big numbers on the card face, most important first: active damage, armor grants, draw, dimmed conditional damage. */
+/** Big numbers on the card face, most important first: active damage, armor grants, draw, dimmed conditional damage, then Bleeding when there is room. */
 export function statChips(card: CardDefinition, preview: CardPreview): StatChip[] {
   const chips: StatChip[] = []
   const totalBase = damageEffects(card).reduce((sum, effect) => sum + effect.amount, 0)
@@ -82,17 +82,18 @@ export function statChips(card: CardDefinition, preview: CardPreview): StatChip[
     if (effect.type === 'armor') chips.push({ kind: 'armor', value: effect.amount, caption: armorCaption(effect.target, preview), base: 0, boosted: false, inactive: false, spoken: `${effect.amount} брони ${armorCaption(effect.target, preview)}` })
   }
   if (preview.draw > 0) chips.push({ kind: 'draw', value: preview.draw, caption: cardsWord(preview.draw), base: 0, boosted: false, inactive: false, spoken: `добор: ${preview.draw} ${cardsWord(preview.draw)}` })
+  if (preview.damage === 0 && totalBase > 0) {
+    chips.push({ kind: 'damage', value: totalBase, caption: 'врагу', base: totalBase, boosted: false, inactive: true, spoken: `${totalBase} ${damageWord(totalBase)} врагу, если враг атакует` })
+  }
   // Bleeding: applied strength (a number to wait for), or the damage a tick card takes at once.
   for (const effect of card.effects) {
-    if (effect.type === 'status' && effect.status === 'bleeding') chips.push({ kind: 'bleeding', value: effect.amount ?? 1, caption: 'Кровь', base: 0, boosted: false, inactive: false, spoken: `Кровотечение ${effect.amount ?? 1}` })
+    if (effect.type === 'status' && effect.status === 'bleeding' && chips.length < 2) chips.push({ kind: 'bleeding', value: effect.amount ?? 1, caption: 'Кровь', base: 0, boosted: false, inactive: false, spoken: `Кровотечение ${effect.amount ?? 1}` })
     if (effect.type === 'status-tick' && effect.status === 'bleeding') {
+      if (chips.length >= 2) continue
       chips.push(preview.statusDamage > 0
         ? { kind: 'bleeding', value: preview.statusDamage, caption: 'сквозь броню', base: 0, boosted: false, inactive: false, spoken: `${preview.statusDamage} ${damageWord(preview.statusDamage)} сквозь броню` }
         : { kind: 'bleeding', value: 1, caption: 'при Крови', base: 0, boosted: false, inactive: true, spoken: 'урон равен силе Кровотечения врага, если оно есть' })
     }
-  }
-  if (preview.damage === 0 && totalBase > 0) {
-    chips.push({ kind: 'damage', value: totalBase, caption: 'врагу', base: totalBase, boosted: false, inactive: true, spoken: `${totalBase} ${damageWord(totalBase)} врагу, если враг атакует` })
   }
   return chips
 }
@@ -109,6 +110,12 @@ export function ruleLines(card: CardDefinition, preview: CardPreview): RuleLine[
     lines.push(preview.armorBonus > 0
       ? { tone: 'on', glyph: 'armor', text: `+${preview.armorBonus} — броня ${bonusOwnerGenitive(preview)}`, short: `+${preview.armorBonus} броня` }
       : { tone: 'off', glyph: 'armor', text: `+${card.damageBonus.amount} при броне ${bonusOwnerGenitive(preview)}`, short: `+${card.damageBonus.amount} при броне` })
+  }
+  const appliedBleeding = card.effects.find((effect): effect is Extract<CardEffect, { type: 'status' }> => effect.type === 'status' && effect.status === 'bleeding')
+  const bleedingChipVisible = statChips(card, preview).some(chip => chip.kind === 'bleeding' && chip.spoken.startsWith('Кровотечение '))
+  if (appliedBleeding && !bleedingChipVisible) {
+    const amount = appliedBleeding.amount ?? 1
+    lines.push({ tone: 'on', glyph: 'bleeding', text: `Накладывает Кровотечение ${amount}`, short: `Кровь +${amount}` })
   }
   const burstEffect = card.effects.find((effect): effect is Extract<CardEffect, { type: 'status-burst' }> => effect.type === 'status-burst')
   if (burstEffect) {
