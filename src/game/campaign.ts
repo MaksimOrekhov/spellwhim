@@ -1,7 +1,7 @@
 import { createBattle } from './battle'
 import { cards, startingDeck } from './types'
 import { economyEncounters, gameEconomy } from './economy'
-import { dungeonEncounterById, eliteEncounterCatalog, encounterPoolForLayer, normalEncounterCatalog } from './encountersV09'
+import { dungeonEncounterById, eliteEncountersForLayer, encounterPoolForLayer, normalEncounterCatalog } from './encountersV09'
 import type { EconomyConfig } from './economy'
 import { shuffle } from './deck'
 import type { BattleState, CardDefinition, CardId, EncounterDefinition, Hero, HeroId } from './types'
@@ -176,7 +176,7 @@ export function createDungeonMap(seed: number, economy: EconomyConfig = gameEcon
         return { id, layer: layerIndex, column, type, edges: [], healAmount: REST_HEAL_AMOUNT }
       }
       const pool = type === 'elite'
-        ? eliteEncounterCatalog
+        ? eliteEncountersForLayer(layerIndex)
         : normalEncounterCatalog.filter(encounter => encounterPoolForLayer(layerIndex).includes(encounter.id))
       const previousIds = new Set(layers[layerIndex - 1]?.filter(previous => Math.abs(previous.column - column) <= 1).map(previous => previous.encounterId))
       const withoutAdjacentRepeat = pool.filter(encounter => !previousIds.has(encounter.id))
@@ -327,7 +327,9 @@ export function validateDungeonMap(map: DungeonMap): string[] {
       const pool = encounterPoolForLayer(node.layer)
       if (!pool.includes(node.encounterId)) errors.push(`Normal encounter ${node.encounterId} is not available on layer ${node.layer + 1}`)
     }
-    if (node.type === 'elite' && !eliteEncounterCatalog.some(encounter => encounter.id === node.encounterId)) errors.push(`Elite node ${node.id} does not use an elite encounter`)
+    if (node.type === 'elite' && !eliteEncountersForLayer(node.layer).some(encounter => encounter.id === node.encounterId)) {
+      errors.push(`Elite node ${node.id} does not use the elite assigned to layer ${node.layer + 1}`)
+    }
     if (node.type !== 'final' && node.edges.length === 0) errors.push(`Node ${node.id} is a dead end`)
     for (const targetId of node.edges) {
       const target = byId.get(targetId)

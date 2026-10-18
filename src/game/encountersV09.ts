@@ -91,15 +91,26 @@ export const eliteEncounterCatalog: readonly EncounterDefinition[] = [
 ]
 
 export const encounterPoolsByLayer: readonly (readonly string[])[] = [
-  ['defias-cutpurse', 'defias-lookout', 'mine-overseer', 'foundry-tinkerer'],
+  ['defias-cutpurse', 'defias-lookout', 'mine-overseer', 'goblin-powder-runner'],
   ['defias-cutpurse', 'mine-overseer', 'goblin-powder-runner', 'defias-lookout', 'foundry-tinkerer'],
   normalEncounterCatalog.map(encounter => encounter.id),
 ]
 
-/** Layers are zero-based: keep the first two simple, add armor/AoE in the middle, then open the full roster. */
+/** Layers are zero-based: the first two share a 4-enemy pool, layer 3 adds the tinkerer, layer 5 opens the full roster. */
 export function encounterPoolForLayer(layer: number): readonly string[] {
   const poolIndex = layer < 2 ? 0 : layer < 4 ? 1 : 2
   return encounterPoolsByLayer[poolIndex] ?? []
+}
+
+/** Map layer indices are zero-based: Veteran on layer 3, foundry chief on layer 5. */
+const eliteEncounterIdByLayer: Readonly<Record<number, string>> = {
+  2: 'defias-veteran',
+  4: 'goblin-foundry-chief',
+}
+
+export function eliteEncountersForLayer(layer: number): readonly EncounterDefinition[] {
+  const encounterId = eliteEncounterIdByLayer[layer]
+  return encounterId ? eliteEncounterCatalog.filter(encounter => encounter.id === encounterId) : []
 }
 
 export function dungeonEncounterById(id: string): EncounterDefinition | undefined {

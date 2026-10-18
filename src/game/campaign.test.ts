@@ -7,7 +7,7 @@ import {
 import { createCampaignBattle } from './campaign'
 import { deriveDungeonSeed } from './campaign'
 import { forecastEnemyAction, playCard } from './battle'
-import { eliteEncounterCatalog, encounterPoolForLayer, normalEncounterCatalog } from './encountersV09'
+import { eliteEncounterCatalog, eliteEncountersForLayer, encounterPoolForLayer, normalEncounterCatalog } from './encountersV09'
 import { chooseDungeonRouteNode, publicDungeonNodeView } from './dungeonRoutePolicy'
 import { cardDefinition } from './types'
 import type { EnemyAction, EnemyHit } from './types'
@@ -62,9 +62,23 @@ describe('dungeon map generation', () => {
       const map = createDungeonMap(seed)
       for (const node of map.layers.flat()) {
         if (node.type === 'battle') expect(encounterPoolForLayer(node.layer)).toContain(node.encounterId)
-        if (node.type === 'elite') expect(eliteEncounterCatalog.map(item => item.id)).toContain(node.encounterId)
+        if (node.type === 'elite') {
+          expect(eliteEncountersForLayer(node.layer).map(item => item.id)).toContain(node.encounterId)
+          expect(node.encounterId).toBe(node.layer === 2 ? 'defias-veteran' : 'goblin-foundry-chief')
+        }
       }
     }
+    expect(encounterPoolForLayer(0)).not.toContain('foundry-tinkerer')
+    expect(encounterPoolForLayer(1)).not.toContain('foundry-tinkerer')
+    expect(encounterPoolForLayer(2)).toContain('foundry-tinkerer')
+    expect(encounterPoolForLayer(4)).toEqual(normalEncounterCatalog.map(item => item.id))
+  })
+
+  it('rejects elites assigned to the wrong layer', () => {
+    const map = createDungeonMap(17)
+    const wrongEliteLayer = map.layers[4]!.find(node => node.type === 'elite')!
+    wrongEliteLayer.encounterId = 'defias-veteran'
+    expect(validateDungeonMap(map)).toContain(`Elite node ${wrongEliteLayer.id} does not use the elite assigned to layer 5`)
   })
 
   it('announces elite preparations and preserves the current intent when the foundry chief changes phase', () => {
