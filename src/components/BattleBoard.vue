@@ -2,9 +2,9 @@
 import { computed } from 'vue'
 import { forecastEnemyAction } from '../game/battle'
 import { pendingTickDamage, statusViews } from '../game/statuses'
-import type { BattleState } from '../game/types'
+import type { BattleState, HeroId } from '../game/types'
 import type { BattlePhase, BattlePresentation } from '../composables/useBattleAnimation'
-import { heroThreats, lethalLater, lethalNow } from '../ui/threatDisplay'
+import { heroMarks, lethalHeroes, publicIntent } from '../ui/threatDisplay'
 import HeroFrame from './HeroFrame.vue'
 import EnemyFrame from './EnemyFrame.vue'
 import IntentBanner from './IntentBanner.vue'
@@ -12,21 +12,24 @@ import ThreatRays from './ThreatRays.vue'
 import BattleFx from './BattleFx.vue'
 import BattleResult from './BattleResult.vue'
 import BattleHelp from './BattleHelp.vue'
-const props = defineProps<{ state: BattleState; animation: BattlePresentation; phase: BattlePhase; artifactNotices?: string[]; continueLabel?: string }>()
+const props = defineProps<{ state: BattleState; animation: BattlePresentation; phase: BattlePhase; artifactNotices?: string[]; continueLabel?: string; captioned?: boolean }>()
 const emit = defineEmits<{ impact: [actionId: string]; endTurn: []; continue: [] }>()
 const enemyStatuses = computed(() => statusViews(props.state, 'enemy'))
 // Health the enemy loses to ticking statuses at the start of its turn (Bleeding), drawn as a ghost on its health bar.
 const bleedTick = computed(() => props.state.result ? 0 : Math.min(props.state.enemy.health, pendingTickDamage(props.state, 'enemy')))
 // While the enemy acts, the forecast the player saw is kept (it was computed before the hit and is what gets executed).
-const forecast = computed(() => props.phase === 'enemy' && props.animation.incoming ? props.animation.incoming : forecastEnemyAction(props.state))
-const threats = computed(() => heroThreats(forecast.value))
+// The engine's forecast stops here: everything below this line receives only the public intent (ui/threatDisplay.ts).
+const intent = computed(() => publicIntent(props.phase === 'enemy' && props.animation.incoming ? props.animation.incoming : forecastEnemyAction(props.state)))
+const marks = computed(() => heroMarks(intent.value))
+// What the sweep effect of an attack on both draws at each hero: the announced loss of a hit that lands now, nothing for a preparation.
+const incomingLoss = computed(() => Object.fromEntries(Object.values(marks.value).map(mark => [mark!.hero, mark!.when === 'now' ? mark!.healthLoss : 0])) as Partial<Record<HeroId, number>>)
 const heroNames = computed(() => ({ warrior: props.state.heroes.warrior.name, mage: props.state.heroes.mage.name }))
 const phaseTitle = computed(() => ({ player: 'Ваш ход', card: 'Способность отряда', enemy: 'Ход противника', finished: 'Бой завершён' })[props.phase])
-const rayTargets = computed(() => forecast.value.threatened)
-const rayLater = computed(() => forecast.value.targets.length === 0 && forecast.value.futureTargets.length > 0)
-const rayLethal = computed(() => [...lethalNow(forecast.value), ...lethalLater(forecast.value)])
+const rayTargets = computed(() => Object.keys(marks.value) as HeroId[])
+const rayLater = computed(() => intent.value.kind === 'prepare')
+const rayLethal = computed(() => lethalHeroes(intent.value))
 // Changes whenever the announced numbers change, so the rays re-measure after a protective card moved the layout of the badges.
-const rayTick = computed(() => [props.state.turn, props.phase, forecast.value.action.name, ...Object.values(threats.value).map(item => `${item!.hero}${item!.timing}${item!.healthLoss}`)].join('|'))
+const rayTick = computed(() => [props.state.turn, props.phase, intent.value.name, ...Object.values(marks.value).map(item => `${item!.hero}${item!.when}${item!.when === 'now' ? item!.healthLoss : ''}`)].join('|'))
 </script>
 <template>
   <main class="battle-scene" data-battle-scene :class="'battle-scene--' + phase">
@@ -48,19 +51,19 @@ const rayTick = computed(() => [props.state.turn, props.phase, forecast.value.ac
     </header>
     <div class="arena">
       <section class="party party--first" aria-label="Вариан Ринн">
-        <HeroFrame :hero="state.heroes.warrior" :statuses="statusViews(state, 'warrior')" :artifacts="state.artifacts" :turn="state.turn" :threat="threats.warrior" :hit="animation.impactTarget === 'warrior' || animation.impactTarget === 'both'" :acting="phase === 'card' && animation.source === 'warrior'" />
+        <HeroFrame :hero="state.heroes.warrior" :statuses="statusViews(state, 'warrior')" :artifacts="state.artifacts" :turn="state.turn" :threat="marks.warrior" :hit="animation.impactTarget === 'warrior' || animation.impactTarget === 'both'" :acting="phase === 'card' && animation.source === 'warrior'" />
       </section>
       <section class="enemy-encounter" aria-label="Противник">
         <EnemyFrame :enemy="state.enemy" :statuses="enemyStatuses" :bleed-tick="bleedTick" :acting="phase === 'enemy'" :hit="animation.impactTarget === 'enemy'" />
-        <IntentBanner :forecast="forecast" :hero-names="heroNames" :executing="phase === 'enemy'" />
+        <IntentBanner :intent="intent" :hero-names="heroNames" :executing="phase === 'enemy'" :caption="captioned" />
       </section>
       <section class="party party--second" aria-label="Джайна Праудмур">
-        <HeroFrame :hero="state.heroes.mage" :statuses="statusViews(state, 'mage')" :artifacts="state.artifacts" :turn="state.turn" :threat="threats.mage" :hit="animation.impactTarget === 'mage' || animation.impactTarget === 'both'" :acting="phase === 'card' && animation.source === 'mage'" />
+        <HeroFrame :hero="state.heroes.mage" :statuses="statusViews(state, 'mage')" :artifacts="state.artifacts" :turn="state.turn" :threat="marks.mage" :hit="animation.impactTarget === 'mage' || animation.impactTarget === 'both'" :acting="phase === 'card' && animation.source === 'mage'" />
       </section>
     </div>
     <ThreatRays :targets="rayTargets" :later="rayLater" :lethal="rayLethal" :tick="rayTick" />
     <p v-if="artifactNotices?.length" class="artifact-feedback" role="status" aria-live="polite">{{ artifactNotices.join(' · ') }}</p>
-    <BattleFx :pulse="animation.pulse" :action-id="animation.actionId" :effect="animation.effect" :source="animation.source" :target="animation.target" :damage="animation.amount" :bonus-damage="animation.bonusDamage" :partner-armor="animation.partnerArmor" :incoming="animation.incoming" @impact="emit('impact', $event)" />
+    <BattleFx :pulse="animation.pulse" :action-id="animation.actionId" :effect="animation.effect" :source="animation.source" :target="animation.target" :damage="animation.amount" :bonus-damage="animation.bonusDamage" :partner-armor="animation.partnerArmor" :incoming-loss="incomingLoss" @impact="emit('impact', $event)" />
     <BattleResult v-if="state.result" :result="state.result" :continue-label="continueLabel" @continue="emit('continue')" />
   </main>
 </template>

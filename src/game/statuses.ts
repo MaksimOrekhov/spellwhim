@@ -191,6 +191,8 @@ export interface StatusView {
   value: number
   icon: StatusIconKey
   trigger: StatusTriggerGroup
+  /** The one figure shown on the compact icon: the bonus a hit gets (`+3`) or the strength (`3`); null when there is none. */
+  badge: string | null
 }
 
 /** Display model: plain data in canonical order, with no Vue and no icon assets, for any number of statuses per carrier. */
@@ -200,6 +202,7 @@ export function statusViews(state: StatusHolder, carrier: StatusCarrierId): Stat
     return {
       id: item.id, carrier, name: definition.name, shortName: definition.shortName, description: definition.description, note: definition.note, spoken: definition.spoken[carrier === 'enemy' ? 'enemy' : 'hero'],
       polarity: definition.polarity, reading: definition.reading, value: item.value, icon: definition.icon, trigger: triggerGroup(item.id, carrier),
+      badge: definition.hitBonus ? '+' + definition.hitBonus : definition.reading === 'intensity' ? String(item.value) : null,
     }
   })
 }

@@ -1,4 +1,4 @@
-import { createBattle } from '../game/battle'
+import { createBattle, endTurn } from '../game/battle'
 import { applyStatus } from '../game/statuses'
 import { defaultDungeonRoster } from '../game/encountersV10'
 import { gameEconomy } from '../game/economy'
@@ -9,9 +9,9 @@ import type { ArtifactId, BattleState, EncounterDefinition, EnemyAction, HeroId 
  * rules engine and then nudged through plain state fields, never through UI-only data, so what the lab draws is what a
  * run could show. The scene ids are the cases the threat display has to get right.
  */
-export type BattleSceneId = 'normal' | 'both' | 'lethal' | 'prepared' | 'absorbed' | 'phase2' | 'artifacts' | 'bleeding'
+export type BattleSceneId = 'normal' | 'warrior' | 'both' | 'lethal' | 'prepared' | 'revealed' | 'absorbed' | 'phase2' | 'artifacts' | 'bleeding' | 'vulnerable' | 'everything'
 
-export const battleSceneIds: readonly BattleSceneId[] = ['normal', 'both', 'lethal', 'prepared', 'absorbed', 'phase2', 'artifacts', 'bleeding']
+export const battleSceneIds: readonly BattleSceneId[] = ['normal', 'warrior', 'both', 'lethal', 'prepared', 'revealed', 'absorbed', 'phase2', 'artifacts', 'bleeding', 'vulnerable', 'everything']
 
 function encounter(id: string): EncounterDefinition {
   const all = [...defaultDungeonRoster.normal, ...defaultDungeonRoster.elite, ...(defaultDungeonRoster.final ? [defaultDungeonRoster.final] : [])]
@@ -47,6 +47,44 @@ export function battleScene(id: BattleSceneId, seed = 7): BattleState {
       if (action.kind === 'prepare') setIntent(state, action.prepared)
       state.heroes.mage.health = 9
       state.heroes.warrior.health = 21
+      return state
+    }
+    case 'warrior': {
+      // A plain hit on Varian (the cutpurse's opening stays as written; only its announced target is moved).
+      const state = base('defias-cutpurse')
+      const action = state.enemy.nextAction
+      if (action.kind === 'attack') setIntent(state, { ...action, target: 'warrior' })
+      state.heroes.warrior.health = 25
+      return state
+    }
+    case 'revealed': {
+      // The lookout's aim, one real turn later: the announced action is now the heavy shot itself, with its exact numbers.
+      const state = base('defias-lookout')
+      state.heroes.warrior.health = 22
+      endTurn(state)
+      return state
+    }
+    case 'vulnerable': {
+      const state = base('defias-cutpurse')
+      state.heroes.warrior.health = 25
+      state.enemy.health = 22
+      applyStatus(state, 'enemy', 'vulnerability')
+      return state
+    }
+    case 'everything': {
+      // Vulnerability, Bleeding and two artifacts at once on an armored enemy with a blow announced at the wounded mage.
+      const state = base('mine-overseer')
+      equip(state, 'reliable-wedge', 'mage')
+      equip(state, 'tension-spool', 'warrior')
+      applyStatus(state, 'enemy', 'vulnerability')
+      applyStatus(state, 'enemy', 'bleeding', 3)
+      state.heroes.mage.armor = 5
+      state.heroes.warrior.armor = 4
+      state.heroes.warrior.health = 16
+      state.enemy.armor = 6
+      state.enemy.health = 33
+      const action = state.enemy.nextAction
+      if (action.kind === 'prepare') setIntent(state, action.prepared)
       return state
     }
     case 'prepared': {

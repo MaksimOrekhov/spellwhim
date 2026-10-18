@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // Dev-only lab (card-preview.html): the real board, hand and reward screen driven by the real rules engine
 // in reproducible states. Query: ?view=hand|reward  &hand=8|10  &bonus=1  &mana=N  &elite=1  &ids=a,b,c
-// &scene=normal|both|lethal|prepared|absorbed|phase2|artifacts (battle scenes of src/ui/battleScenes.ts; replaces &enemy)
+// &scene=<id of battleSceneIds> (battle scenes of src/ui/battleScenes.ts; replaces &enemy)  &intent=caption (banner variant with the action name)
 import { computed, shallowRef } from 'vue'
 import BattleBoard from './BattleBoard.vue'
 import BattleHand from './BattleHand.vue'
@@ -70,7 +70,7 @@ const chosen = shallowRef('')
   <div class="app-shell">
     <div class="game-wrap">
       <template v-if="view === 'hand'">
-        <BattleBoard :state="state" :animation="animation" :phase="phase" @impact="impact" @end-turn="onEndTurn" />
+        <BattleBoard :state="state" :animation="animation" :phase="phase" :captioned="query.get('intent') === 'caption'" @impact="impact" @end-turn="onEndTurn" />
         <BattleHand :cards="views" :outgoing="pendingView" :outgoing-index="state.pending?.handIndex ?? 0" :draw-count="state.drawPile.length" :discard-count="state.discardPile.length" :exhausted-count="state.exhausted.length" :phase="phase" :mana="state.mana" :max-mana="state.maxMana" @play="playCard" @end-turn="onEndTurn" />
       </template>
       <CardReward v-else :options="rewardOptions" :elite="query.get('elite') === '1'" encounter-name="Шахтный забой" @choose="chosen = $event.id" />

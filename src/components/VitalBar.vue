@@ -1,12 +1,13 @@
 <script setup lang="ts">
 // Health plate shared by the heroes and the enemy: name, one wide bar with the number inside it, armor as a steel shield and
 // an optional "ghost" segment — the health that the announced hit will take away this turn. The ghost never shows a prepared
-// strike (that one is labelled "next turn" elsewhere), so the bar only ever predicts damage that is actually about to land.
+// strike (its size is not public), so the bar only ever predicts damage that is actually about to land. It carries no number:
+// the exact figure is in the enemy's banner.
 import { computed } from 'vue'
 import { Heart, Shield } from '@lucide/vue'
 import GameTooltip from './GameTooltip.vue'
 
-const props = defineProps<{ name: string; subtitle?: string; health: number; max: number; armor: number; ghost?: number; ghostTone?: 'threat' | 'strike'; side: 'hero' | 'enemy' }>()
+const props = defineProps<{ name: string; subtitle?: string; health: number; max: number; armor: number; ghost?: number; ghostTone?: 'threat' | 'strike'; lethal?: boolean; side: 'hero' | 'enemy' }>()
 const pct = computed(() => Math.max(0, Math.min(100, props.health / props.max * 100)))
 const ghostPct = computed(() => Math.max(0, Math.min(pct.value, (props.ghost ?? 0) / props.max * 100)))
 const low = computed(() => props.health / props.max <= 0.35)
@@ -17,8 +18,8 @@ const low = computed(() => props.health / props.max <= 0.35)
     <div class="nameplate"><strong>{{ name }}</strong><small v-if="subtitle">{{ subtitle }}</small></div>
     <div class="bar" role="img" :aria-label="`${name}: здоровье ${health} из ${max}${armor ? ', броня ' + armor : ''}${ghost ? ', в этот ход потеряет ' + ghost : ''}`">
       <span class="fill" :style="{ width: pct + '%' }"></span>
-      <span v-if="ghostPct > 0" class="ghost" :class="'ghost--' + (ghostTone ?? 'threat')" :style="{ left: (pct - ghostPct) + '%', width: ghostPct + '%' }"></span>
-      <span class="hp"><Heart :size="15" :stroke-width="2.6" aria-hidden="true" /><b>{{ health }}</b><i>/{{ max }}</i><em v-if="ghost" :key="ghost">−{{ ghost }}</em></span>
+      <span v-if="ghostPct > 0" class="ghost" :class="['ghost--' + (ghostTone ?? 'threat'), { 'ghost--lethal': lethal }]" :style="{ left: (pct - ghostPct) + '%', width: ghostPct + '%' }"></span>
+      <span class="hp"><Heart :size="15" :stroke-width="2.6" aria-hidden="true" /><b>{{ health }}</b><i>/{{ max }}</i></span>
     </div>
     <GameTooltip v-if="armor" label="Броня" class="armor-tip">
       <span class="armor" tabindex="0" :aria-label="'Броня ' + armor"><Shield :size="40" :stroke-width="1.6" aria-hidden="true" /><b>{{ armor }}</b></span>
@@ -37,17 +38,14 @@ const low = computed(() => props.health / props.max <= 0.35)
 .fill{position:absolute;inset:0 auto 0 0;background:var(--mat-hp-fill);transition:width var(--dur-slow) var(--ease-out);box-shadow:inset 0 2px 2px #fff6}
 .fill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#0000 75%,#fff3)}
 .is-low .fill{background:var(--mat-hp-fill-low)}
-.ghost{position:absolute;top:0;bottom:0;background-color:#1a0000;background-image:repeating-linear-gradient(135deg,var(--c-ghost-threat-a) 0 5px,var(--c-ghost-threat-b) 5px 10px);box-shadow:inset 0 0 8px var(--c-threat);animation:ghost-blink 1s ease-in-out infinite;transition:left var(--dur-slow) var(--ease-out),width var(--dur-slow) var(--ease-out)}
+.ghost{position:absolute;top:0;bottom:0;background-color:#1a0000;background-image:repeating-linear-gradient(135deg,var(--c-ghost-threat-a) 0 5px,var(--c-ghost-threat-b) 5px 10px);box-shadow:inset 0 0 8px var(--c-threat);transition:left var(--dur-slow) var(--ease-out),width var(--dur-slow) var(--ease-out)}
 /* "strike": health the enemy is about to lose on its own (Bleeding at the start of its turn), in gold like the card-damage preview. */
 .ghost--strike{background-color:#2a1a00;background-image:repeating-linear-gradient(135deg,var(--c-ghost-strike-a) 0 5px,var(--c-ghost-strike-b) 5px 10px);box-shadow:inset 0 0 8px var(--c-bonus)}
-.ghost--strike~.hp em{color:var(--c-ghost-strike-a)}
-@keyframes ghost-blink{50%{opacity:.62}}
+.ghost--lethal{box-shadow:inset 0 0 10px var(--c-lethal),0 0 0 1px var(--c-lethal)}
 .hp{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:5px;color:#fff;text-shadow:0 1px 2px #000,0 0 5px #000a}
 .hp svg{color:#ffd0c8;fill:currentColor}
 .hp b{font:var(--fw-bold) clamp(15px,2.1vh,22px)/1 var(--font-num)}
 .hp i{font:var(--fw-semibold) clamp(11px,1.5vh,16px)/1 var(--font-num);font-style:normal;opacity:.78}
-.hp em{margin-left:6px;padding:0 6px;border-radius:var(--r-1);background:#000a;color:var(--c-ghost-threat-a);font:var(--fw-bold) clamp(12px,1.6vh,17px)/1.15 var(--font-num);font-style:normal;animation:loss-in var(--dur-base) var(--ease-snap)}
-@keyframes loss-in{from{scale:1.6;opacity:0}}
 .armor-tip{position:absolute;left:-14px;bottom:-8px;z-index:2}
 .armor{position:relative;display:grid;place-items:center;width:clamp(36px,5.4vh,50px);height:clamp(40px,6vh,56px);filter:drop-shadow(0 3px 4px #000c)}
 .armor svg{position:absolute;inset:0;width:100%;height:100%;color:var(--c-armor-deep);fill:var(--c-armor)}

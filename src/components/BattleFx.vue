@@ -2,11 +2,10 @@
 import { onMounted, onUnmounted, useTemplateRef, watch } from 'vue'
 import { Application, Container, Graphics, Text } from 'pixi.js'
 import type { HeroId } from '../game/types'
-import type { EnemyActionForecast } from '../game/battle'
 import { fontFamily } from '../ui/typography'
 
 type Effect = 'attack' | 'spell' | 'guard' | 'hit' | 'heavy' | 'hit-all' | 'defend' | 'prepare' | 'recover' | ''
-const props = defineProps<{ pulse: number; effect: Effect; target: HeroId | 'enemy'; source: HeroId | 'enemy' | null; damage: number; actionId: string | null; bonusDamage: number; partnerArmor: number; incoming?: EnemyActionForecast | null }>()
+const props = defineProps<{ pulse: number; effect: Effect; target: HeroId | 'enemy'; source: HeroId | 'enemy' | null; damage: number; actionId: string | null; bonusDamage: number; partnerArmor: number; incomingLoss?: Partial<Record<HeroId, number>> }>()
 const emit = defineEmits<{ impact: [actionId: string] }>()
 const canvasHost = useTemplateRef<HTMLDivElement>('canvasHost')
 let app: Application | null = null
@@ -398,7 +397,7 @@ function trigger() {
     let sent = false
     if (!remaining) return
     for (const { id, point } of targets) {
-      const actual = props.incoming?.targets.find(hit => hit.target === id)?.healthLoss ?? 0
+      const actual = props.incomingLoss?.[id] ?? 0
       swordSlashAt(point.x, point.y, () => { remaining -= 1; if (!remaining && !sent) { sent = true; onImpact() } }, 0xffa06e, actual)
     }
   }

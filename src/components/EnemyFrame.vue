@@ -53,6 +53,6 @@ const vulnerable = computed(() => props.statuses?.some(item => item.id === 'vuln
 .phase--2{background:linear-gradient(#6a1d0e,#33090a);border-color:var(--c-threat-line)}
 .phase-pip{width:9px;height:9px;border-radius:50%;background:#0006;border:1px solid var(--gold)}
 .phase-pip.on{background:var(--c-bonus);box-shadow:0 0 6px var(--c-bonus)}
-.status-rack{position:absolute;z-index:3;left:calc(-1 * clamp(10px,2vh,24px));bottom:6px;display:flex;flex-direction:column;align-items:flex-start;gap:5px}
+.status-rack{position:absolute;z-index:3;left:-12px;bottom:12px;display:flex;flex-direction:column;align-items:flex-start;gap:14px}
 .plate{width:100%}
 </style>
