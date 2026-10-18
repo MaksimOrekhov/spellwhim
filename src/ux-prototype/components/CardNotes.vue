@@ -30,7 +30,7 @@ const reasonText = computed(() => props.reason === 'mana' ? `Не хватает
 </template>
 
 <style scoped>
-.notes{--accent:#d6a65e;width:15.5em;padding:.9em 1em .8em;border-radius:.4em .9em .4em .9em;background:linear-gradient(160deg,var(--parch-1),var(--parch-2));color:var(--ink);box-shadow:0 .6em 1.4em #000b,inset 0 0 1.6em #8a622c66,0 0 0 .14em var(--brass-3),0 0 0 .26em #2b1f14;font-size:1rem;line-height:1.3;text-align:left}
+.notes{--accent:#d6a65e;width:15.5em;padding:.9em 1em .8em;border-radius:1.1em 1.5em 1.2em 1.6em/1.3em 1.1em 1.6em 1.2em;background:linear-gradient(160deg,var(--parch-1),var(--parch-2));color:var(--ink);box-shadow:0 .6em 1.4em #000b,inset 0 0 1.6em #8a622c66,0 0 0 .14em var(--brass-3),0 0 0 .26em #2b1f14;font-size:1rem;line-height:1.3;text-align:left}
 header{display:flex;flex-direction:column;gap:.1em;padding-bottom:.4em;margin-bottom:.45em;border-bottom:.08em solid #8a622c88}
 header strong{font:800 1.12em/1.15 var(--f-display)}
 header small{font:700 .66em/1.2 var(--f-ui);letter-spacing:.1em;text-transform:uppercase;color:#7a5a2c}
@@ -42,7 +42,7 @@ header small{font:700 .66em/1.2 var(--f-ui);letter-spacing:.1em;text-transform:u
 .notes-math b.hot{color:#a85d00;text-shadow:0 0 .5em #ffd56b}
 .notes-math small{font-size:.82em;font-weight:600;color:#5b3d1a}
 .notes-sub{margin:.1em 0 .3em 1.7em;font:600 .74em/1.25 var(--f-ui);color:#5b3d1a}
-.notes-key{display:flex;gap:.4em;margin:.45em 0 0;padding:.4em .5em;border-radius:.4em;background:#fff6;font:600 .76em/1.3 var(--f-ui)}
+.notes-key{display:flex;gap:.4em;margin:.45em 0 0;padding:.45em .6em;border-radius:.9em;background:#fff6;font:600 .76em/1.3 var(--f-ui)}
 .notes-key svg{flex:none;width:1.4em;height:1.4em;color:#c27a0b;margin-top:.05em}
 .notes-key--plain svg{color:#c2501b}
 footer{margin-top:.55em;padding-top:.4em;border-top:.08em solid #8a622c88;font:700 .72em/1.3 var(--f-ui);color:#4f6d2a}

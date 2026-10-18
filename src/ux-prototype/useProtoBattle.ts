@@ -12,6 +12,8 @@ export interface ProtoCardView {
   preview: CardPreview
   /** Why the card cannot be played right now (null = playable). */
   reason: 'mana' | 'busy' | 'finished' | null
+  /** 1-based place in the quick-play queue, if the player has already pressed this card during an animation. */
+  queued?: number
 }
 
 /** Thin adapter over the real engine — the same contract as src/composables/useBattle.ts, plus scenario loading. */

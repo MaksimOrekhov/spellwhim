@@ -4,7 +4,7 @@ import ProtoCard from './ProtoCard.vue'
 import CardNotes from './CardNotes.vue'
 import type { ProtoCardView } from '../useProtoBattle'
 
-const props = defineProps<{ cards: ProtoCardView[]; mana: number; locked?: boolean; pin?: number }>()
+const props = defineProps<{ cards: ProtoCardView[]; mana: number; locked?: boolean; pin?: number; labels?: Record<string, string> }>()
 const emit = defineEmits<{ play: [instanceId: string]; inspect: [view: ProtoCardView | null] }>()
 
 const box = ref<HTMLElement | null>(null)
@@ -59,7 +59,7 @@ function side(index: number): 'left' | 'right' {
 }
 function enter(view: ProtoCardView) { active.value = view.instanceId; emit('inspect', view) }
 function leave(view: ProtoCardView) { if (active.value === view.instanceId) { active.value = null; emit('inspect', null) } }
-function hotkey(index: number) { return String(index === 9 ? 0 : index + 1) }
+function hotkey(index: number, view: ProtoCardView) { return props.labels ? props.labels[view.instanceId] ?? '' : String(index === 9 ? 0 : index + 1) }
 </script>
 
 <template>
@@ -67,9 +67,9 @@ function hotkey(index: number) { return String(index === 9 ? 0 : index + 1) }
     <TransitionGroup name="deal" tag="div" class="hand-track">
       <div v-for="(view, index) in cards" :key="view.instanceId" class="slot" :class="{ 'is-active': active === view.instanceId, 'is-unplayable': !!view.reason }" :style="slotStyle(index)" @mouseenter="enter(view)" @mouseleave="leave(view)" @focusin="enter(view)" @focusout="leave(view)">
         <div class="holder" :style="holderStyle(index)">
-          <ProtoCard :id="'pcard-' + view.instanceId" :card="view.card" :preview="view.preview" :reason="view.reason" :hotkey="hotkey(index)" :mana="mana" :vis="index === cards.length - 1 || active === view.instanceId ? 1 : visible" @play="emit('play', view.instanceId)" />
+          <ProtoCard :id="'pcard-' + view.instanceId" :card="view.card" :preview="view.preview" :reason="view.reason" :hotkey="hotkey(index, view)" :queued="view.queued" :mana="mana" :vis="index === cards.length - 1 || active === view.instanceId ? 1 : visible" @play="emit('play', view.instanceId)" />
         </div>
-        <div v-if="active === view.instanceId" class="notes-anchor" :class="'notes-anchor--' + side(index)"><CardNotes :card="view.card" :preview="view.preview" :reason="view.reason" :mana="mana" :hotkey="hotkey(index)" /></div>
+        <div v-if="active === view.instanceId" class="notes-anchor" :class="'notes-anchor--' + side(index)"><CardNotes :card="view.card" :preview="view.preview" :reason="view.reason" :mana="mana" :hotkey="hotkey(index, view)" /></div>
       </div>
     </TransitionGroup>
     <p v-if="!cards.length" class="empty">Рука пуста — завершите ход, чтобы добрать карты.</p>

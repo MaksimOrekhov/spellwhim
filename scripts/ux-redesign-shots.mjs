@@ -41,14 +41,18 @@ async function proto() {
     ['proto-1920-ten-hover', 'ten hover', 1920, 1080, 's=ten&hover=4'],
     ['proto-1920-swarm', 'swarm', 1920, 1080, 's=swarm'],
     ['proto-1920-reward', 'reward', 1920, 1080, 'screen=reward'],
+    ['proto-1920-reward-elite', 'reward elite', 1920, 1080, 'screen=reward&elite=1'],
     ['proto-1920-map', 'map', 1920, 1080, 'screen=map'],
+    ['proto-1920-rest', 'rest', 1920, 1080, 'screen=rest'],
     ['proto-1920-victory', 'victory', 1920, 1080, 's=synergy&screen=victory'],
     ['proto-1920-defeat', 'defeat', 1920, 1080, 's=swarm&screen=defeat'],
     ['proto-1280-normal', 'normal 720', 1280, 720, 's=normal'],
     ['proto-1280-synergy', 'synergy 720', 1280, 720, 's=synergy&hover=0'],
     ['proto-1280-ten', 'ten 720', 1280, 720, 's=ten&hover=3'],
     ['proto-1280-reward', 'reward 720', 1280, 720, 'screen=reward'],
+    ['proto-1280-reward-elite', 'reward elite 720', 1280, 720, 'screen=reward&elite=1'],
     ['proto-1280-map', 'map 720', 1280, 720, 'screen=map'],
+    ['proto-1280-rest', 'rest 720', 1280, 720, 'screen=rest'],
   ]
   for (const [name, , w, h, query] of states) { const page = await open(w, h, q(query)); await shot(page, name); await page.close() }
   // card close-ups at 2× (the hand without hover, and one zoomed card with its scroll)
@@ -62,7 +66,10 @@ async function proto() {
   page = await open(1920, 1080, q('s=synergy'))
   await page.keyboard.press('1'); await sleep(260); await shot(page, 'proto-1920-play-flight')
   await sleep(380); await shot(page, 'proto-1920-play-impact')
-  await sleep(1000); await page.keyboard.press('Enter'); await sleep(620); await shot(page, 'proto-1920-enemy-turn')
+  await sleep(1000)
+  // quick play: press 1 and 2 back to back — the second play is queued, labels stay stable while the hand re-flows
+  await page.keyboard.press('1'); await sleep(120); await page.keyboard.press('2'); await sleep(150); await shot(page, 'proto-1920-quick-queue'); await sleep(1700)
+  await page.keyboard.press('Enter'); await sleep(620); await shot(page, 'proto-1920-enemy-turn')
   await page.close()
 }
 
@@ -70,7 +77,7 @@ async function current() {
   for (const [w, h, tag] of [[1920, 1080, '1920'], [1280, 720, '1280']]) {
     const page = await open(w, h, `${base}/`)
     await shot(page, `current-${tag}-map`)
-    await page.click('.route-node.is-current'); await sleep(1300)
+    await page.click('.map-node.is-available'); await sleep(1300)
     await shot(page, `current-${tag}-battle`)
     const cards = await page.$$('.spell-card')
     if (cards[2]) { await cards[2].hover(); await sleep(500); await shot(page, `current-${tag}-battle-hover`) }
@@ -89,6 +96,10 @@ async function current() {
     await sleep(700); await shot(page, `current-${tag}-result`)
     await page.click('.result-card .game-button'); await sleep(900)
     await shot(page, `current-${tag}-reward`)
+    await page.click('.reward-card'); await sleep(900)
+    await shot(page, `current-${tag}-map-progress`)
+    const rest = await page.$('.map-node--rest.is-available')
+    if (rest) { await rest.click(); await sleep(900); await shot(page, `current-${tag}-rest`) }
     await page.close()
   }
 }

@@ -20,11 +20,11 @@ const picks = computed(() => props.options.map(card => ({ card, preview: preview
   <main class="reward">
     <header class="reward-head">
       <span class="spark"><GlyphIcon name="attack-all" /></span>
-      <small>Победа · Корневой дозорный</small>
-      <h1>Выберите новую силу</h1>
-      <p>Карта останется в колоде до конца похода. Колода: 18 → 19 карт.</p>
+      <small>{{ options.length > 3 ? 'Ценная награда элиты' : 'Награда за победу' }}</small>
+      <h1>{{ options.length > 3 ? 'Заберите трофей' : 'Выберите новую силу' }}</h1>
+      <p>Выберите одну карту из {{ options.length }}. Она останется в колоде до конца похода.</p>
     </header>
-    <div class="reward-row">
+    <div class="reward-row" :class="{ many: options.length > 3 }">
       <div v-for="(p, i) in picks" :key="p.card.id" class="choice" :style="{ '--i': i }">
         <div class="choice-card"><ProtoCard :card="p.card" :preview="p.preview" :reason="null" @play="$emit('pick', p.card)" /></div>
         <CardNotes class="choice-notes" :card="p.card" :preview="p.preview" :reason="null" mode="choose" />
@@ -49,8 +49,12 @@ const picks = computed(() => props.options.map(card => ({ card, preview: preview
 .choice-card :deep(.pcard){font-size:1.5rem}
 .choice:hover .choice-card{transform:translateY(-.8rem) scale(1.03)}
 .choice-notes{width:17.4rem!important;font-size:1.1rem;min-height:14.2em}
-.take{padding:.7rem 2.2rem;border:.14rem solid #ffe3a7;border-radius:.6rem;background:linear-gradient(#d8923f,#8a4a1d);box-shadow:0 .25rem 0 #4a1f08,0 .6rem 1rem #000a;color:#fff3d6;font:800 1.1rem var(--f-display)}
+.take{padding:.75rem 2.4rem;border:.14rem solid #ffe3a7;border-radius:1.8rem 1.4rem 1.7rem 1.5rem/1.5rem 1.8rem 1.4rem 1.7rem;background:linear-gradient(#d8923f,#8a4a1d);box-shadow:0 .25rem 0 #4a1f08,0 .6rem 1rem #000a;color:#fff3d6;font:800 1.1rem var(--f-display)}
 .take:hover{filter:brightness(1.12)}
+.many{gap:1.8rem;margin-top:1.8rem}
+.many .choice-card{width:13.3rem;height:19.6rem}
+.many .choice-card :deep(.pcard){font-size:1.15rem}
+.many .choice-notes{width:13.3rem!important;font-size:.84rem;min-height:12em}
 .skip{margin-top:1.3rem;padding:.35rem 1.4rem;border:.1rem solid #ffffff44;border-radius:2rem;background:#0006;color:#d9c9a6;font:700 .9rem var(--f-ui)}
-@media (max-height:820px){.reward{padding-top:1.4rem}.reward-head h1{font-size:2.2rem}.reward-row{margin-top:1.2rem;gap:3rem}.choice-card{width:13.9rem;height:20.4rem}.choice-card :deep(.pcard){font-size:1.2rem}.choice-notes{width:13.9rem!important;font-size:.9rem}.reward-head p{display:none}}
+@media (max-height:820px){.many{gap:1.2rem;margin-top:.8rem}.many .choice-card{width:11.4rem;height:16.7rem}.many .choice-card :deep(.pcard){font-size:.98rem}.many .choice-notes{width:11.4rem!important;font-size:.72rem;min-height:9em}.many .take{padding:.45rem 1.4rem;font-size:.95rem}.reward{padding-top:1.4rem}.reward-head h1{font-size:2.2rem}.reward-row{margin-top:1.2rem;gap:3rem}.choice-card{width:13.9rem;height:20.4rem}.choice-card :deep(.pcard){font-size:1.2rem}.choice-notes{width:13.9rem!important;font-size:.9rem}.reward-head p{display:none}}
 </style>

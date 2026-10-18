@@ -9,7 +9,7 @@ import { portraits } from '../cardArt'
 import VitalBar from './VitalBar.vue'
 import GlyphIcon from './GlyphIcon.vue'
 
-const props = defineProps<{ hero: Hero; incoming?: EnemyTargetForecast; later?: boolean; acting?: boolean; hit?: boolean; guarded?: boolean; armorPreview?: number }>()
+const props = defineProps<{ hero: Hero; incoming?: EnemyTargetForecast; later?: boolean; acting?: boolean; hit?: boolean; guarded?: boolean; armorPreview?: number; heal?: number }>()
 const id = computed<HeroId>(() => props.hero.id)
 const style = computed(() => classThemeStyle(props.hero.id))
 const ghost = computed(() => props.incoming && !props.later ? props.incoming.healthLoss : 0)
@@ -33,7 +33,7 @@ const ghost = computed(() => props.incoming && !props.later ? props.incoming.hea
       </div>
       <span v-if="hero.id === 'mage' && hero.armor > 0" class="spark" title="Пока у Джайны есть броня, её заклинания наносят +2 урона"><GlyphIcon name="attack-all" /> +2</span>
     </div>
-    <VitalBar :name="hero.name" :subtitle="hero.title" :health="hero.health" :max="hero.maxHealth" :armor="hero.armor" :armor-preview="armorPreview" :ghost="ghost" ghost-tone="threat" side="hero" />
+    <VitalBar :name="hero.name" :subtitle="hero.title" :health="hero.health" :max="hero.maxHealth" :armor="hero.armor" :armor-preview="armorPreview" :heal="heal" :ghost="ghost" ghost-tone="threat" side="hero" />
   </article>
 </template>
 
@@ -42,12 +42,12 @@ const ghost = computed(() => props.incoming && !props.later ? props.incoming.hea
 .hero.is-acting{transform:translateY(-.6rem)}
 .arch{position:relative;width:var(--arch-w);height:var(--arch-h);filter:drop-shadow(0 1rem 1.2rem #000b)}
 .arch-rim,.arch-art,.arch-gloss{position:absolute;display:block}
-.arch-rim{inset:0;border-radius:50% 50% 1.1rem 1.1rem/34% 34% 1.1rem 1.1rem;background:linear-gradient(160deg,#fff0b8 0%,var(--class-accent) 22%,#7a5424 52%,var(--class-accent) 76%,#4b3015 100%)}
+.arch-rim{inset:0;border-radius:50% 50% 2.1rem 2.1rem/34% 34% 2.1rem 2.1rem;background:linear-gradient(160deg,#fff0b8 0%,var(--class-accent) 22%,#7a5424 52%,var(--class-accent) 76%,#4b3015 100%)}
 .hero--mage .arch-rim{background:linear-gradient(160deg,#fff3c0 0%,#d9b46a 18%,var(--class-accent) 45%,#4b3a86 70%,#e8c978 100%)}
-.arch-art{inset:.55rem;overflow:hidden;border-radius:50% 50% .7rem .7rem/33% 33% .7rem .7rem;background:#10202e;box-shadow:inset 0 0 1.2rem #000b}
+.arch-art{inset:.55rem;overflow:hidden;border-radius:50% 50% 1.6rem 1.6rem/33% 33% 1.6rem 1.6rem;background:#10202e;box-shadow:inset 0 0 1.2rem #000b}
 .arch-art img{width:100%;height:100%;object-fit:cover;object-position:46% 18%;display:block;transform:scale(1.18);transform-origin:50% 22%;transition:transform .5s var(--ease-out),filter .3s}
 .hero:hover .arch-art img{transform:scale(1.22)}
-.arch-gloss{inset:.55rem;border-radius:50% 50% .7rem .7rem/33% 33% .7rem .7rem;pointer-events:none;background:linear-gradient(180deg,#fff2 0,#0000 28%,#0000 62%,#000a 100%);box-shadow:inset 0 0 0 .1rem #ffffff22}
+.arch-gloss{inset:.55rem;border-radius:50% 50% 1.6rem 1.6rem/33% 33% 1.6rem 1.6rem;pointer-events:none;background:linear-gradient(180deg,#fff2 0,#0000 28%,#0000 62%,#000a 100%);box-shadow:inset 0 0 0 .1rem #ffffff22}
 .hero.is-hit .arch-art img{animation:hit-flash .42s ease-out}
 .hero.is-hit .arch{animation:shake .42s ease-out}
 @keyframes hit-flash{0%{filter:brightness(2.2) saturate(.4)}100%{filter:none}}

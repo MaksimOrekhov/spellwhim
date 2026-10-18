@@ -29,7 +29,7 @@ defineEmits<{ next: []; again: [] }>()
 small{display:block;margin-top:.6rem;font:800 .85rem var(--f-ui);letter-spacing:.22em;text-transform:uppercase;color:#ffe9b0}
 h1{margin:.2rem 0;font:800 5rem/1.1 var(--f-display);color:#fff3d6;text-shadow:0 .25rem .6rem #000b}
 p{margin:0 0 1.4rem;font:600 1.2rem var(--f-ui);color:#f6e8c6}
-.cta{padding:.9rem 3rem;border:.16rem solid #ffe3a7;border-radius:.7rem;background:linear-gradient(#e8a24a,#9a5420);box-shadow:0 .3rem 0 #4a1f08,0 .8rem 1.2rem #000b;color:#fff8e0;font:800 1.4rem var(--f-display)}
+.cta{padding:.9rem 3.2rem;border:.16rem solid #ffe3a7;border-radius:2.2rem 1.7rem 2.1rem 1.8rem/1.8rem 2.2rem 1.7rem 2.1rem;background:linear-gradient(#e8a24a,#9a5420);box-shadow:0 .3rem 0 #4a1f08,0 .8rem 1.2rem #000b;color:#fff8e0;font:800 1.4rem var(--f-display)}
 .cta:hover{filter:brightness(1.1)}
 @media (max-height:820px){h1{font-size:3.6rem}.band{padding:1.6rem 0 1.8rem}}
 </style>

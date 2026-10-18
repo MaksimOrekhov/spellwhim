@@ -38,7 +38,7 @@ const later = computed(() => !props.forecast.targets.length && props.forecast.fu
 </template>
 
 <style scoped>
-.intent{--c:#ff7a4d;position:relative;display:flex;align-items:center;gap:.9rem;min-width:25rem;max-width:40rem;padding:.7rem 1.1rem .7rem .7rem;border-radius:.5rem 2rem 2rem .5rem;background:linear-gradient(100deg,#2a1710f2,#3d2518f2);border:.14rem solid var(--brass-3);box-shadow:0 .5rem 1.2rem #000b,inset 0 .1rem #ffffff22,inset .35rem 0 0 var(--c)}
+.intent{--c:#ff7a4d;position:relative;display:flex;align-items:center;gap:.9rem;min-width:25rem;max-width:40rem;padding:.7rem 1.1rem .7rem .7rem;border-radius:1.7rem 2.6rem 2.4rem 1.9rem/1.8rem 2.4rem 2.6rem 1.7rem;background:linear-gradient(100deg,#2a1710f2,#3d2518f2);border:.14rem solid var(--brass-3);box-shadow:0 .5rem 1.2rem #000b,inset 0 .1rem #ffffff22,inset .45rem 0 .6rem -.2rem var(--c)}
 .intent--defend,.intent--recover{--c:#8fc2f0}
 .intent--prepare{--c:#ffc15a}
 .intent-icon{display:grid;place-items:center;flex:none;width:3.6rem;height:3.6rem;margin-left:.3rem;border-radius:50%;background:radial-gradient(circle at 35% 28%,color-mix(in srgb,var(--c) 55%,#fff),var(--c) 55%,color-mix(in srgb,var(--c) 45%,#000));color:#2a1208;font-size:2rem;box-shadow:0 .2rem .5rem #000a,inset 0 0 .5rem #fff6}

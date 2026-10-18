@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // UX/UI exploration prototype «Сцена приключения». Isolated from the shipping game: it imports the rules (read-only)
 // and renders them with a new presentation layer. Open /ux-prototype.html (dev) — see docs/ux-ui-redesign-research.md.
-import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watchEffect } from 'vue'
 import { useProtoBattle } from './useProtoBattle'
 import { scenarioList } from './scenarios'
 import type { ScenarioId } from './scenarios'
@@ -20,13 +20,14 @@ import EndTurnButton from './components/EndTurnButton.vue'
 import GlyphIcon from './components/GlyphIcon.vue'
 import ProtoReward from './components/ProtoReward.vue'
 import ProtoMap from './components/ProtoMap.vue'
+import ProtoRest from './components/ProtoRest.vue'
 import ProtoResult from './components/ProtoResult.vue'
 
-type Screen = 'battle' | 'reward' | 'map'
+type Screen = 'battle' | 'reward' | 'map' | 'rest'
 type Phase = 'player' | 'card' | 'enemy' | 'finished'
 
 const query = new URLSearchParams(window.location.search)
-const initialScenario = (scenarioList.find(s => s.id === query.get('s'))?.id ?? 'normal') as ScenarioId
+const initialScenario = (scenarioList.find(s => s.id === query.get('s'))?.id ?? (query.get('screen') === 'rest' ? 'ten' : 'normal')) as ScenarioId
 const battle = useProtoBattle(initialScenario)
 const { state, hand, forecast } = battle
 
@@ -51,7 +52,16 @@ const flyer = ref<null | { view: (typeof hand.value)[number]; x: number; y: numb
 let uid = 0
 
 const heroNames = computed(() => ({ warrior: state.value.heroes.warrior.name, mage: state.value.heroes.mage.name }))
-const handViews = computed(() => hand.value.map(v => phase.value !== 'player' && !v.reason ? { ...v, reason: 'busy' as const } : v))
+const queue = ref<string[]>([])
+const handViews = computed(() => hand.value.map(v => {
+  const queued = queue.value.indexOf(v.instanceId) + 1
+  const base = phase.value === 'enemy' && !v.reason ? { ...v, reason: 'busy' as const } : v
+  return queued ? { ...base, queued } : base
+}))
+// Quick play: hotkey labels are frozen while an animation runs, so pressing 1 then 2 plays the cards that WERE labelled 1 and 2,
+// even though the hand re-flows after the first card leaves. They are renumbered only when the hand is idle again.
+const labels = ref<Record<string, string>>({})
+watchEffect(() => { if (!busy.value) labels.value = Object.fromEntries(hand.value.map((v, i) => [v.instanceId, i === 9 ? '0' : String(i + 1)])) })
 const anyPlayable = computed(() => hand.value.some(v => !v.reason))
 const ghost = computed(() => inspected.value && inspected.value.preview.healthDamage > 0 && !inspected.value.reason ? inspected.value.preview.healthDamage : 0)
 const incomingFor = (id: HeroId) => state.value.result ? undefined : forecast.value.targets.find(t => t.target === id) ?? forecast.value.futureTargets.find(t => t.target === id)
@@ -84,8 +94,14 @@ function burst(at: { x: number; y: number }, tone: string) {
 function flash(target: 'enemy' | HeroId) { hits[target] = true; window.setTimeout(() => { hits[target] = false }, 450) }
 
 async function playCard(id: string) {
-  if (busy.value || state.value.result || screen.value !== 'battle') return
+  if (state.value.result || screen.value !== 'battle') return
   const view = hand.value.find(v => v.instanceId === id)
+  if (busy.value) {
+    // buffer up to two further plays while a card is in flight (never during the enemy turn)
+    const reserved = queue.value.reduce((sum, qid) => sum + (hand.value.find(v => v.instanceId === qid)?.card.cost ?? 0), 0)
+    if (phase.value === 'card' && view && !view.reason && queue.value.length < 2 && !queue.value.includes(id) && state.value.mana - reserved >= view.card.cost) queue.value = [...queue.value, id]
+    return
+  }
   if (!view || view.reason) return
   const el = document.getElementById('pcard-' + id)
   const rect = el?.getBoundingClientRect()
@@ -130,6 +146,9 @@ async function playCard(id: string) {
   if (state.value.result) finishBattle()
   else phase.value = 'player'
   busy.value = false
+  const next = queue.value[0]
+  queue.value = queue.value.slice(1)
+  if (next && !state.value.result) void playCard(next)
 }
 
 async function endTurn() {
@@ -153,6 +172,7 @@ async function endTurn() {
   }
   await sleep(500)
   battle.finish()
+  queue.value = []
   rayTick.value++
   if (state.value.result) { finishBattle(); busy.value = false; return }
   say('Ваш ход · ' + state.value.turn)
@@ -176,15 +196,14 @@ function resetTo(id: ScenarioId) {
   rayTick.value++
 }
 function showResult(kind: 'victory' | 'defeat') { screen.value = 'battle'; battle.forceResult(kind); finishBattle() }
-const rewardCards = computed<CardDefinition[]>(() => campaignRewardOptions(state.value))
+const rewardCards = computed<CardDefinition[]>(() => campaignRewardOptions(state.value, query.get('elite') === '1' ? 5 : 3))
 
 function onKey(event: KeyboardEvent) {
-  if (screen.value !== 'battle' || phase.value !== 'player' || event.metaKey || event.ctrlKey || event.altKey) return
-  if (event.key === 'Enter' && !(event.target instanceof HTMLButtonElement)) { event.preventDefault(); void endTurn(); return }
+  if (screen.value !== 'battle' || event.metaKey || event.ctrlKey || event.altKey || phase.value === 'enemy' || phase.value === 'finished') return
+  if (event.key === 'Enter' && phase.value === 'player' && !(event.target instanceof HTMLButtonElement)) { event.preventDefault(); void endTurn(); return }
   if (/^[0-9]$/.test(event.key)) {
-    const index = event.key === '0' ? 9 : Number(event.key) - 1
-    const view = handViews.value[index]
-    if (view) void playCard(view.instanceId)
+    const id = Object.keys(labels.value).find(key => labels.value[key] === event.key)
+    if (id) void playCard(id)
   }
 }
 onMounted(() => {
@@ -241,7 +260,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
           </div>
         </aside>
         <div class="dock-hand">
-          <HandFan :cards="handViews" :mana="state.mana" :locked="phase !== 'player'" :pin="pin" @play="playCard" @inspect="inspected = $event" />
+          <HandFan :cards="handViews" :mana="state.mana" :locked="phase === 'enemy' || phase === 'finished'" :pin="pin" :labels="labels" @play="playCard" @inspect="inspected = $event" />
           <p class="hand-count" :class="{ full: hand.length >= 10 }">{{ hand.length }} / 10 карт · клавиши 1–9, 0</p>
         </div>
         <aside class="dock-right">
@@ -255,7 +274,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
     </template>
 
     <ProtoReward v-else-if="screen === 'reward'" :options="rewardCards" @pick="screen = 'map'" />
-    <ProtoMap v-else-if="screen === 'map'" @enter="resetTo('normal')" />
+    <ProtoMap v-else-if="screen === 'map'" @enter="screen = 'rest'" />
+    <ProtoRest v-else-if="screen === 'rest'" :heroes="state.heroes" @choose="screen = 'map'" />
 
     <aside v-if="showPanel" class="proto-panel" :class="{ open: panelOpen }">
       <button class="proto-toggle" :aria-expanded="panelOpen" @click="panelOpen = !panelOpen">Прототип «Сцена приключения» {{ panelOpen ? '▾' : '▸' }}</button>
@@ -266,7 +286,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
         <button class="proto-btn" @click="showResult('victory')"><b>Победа</b></button>
         <button class="proto-btn" @click="showResult('defeat')"><b>Поражение</b></button>
         <button class="proto-btn" @click="screen = 'reward'"><b>Награда</b></button>
-        <button class="proto-btn" @click="screen = 'map'"><b>Карта «Штреки» (схема)</b></button>
+        <button class="proto-btn" @click="screen = 'map'"><b>Карта похода (реальные данные)</b></button>
+        <button class="proto-btn" @click="screen = 'rest'"><b>Привал</b></button>
         <p class="proto-title">Параметры</p>
         <label class="proto-check"><input v-model="reduce" type="checkbox" /> Уменьшить анимации</label>
         <label class="proto-check"><input v-model="fast" type="checkbox" /> Быстрый режим (×2)</label>
@@ -288,8 +309,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .where-pips{display:flex;gap:.3rem;margin-left:.4rem}
 .where-pips i{width:.7rem;height:.7rem;border-radius:50%;border:.1rem solid var(--brass-2);background:#0006}
 .where-pips i.on{background:var(--brass-1);box-shadow:0 0 .5rem var(--brass-1)}
-.ribbon{position:absolute;left:50%;top:.6rem;translate:-50% 0;display:flex;align-items:center;gap:1rem;padding:.55rem 3rem;clip-path:polygon(1.2rem 0,calc(100% - 1.2rem) 0,100% 50%,calc(100% - 1.2rem) 100%,1.2rem 100%,0 50%);filter:drop-shadow(0 .3rem .5rem #000a)}
-.ribbon::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(#3a2a52,#1f1532);box-shadow:inset 0 0 0 .18rem #e8c978}
+.ribbon{position:absolute;left:50%;top:.6rem;translate:-50% 0;display:flex;align-items:center;gap:1rem;padding:.55rem 3rem;border-radius:2rem 1.5rem 2rem 1.6rem/1.7rem 2rem 1.5rem 1.9rem;filter:drop-shadow(0 .3rem .5rem #000a)}
+.ribbon::before{content:'';position:absolute;inset:0;z-index:-1;border-radius:inherit;background:linear-gradient(#3a2a52,#1f1532);box-shadow:inset 0 0 0 .18rem #e8c978,inset 0 .2rem .2rem #fff3}
 .ribbon{background:none}
 .ribbon--player::before{background:linear-gradient(#24507c,#152c4d)}
 .ribbon--enemy::before{background:linear-gradient(#7a2412,#3d0f0a)}

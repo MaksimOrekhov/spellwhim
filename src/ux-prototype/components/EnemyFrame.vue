@@ -60,7 +60,7 @@ const phase2 = computed(() => props.enemy.behavior.phase2 && props.enemy.phase =
 .vuln-copy{display:grid;text-align:left}
 .vuln-copy b{font:800 1.6rem/1 var(--f-num);color:var(--bonus)}
 .vuln-copy small{font:800 .66rem/1.1 var(--f-ui);letter-spacing:.1em;text-transform:uppercase;color:#ffdca3}
-.vuln-tip{position:absolute;left:0;top:calc(100% + .6rem);width:17rem;padding:.8rem 1rem;border-radius:.5rem;background:linear-gradient(160deg,var(--parch-1),var(--parch-2));color:var(--ink);font:600 .88rem/1.35 var(--f-ui);text-align:left;box-shadow:0 .6rem 1.4rem #000b,0 0 0 .14rem var(--brass-3);opacity:0;visibility:hidden;transition:opacity .15s;pointer-events:none}
+.vuln-tip{position:absolute;left:0;top:calc(100% + .6rem);width:17rem;padding:.8rem 1rem;border-radius:1.1rem 1.5rem 1.2rem 1.6rem;background:linear-gradient(160deg,var(--parch-1),var(--parch-2));color:var(--ink);font:600 .88rem/1.35 var(--f-ui);text-align:left;box-shadow:0 .6rem 1.4rem #000b,0 0 0 .14rem var(--brass-3);opacity:0;visibility:hidden;transition:opacity .15s;pointer-events:none}
 .vuln-tip strong{display:block;font:800 1.05rem var(--f-display);margin-bottom:.2rem}
 .vuln-tip em{display:block;margin-top:.35rem;font-style:normal;color:#6a4a1c;font-size:.8rem}
 .vuln:hover .vuln-tip,.vuln:focus-visible .vuln-tip{opacity:1;visibility:visible}

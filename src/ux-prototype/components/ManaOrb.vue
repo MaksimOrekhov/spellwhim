@@ -47,7 +47,7 @@ const hint = computed(() => props.nextMax && props.nextMax !== props.max ? `сл
 .num i{font:700 1.4rem/1 var(--f-num);font-style:normal;color:#bfeaff}
 .ring{position:absolute;inset:-.25rem;border-radius:50%;border:.42rem solid transparent;background:conic-gradient(from 200deg,#f7dc98,#8a6228,#e4bc66,#4f3716,#f7dc98) border-box;-webkit-mask:linear-gradient(#000 0 0) padding-box exclude,linear-gradient(#000 0 0);mask:linear-gradient(#000 0 0) padding-box exclude,linear-gradient(#000 0 0);pointer-events:none}
 .pips{display:flex;gap:.3rem;margin-top:.7rem}
-.pips i{width:1rem;height:1.25rem;clip-path:polygon(50% 0,100% 30%,88% 100%,12% 100%,0 30%);background:#17344f;opacity:.8}
+.pips i{width:1rem;height:1.25rem;border-radius:46% 46% 50% 50%/36% 36% 64% 64%;background:#17344f;opacity:.8}
 .pips i.on{background:linear-gradient(#bff0ff,#2c9fe6 60%,#14509e);box-shadow:0 0 .5rem #62d0ff;opacity:1}
 .label{margin-top:.35rem;font:800 .72rem/1 var(--f-ui);letter-spacing:.18em;text-transform:uppercase;color:#bfe6f8;text-shadow:0 .1rem .2rem #000}
 .hint{margin-top:.15rem;font:600 .74rem/1.2 var(--f-ui);color:#f0dfb4;text-shadow:0 .1rem .2rem #000;text-align:center}
