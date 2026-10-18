@@ -106,11 +106,11 @@ function ariaLabel(node: DungeonMapNode) {
 .campaign-header{width:min(1080px,100%);text-align:center;flex:0 0 auto}
 .campaign-topline{display:flex;align-items:center;justify-content:center;gap:12px;color:#e7cf9b;font:700 clamp(10px,.85vw,13px) var(--display);letter-spacing:.16em}
 .campaign-mark{color:#ffe19a;font-size:24px;text-shadow:0 0 18px #ffc262}
-.seed-chip{padding:5px 9px;border:1px solid #d7bc8155;border-radius:14px;background:#1d3536aa;font:700 10px 'Trebuchet MS',Arial,sans-serif;letter-spacing:.06em}
-.new-run{padding:6px 10px;border:1px solid #d7bc8166;border-radius:5px;background:#213d39c9;color:#f8e4b6;font:700 11px 'Trebuchet MS',Arial,sans-serif;cursor:pointer}
+.seed-chip{padding:5px 9px;border:1px solid #d7bc8155;border-radius:14px;background:#1d3536aa;font:700 10px var(--font-ui);letter-spacing:.06em}
+.new-run{padding:6px 14px;border:1px solid #d7bc8166;border-radius:var(--r-pill);background:#213d39c9;color:#f8e4b6;font:700 11px var(--font-ui);cursor:pointer}
 .new-run:hover,.new-run:focus-visible{border-color:#ffe2a0;background:#38554a;outline:none}
 .campaign-header h1{margin:5px 0 2px;color:#fff0c9;font:700 clamp(28px,3vw,40px) var(--display);text-shadow:0 4px 14px #0008}
-.campaign-header p{margin:0;color:#eee0c5;font:500 clamp(12px,1.05vw,15px) 'Trebuchet MS',Arial,sans-serif}
+.campaign-header p{margin:0;color:#eee0c5;font:500 clamp(12px,1.05vw,15px) var(--font-ui)}
 .map-viewport{width:min(1120px,100%);height:min(64vh,560px);min-height:408px;flex:1 0 auto;margin:8px 0;overflow:visible}
 .dungeon-graph{position:relative;width:100%;height:100%;min-height:408px;isolation:isolate}
 .route-edges{position:absolute;z-index:-1;inset:0;width:100%;height:100%;overflow:visible}
@@ -119,7 +119,7 @@ function ariaLabel(node: DungeonMapNode) {
 .mine-rail{position:absolute;z-index:-1;top:2%;bottom:5%;width:9px;border-left:2px solid #bd985659;border-right:2px solid #bd985659;opacity:.48;transform:skewY(-4deg)}
 .mine-rail::after{position:absolute;top:0;right:-7px;bottom:0;left:-7px;background:repeating-linear-gradient(180deg,transparent 0 18px,#d2ab6b52 19px 21px,transparent 22px 42px);content:""}
 .mine-rail--left{left:15%}.mine-rail--right{right:15%}
-.map-node{position:absolute;display:flex;align-items:center;justify-content:center;gap:11px;width:23%;min-height:50px;padding:7px 12px;border:1px solid #ddc58a70;border-radius:12px;background:linear-gradient(145deg,#263c39f2,#374d43f2);color:#fff1d0;text-align:left;box-shadow:0 7px 18px #0c282a88,inset 0 0 0 2px #e3c87b0c;transform:translate(-50%,-50%);transition:filter .18s,transform .18s,border-color .18s,box-shadow .18s;cursor:default}
+.map-node{position:absolute;display:flex;align-items:center;justify-content:center;gap:11px;width:23%;min-height:50px;padding:7px 14px;border:1px solid #ddc58a70;border-radius:var(--shape-plank);background:linear-gradient(145deg,#263c39f2,#374d43f2);color:#fff1d0;text-align:left;box-shadow:0 7px 18px #0c282a88,inset 0 0 0 2px #e3c87b0c;transform:translate(-50%,-50%);transition:filter .18s,transform .18s,border-color .18s,box-shadow .18s;cursor:default}
 .map-node.is-available{border-color:#ffdc91;box-shadow:0 0 0 2px #ffe19a24,0 0 25px #ffc95a55,inset 0 0 15px #f4cf7420;cursor:pointer;animation:node-glow 2.6s ease-in-out infinite}
 .map-node.is-available:hover,.map-node.is-available:focus-visible{z-index:3;outline:none;filter:brightness(1.16);transform:translate(-50%,-50%) scale(1.04);box-shadow:0 0 0 3px #ffe8b255,0 0 34px #ffd36d77}
 .map-node.is-visited{border-color:#f3d282;background:linear-gradient(145deg,#55462e,#394b3e);box-shadow:0 0 18px #e6bd5d40}
@@ -133,8 +133,8 @@ function ariaLabel(node: DungeonMapNode) {
 .node-content{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
 .node-content small{color:#e5c984;font:700 9px var(--display);letter-spacing:.1em}
 .node-content strong{color:#fff0cf;font:800 clamp(12px,1vw,15px) var(--display);white-space:nowrap}
-.party-status{display:flex;align-items:center;justify-content:center;gap:clamp(12px,2vw,28px);width:min(1000px,100%);flex:0 0 auto;padding:9px 18px;border:1px solid #d8bb7b5c;border-radius:10px;background:linear-gradient(90deg,#203b38ed,#314b40ed,#203b38ed);box-shadow:0 8px 22px #102a2b70}
-.party-hero{display:flex;align-items:center;gap:9px;min-width:145px}.party-hero>span:last-child{display:grid;gap:2px}.party-hero small{color:#ddc38d;font:700 9px var(--display);letter-spacing:.06em}.party-hero strong{color:#fff1d2;font:700 14px 'Trebuchet MS',Arial,sans-serif}
+.party-status{display:flex;align-items:center;justify-content:center;gap:clamp(12px,2vw,28px);width:min(1000px,100%);flex:0 0 auto;padding:9px 22px;border:1px solid #d8bb7b5c;border-radius:var(--shape-banner);background:linear-gradient(90deg,#203b38ed,#314b40ed,#203b38ed);box-shadow:0 8px 22px #102a2b70}
+.party-hero{display:flex;align-items:center;gap:9px;min-width:145px}.party-hero>span:last-child{display:grid;gap:2px}.party-hero small{color:#ddc38d;font:700 9px var(--display);letter-spacing:.06em}.party-hero strong{color:#fff1d2;font:700 14px var(--font-ui)}
 .hero-medallion{display:grid;place-items:center;width:31px;height:31px;border:1px solid #d5b46e;border-radius:50%;background:#423b31;color:#ffdc8d}.hero-medallion--mage{border-color:#b6a3d7;background:#302e49;color:#d7caff}
 .party-divider{color:#e6c678;font-size:14px}.route-progress{margin-left:auto;color:#d9cbab;font:700 9px var(--display);letter-spacing:.08em;text-align:right}
 @keyframes node-glow{0%,100%{box-shadow:0 0 0 2px #ffe19a24,0 0 18px #ffc95a40,inset 0 0 15px #f4cf7418}50%{box-shadow:0 0 0 2px #ffe19a42,0 0 28px #ffc95a70,inset 0 0 17px #f4cf7428}}

@@ -48,6 +48,6 @@ onUnmounted(() => { window.removeEventListener('resize', reposition); window.rem
 </template>
 <style scoped>
 .tooltip-anchor{display:inline-flex;position:relative;min-width:0}
-.game-tooltip{position:fixed;z-index:1000;width:max-content;max-width:min(320px,calc(100vw - 24px));padding:16px 18px;border:1px solid #e4c58c;border-radius:10px;background:linear-gradient(145deg,#314342,#182b30);box-shadow:0 12px 32px #071416a8;color:#fff0d2;font:15px/1.45 'Trebuchet MS',Arial,sans-serif;pointer-events:none;text-align:left}
-.game-tooltip>strong{display:block;font:700 19px/1.2 Georgia,serif;margin-bottom:8px;color:#ffe3a8}.game-tooltip :deep(p){margin:6px 0}.game-tooltip :deep(.tooltip-accent){color:#e0bcff;font-weight:700}.game-tooltip :deep(.tooltip-reason){color:#ffd09d;border-top:1px solid #b99f6955;padding-top:8px}
+.game-tooltip{position:fixed;z-index:1000;width:max-content;max-width:min(320px,calc(100vw - 24px));padding:16px 18px;border:var(--border-panel);border-radius:var(--shape-scroll);background:linear-gradient(145deg,#314342,#182b30);box-shadow:var(--shadow-3);color:#fff0d2;font:15px/1.45 var(--font-ui);pointer-events:none;text-align:left}
+.game-tooltip>strong{display:block;font:700 19px/1.2 var(--font-display);margin-bottom:8px;color:#ffe3a8}.game-tooltip :deep(p){margin:6px 0}.game-tooltip :deep(.tooltip-accent){color:#e0bcff;font-weight:700}.game-tooltip :deep(.tooltip-reason){color:#ffd09d;border-top:1px solid #b99f6955;padding-top:8px}
 </style>

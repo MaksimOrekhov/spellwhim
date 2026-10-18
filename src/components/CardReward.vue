@@ -60,7 +60,7 @@ function kindLabel(card: CardDefinition) {
 .reward-card{position:relative;isolation:isolate;display:flex;flex:1;flex-direction:column;align-items:stretch;max-width:290px;min-width:0;padding:12px 14px 16px;border:2px solid var(--class-primary);border-radius:15px 15px 12px 12px;background:linear-gradient(150deg,color-mix(in srgb,var(--class-primary) 62%,var(--class-surface)),var(--class-surface) 36%,#20232e);color:var(--ink);box-shadow:0 12px 30px #173b3466,inset 0 0 0 2px color-mix(in srgb,var(--class-accent) 32%,transparent);transition:transform .2s,border-color .2s,box-shadow .2s;text-align:center;cursor:pointer}
 .reward-card::before{position:absolute;z-index:-1;inset:5px;border:1px solid color-mix(in srgb,var(--class-accent) 66%,transparent);border-radius:inherit;content:"";pointer-events:none}
 .reward-card:hover{transform:translateY(-7px);box-shadow:0 16px 32px #102b2b88,0 0 14px color-mix(in srgb,var(--class-accent) 36%,transparent)}
-.reward-card:focus-visible{outline:3px solid #b0eff5;outline-offset:4px}
+.reward-card:focus-visible{outline:var(--focus-ring);outline-offset:var(--focus-offset)}
 .reward-card--angular{border-radius:8px 14px 8px 14px}
 .reward-card--angular::before{border-radius:2px}
 .reward-card--arcane{border-radius:18px 18px 15px 15px}

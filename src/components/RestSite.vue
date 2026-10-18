@@ -39,23 +39,23 @@ function amount(hero: BattleState['heroes']['warrior']) {
 
 <style scoped>
 .rest-screen{position:absolute;z-index:9;inset:0;display:grid;place-items:center;overflow:auto;padding:22px;background:radial-gradient(ellipse at 50% 30%,#837551,#496454 58%,#203f3e);color:#fff0d1}
-.rest-card{width:min(780px,94vw);padding:clamp(22px,4vw,42px);border:1px solid #e8c982;border-radius:18px;background:radial-gradient(ellipse at 50% 0,#655a40,#2c4944 72%);box-shadow:0 20px 60px #0c2425aa,inset 0 0 38px #e7bf6720;text-align:center}
+.rest-card{width:min(780px,94vw);padding:clamp(22px,4vw,42px);border:1px solid #e8c982;border-radius:var(--shape-dialog);background:radial-gradient(ellipse at 50% 0,#655a40,#2c4944 72%);box-shadow:0 20px 60px #0c2425aa,inset 0 0 38px #e7bf6720;text-align:center}
 .rest-fire{display:block;color:#ffc876;font-size:42px;text-shadow:0 0 18px #ff9b4c}
 .rest-card>small{color:#e3c98e;font:700 11px var(--display);letter-spacing:.18em}
 .rest-card h1{margin:7px 0;color:#fff0c8;font:700 clamp(28px,4vw,42px) var(--display)}
-.rest-card>p{max-width:540px;margin:0 auto 22px;color:#e7ddc7;font:500 15px/1.5 'Trebuchet MS',Arial,sans-serif}
+.rest-card>p{max-width:540px;margin:0 auto 22px;color:#e7ddc7;font:500 15px/1.5 var(--font-ui)}
 .rest-heroes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
-.rest-hero{display:flex;flex-direction:column;align-items:center;gap:7px;min-height:210px;padding:17px 14px;border:1px solid #d9bd7b88;border-radius:13px;background:linear-gradient(155deg,#4b4031,#273d3d 72%);color:#fff0d0;cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s}
+.rest-hero{display:flex;flex-direction:column;align-items:center;gap:7px;min-height:210px;padding:17px 14px;border:1px solid #d9bd7b88;border-radius:var(--shape-scroll);background:linear-gradient(155deg,#4b4031,#273d3d 72%);color:#fff0d0;cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s}
 .rest-hero--mage{border-color:#b6a3d899;background:linear-gradient(155deg,#403b5c,#273d3d 72%)}
 .rest-hero:not(:disabled):hover,.rest-hero:not(:disabled):focus-visible{transform:translateY(-4px);outline:none;border-color:#ffe09c;box-shadow:0 0 24px #ffd17055}
 .rest-hero:disabled{opacity:.55;cursor:default}
 .rest-portrait{display:grid;place-items:center;width:45px;height:45px;border:1px solid #dfc17d;border-radius:50%;background:#2b3434;color:#ffdf98;font-size:23px}
 .rest-hero--mage .rest-portrait{border-color:#b6a3d8;color:#d7cbff}
 .rest-name{font:700 18px var(--display);color:#fff0cf}
-.rest-hero strong{font:700 15px 'Trebuchet MS',Arial,sans-serif}
+.rest-hero strong{font:700 15px var(--font-ui)}
 .rest-hero em{color:#bfe2a2;font:800 15px var(--display);font-style:normal}
 .rest-hero:disabled em{color:#d2c4a7}
-.rest-action{margin-top:auto;padding:7px 13px;border:1px solid #dbbd7e;border-radius:5px;background:#3a4a3d;color:#ffe9b6;font:800 10px var(--display);letter-spacing:.12em}
-.skip-rest{margin-top:18px;padding:10px 16px;border:1px solid #d7bf8d;border-radius:6px;background:#263f3b;color:#fff0d1;font-weight:700;cursor:pointer}
+.rest-action{margin-top:auto;padding:7px 16px;border:1px solid #dbbd7e;border-radius:var(--r-pill);background:#3a4a3d;color:#ffe9b6;font:800 10px var(--display);letter-spacing:.12em}
+.skip-rest{margin-top:18px;padding:10px 22px;border:1px solid #d7bf8d;border-radius:var(--shape-plank);background:#263f3b;color:#fff0d1;font-weight:700;cursor:pointer}
 @media(max-width:560px){.rest-heroes{grid-template-columns:1fr;gap:10px}.rest-hero{min-height:168px}.rest-card>p{font-size:13px}}
 </style>

@@ -3,6 +3,7 @@ import { onMounted, onUnmounted, useTemplateRef, watch } from 'vue'
 import { Application, Container, Graphics, Text } from 'pixi.js'
 import type { HeroId } from '../game/types'
 import type { EnemyActionForecast } from '../game/battle'
+import { fontFamily } from '../ui/typography'
 
 type Effect = 'attack' | 'spell' | 'guard' | 'hit' | 'heavy' | 'hit-all' | 'defend' | 'prepare' | 'recover' | ''
 const props = defineProps<{ pulse: number; effect: Effect; target: HeroId | 'enemy'; source: HeroId | 'enemy' | null; damage: number; actionId: string | null; bonusDamage: number; partnerArmor: number; incoming?: EnemyActionForecast | null }>()
@@ -45,7 +46,7 @@ function popAt(x: number, y: number, color: number, amount: number) {
   const ring = new Graphics().circle(0, 0, 30).stroke({ color, width: 6, alpha: 0.95 })
   ring.position.set(x, y)
   effects.addChild(ring)
-  const label = new Text({ text: amount === 0 ? 'БЛОК' : `−${amount}`, style: { fontFamily: 'Georgia, serif', fontSize: Math.max(28, Math.min(46, (canvasHost.value?.clientHeight ?? 720) * .04)), fontWeight: 'bold', fill: '#fff4d6', stroke: { color: 0x38222b, width: 6 }, dropShadow: { color: 0x120e20, blur: 10, distance: 4 } } })
+  const label = new Text({ text: amount === 0 ? 'БЛОК' : `−${amount}`, style: { fontFamily: fontFamily('--font-display'), fontSize: Math.max(28, Math.min(46, (canvasHost.value?.clientHeight ?? 720) * .04)), fontWeight: 'bold', fill: '#fff4d6', stroke: { color: 0x38222b, width: 6 }, dropShadow: { color: 0x120e20, blur: 10, distance: 4 } } })
   label.anchor.set(0.5)
   label.position.set(x, y - 10)
   effects.addChild(label)
@@ -165,7 +166,7 @@ function impactFlashAt(x: number, y: number, color = 0xffc46b) {
 
 function floatingLabelAt(x: number, y: number, text: string, color: string) {
   if (!effects || !app) return
-  const label = new Text({ text, style: { fontFamily: 'Georgia, serif', fontSize: 26, fontWeight: 'bold', fill: color, stroke: { color: 0x102333, width: 5 }, dropShadow: { color: 0x071521, blur: 8, distance: 3 } } })
+  const label = new Text({ text, style: { fontFamily: fontFamily('--font-display'), fontSize: 26, fontWeight: 'bold', fill: color, stroke: { color: 0x102333, width: 5 }, dropShadow: { color: 0x071521, blur: 8, distance: 3 } } })
   label.anchor.set(0.5)
   label.position.set(x, y - 30)
   effects.addChild(label)

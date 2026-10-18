@@ -1,15 +1,10 @@
+/* Global base. Tokens: tokens.css (imported first in main.ts); fonts: fonts.css. Layout variables below are scene geometry, not design tokens. */
 :root {
-  font-family: 'Trebuchet MS', Arial, sans-serif;
-  color: #fff0d2;
-  background: #172a2d;
+  font-family: var(--font-ui);
+  color: var(--ink);
+  background: var(--scene-0);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
-  --ink: #fff1d5;
-  --muted: #c4c8ba;
-  --gold: #e9bd72;
-  --line: #d7b57970;
-  --panel: #203436f5;
-  --display: Georgia, 'Times New Roman', serif;
   --card-height: clamp(224px, 27vh, 354px);
   --hand-height: calc(var(--card-height) + 60px);
   --enemy-size: clamp(124px, 19vh, 250px);
@@ -21,13 +16,15 @@ body { overflow: auto; }
 button, input { font: inherit; }
 button { color: inherit; }
 button:not(:disabled) { cursor: pointer; }
-button:focus-visible, [tabindex]:focus-visible { outline: 3px solid #b0eff5; outline-offset: 4px; }
-.app-shell { width: 100%; height: 100dvh; min-width: 760px; min-height: 560px; background: #172a2d; }
+button:focus-visible, [tabindex]:focus-visible { outline: var(--focus-ring); outline-offset: var(--focus-offset); }
+.app-shell { width: 100%; height: 100dvh; min-width: 760px; min-height: 560px; background: var(--scene-0); }
 .game-wrap { position: relative; width: 100%; height: 100%; overflow: hidden; isolation: isolate; }
-.game-button { min-height: 48px; padding: 12px 24px; border: 1px solid #ffe1a2; border-radius: 10px; background: linear-gradient(#c78d49, #8c532d); box-shadow: 0 4px 0 #5c3627, inset 0 1px #fff3b94d; color: #fff7dd; font-weight: 700; font-size: 16px; transition: filter .15s, transform .15s; }
-.game-button:hover:not(:disabled) { filter: brightness(1.12); transform: translateY(-1px); }
+/* Primary action: a soft brass "plank" with a visible underside (thickness), never a flat rectangle. */
+.game-button { min-height: 48px; padding: 12px 26px; border: var(--border-brass); border-radius: var(--shape-plank); background: var(--mat-brass); box-shadow: var(--edge-plank), var(--bevel-top), var(--bevel-bottom); color: #fff7dd; font-family: var(--font-display); font-weight: var(--fw-semibold); font-size: 17px; text-shadow: 0 2px 3px #4a1f08; transition: filter var(--dur-fast), transform var(--dur-fast), box-shadow var(--dur-fast); }
+.game-button:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
+.game-button:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 2px 0 #5c3627, var(--bevel-top), var(--bevel-bottom); }
 .game-button:disabled { cursor: default; opacity: .5; }
-.game-button--quiet { background: #233b3b; border-color: #c3ac785e; box-shadow: none; }
+.game-button--quiet { background: var(--mat-quiet); border: var(--border-soft); box-shadow: var(--edge-plank-quiet), var(--bevel-top); text-shadow: none; font-family: var(--font-ui); }
 .battle-fx { position: absolute; z-index: 5; inset: 0; pointer-events: none; }
 .battle-fx canvas { display: block; width: 100%; height: 100%; }
 @media (max-height: 700px) {

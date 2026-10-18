@@ -1,0 +1,94 @@
+/* Spellwhim design tokens — the single place for colours, materials, type, shapes, shadows, motion and spacing.
+   Direction: «Сцена приключения» — warm materials (wood, brass, parchment, gems), soft rounded organic forms, no sharp corners.
+   Docs: docs/design-tokens-v1.md. Rules:
+   - Components reference tokens, not literals. A new literal colour/radius/shadow in a component is a missing token.
+   - Class colours are NOT here: they live in src/game/classThemes.ts (classThemeStyle → --class-*).
+   - UI icons come from Lucide (@lucide/vue); never hand-drawn or generated. */
+:root {
+  /* ── Typography ─────────────────────────────────────────────────────────── */
+  --font-display: 'El Messiri', 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+  --font-ui: 'Nunito', 'Segoe UI', 'Trebuchet MS', system-ui, sans-serif;
+  --font-num: 'Rubik', 'Nunito', 'Segoe UI', system-ui, sans-serif;
+  --display: var(--font-display); /* legacy alias used by existing components; prefer --font-display */
+
+  --fs-2xs: 10px; --fs-xs: 11px; --fs-sm: 13px; --fs-md: 15px; --fs-lg: 18px; --fs-xl: 22px; --fs-2xl: 28px; --fs-3xl: 36px; --fs-4xl: 48px;
+  --lh-tight: 1.1; --lh-snug: 1.25; --lh-body: 1.45;
+  --ls-caps: .14em; /* small-caps labels (ВРАГУ, ЦЕЛИ, МАНА) */
+  --fw-regular: 500; --fw-semibold: 700; --fw-bold: 800;
+
+  /* ── Text colours ───────────────────────────────────────────────────────── */
+  --ink: #fff1d5;          /* primary text on dark surfaces */
+  --muted: #c4c8ba;        /* secondary text */
+  --text-dim: #cdbd9b;
+  --gold: #e9bd72;         /* accent text / ornaments on dark surfaces */
+  --parch-ink: #2b1f14;    /* text on parchment */
+  --parch-ink-soft: #5b3d1a;
+
+  /* ── Materials (solid colours) ──────────────────────────────────────────── */
+  --wood-0: #170f0a; --wood-1: #261912; --wood-2: #3d2a1b; --wood-3: #5d4128;
+  --brass-1: #fbe3a0; --brass-2: #d2a24f; --brass-3: #8a6228; --brass-4: #4f3716;
+  --parch-1: #f6e8c6; --parch-2: #dcc48e;
+  --scene-0: #172a2d; --scene-1: #203436; --scene-2: #284d46; --scene-3: #355d50; /* current teal scene chrome; shrinks as stages move to warm chrome */
+  --line: #d7b57970;       /* hairline on dark surfaces */
+  --panel: #203436f5;      /* legacy flat panel */
+
+  /* ── Game semantics: one colour = one meaning on every screen ──────────── */
+  --c-mana: #62d0ff;      --c-mana-deep: #1c62b5;
+  --c-health: #e2554a;    --c-health-deep: #7d1f27;
+  --c-armor: #b3cde8;     --c-armor-deep: #4a6a8c;
+  --c-threat: #ff6a3d;
+  --c-bonus: #ffd56b;     /* synergy / active bonus numbers */
+  --c-vulnerable: #ffb23d;
+  --c-heal: #8ad66f;
+  --c-focus: #b0eff5;
+
+  /* ── Materials (gradients) ──────────────────────────────────────────────── */
+  --mat-brass: linear-gradient(180deg, #f5d58b, #c4893a 14%, #a1642a 50%, #7a461b 100%);       /* primary action plank */
+  --mat-brass-top: linear-gradient(#f4d89a, #b9843a);
+  --mat-wood: linear-gradient(#3d2a1b, #261912);
+  --mat-parchment: linear-gradient(160deg, var(--parch-1), var(--parch-2));
+  --mat-teal-panel: linear-gradient(145deg, #314342, #182b30);                                  /* legacy tooltip/panel */
+  --mat-quiet: linear-gradient(#2c4745, #233b3b);                                               /* secondary plank */
+  --mat-ruby: linear-gradient(#ff8a73, var(--c-health) 45%, var(--c-health-deep));
+  --mat-gem-mana: linear-gradient(150deg, #8fe0ff, #2a86d4 55%, #17519a);
+
+  /* ── Shape: soft, organic, slightly asymmetric ─────────────────────────────
+     Scale (rem) for plain radii; never below --r-1 on interactive/panel surfaces. */
+  --r-1: .5rem; --r-2: .875rem; --r-3: 1.25rem; --r-4: 1.75rem; --r-pill: 999px;
+  /* Elliptical, asymmetric shorthands ("x radii / y radii"): same family, different corners, so surfaces look hand-made, not stamped. */
+  --shape-plank:    1.7rem 1.3rem 1.6rem 1.4rem / 1.4rem 1.7rem 1.3rem 1.6rem;   /* buttons */
+  --shape-scroll:   1.1rem 1.5rem 1.2rem 1.6rem / 1.3rem 1.1rem 1.6rem 1.2rem;   /* panels, tooltips, parchment */
+  --shape-banner:   2rem 1.5rem 2rem 1.6rem / 1.7rem 2rem 1.5rem 1.9rem;         /* ribbons, plates */
+  --shape-dialog:   1.9rem 1.6rem 2rem 1.7rem / 1.7rem 2rem 1.6rem 1.9rem;       /* modal cards */
+  --shape-chip:     .9rem .7rem .95rem .75rem / .75rem .95rem .7rem .9rem;       /* small badges */
+  --shape-medallion: 50% 47% 52% 48% / 48% 52% 47% 51%;                          /* round tokens with a tiny wobble */
+  --shape-arch: 50% 50% 2.1rem 2.1rem / 34% 34% 2.1rem 2.1rem;                    /* portrait arches (stage 5) */
+
+  /* ── Elevation, bevel, glow ─────────────────────────────────────────────── */
+  --shadow-1: 0 2px 6px #0a181a66;
+  --shadow-2: 0 6px 16px #0a181a80;
+  --shadow-3: 0 12px 32px #071416a8;
+  --shadow-4: 0 24px 64px #071416cc;
+  --bevel-top: inset 0 1px 1px #fff6;               /* light edge on raised surfaces */
+  --bevel-bottom: inset 0 -3px 5px #0004;           /* shaded underside */
+  --edge-plank: 0 5px 0 #5c3627;                    /* "thickness" under buttons */
+  --edge-plank-quiet: 0 3px 0 #0f1d1d;
+  --glow-bonus: 0 0 14px #ffd56b99;
+  --glow-threat: 0 0 18px #ff5a2f88;
+  --glow-mana: 0 0 14px #62d0ff77;
+
+  /* ── Borders ────────────────────────────────────────────────────────────── */
+  --border-brass: 1px solid #ffe1a2;
+  --border-soft: 1px solid #c3ac785e;
+  --border-panel: 1px solid #e4c58c;
+  --focus-ring: 3px solid var(--c-focus);
+  --focus-offset: 4px;
+
+  /* ── Motion ─────────────────────────────────────────────────────────────── */
+  --ease-out: cubic-bezier(.2, .8, .2, 1);
+  --ease-snap: cubic-bezier(.3, 1.5, .5, 1);
+  --dur-fast: .15s; --dur-base: .25s; --dur-slow: .5s;
+
+  /* ── Spacing (4-px base) ────────────────────────────────────────────────── */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px; --sp-6: 32px; --sp-7: 48px; --sp-8: 64px;
+}
