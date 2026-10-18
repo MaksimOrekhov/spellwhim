@@ -3,10 +3,12 @@ import { createServer } from 'vite'
 const args = process.argv.slice(2)
 const flag = name => { const index = args.indexOf(name); return index < 0 ? undefined : Number(args[index + 1]) }
 const rosterId = args.includes('--roster') ? args[args.indexOf('--roster') + 1] : 'E'
-const seedArg = args.find((value, index) => !value.startsWith('--') && (index === 0 || !['--runs', '--archetype-runs', '--roster'].includes(args[index - 1])))
+const seedArg = args.find((value, index) => !value.startsWith('--') && (index === 0 || !['--runs', '--archetype-runs', '--roster', '--information'].includes(args[index - 1])))
 const baseSeed = Number(seedArg ?? 42) >>> 0
 const positionalRunCount = args.slice(args.indexOf(seedArg) + 1).find(value => /^\d+$/.test(value))
 const runCount = Math.max(1, Math.floor(flag('--runs') ?? (Number(positionalRunCount) || 100)))
+const information = args.includes('--information') ? args[args.indexOf('--information') + 1] : 'public'
+if (!['public', 'omniscient'].includes(information)) throw new Error('--information: public (default, fair) или omniscient (историческая диагностика: видит размер подготовленного удара)')
 const archetypeRuns = Math.max(1, Math.floor(flag('--archetype-runs') ?? 20))
 
 const server = await createServer({ optimizeDeps: { noDiscovery: true, include: [] }, server: { middlewareMode: true, ws: false, hmr: false }, appType: 'custom' })
@@ -45,7 +47,7 @@ try {
       let plays = 0
       while (!state.result && plays < 12) {
         const instanceId = planner?.next(state)
-        const card = instanceId ? state.hand.find(item => item.instanceId === instanceId) : strategy === 'planner' ? undefined : balance.chooseCard(state, strategy)
+        const card = instanceId ? state.hand.find(item => item.instanceId === instanceId) : strategy === 'planner' ? undefined : balance.chooseCard(state, strategy, information)
         if (!card) break
         const definition = types.cardDefinition(card.definitionId)
         const outcome = battleRules.playCard(state, card.instanceId)
@@ -131,7 +133,7 @@ try {
       })
     }
   }
-  console.log(`Dungeon routes · ${runCount} seeds per route/strategy · seed range ${baseSeed}–${(baseSeed + runCount - 1) >>> 0} · economy B · roster ${roster.id}`)
+  console.log(`Dungeon routes · ${runCount} seeds per route/strategy · seed range ${baseSeed}–${(baseSeed + runCount - 1) >>> 0} · economy B · roster ${roster.id} · information ${information}`)
   console.table(routeRows)
   const policySummary = ['safe', 'risky', 'mixed'].map(policy => {
     const rows = routeRows.filter(row => row.policy === policy)

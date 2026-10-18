@@ -1,6 +1,8 @@
 import { createServer } from 'vite'
 
 const args = process.argv.slice(2)
+const information = args.includes('--information') ? args[args.indexOf('--information') + 1] : 'public'
+if (!['public', 'omniscient'].includes(information)) throw new Error('--information: public (default, fair) или omniscient (историческая диагностика)')
 const positional = args.filter((value, index) => !value.startsWith('--') && !args[index - 1]?.startsWith('--'))
 const numberArg = (name, fallback) => {
   const index = args.indexOf(name)
@@ -46,7 +48,7 @@ try {
       let plays = 0
       while (!state.result && plays < 12) {
         const plannedId = planner?.next(state)
-        const card = plannedId ? state.hand.find(value => value.instanceId === plannedId) : strategy === 'planner' ? undefined : balance.chooseCard(state, strategy)
+        const card = plannedId ? state.hand.find(value => value.instanceId === plannedId) : strategy === 'planner' ? undefined : balance.chooseCard(state, strategy, information)
         if (!card) break
         const definition = types.cardDefinition(card.definitionId)
         const preview = battle.previewCard(state, definition)

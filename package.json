@@ -16,7 +16,8 @@
     "artifacts:lab": "node scripts/run-artifact-lab.mjs",
     "economy": "node scripts/run-economy.mjs",
     "status:baseline": "node scripts/record-status-baseline.mjs",
-    "challenge:lab": "node scripts/run-combat-challenge.mjs"
+    "challenge:lab": "node scripts/run-combat-challenge.mjs",
+    "information:lab": "node scripts/run-information-comparison.mjs"
   },
   "dependencies": {
     "@lucide/vue": "^1.59.0",

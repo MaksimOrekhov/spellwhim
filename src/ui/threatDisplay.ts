@@ -1,61 +1,13 @@
-import type { EnemyActionForecast, EnemyTargetForecast } from '../game/battle'
-import type { EnemyAction, HeroId } from '../game/types'
+import type { HeroId } from '../game/types'
+import type { IntentKind, PublicIntent, RevealedHit } from '../game/observableIntent'
 
 /**
- * The PUBLIC intent: the only description of the enemy's announced action that the scene may draw, read or speak.
- *
- * `forecastEnemyAction` is the engine's full truth and also carries the exact numbers of a prepared strike (`futureTargets`).
- * The player is not told those while the enemy is still preparing, so the scene never receives the forecast: BattleBoard turns it
- * into a `PublicIntent` here, and the `prepare` variant of that type has no numeric field at all. A leak through a banner, a
- * tooltip, a `title`, an `aria-label`, a health bar, a portrait or a ray is therefore a type error, not a review finding.
- * The engine, the tests and the bots keep reading the real forecast; nothing here changes a rule.
- *
- * The order of a prepared strike is: prepare (target known, size hidden) → the strike announced with exact numbers on the
- * next turn → execution. The announced strike is an ordinary `attack` and is drawn exactly like one.
+ * Scene-side view of the PUBLIC intent. The visibility policy itself (what may be known while the enemy prepares a strike)
+ * lives in game/observableIntent.ts and is shared with the Balance Lab bots; this module only adds texts and hero markers.
+ * The scene never receives the engine forecast, so a hidden number cannot reach a banner, tooltip, `aria-label`, bar or ray.
  */
-export type IntentKind = EnemyAction['kind']
-
-/** One announced hit on one hero, exact: this is what lands when the turn ends. Armor, statuses and artifacts are inside it. */
-export interface RevealedHit {
-  hero: HeroId
-  /** Damage that reaches the hero's armor (after statuses and artifacts). */
-  attack: number
-  absorbed: number
-  healthLoss: number
-  lethal: boolean
-  /** The hit is fully soaked up by armor. */
-  blocked: boolean
-  /** Damage removed by an artifact (Reliable Wedge). */
-  artifactReduction: number
-}
-
-export type PublicIntent =
-  | { kind: 'attack' | 'attack_all'; name: string; phase: 1 | 2; hits: RevealedHit[]; primaryTarget: HeroId | null }
-  /** Preparation: who is aimed at and what kind of blow, never how hard. */
-  | { kind: 'prepare'; name: string; phase: 1 | 2; targets: HeroId[]; blow: 'attack' | 'attack_all' }
-  | { kind: 'defend' | 'recover'; name: string; phase: 1 | 2; armor: number }
-
-function toHit(hit: EnemyTargetForecast): RevealedHit {
-  return { hero: hit.target, attack: hit.attack, absorbed: hit.absorbed, healthLoss: hit.healthLoss, lethal: hit.lethal, blocked: hit.attack > 0 && hit.healthLoss === 0, artifactReduction: hit.artifactReduction }
-}
-
-const warriorFirst = (a: { hero: HeroId }, b: { hero: HeroId }) => (a.hero === 'warrior' ? -1 : 1) - (b.hero === 'warrior' ? -1 : 1)
-
-export function publicIntent(forecast: EnemyActionForecast): PublicIntent {
-  const action = forecast.action
-  const { name } = action
-  const phase = forecast.phase
-  switch (action.kind) {
-    case 'attack':
-    case 'attack_all':
-      return { kind: action.kind, name, phase, hits: forecast.targets.map(toHit).sort(warriorFirst), primaryTarget: action.kind === 'attack_all' ? action.primaryTarget : null }
-    case 'prepare':
-      // Only the announced targets are read; the forecast's `futureTargets` numbers are deliberately not touched.
-      return { kind: 'prepare', name, phase, targets: [...forecast.threatened], blow: action.prepared.kind }
-    default:
-      return { kind: action.kind, name, phase, armor: forecast.armorGain }
-  }
-}
+export type { IntentKind, PublicIntent, RevealedHit } from '../game/observableIntent'
+export { publicIntent } from '../game/observableIntent'
 
 /** What a portrait shows about the announced action: a marker, never a number for a strike that is still being prepared. */
 export type HeroMark =

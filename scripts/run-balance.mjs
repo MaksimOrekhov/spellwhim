@@ -7,17 +7,19 @@ const classic = ['aggressive', 'defensive', 'balanced']
 const everything = [...classic, 'planner']
 
 function readArgs(args) {
-  const options = { runs: 200, seed: 42, strategy: 'all', json: null, run: null }
+  const options = { runs: 200, seed: 42, strategy: 'all', json: null, run: null, information: 'public' }
   for (let i = 0; i < args.length; i += 1) {
     const arg = args[i]
     if (arg === '--runs') options.runs = Number(args[++i])
     else if (arg === '--seed') options.seed = Number(args[++i]) >>> 0
     else if (arg === '--strategy') options.strategy = args[++i]
     else if (arg === '--json') options.json = args[++i] ?? 'balance-report.json'
+    else if (arg === '--information') options.information = args[++i]
     else if (arg === '--run') options.run = Number(args[++i]) >>> 0
     else if (arg === '--help' || arg === '-h') options.help = true
     else throw new Error('Неизвестный аргумент: ' + arg)
   }
+  if (!['public', 'omniscient'].includes(options.information)) throw new Error('--information: public (по умолчанию, честная политика) или omniscient (историческая диагностика)')
   if (!Number.isInteger(options.runs) || options.runs < 1) throw new Error('--runs должен быть положительным целым числом')
   return options
 }
@@ -51,7 +53,7 @@ const server = await createServer({
 try {
   const { simulateBalance, simulateRun, summarizeBalance } = await server.ssrLoadModule('/src/game/balance.ts')
   if (options.run !== null) {
-    const run = simulateRun(options.run, strategies[0])
+    const run = simulateRun(options.run, strategies[0], { information: options.information })
     console.log(JSON.stringify(run, null, 2))
     if (options.json) await writeJson(options.json, run)
     process.exitCode = run.status === 'timeout' ? 2 : 0
@@ -61,7 +63,7 @@ try {
     const timing = {}
     for (const strategy of strategies) {
       const started = performance.now()
-      runs.push(...simulateBalance({ runs: options.runs, seed: options.seed, strategies: [strategy] }))
+      runs.push(...simulateBalance({ runs: options.runs, seed: options.seed, strategies: [strategy], information: options.information }))
       const elapsed = performance.now() - started
       timing[strategy] = { totalMs: Math.round(elapsed), msPerRun: Number((elapsed / options.runs).toFixed(2)) }
     }
@@ -121,7 +123,7 @@ try {
     console.table(summary.map(row => ({ strategy: row.strategy, 'ms / run': timing[row.strategy].msPerRun, 'total ms': timing[row.strategy].totalMs, 'search nodes / turn': f(row.planningNodesPerTurn, 1), 'max nodes in a plan': row.planningMaxNodes, 'plans cut by node cap': row.planningTruncatedPlans })))
 
     if (options.json) {
-      const report = { schemaVersion: 2, options: { runs: options.runs, seed: options.seed, strategies }, summary, timing, runs }
+      const report = { schemaVersion: 2, options: { runs: options.runs, seed: options.seed, strategies, information: options.information }, summary, timing, runs }
       await writeJson(options.json, report)
       console.log('JSON сохранён: ' + options.json)
     }

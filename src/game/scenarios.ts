@@ -1,3 +1,5 @@
+import { visibleThreat } from './observableIntent'
+import type { Information } from './observableIntent'
 import { createBattle, endTurn, forecastEnemyAction, playCard, previewCard } from './battle'
 import { cardDefinition, encounters, startingDeck } from './types'
 import type { CardId } from './types'
@@ -50,7 +52,8 @@ export type StrategyName = 'aggressive' | 'defensive' | 'mixed'
 export interface StrategyResult { strategy: StrategyName; encounter: string; seed: number; turns: number; damage: number; hp: { warrior: number; mage: number }; result: string; choices: string[] }
 
 /** Deterministic, headless comparison using actual draw, vulnerability, armor, and enemy rules. */
-export function runStrategyComparison(seed = 42): StrategyResult[] {
+/** `information` as in `chooseCard`: the fair policy by default, `'omniscient'` for the historical diagnostic. */
+export function runStrategyComparison(seed = 42, information: Information = 'public'): StrategyResult[] {
   const strategies: StrategyName[] = ['aggressive', 'defensive', 'mixed']
   return encounters.map(encounter => strategies.map(strategy => {
     const state = createBattle(encounter, undefined, { seed, deck: [...startingDeck, 'quick-cut', 'thunderbolt', 'bastion'], openingHandSize: 4 })
@@ -59,7 +62,7 @@ export function runStrategyComparison(seed = 42): StrategyResult[] {
       let safety = 0
       while (safety++ < 8 && !state.result) {
         const forecast = forecastEnemyAction(state)
-        const incoming = forecast.targets.length ? forecast.targets : forecast.futureTargets
+        const incoming = visibleThreat(forecast, state.heroes, information)
         const threatened = new Set(incoming.map(hit => hit.target))
         const candidates = state.hand.map((instance, index) => {
           const card = cardDefinition(instance.definitionId)
@@ -70,7 +73,7 @@ export function runStrategyComparison(seed = 42): StrategyResult[] {
           const score = strategy === 'aggressive'
             ? damage + synergyValue - card.cost * 0.3 + (card.kind === 'defense' ? -1 : 0)
             : strategy === 'defensive'
-              ? armorValue * (incoming.some(hit => hit.attack >= 7) ? 1.6 : 1.15) + damage * 0.28 + synergyValue * 0.5 - card.cost * 0.15
+              ? armorValue * (incoming.some(hit => !hit.estimated && hit.attack >= 7) ? 1.6 : 1.15) + damage * 0.28 + synergyValue * 0.5 - card.cost * 0.15
               : damage * 0.72 + armorValue * 1.15 + synergyValue - card.cost * 0.18
           return { instance, card, index, score }
         }).filter(item => item.card.cost <= state.mana).sort((a, b) => b.score - a.score || a.index - b.index)

@@ -3,6 +3,8 @@ import { addCampaignReward, advanceCampaign, campaignEncounter, campaignEncounte
 import { baselineEconomy } from './economy'
 import type { EconomyConfig } from './economy'
 import { createTurnPlanner } from './balancePlanner'
+import { visibleThreat } from './observableIntent'
+import type { Information } from './observableIntent'
 import type { PlannerStats } from './balancePlanner'
 import { MAX_HAND_SIZE, cardDefinition, startingDeck } from './types'
 import type { BattleState, CardId, CardInstance, EnemyAction, HeroId } from './types'
@@ -134,7 +136,7 @@ export interface BalanceRun {
 
 export interface BalanceLimits { maxTurnsPerBattle: number; maxPlaysPerTurn: number; maxActionsPerRun: number }
 /** Simulation options beyond the limits: the economy to play (the standard game by default) and a readable trace. */
-export interface RunOptions extends Partial<BalanceLimits> { economy?: EconomyConfig; trace?: boolean }
+export interface RunOptions extends Partial<BalanceLimits> { economy?: EconomyConfig; trace?: boolean; information?: Information }
 export const defaultBalanceLimits: BalanceLimits = { maxTurnsPerBattle: 60, maxPlaysPerTurn: 12, maxActionsPerRun: 10_000 }
 
 function blankCardStats(): CardStats { return { plays: 0, healthDamage: 0, armorGranted: 0, cardsDrawn: 0, manaSpent: 0, vulnerabilitySetups: 0, vulnerabilityTriggers: 0, armorBonusTriggers: 0 } }
@@ -151,15 +153,15 @@ function describeAction(action: EnemyAction, heroes: BattleState['heroes']): str
 function snapshot(state: BattleState) {
   return { enemy: { health: state.enemy.health, armor: state.enemy.armor }, heroes: { warrior: { health: state.heroes.warrior.health, armor: state.heroes.warrior.armor }, mage: { health: state.heroes.mage.health, armor: state.heroes.mage.armor } } }
 }
-function opponentForecast(state: BattleState) {
-  const forecast = forecastEnemyAction(state)
-  return forecast.targets.length ? forecast.targets : forecast.futureTargets
+/** What the bot may plan around: the exact hits of an announced strike, only target and kind (a fixed prior) for a preparation. */
+function opponentForecast(state: BattleState, information: Information) {
+  return visibleThreat(forecastEnemyAction(state), state.heroes, information)
 }
 
-function evaluateCard(state: BattleState, instance: CardInstance, strategy: ClassicStrategy): number {
+function evaluateCard(state: BattleState, instance: CardInstance, strategy: ClassicStrategy, information: Information): number {
   const card = cardDefinition(instance.definitionId)
   const preview = previewCard(state, card)
-  const forecast = opponentForecast(state)
+  const forecast = opponentForecast(state, information)
   const remainingEnemyHp = state.enemy.health + state.enemy.armor
   const damage = Math.min(preview.damage + preview.statusDamage, remainingEnemyHp)
   const lethal = damage >= remainingEnemyHp
@@ -168,8 +170,9 @@ function evaluateCard(state: BattleState, instance: CardInstance, strategy: Clas
     const added = preview.armor[hit.target]
     return sum + Math.min(added, Math.max(0, hit.attack - state.heroes[hit.target].armor))
   }, 0)
-  const lethalThreat = forecast.some(hit => hit.lethal || hit.healthLoss >= state.heroes[hit.target].health)
-  const blocksLethal = forecast.some(hit => hit.lethal && preview.armor[hit.target] >= hit.healthLoss)
+  // A prior for a preparation is never a lethal threat: the real size, and so the lethality, is not public yet.
+  const lethalThreat = forecast.some(hit => !hit.estimated && (hit.lethal || hit.healthLoss >= state.heroes[hit.target].health))
+  const blocksLethal = forecast.some(hit => !hit.estimated && hit.lethal && preview.armor[hit.target] >= hit.healthLoss)
   const bonusValue = preview.bonusDamage + preview.draw * 1.4 + preview.bonuses.length * 1.2 + preview.statusFuture * 0.6
   const drawValue = preview.draw * 1.7
   if (strategy === 'aggressive') {
@@ -187,10 +190,11 @@ function evaluateCard(state: BattleState, instance: CardInstance, strategy: Clas
   return damage * 0.9 + block * danger + bonusValue + drawValue * 0.7 - card.cost * 0.45
 }
 
-export function chooseCard(state: BattleState, strategy: ClassicStrategy): CardInstance | undefined {
+/** `information` defaults to the fair policy; `'omniscient'` reproduces the historical bots (diagnostic only: it reads a prepared strike's hidden size). */
+export function chooseCard(state: BattleState, strategy: ClassicStrategy, information: Information = 'public'): CardInstance | undefined {
   const choice = state.hand
     .filter(instance => cardDefinition(instance.definitionId).cost <= state.mana)
-    .map((instance, index) => ({ instance, index, score: evaluateCard(state, instance, strategy) }))
+    .map((instance, index) => ({ instance, index, score: evaluateCard(state, instance, strategy, information) }))
     .sort((a, b) => b.score - a.score || a.index - b.index)[0]
   return choice && choice.score > 0.15 ? choice.instance : undefined
 }
@@ -244,7 +248,7 @@ function recordBattle(state: BattleState, encounterId: string, encounterName: st
 }
 
 export function simulateRun(seed: number, strategy: BalanceStrategy, options: RunOptions = {}): BalanceRun {
-  const { economy = baselineEconomy, trace: wantTrace = false, ...limits } = options
+  const { economy = baselineEconomy, trace: wantTrace = false, information = 'public', ...limits } = options
   const max = { ...defaultBalanceLimits, ...limits }
   const encounterList = campaignEncounters(economy)
   const topMana = Math.max(...economy.manaByTurn)
@@ -323,7 +327,7 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, options: Ru
       let playsThisTurn = 0
       while (!battle.result && playsThisTurn < max.maxPlaysPerTurn && actionCount < max.maxActionsPerRun) {
         const plannedId = planner?.next(battle)
-        const chosen = planner ? battle.hand.find(instance => instance.instanceId === plannedId) : chooseCard(battle, strategy as ClassicStrategy)
+        const chosen = planner ? battle.hand.find(instance => instance.instanceId === plannedId) : chooseCard(battle, strategy as ClassicStrategy, information)
         if (!chosen) break
         const card = cardDefinition(chosen.definitionId)
         const outcome = playCard(battle, chosen.instanceId)
@@ -428,11 +432,11 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, options: Ru
   }
 }
 
-export function simulateBalance(options: { runs: number; seed: number; strategies?: BalanceStrategy[]; limits?: Partial<BalanceLimits>; economy?: EconomyConfig }): BalanceRun[] {
+export function simulateBalance(options: { runs: number; seed: number; strategies?: BalanceStrategy[]; limits?: Partial<BalanceLimits>; economy?: EconomyConfig; information?: Information }): BalanceRun[] {
   // The default stays the three classic controls so existing reports are unchanged; pass `allStrategies` to add the planner.
   const strategies = options.strategies ?? [...classicStrategies]
   const results: BalanceRun[] = []
-  for (const strategy of strategies) for (let index = 0; index < options.runs; index += 1) results.push(simulateRun((options.seed + index) >>> 0, strategy, { ...options.limits, economy: options.economy }))
+  for (const strategy of strategies) for (let index = 0; index < options.runs; index += 1) results.push(simulateRun((options.seed + index) >>> 0, strategy, { ...options.limits, economy: options.economy, information: options.information }))
   return results
 }
 
