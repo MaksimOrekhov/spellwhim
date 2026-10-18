@@ -83,13 +83,15 @@ export function cardDefinition(id: CardId): CardDefinition {
   return definition
 }
 
+export type EnemyAppearance = 'root' | 'guardian' | 'heart' | 'defias' | 'goblin' | 'mechanical'
+
 export interface EncounterDefinition {
   id: string
   name: string
   title: string
   maxHealth: number
   behavior: EnemyBehavior
-  appearance: 'root' | 'guardian' | 'heart'
+  appearance: EnemyAppearance
   mapLabel: string
 }
 

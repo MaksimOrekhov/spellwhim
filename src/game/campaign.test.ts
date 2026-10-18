@@ -6,6 +6,10 @@ import {
 } from './campaign'
 import { createCampaignBattle } from './campaign'
 import { deriveDungeonSeed } from './campaign'
+import { forecastEnemyAction, playCard } from './battle'
+import { eliteEncounterCatalog, encounterPoolsByLayer, normalEncounterCatalog } from './encountersV09'
+import { cardDefinition } from './types'
+import type { EnemyAction, EnemyHit } from './types'
 
 function winCurrentNode(run: ReturnType<typeof createDungeonRun>) {
   const node = dungeonNode(run.map, run.currentNodeId!)!
@@ -31,8 +35,49 @@ describe('dungeon map generation', () => {
 
   it('keeps every route connected, playable and within elite limits for 1,000 seeds', () => {
     for (let seed = 0; seed < 1_000; seed += 1) {
-      expect(validateDungeonMap(createDungeonMap(seed)), `seed ${seed}`).toEqual([])
+      const map = createDungeonMap(seed)
+      expect(validateDungeonMap(map), `seed ${seed}`).toEqual([])
+      for (const node of map.layers.flat().filter(item => item.type === 'battle')) {
+        const previous = map.layers[node.layer - 1]?.filter(item => item.edges.includes(node.id)) ?? []
+        expect(previous.every(item => item.encounterId !== node.encounterId), `seed ${seed}, node ${node.id}`).toBe(true)
+      }
     }
+  })
+
+  it('uses distinct Deadmines archetypes, true elites and layer-appropriate pools', () => {
+    expect(new Set([...normalEncounterCatalog, ...eliteEncounterCatalog].map(item => item.id)).size).toBe(normalEncounterCatalog.length + eliteEncounterCatalog.length)
+    expect(normalEncounterCatalog).toHaveLength(6)
+    expect(eliteEncounterCatalog).toHaveLength(2)
+    const hits = (action: EnemyAction): EnemyHit[] => action.kind === 'attack' || action.kind === 'attack_all' ? [action] : action.kind === 'prepare' ? [action.prepared] : []
+    for (const encounter of [...normalEncounterCatalog, ...eliteEncounterCatalog]) {
+      expect(encounter.behavior.phase1.length, encounter.id).toBeGreaterThan(0)
+      expect([...encounter.behavior.phase1, ...(encounter.behavior.phase2 ?? [])].every(action => ['attack', 'attack_all', 'prepare', 'defend', 'recover'].includes(action.kind)), encounter.id).toBe(true)
+      for (const action of [...encounter.behavior.phase1, ...(encounter.behavior.phase2 ?? [])]) {
+        for (const hit of hits(action)) expect(['warrior', 'mage'].includes(hit.kind === 'attack' ? hit.target : hit.primaryTarget)).toBe(true)
+        if (action.kind === 'prepare') expect(['attack', 'attack_all'].includes(action.prepared.kind)).toBe(true)
+      }
+    }
+    for (let seed = 0; seed < 1_000; seed += 1) {
+      const map = createDungeonMap(seed)
+      for (const node of map.layers.flat()) {
+        if (node.type === 'battle') expect(encounterPoolsByLayer[Math.min(node.layer, 2)]).toContain(node.encounterId)
+        if (node.type === 'elite') expect(eliteEncounterCatalog.map(item => item.id)).toContain(node.encounterId)
+      }
+    }
+  })
+
+  it('announces elite preparations and preserves the current intent when the foundry chief changes phase', () => {
+    const mechanic = eliteEncounterCatalog.find(item => item.id === 'goblin-foundry-chief')!
+    const battle = createCampaignBattle({ encounter: mechanic, deck: ['fireball'], seed: 81 })
+    expect(forecastEnemyAction(battle).futureTargets).toMatchObject([{ target: 'warrior', attack: 4 }, { target: 'mage', attack: 4 }])
+    battle.enemy.health = 30
+    battle.hand = [{ instanceId: 'test-fireball', definitionId: 'fireball' }]
+    battle.mana = 3
+    expect(playCard(battle, 'test-fireball').ok).toBe(true)
+    expect(battle.enemy.phase).toBe(2)
+    expect(battle.enemy.nextAction).toMatchObject({ kind: 'prepare', name: 'Разогревает котёл' })
+    expect(battle.enemy.behavior.phase2?.[0]).toMatchObject({ kind: 'prepare', name: 'Переводит котёл в красную зону' })
+    expect(cardDefinition('fireball').effects[0]).toMatchObject({ type: 'damage', amount: 8 })
   })
 
   it('keeps enemy-facing display data out of map nodes while fixing each encounter by seed', () => {
@@ -40,6 +85,7 @@ describe('dungeon map generation', () => {
     for (const node of map.layers.flat()) {
       expect(node).not.toHaveProperty('title')
       expect(node).not.toHaveProperty('detail')
+      expect(node).not.toHaveProperty('name')
       if (node.type !== 'rest') {
         const regenerated = dungeonNode(createDungeonMap(321), node.id)!
         expect(dungeonEncounter(node)).toEqual(dungeonEncounter(regenerated))

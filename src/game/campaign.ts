@@ -1,6 +1,7 @@
 import { createBattle } from './battle'
 import { cards, startingDeck } from './types'
 import { economyEncounters, gameEconomy } from './economy'
+import { dungeonEncounterById, eliteEncounterCatalog, encounterPoolsByLayer, normalEncounterCatalog } from './encountersV09'
 import type { EconomyConfig } from './economy'
 import { shuffle } from './deck'
 import type { BattleState, CardDefinition, CardId, EncounterDefinition, Hero, HeroId } from './types'
@@ -163,28 +164,34 @@ function nodeId(layer: number, column: number): string { return `layer-${layer +
 export function createDungeonMap(seed: number, economy: EconomyConfig = gameEconomy): DungeonMap {
   const random = dungeonRandom(seed)
   const encounters = campaignEncounters(economy)
-  if (encounters.length < 2) throw new Error('Dungeon maps need at least one non-final encounter and one final encounter')
-  const regularEncounters = encounters.slice(0, -1)
+  if (encounters.length < 1) throw new Error('Dungeon maps need a final encounter')
   const finalEncounter = encounters[encounters.length - 1]!
 
-  const layers = dungeonLayerTypes.map((types, layerIndex) => {
+  const layers: DungeonMapNode[][] = []
+  dungeonLayerTypes.forEach((types, layerIndex) => {
     const arrangedTypes = layerIndex === 0 ? [...types] : shuffleValues(types, random)
-    return arrangedTypes.map((type, column): DungeonMapNode => {
+    layers.push(arrangedTypes.map((type, column): DungeonMapNode => {
       const id = nodeId(layerIndex, column)
       if (type === 'rest') {
         return { id, layer: layerIndex, column, type, edges: [], healAmount: REST_HEAL_AMOUNT }
       }
-      const baseEncounter = type === 'elite'
-        ? regularEncounters[Math.floor(random() * regularEncounters.length)]!
-        : regularEncounters[Math.floor(random() * regularEncounters.length)]!
-      const healthScale = type === 'elite' ? 1.08 + random() * 0.08 : layerIndex === 0 ? [0.62, 0.70, 0.78][column]! : 0.62 + random() * 0.14
+      const pool = type === 'elite'
+        ? eliteEncounterCatalog
+        : normalEncounterCatalog.filter(encounter => (encounterPoolsByLayer[Math.min(layerIndex, encounterPoolsByLayer.length - 1)] ?? []).includes(encounter.id))
+      const previousIds = new Set(layers[layerIndex - 1]?.filter(previous => Math.abs(previous.column - column) <= 1).map(previous => previous.encounterId))
+      const withoutAdjacentRepeat = pool.filter(encounter => !previousIds.has(encounter.id))
+      const choices = withoutAdjacentRepeat.length ? withoutAdjacentRepeat : pool
+      const baseEncounter = choices[Math.floor(random() * choices.length)]!
+      const healthScale = type === 'elite'
+        ? (layerIndex >= 4 ? 1.06 : 1)
+        : layerIndex === 0 ? [0.78, 0.82, 0.86][column]! : 0.84 + Math.min(layerIndex, 5) * 0.025 + random() * 0.04
       const health = Math.max(1, Math.round(baseEncounter.maxHealth * healthScale))
       const rewardCount = type === 'elite' ? ELITE_REWARD_CHOICES : NORMAL_REWARD_CHOICES
       return {
         id, layer: layerIndex, column, type,
         edges: [], encounterId: baseEncounter.id, encounterHealth: health, rewardCount,
       }
-    })
+    }))
   })
 
   const finalNode: DungeonMapNode = {
@@ -213,12 +220,11 @@ export function dungeonEncounter(node: DungeonMapNode, economy: EconomyConfig = 
   if (!node.encounterId || node.encounterHealth === undefined || (node.type !== 'battle' && node.type !== 'elite' && node.type !== 'final')) {
     throw new Error(`Node ${node.id} does not contain a battle`)
   }
-  const base = campaignEncounters(economy).find(encounter => encounter.id === node.encounterId)
+  const base = dungeonEncounterById(node.encounterId) ?? campaignEncounters(economy).find(encounter => encounter.id === node.encounterId)
   if (!base) throw new Error(`Unknown encounter ${node.encounterId}`)
   return {
     ...base,
     id: `${base.id}/${node.id}`,
-    name: node.type === 'elite' ? `${base.name} · элита` : base.name,
     maxHealth: node.encounterHealth,
   }
 }
@@ -317,6 +323,11 @@ export function validateDungeonMap(map: DungeonMap): string[] {
 
   for (const node of nodes) {
     if (node.type === 'elite' && node.layer < 2) errors.push(`Elite ${node.id} appears before layer 3`)
+    if (node.type === 'battle' && node.encounterId) {
+      const pool = encounterPoolsByLayer[Math.min(node.layer, encounterPoolsByLayer.length - 1)] ?? []
+      if (!pool.includes(node.encounterId)) errors.push(`Normal encounter ${node.encounterId} is not available on layer ${node.layer + 1}`)
+    }
+    if (node.type === 'elite' && !eliteEncounterCatalog.some(encounter => encounter.id === node.encounterId)) errors.push(`Elite node ${node.id} does not use an elite encounter`)
     if (node.type !== 'final' && node.edges.length === 0) errors.push(`Node ${node.id} is a dead end`)
     for (const targetId of node.edges) {
       const target = byId.get(targetId)

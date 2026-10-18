@@ -19,18 +19,18 @@ const threatened = computed(() => new Set(forecast.value.threatened))
 <template>
   <main class="battle-scene" data-battle-scene :class="'battle-scene--' + phase">
     <svg class="scene-art" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      <defs><radialGradient id="sky"><stop stop-color="#a9c3b4"/><stop offset=".5" stop-color="#537e76"/><stop offset="1" stop-color="#254d49"/></radialGradient><radialGradient id="sun"><stop stop-color="#ffe7a8" stop-opacity=".8"/><stop offset="1" stop-color="#f7dd9e" stop-opacity="0"/></radialGradient><linearGradient id="earth" x2="0" y2="1"><stop stop-color="#5c8063"/><stop offset="1" stop-color="#263f35"/></linearGradient></defs>
-      <path fill="url(#sky)" d="M0 0h1600v1000H0z"/><ellipse cx="800" cy="210" rx="400" ry="320" fill="url(#sun)"/>
-      <path d="M0 400Q210 190 425 385T900 320T1600 355V1000H0Z" fill="#3b6b61" opacity=".5"/><path d="M0 540Q400 390 800 500T1600 460V1000H0Z" fill="url(#earth)"/>
-      <path d="M-50 830Q160 570 150 180Q90 120 0 110L0 0Q180 55 190 175Q240 100 340 70L370 95Q230 145 228 245Q245 540 115 900Z" fill="#193e36"/>
-      <path d="M1650 820Q1460 570 1480 160Q1530 130 1610 115V0Q1430 60 1440 160Q1370 100 1260 50L1220 80Q1400 160 1400 255Q1390 540 1525 900Z" fill="#1c4238"/>
-      <path d="M0 30Q290 -140 510 70Q360 180 210 145Q90 220 0 165ZM1600 0Q1310 -90 1090 60Q1210 180 1410 130Q1520 220 1600 155Z" fill="#2e5740"/>
-      <path d="M0 780Q210 650 380 830Q580 760 800 800Q1060 750 1260 820Q1490 640 1600 760V1000H0Z" fill="#214437" opacity=".75"/>
-      <ellipse cx="800" cy="625" rx="420" ry="105" fill="#c8bd80" opacity=".1"/><ellipse cx="800" cy="625" rx="310" ry="77" fill="none" stroke="#c9bd85" stroke-width="3" opacity=".17"/>
-      <path d="M0 880Q80 710 180 740Q110 850 0 920M1600 900Q1510 710 1415 765Q1490 875 1600 940" fill="#446647"/>
+      <defs><radialGradient id="sky"><stop stop-color="#c08d58"/><stop offset=".42" stop-color="#765840"/><stop offset="1" stop-color="#292b2a"/></radialGradient><radialGradient id="sun"><stop stop-color="#ffd28a" stop-opacity=".72"/><stop offset="1" stop-color="#f7a34d" stop-opacity="0"/></radialGradient><linearGradient id="earth" x2="0" y2="1"><stop stop-color="#675744"/><stop offset="1" stop-color="#242827"/></linearGradient></defs>
+      <path fill="url(#sky)" d="M0 0h1600v1000H0z"/><ellipse cx="800" cy="340" rx="450" ry="370" fill="url(#sun)"/>
+      <path d="M0 0h1600v250Q1360 180 1190 252T800 210T400 250T0 210Z" fill="#252927"/><path d="M0 390Q370 310 800 390T1600 370V1000H0Z" fill="url(#earth)"/>
+      <path d="M115 1000V430Q115 90 800 55Q1485 90 1485 430V1000H1350V435Q1350 225 800 205Q250 225 250 435V1000Z" fill="#343633"/>
+      <path d="M95 430Q100 65 800 35Q1500 65 1505 430M228 430Q235 185 800 178Q1365 185 1372 430" fill="none" stroke="#765d42" stroke-width="34" stroke-linecap="round"/>
+      <path d="M0 650Q330 560 520 650T1050 630T1600 650V1000H0Z" fill="#373831" opacity=".8"/>
+      <path d="M0 850H1600M180 440V870M1420 440V870" fill="none" stroke="#604b35" stroke-width="24" stroke-linecap="round"/>
+      <ellipse cx="800" cy="695" rx="390" ry="100" fill="#ffd08a" opacity=".1"/><ellipse cx="800" cy="695" rx="300" ry="72" fill="none" stroke="#b79a67" stroke-width="3" opacity=".2"/>
+      <path d="M0 920Q240 780 440 900Q650 830 820 920Q1110 800 1300 910Q1480 800 1600 900V1000H0Z" fill="#292b27"/>
     </svg>
     <header class="battle-header">
-      <div class="location-label"><span>✦ Сумеречная чаща</span><small>{{ state.enemy.title }}</small></div>
+      <div class="location-label"><span>✦ Мёртвые копи</span><small>{{ state.enemy.title }}</small></div>
       <div :key="phase + (phase === 'player' ? state.turn : '')" class="phase-indicator" :class="'phase-indicator--' + phase" role="status" aria-live="polite"><strong>{{ phaseTitle }}</strong><span>{{ phase === 'player' ? 'Вариан и Джайна · Ход ' + state.turn : phase === 'finished' ? 'Сражение завершено' : animation.label }}</span></div>
       <BattleHelp />
     </header>

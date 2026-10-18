@@ -10,7 +10,7 @@ The design research document is retained at [roguelike-adventure-design-research
 
 - Edges only move forward. Each node connects to adjacent columns in the next layer; every node ultimately reaches the final node.
 - The fixed node schedule is: three normal fights; one rest and two fights; one elite and two fights; one rest and two fights; one elite and two fights; one rest and two fights; then the final.
-- Normal and elite encounters reuse the current campaign enemy package. Their maximum health is scaled in generated node data; the final node retains the package's final encounter and health.
+- Since Encounter Diversity v0.9, normal and elite encounters use the Deadmines roster in `src/game/encountersV09.ts`, selected from layer pools; elites have their own behavior. The final node still retains the selected economy package's final encounter and health.
 - A normal victory offers one card selected from three deterministic reward options. An elite victory offers one from five. The deck persists through the run.
 - At a rest, choose one injured hero to heal by up to 6 HP, capped at that hero's maximum. If both heroes are full, continue without healing.
 - Current HP carries forward between fights; temporary armor is cleared. A defeat ends the run, and defeating the final encounter completes it.
@@ -37,7 +37,7 @@ The displayed seed can be copied into the core API or CLI to reproduce a route. 
 - Pure route generation and run transitions live in `src/game/campaign.ts`.
 - The screen and route choices live in `src/components/CampaignMap.vue`; rest healing is presented by `src/components/RestSite.vue`.
 - Battles still use the shared battle engine and selected economy. The experimental economy flags and Balance Lab's legacy linear campaign helpers remain available.
-- The map uses the currently configured encounter package, which is still the prototype package rather than new Deadmines-specific encounters.
+- The v0.9 normal/elite catalog is Deadmines-themed; the final boss is still the prototype economy encounter pending a separate boss-design iteration.
 - New UI icons use the locally installed open-source Lucide Vue package. The dependency version declares ISC; its distributed license notice also includes the Feather-derived icon list and the associated MIT notice. The map's chosen icons are `Swords`, `Crown`, `Flame`, and `Skull`. The complete notice is retained at `LICENSES/LUCIDE.txt`; no external CDN is used.
 - Run persistence across app restarts, route events, shops, artifacts, and additional reward types are outside v0.1.
 

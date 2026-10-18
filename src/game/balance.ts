@@ -187,7 +187,7 @@ function evaluateCard(state: BattleState, instance: CardInstance, strategy: Clas
   return damage * 0.9 + block * danger + bonusValue + drawValue * 0.7 - card.cost * 0.45
 }
 
-function chooseCard(state: BattleState, strategy: ClassicStrategy): CardInstance | undefined {
+export function chooseCard(state: BattleState, strategy: ClassicStrategy): CardInstance | undefined {
   const choice = state.hand
     .filter(instance => cardDefinition(instance.definitionId).cost <= state.mana)
     .map((instance, index) => ({ instance, index, score: evaluateCard(state, instance, strategy) }))
