@@ -27,10 +27,12 @@
 
 Образы Джайны и Вариана зафиксированы как художественные ориентиры, а не единая дата событий: сюжет остаётся альтернативной таверновой историей и не обязан строго помещаться в хронологию Warcraft.
 
-## Карты, фон и эффекты
+## Карты способностей, приключенческий арт и эффекты
 
-- Иллюстрация карты показывает один ясный момент действия и один главный фокус. Форма оружия, эффект и классовая принадлежность должны читаться в размере миниатюры.
-- Фоны шахты, мастерской и корабельной палубы — цельные пространства с глубиной, выразительными источниками света и свободными участками под HUD. Не вписывать персонажей, которых игра не отображает отдельно, если они мешают бою.
+- **Карты способностей — универсальные и зависят от класса/механики.** Показывай действие, силуэт, момент удара/заклинания/защиты и читаемый визуальный эффект на нейтральном или абстрактном фэнтезийном фоне. Не привязывай сцену к текущему приключению. Не используй шахту, рельсы, вагонетки, шахтные балки, шахтные фонари, тоннели или другие узнаваемые локационные детали.
+- **Враги, элиты, боссы, события и фоны приключения зависят от локации.** Для эпизода в Мёртвых копях окружение шахты, мастерской и строящегося корабля уместно и желательно, когда соответствует конкретному персонажу или сцене.
+- Иллюстрация способности показывает один ясный момент действия и один главный фокус. Форма оружия, эффект и классовая принадлежность должны читаться в размере миниатюры. Воин опирается на сталь, броню, щит, искры и кинетику; Маг — на лед, огонь, тайную энергию, руны и свечение. Цвет эффекта сохраняет естественный цвет заклинания.
+- Фоны шахты, мастерской и корабельной палубы — цельные пространства с глубиной, выразительными источниками света и свободными участками под HUD. Не вписывай персонажей, которых игра не отображает отдельно, если они мешают бою.
 - UI и текст карт собираются средствами приложения, не рисуются внутри файлов.
 - VFX показывают источник, направление и цель: стальной след удара, огненный снаряд, ледяная/тайная магическая дуга. Защитные карты Вариана изображают воинские приёмы — блок клинком, стойку, перехват или прикрытие напарника; он не создаёт магические щиты. Резонанс показывай отдельным магическим откликом Джайны. Эффекты короткие и контрастные, не закрывают здоровье, намерение врага и карты.
 
@@ -53,13 +55,17 @@
 
 Промпты для генератора пишутся на английском и дополняются конкретной сценой из `ASSET_MANIFEST.md`. В них не включать слова `brushing` и `camera`.
 
-**Стиль:**
+**Стиль способности (нейтральный фон):**
 
-> Original fan-made Warcraft fantasy card-game illustration, vibrant stylized hand-painted fantasy, bold readable silhouette, warm adventurous humor, rich jewel colors, expressive shapes, polished painterly finish, dramatic but clear magical lighting, faithful recognizable Warcraft character design, original composition, no text, no logo, no card frame, no interface, no photorealism, no anime, no grimdark.
+> Original fan-made Warcraft fantasy ability-card illustration, vibrant stylized hand-painted fantasy, bold readable silhouette, expressive shapes, polished painterly finish, clear dramatic lighting, class- and mechanic-driven action, neutral or abstract fantasy background unrelated to any specific adventure, original composition, no text, no logo, no card frame, no interface, no photorealism, no anime, no grimdark. No mines, caves, tunnels, rails, carts, timber mine supports, or mining lanterns.
+
+**Приключенческий арт (локационный фон):**
+
+> Original fan-made Warcraft fantasy illustration for [enemy, event, boss, or environment] in [specific adventure location], vibrant stylized hand-painted fantasy, bold readable focal point, expressive shapes, polished painterly finish, location-specific environmental details and lighting, original composition, no text, no logo, no interface, no photorealism, no anime, no grimdark.
 
 **Портрет:**
 
-> Square character portrait, chest-up, centered face with safe space around the head and shoulders, [character-specific canonical features and era], [distinctive prop], mine-inspired warm and cool light, clean background shapes, designed to remain recognizable when cropped to a circle, no text, no border, no interface.
+> Square character portrait, chest-up, centered face with safe space around the head and shoulders, [character-specific canonical features and era], [distinctive prop], [character- and location-appropriate lighting and background], designed to remain recognizable when cropped to a circle, no text, no border, no interface.
 
 **Фон:**
 

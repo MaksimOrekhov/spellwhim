@@ -29,6 +29,8 @@
 
 - Кадр квадратный; действие крупное и читается в миниатюре.
 - Используй одну центральную идею: столкновение клинков, огненный шар, узкий арканный разряд.
+- **Abilities = class/mechanic-driven, neutral background.** Фон нейтральный или абстрактный и не привязан к конкретному приключению. Для иллюстраций способностей запрещены узнаваемые шахты и их элементы: рельсы, вагонетки, шахтные балки, шахтные фонари, тоннели и подобное окружение.
+- Локационный арт врагов, элит, боссов, событий и окружения приключения, наоборот, привязан к сцене. Для Мёртвых копей используй подходящие детали шахты, мастерской или корабельной палубы.
 - Цвет классовой системы может поддерживать действие, но не должен портить его естественный цвет: пламя остаётся тёплым, лёд — голубым, металл — стальным.
 - Не рисуй рамку карты, эмблему класса, стоимость, подпись, текст или игровой интерфейс внутри иллюстрации.
 - Не добавляй персонажа автоматически. Включай его только если он нужен для чтения конкретного действия и прошёл проверку канонического облика.
@@ -52,13 +54,13 @@
 
 ## Контрольные иллюстрации v0.1
 
-Три контрольных изображения лежат в `art-exploration/card-design-system-v01/`. Это черновые стилевые образцы, созданные встроенным ImageGen по портретам Вариана и Джайны как референсам освещения и отделки. Они не подключены в игру и не считаются утверждёнными игровыми ассетами. Эти три примера проверяют классовые сигналы и различимость действий; массовая генерация карт начинается после отдельного просмотра и утверждения направления.
+Три контрольных изображения лежат в `art-exploration/card-design-system-v01/`. Это черновые стилевые образцы, созданные встроенным ImageGen; фон у всех заменён на нейтральный/абстрактный после уточнения арт-дирекшена. Они не подключены в игру и не считаются утверждёнными игровыми ассетами. Эти три примера проверяют классовые сигналы и различимость действий; массовая генерация карт начинается после отдельного просмотра и утверждения направления.
 
 | Файл | Класс и действие | Визуальная проверка |
 |---|---|---|
-| `warrior-defensive-parry.png` | Воин — защитное парирование | сталь и бронза, угловатый удар, янтарные искры |
-| `mage-fireball.png` | Маг — огненный шар | тёплое пламя с аметистовым магическим контуром и сапфировой глубиной |
-| `mage-arcane-bolt.png` | Маг — арканный разряд | сапфир, аметист и светлая энергия, заметный направленный силуэт |
+| `warrior-defensive-parry.png` | Воин — защитное парирование | сталь и бронза, угловатый удар, янтарные искры на нейтральном угольно-сером фоне |
+| `mage-fireball.png` | Маг — огненный шар | тёплое пламя с аметистовым контуром на абстрактном индиго-фиолетовом фоне |
+| `mage-arcane-bolt.png` | Маг — арканный разряд | сапфир, аметист и светлая энергия на абстрактном тёмно-синем фоне |
 
 ## Заготовка промпта способности: GLOBAL STYLE + CLASS ART DNA + CARD SCENE
 
@@ -66,7 +68,7 @@
 
 **GLOBAL STYLE:**
 
-> Original fan-made Warcraft fantasy card illustration, vibrant stylized hand-painted fantasy, bold readable silhouette, warm adventurous humor, rich jewel colors, expressive clean shapes, polished painterly finish, dramatic but clear lighting, warm mine-lantern highlights against cool mine shadows, original composition, square composition, readable at thumbnail size, no text, no logo, no card frame, no emblem, no interface, no watermark, no photorealism, no anime, no grimdark.
+> Original fan-made Warcraft fantasy ability-card illustration, vibrant stylized hand-painted fantasy, bold readable silhouette, warm adventurous humor, rich jewel colors, expressive clean shapes, polished painterly finish, dramatic but clear lighting, neutral or abstract fantasy background, original composition, square composition, readable at thumbnail size, no specific adventure setting, no mines, caves, tunnels, rails, carts, timber mine supports, or mining lanterns, no text, no logo, no card frame, no emblem, no interface, no watermark, no photorealism, no anime, no grimdark.
 
 **CLASS ART DNA — Воин:**
 
@@ -78,14 +80,14 @@
 
 **CARD SCENE — Воин, парирование:**
 
-> Square close-up card illustration of two steel blades meeting in a decisive defensive parry, one blade held across the incoming strike, bright amber sparks at impact, bronze fittings and charcoal shadows, angular physical motion, warm mine-lantern highlights against cool blue depth, no visible face or full character, one clear action readable at thumbnail size, original composition, no text, no frame, no emblem, no UI.
+> Square close-up card illustration of two steel blades meeting in a decisive defensive parry, one blade held across the incoming strike, bright amber sparks at impact, bronze fittings and charcoal shadows, angular physical motion, neutral abstract slate and ember background, no visible face or full character, one clear action readable at thumbnail size, original composition, no mine, cave, tunnel, rails, cart, timber supports, lanterns, text, frame, emblem, or UI.
 
 **CARD SCENE — Маг, огненный шар:**
 
-> Square close-up card illustration of one large orange-gold fireball in flight, luminous core and painterly flame tongues, subtle amethyst arcane ribbons and sapphire-blue mine shadows identifying a mage, simple warm-lantern background, bold centered silhouette readable at thumbnail size, no character or hands, original composition, no text, no frame, no emblem, no UI.
+> Square close-up card illustration of one large orange-gold fireball in flight, luminous core and painterly flame tongues, subtle amethyst arcane ribbons and sapphire accents identifying a mage, simple abstract indigo-violet magical background, bold centered silhouette readable at thumbnail size, no character or hands, original composition, no mine, cave, tunnel, rails, cart, timber supports, lanterns, text, frame, emblem, or UI.
 
 **CARD SCENE — Маг, арканный разряд:**
 
-> Square close-up card illustration of one directed sapphire and amethyst arcane bolt with a bright cyan-white core, a short trail of rune-like fragments and a few particles, simple warm mine-lantern background with deep indigo shadows, bold diagonal silhouette readable at thumbnail size, no character or hands, original composition, no text, no frame, no emblem, no UI.
+> Square close-up card illustration of one directed sapphire and amethyst arcane bolt with a bright cyan-white core, a short trail of rune-like fragments and a few particles, simple abstract indigo background, bold diagonal silhouette readable at thumbnail size, no character or hands, original composition, no mine, cave, tunnel, rails, cart, timber supports, lanterns, text, frame, emblem, or UI.
 
 Каждый результат сначала проверяется как экспериментальный. Проверяй читаемость действия, классовый сигнал и совпадение с общим художественным направлением до оптимизации и интеграции.
