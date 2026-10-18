@@ -1,7 +1,7 @@
 import { computed, shallowRef } from 'vue'
 import { endTurn, previewCard, resolveCardPlay, startCardPlay } from '../game/battle'
 import { addCampaignReward, createCampaignBattle } from '../game/campaign'
-import { baselineEconomy } from '../game/economy'
+import { gameEconomy } from '../game/economy'
 import type { EconomyConfig } from '../game/economy'
 import { cardDefinition, startingDeck } from '../game/types'
 import type { BattleState, CardDefinition, CardId, CardInstance, CardPreview, EncounterDefinition } from '../game/types'
@@ -14,7 +14,7 @@ export interface HandCardView {
 }
 
 export function useBattle(options: { seed?: number; deck?: readonly CardId[]; economy?: EconomyConfig } = {}) {
-  const economy = options.economy ?? baselineEconomy
+  const economy = options.economy ?? gameEconomy
   let seed = (options.seed ?? Date.now()) >>> 0
   let battleSequence = 0
   let runGeneration = 0

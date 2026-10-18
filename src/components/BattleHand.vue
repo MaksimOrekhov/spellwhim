@@ -4,9 +4,16 @@ import HandCard from './HandCard.vue'
 import GameTooltip from './GameTooltip.vue'
 import type { HandCardView } from '../composables/useBattle'
 import type { BattlePhase } from '../composables/useBattleAnimation'
-const props = defineProps<{ cards: HandCardView[]; outgoing: HandCardView | null; outgoingIndex: number; drawCount: number; discardCount: number; exhaustedCount: number; phase: BattlePhase; mana: number; maxMana: number; nextMana?: number; nextDraw?: number }>()
+const props = defineProps<{ cards: HandCardView[]; outgoing: HandCardView | null; outgoingIndex: number; drawCount: number; discardCount: number; exhaustedCount: number; phase: BattlePhase; mana: number; maxMana: number; nextMana?: number; nextDraw?: number; drawBoostFrom?: number; drawBoostAmount?: number }>()
 const emit = defineEmits<{ play: [instanceId: string]; endTurn: [] }>()
 const displayed = computed(() => { const cards = [...props.cards]; if (props.outgoing) cards.splice(props.outgoingIndex, 0, props.outgoing); return cards })
+const manaHint = computed(() => {
+  if (props.nextMana === undefined || props.nextMana === props.maxMana) return props.maxMana >= 5 ? 'Максимум маны: 5' : ''
+  return 'Следующий ход: максимум ' + props.nextMana
+})
+const drawHint = computed(() => props.drawBoostFrom !== undefined && props.drawBoostAmount !== undefined
+  ? 'В начале каждого хода после первого добираются 2 карты; с ' + props.drawBoostFrom + '-го хода — ' + props.drawBoostAmount + '. Несыгранные карты остаются в руке.'
+  : 'В начале каждого следующего хода добираются ' + (props.nextDraw ?? 2) + ' карты. Несыгранные карты остаются в руке.')
 function reason(item: HandCardView): string | null {
   if (props.phase === 'finished') return 'Бой завершён.'
   if (props.phase === 'enemy') return 'Сейчас ход противника. Дождитесь начала хода отряда.'
@@ -18,8 +25,8 @@ function reason(item: HandCardView): string | null {
 <template>
   <footer class="battle-dock">
     <aside class="hand-resources">
-      <div class="mana-pool" aria-label="Мана отряда"><span>Мана</span><strong>{{ mana }}<small>/{{ maxMana }}</small></strong><div class="mana-pips" aria-hidden="true"><i v-for="pip in maxMana" :key="pip" :class="{ 'is-spent': pip > mana }"></i></div><em v-if="nextMana !== undefined && nextMana !== maxMana" class="mana-next">Следующий ход: {{ nextMana }}</em></div>
-      <GameTooltip label="Общая колода"><button class="deck-counts" aria-label="Колода и сброс"><span>▤ Колода <b>{{ drawCount }}</b></span><span>↻ Сброс <b>{{ discardCount }}</b></span></button><template #content><p>В начале боя в руке 8 карт. В начале следующего хода добираются до {{ nextDraw ?? 2 }} карт, несыгранные остаются в руке. Максимум — 10.</p><p>Карты сверх лимита не сжигаются и остаются в колоде. Выбывших до конца боя: {{ exhaustedCount }}.</p></template></GameTooltip>
+      <div class="mana-pool" aria-label="Мана отряда"><span>Мана</span><strong>{{ mana }}<small>/{{ maxMana }}</small></strong><div class="mana-pips" aria-hidden="true"><i v-for="pip in maxMana" :key="pip" :class="{ 'is-spent': pip > mana }"></i></div><em v-if="manaHint" class="mana-next">{{ manaHint }}</em></div>
+      <GameTooltip label="Общая колода"><button class="deck-counts" aria-label="Колода и сброс"><span>▤ Колода <b>{{ drawCount }}</b></span><span>↻ Сброс <b>{{ discardCount }}</b></span></button><template #content><p>В начале боя в руке 8 карт. {{ drawHint }}</p><p>Максимум руки — 10. Карты сверх лимита остаются в колоде. Выбывших до конца боя: {{ exhaustedCount }}.</p></template></GameTooltip>
     </aside>
     <section class="hand-area" aria-label="Карты в руке">
       <p class="hand-hint">{{ displayed.length }} / 10 карт · наведите для полного описания · клавиши 1–9, 0</p>

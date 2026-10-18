@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { createBattle, endTurn, forecastEnemyAction, playCard, previewCard } from './battle'
 import { advanceCampaign, campaignEncounter, campaignEncounters, carriedHeroes, createCampaignBattle } from './campaign'
-import { baselineEconomy, buildEconomy, cloneEconomy, drawForTurn, economyEncounters, economyFromSearch, economyFromSpec, economyStage, manaForTurn, maxManaTurn, playableEconomies } from './economy'
+import { baselineEconomy, buildEconomy, cloneEconomy, drawForTurn, economyEncounters, economyFromSearch, economyFromSpec, economyStage, gameEconomy, manaForTurn, maxManaTurn, playableEconomies } from './economy'
 import { reinforcedEncounters } from './encountersV07'
 import { cloneBattleState, createTurnPlanner, planTurn } from './balancePlanner'
 import { allStrategies, simulateBalance, simulateRun, summarizeEconomy } from './balance'
@@ -51,11 +51,14 @@ describe('economy parameters', () => {
     expect(drawForTurn(buildEconomy({ mana: 'U' }), 9)).toBe(2)
   })
 
-  it('keeps the standard game as the default economy', () => {
+  it('keeps model A as the v0.6 control and model B as the standard game', () => {
     expect(baselineEconomy).toMatchObject({ id: 'A', manaCurve: 'A', draw: 'base', enemies: 'v06', openingHand: OPENING_HAND_SIZE })
     expect(baselineEconomy.drawSchedule.perTurn).toBe(CARDS_DRAWN_PER_TURN)
     expect(economyEncounters(baselineEconomy)).toBe(encounters)
     expect(playableEconomies.A).toBe(baselineEconomy)
+    expect(gameEconomy).toBe(playableEconomies.B)
+    expect(gameEconomy).toMatchObject({ id: 'B', manaCurve: 'B', draw: 'late3', enemies: 'v07' })
+    expect(createCampaignBattle({ seed: 9 })).toMatchObject({ economy: gameEconomy, enemy: { maxHealth: 56 } })
   })
 
   it('builds the comparison stages from independent parts', () => {
@@ -68,17 +71,17 @@ describe('economy parameters', () => {
     expect({ ...economyStage('D', 'B'), id: 'B' }).toEqual(B)
   })
 
-  it('parses CLI specs and dev URL parameters, falling back to the standard game', () => {
+  it('parses CLI specs and dev URL parameters, defaulting to the standard B package', () => {
     expect(economyFromSpec('U')).toBe(U)
     expect(economyFromSpec('b/c')).toMatchObject({ manaCurve: 'B', enemies: 'v07', draw: 'base' })
     expect(economyFromSpec('U/v06/late3')).toMatchObject({ manaCurve: 'U', enemies: 'v06', draw: 'late3' })
     expect(() => economyFromSpec('Z')).toThrow()
     expect(() => economyFromSpec('U/v09/base')).toThrow()
-    expect(economyFromSearch('')).toBe(baselineEconomy)
+    expect(economyFromSearch('')).toBe(gameEconomy)
     expect(economyFromSearch('?economy=A')).toBe(baselineEconomy)
     expect(economyFromSearch('?economy=u')).toBe(U)
     expect(economyFromSearch('?economy=B')).toBe(B)
-    expect(economyFromSearch('?economy=nonsense')).toBe(baselineEconomy)
+    expect(economyFromSearch('?economy=nonsense')).toBe(gameEconomy)
     expect(economyFromSearch('?economy=U&enemies=v06')).toMatchObject({ manaCurve: 'U', enemies: 'v06', draw: 'late3' })
     expect(economyFromSearch('?economy=U&enemies=v06&draw=base')).toMatchObject({ enemies: 'v06', draw: 'base' })
     expect(economyFromSearch('?economy=U&draw=bogus')).toBe(U)
@@ -108,11 +111,14 @@ describe('economy parameters', () => {
 })
 
 describe('mana progression in the engine', () => {
-  it('without an economy a battle is the v0.6 battle', () => {
+  it('uses B by default and preserves the v0.6 control when A is explicit', () => {
     const plain = createBattle(encounters[1]!, undefined, { seed: 5 })
-    const explicit = createBattle(encounters[1]!, undefined, { seed: 5, economy: baselineEconomy })
+    const explicit = createBattle(encounters[1]!, undefined, { seed: 5, economy: gameEconomy })
+    const legacy = createBattle(encounters[1]!, undefined, { seed: 5, economy: baselineEconomy })
     expect(plain).toEqual(explicit)
     expect(plain).toMatchObject({ mana: 3, maxMana: 3, turn: 1 })
+    expect(plain.economy).toEqual(gameEconomy)
+    expect(legacy).toMatchObject({ economy: baselineEconomy, mana: 3, maxMana: 3, turn: 1 })
     expect(plain.hand).toHaveLength(OPENING_HAND_SIZE)
     const state = longBattle(baselineEconomy)
     for (let turn = 0; turn < 8; turn += 1) { spendEverything(state); endTurn(state); expect(state).toMatchObject({ mana: 3, maxMana: 3 }) }
@@ -455,12 +461,12 @@ describe('Balance Lab with economies', () => {
 })
 
 describe('the playable app adapter', () => {
-  it('plays the standard rules unless an economy is requested', () => {
+  it('uses model B by default and carries it through a new battle', () => {
     const standard = useBattle({ seed: 7 })
-    standard.startBattle(encounters[0]!)
+    expect(standard.state.value.economy).toEqual(gameEconomy)
+    standard.startBattle(campaignEncounter(0, gameEconomy)!)
     standard.finishTurn()
-    expect(standard.state.value).toMatchObject({ turn: 2, maxMana: 3, mana: 3 })
-    expect(standard.state.value.economy).toEqual(baselineEconomy)
+    expect(standard.state.value).toMatchObject({ turn: 2, maxMana: 4, mana: 4, enemy: { maxHealth: 56 } })
   })
 
   it('grows mana through finishTurn, resets it for the next battle and for a restart', () => {

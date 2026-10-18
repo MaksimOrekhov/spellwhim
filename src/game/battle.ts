@@ -1,5 +1,5 @@
 import { cardDefinition, encounters, links, startingDeck } from './types'
-import { baselineEconomy, drawForTurn, manaForTurn } from './economy'
+import { drawForTurn, gameEconomy, manaForTurn } from './economy'
 import type { EconomyConfig } from './economy'
 import { drawCards, shuffle } from './deck'
 import type { BattleState, CardEffect, CardDefinition, CardId, CardPreview, EncounterDefinition, EnemyAction, EnemyHit, HeroId, PendingPlay, StatusId } from './types'
@@ -9,7 +9,7 @@ export interface BattleOptions {
   seed?: number
   battleId?: string
   openingHandSize?: number
-  /** Mana curve and draw schedule; the standard game (flat 3 mana, draw 2) when omitted. */
+  /** Mana curve and draw schedule; standard model B when omitted. Balance Lab passes model A explicitly. */
   economy?: EconomyConfig
 }
 const ENEMY_ARMOR_CAP = 8
@@ -27,7 +27,7 @@ function updateResult(state: BattleState): void {
 
 export function createBattle(encounter: EncounterDefinition = encounters[1]!, previousHeroes?: BattleState['heroes'], options: BattleOptions = {}): BattleState {
   const seed = (options.seed ?? 1) >>> 0
-  const economy = options.economy ?? baselineEconomy
+  const economy = options.economy ?? gameEconomy
   const battleId = options.battleId ?? encounter.id + ':' + seed
   const heroes = previousHeroes
     ? { warrior: { ...previousHeroes.warrior, armor: 0 }, mage: { ...previousHeroes.mage, armor: 0 } }

@@ -264,9 +264,10 @@ describe('deck, draw, recycle and exhaustion', () => {
     const original = copyId(state, 'thunderbolt')
     playCard(state, original)
     endTurn(state)
+    expect(state.maxMana).toBe(4)
     expect(state.hand[0]!.instanceId).toBe(original)
     expect(playCard(state, original)).toMatchObject({ ok: true, damageDealt: 4 })
-    expect(state.mana).toBe(2)
+    expect(state.mana).toBe(3)
   })
 
   it('exhausts free attacks for this battle so recycling cannot create an infinite free loop', () => {

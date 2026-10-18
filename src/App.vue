@@ -9,15 +9,14 @@ import { useBattle } from './composables/useBattle'
 import { useBattleControls } from './composables/useBattleControls'
 import { useBattleAnimation } from './composables/useBattleAnimation'
 import { advanceCampaign, campaignEncounter, campaignEncounters, campaignRewardOptions } from './game/campaign'
-import { baselineEconomy, drawForTurn, economyFromSearch, manaForTurn } from './game/economy'
+import { drawForTurn, economyFromSearch, gameEconomy, manaForTurn } from './game/economy'
 import type { CardDefinition, EncounterDefinition } from './game/types'
 
-// Experimental economies (Combat Economy v0.7) are a development switch: `npm run dev`, then open `/?economy=B` or `/?economy=U`
-// (or start with VITE_SPELLWHIM_ECONOMY=U). Without it, and in every production build, the game is the standard v0.6.
+// Model B is the standard economy in development, production and Tauri. A and U remain dev-only comparisons.
 const economy = import.meta.env.DEV
   ? economyFromSearch(window.location.search || (import.meta.env.VITE_SPELLWHIM_ECONOMY ? '?economy=' + import.meta.env.VITE_SPELLWHIM_ECONOMY : ''))
-  : baselineEconomy
-const experimental = economy !== baselineEconomy
+  : gameEconomy
+const experimental = economy !== gameEconomy
 const encounters = campaignEncounters(economy)
 const { state, isOver, cards, pendingCard, drawCount, discardCount, beginPlay, resolvePlay, finishTurn, startBattle, addCard, restart } = useBattle({ economy })
 const { animation, phase: battlePhase, impact, play, enemyTurn, cancel } = useBattleAnimation({ state, resolvePlay, finishTurn })
@@ -83,13 +82,13 @@ function restartRun() {
 <template>
   <div class="app-shell">
     <div class="game-wrap">
-      <p v-if="experimental" class="economy-badge" :title="economy.label">Эксперимент v0.7 · модель {{ economy.manaCurve }} · {{ economy.label }}</p>
+      <p v-if="experimental" class="economy-badge" :title="economy.label">Режим сравнения · модель {{ economy.manaCurve }} · {{ economy.label }}</p>
       <CampaignMap v-if="phase === 'map'" :encounters="encounters" :active-index="activeIndex" :heroes="state.heroes" @enter="enterEncounter" />
       <CardReward v-else-if="phase === 'reward'" :options="rewardOptions" :encounter-name="selectedEncounter?.name ?? 'Победа'" @choose="chooseReward" />
       <RunComplete v-else-if="phase === 'complete'" @restart="restartRun" />
       <template v-else>
         <BattleBoard :state="state" :animation="animation" :phase="battlePhase" :continue-label="activeIndex >= encounters.length - 1 ? 'Завершить поход' : 'Выбрать награду'" @impact="impact" @end-turn="onEndTurn" @continue="onBattleContinue" />
-        <BattleHand v-if="!isOver" :cards="cards" :outgoing="pendingCard" :outgoing-index="state.pending?.handIndex ?? 0" :draw-count="drawCount" :discard-count="discardCount" :exhausted-count="state.exhausted.length" :phase="battlePhase" :mana="state.mana" :max-mana="state.maxMana" :next-mana="manaForTurn(state.economy, state.turn + 1)" :next-draw="drawForTurn(state.economy, state.turn + 1)" @play="playCard" @end-turn="onEndTurn" />
+        <BattleHand v-if="!isOver" :cards="cards" :outgoing="pendingCard" :outgoing-index="state.pending?.handIndex ?? 0" :draw-count="drawCount" :discard-count="discardCount" :exhausted-count="state.exhausted.length" :phase="battlePhase" :mana="state.mana" :max-mana="state.maxMana" :next-mana="manaForTurn(state.economy, state.turn + 1)" :next-draw="drawForTurn(state.economy, state.turn + 1)" :draw-boost-from="state.economy.drawSchedule.boost?.fromTurn" :draw-boost-amount="state.economy.drawSchedule.boost?.amount" @play="playCard" @end-turn="onEndTurn" />
       </template>
     </div>
   </div>

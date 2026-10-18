@@ -1,6 +1,6 @@
 import { createBattle } from './battle'
 import { cards, startingDeck } from './types'
-import { baselineEconomy, economyEncounters } from './economy'
+import { economyEncounters, gameEconomy } from './economy'
 import type { EconomyConfig } from './economy'
 import { shuffle } from './deck'
 import type { BattleState, CardDefinition, CardId, EncounterDefinition, Hero } from './types'
@@ -16,7 +16,7 @@ export interface CampaignBattleOptions {
 
 /** Shared campaign rules used by the playable app and the headless balance lab. */
 export function createCampaignBattle(options: CampaignBattleOptions = {}): BattleState {
-  const economy = options.economy ?? baselineEconomy
+  const economy = options.economy ?? gameEconomy
   return createBattle(options.encounter ?? economyEncounters(economy)[0]!, options.heroes, {
     deck: options.deck ?? startingDeck,
     seed: options.seed,
@@ -25,12 +25,12 @@ export function createCampaignBattle(options: CampaignBattleOptions = {}): Battl
   })
 }
 
-/** The encounters of the economy's enemy package (the v0.6 enemies for the standard game). */
-export function campaignEncounters(economy: EconomyConfig = baselineEconomy): readonly EncounterDefinition[] {
+/** The encounters of the economy's enemy package (v0.7 for the standard game). */
+export function campaignEncounters(economy: EconomyConfig = gameEconomy): readonly EncounterDefinition[] {
   return economyEncounters(economy)
 }
 
-export function campaignEncounter(index: number, economy: EconomyConfig = baselineEconomy): EncounterDefinition | undefined {
+export function campaignEncounter(index: number, economy: EconomyConfig = gameEconomy): EncounterDefinition | undefined {
   return campaignEncounters(economy)[index]
 }
 

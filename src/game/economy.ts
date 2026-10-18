@@ -3,15 +3,16 @@ import type { EncounterDefinition } from './types'
 import { reinforcedEncounters } from './encountersV07'
 
 /**
- * Combat Economy v0.7 — the single description of the rules that differ between the standard game (model A)
- * and the experimental mana-progression models (B, U). The headless Balance Lab and the playable app read the
+ * Combat Economy v0.7 — the single description of the standard game (model B) and experimental models (A, U).
+ * The headless Balance Lab and the playable app read the
  * same object, and `battle.ts` is the only place that applies it: there is no second copy of the rules.
  *
  * An economy is three independent parts, so the Lab can add them one at a time (stages A–D of the report):
  *  - a mana curve (mana on turn 1, 2, 3 … ; the last value repeats; restored in full at the start of every turn);
  *  - a draw schedule (cards drawn at the start of each turn after the first);
  *  - an enemy package (the encounters a campaign plays).
- * The standard game is `baselineEconomy`: flat 3 mana, draw 2, the v0.6 enemies. It is the default everywhere.
+ * The standard game is `gameEconomy` (B): 3→4→5 mana, late draw and the v0.7 enemies. `baselineEconomy` (A)
+ * remains the explicit v0.6 control for Balance Lab and regression comparisons.
  */
 
 export type ManaCurveId = 'A' | 'B' | 'U'
@@ -80,7 +81,7 @@ export function buildEconomy(parts: EconomyParts = {}, id?: string): EconomyConf
   }
 }
 
-/** Model A: the standard game (v0.6), the control of every comparison. */
+/** Model A: the v0.6 control economy used for Balance Lab and regression comparisons. */
 export const baselineEconomy: EconomyConfig = buildEconomy()
 
 /** The complete experimental packages offered for play: the curve plus v0.7 enemies plus the late draw. */
@@ -89,6 +90,9 @@ export const playableEconomies: Record<ManaCurveId, EconomyConfig> = {
   B: buildEconomy({ mana: 'B', enemies: 'v07', draw: 'late3' }, 'B'),
   U: buildEconomy({ mana: 'U', enemies: 'v07', draw: 'late3' }, 'U'),
 }
+
+/** Model B is the standard economy used by the actual game. */
+export const gameEconomy: EconomyConfig = playableEconomies.B
 
 export type EconomyStage = 'A' | 'B' | 'C' | 'D'
 /**
@@ -147,13 +151,13 @@ export function economyFromSpec(spec: string): EconomyConfig {
 }
 
 /**
- * Reads the dev-only launch parameters: `?economy=B|U` selects a complete experimental package;
+ * Reads the dev-only launch parameters: `?economy=A|U` selects a comparison package (B is the default);
  * `&enemies=v06|v07` and `&draw=base|late3` override one part of it (`?economy=U&enemies=v06` is stage B for U).
  */
 export function economyFromSearch(search: string): EconomyConfig {
   const params = new URLSearchParams(search)
-  const name = (params.get('economy') ?? 'A').toUpperCase()
-  const curve: ManaCurveId = name in manaCurves ? name as ManaCurveId : 'A'
+  const name = (params.get('economy') ?? 'B').toUpperCase()
+  const curve: ManaCurveId = name in manaCurves ? name as ManaCurveId : 'B'
   const enemies = params.get('enemies')
   const draw = params.get('draw')
   const enemiesPart = enemies && enemies in enemyPackages ? enemies as EnemyPackageId : undefined
