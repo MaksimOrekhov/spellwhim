@@ -16,7 +16,7 @@ import frostboltArt from '../assets/art/frostbolt.svg'
 import arcaneInsightArt from '../assets/art/arcane-insight.svg'
 import iceWardArt from '../assets/art/ice-ward.svg'
 
-const props = defineProps<{ options: CardDefinition[]; encounterName: string; artOverrides?: Partial<Record<CardDefinition['id'], string>> }>()
+const props = defineProps<{ options: CardDefinition[]; encounterName: string; elite?: boolean; artOverrides?: Partial<Record<CardDefinition['id'], string>> }>()
 const emit = defineEmits<{ choose: [card: CardDefinition] }>()
 const artById = { 'sword-strike': swordArt, fireball: fireArt, guard: guardArt, 'quick-cut': quickCutArt, thunderbolt: thunderboltArt, bastion: bastionArt, parry: parryArt, 'shield-bash': shieldBashArt, interpose: interposeArt, frostbolt: frostboltArt, 'arcane-insight': arcaneInsightArt, 'ice-ward': iceWardArt }
 const themes = computed(() => props.options.map(card => getClassTheme(card.className)))
@@ -31,9 +31,9 @@ function kindLabel(card: CardDefinition) {
   <main class="reward-screen">
     <div class="reward-content">
       <span class="reward-spark" aria-hidden="true">✦</span>
-      <p class="reward-kicker">ПОБЕДА · {{ encounterName.toUpperCase() }}</p>
-      <h1>Найдите новую силу</h1>
-      <p class="reward-copy">Выберите одну карту. Она останется с отрядом до конца похода.</p>
+      <p class="reward-kicker">{{ elite ? 'ЦЕННАЯ НАГРАДА ЭЛИТЫ' : 'НАГРАДА ЗА ПОБЕДУ' }} · {{ encounterName.toUpperCase() }}</p>
+      <h1>{{ elite ? 'Заберите трофей' : 'Найдите новую силу' }}</h1>
+      <p class="reward-copy">Выберите одну карту из {{ options.length }}. Она останется с отрядом до конца похода.</p>
       <div class="reward-options">
         <button v-for="(card, index) in options" :key="card.id" class="reward-card" :class="[`reward-card--${themes[index]?.ornament}`]" :style="themeStyles[index]" :data-card-class="themes[index]?.id" @click="emit('choose', card)">
           <span class="reward-card-cost">{{ card.cost }}</span>
