@@ -240,6 +240,7 @@ describe('Card Pool Expansion v0.1', () => {
     const cardPreview = previewCard(state, cardDefinition('ice-echo'))
     expect(cardNotes(cardDefinition('ice-echo'), cardPreview).description).toBe(cardDefinition('ice-echo').description)
     expect(resolveEnemyPortrait('goblin-powder-runner')).toMatchObject({ fallback: false })
+    expect(resolveEnemyPortrait('defias-lookout/layer-3-column-2').src).toContain('enemy-defias-lookout-krea.webp')
     expect(resolveEnemyPortrait('mine-overseer').src).toContain('enemy-mine-overseer-krea.webp')
     expect(resolveEnemyPortrait('defias-veteran').src).toContain('enemy-defias-veteran.jpg')
     expect(resolveEnemyPortrait('defias-lookout').src).toContain('enemy-defias-lookout-krea.webp')
