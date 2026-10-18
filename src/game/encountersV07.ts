@@ -35,7 +35,7 @@ export const reinforcedEncounters: readonly EncounterDefinition[] = [
       phase1: [
         { kind: 'prepare', name: 'Тяжёлый замах', prepared: { kind: 'attack', name: 'Сокрушающий удар', damage: 12, target: 'warrior' } },
         { kind: 'attack_all', name: 'Корневой толчок', damage: 5, primaryTarget: 'mage' },
-        { kind: 'prepare', name: 'Прицелился в Лиру', prepared: { kind: 'attack', name: 'Удар по чародейке', damage: 10, target: 'mage' } },
+        { kind: 'prepare', name: 'Прицелился в Джайну', prepared: { kind: 'attack', name: 'Удар по чародейке', damage: 10, target: 'mage' } },
         { kind: 'recover', name: 'Передышка', armor: 4 },
       ],
     },

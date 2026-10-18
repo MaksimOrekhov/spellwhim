@@ -9,10 +9,10 @@ import type { BattleState, CardId, CardInstance } from './types'
  *
  * Instead of scoring one card at a time, it searches whole-turn card sequences on copies of the live state, always
  * through the real engine (`playCard`, `endTurn`): there is no second implementation of the rules. A sequence is scored
- * on the state AFTER the visible enemy action resolves, so armor, links and held cards are judged by their consequences.
+ * on the state AFTER the visible enemy action resolves, so armor, vulnerability and held cards are judged by their consequences.
  *
  * Information discipline (what a player at the table can know when deciding):
- * - hand, mana, statuses, both discard zones, hero and enemy health/armor, and the enemy's CURRENT announced action;
+ * - hand, mana, both discard zones, hero and enemy health/armor, enemy vulnerability, and the CURRENT announced action;
  * - the CONTENTS of the draw pile (deck minus everything seen), but NOT its order. The copy is canonicalised (by card
  *   definition, never by technical instance id) and reshuffled with an RNG seeded ONLY from the observable situation,
  *   so the real draw order, `rngState`, `seed`, `battleId` and instance ids can never influence a decision;
@@ -72,14 +72,11 @@ const WIN_SCORE = 1_000_000
  */
 export function cloneBattleState(state: BattleState): BattleState {
   if (state.pending) throw new Error('Cannot copy a battle with a card play in progress')
-  const statuses: BattleState['statuses'] = {}
-  for (const [status, value] of Object.entries(state.statuses)) statuses[status as keyof typeof statuses] = { ...value! }
   return {
     ...state,
     heroes: { warrior: { ...state.heroes.warrior }, mage: { ...state.heroes.mage } },
     enemy: { ...state.enemy },
     economy: cloneEconomy(state.economy),
-    statuses,
     hand: [...state.hand], drawPile: [...state.drawPile], discardPile: [...state.discardPile], exhausted: [...state.exhausted],
   }
 }
@@ -109,9 +106,8 @@ function hashText(text: string): number {
  */
 export function observableSeed(state: BattleState, salt = 0): number {
   const zone = (cards: readonly CardInstance[]) => cards.map(card => card.definitionId).sort().join(',')
-  const statuses = Object.entries(state.statuses).map(([name, value]) => name + ':' + value!.expiresOnTurn).sort().join(',')
   const text = [
-    state.turn, state.mana, state.maxMana, zone(state.hand), zone(state.drawPile), zone(state.discardPile), zone(state.exhausted), statuses,
+    state.turn, state.mana, state.maxMana, zone(state.hand), zone(state.drawPile), zone(state.discardPile), zone(state.exhausted), state.enemy.vulnerable,
     state.heroes.warrior.health, state.heroes.warrior.armor, state.heroes.mage.health, state.heroes.mage.armor,
     state.enemy.health, state.enemy.armor, state.enemy.nextAction.name,
   ].join('|')
@@ -134,9 +130,8 @@ export function determinize(state: BattleState, salt = 0): BattleState {
 
 function digest(state: BattleState): string {
   const ids = (cards: readonly CardInstance[]) => cards.map(card => card.definitionId).join(',')
-  const statuses = Object.entries(state.statuses).map(([name, value]) => name + ':' + value!.expiresOnTurn).sort().join(',')
   return [
-    state.mana, [...state.hand].map(card => card.definitionId).sort().join(','), statuses, state.enemy.health, state.enemy.armor,
+    state.mana, [...state.hand].map(card => card.definitionId).sort().join(','), state.enemy.vulnerable, state.enemy.health, state.enemy.armor,
     state.heroes.warrior.armor, state.heroes.warrior.health, state.heroes.mage.armor, state.heroes.mage.health,
     ids(state.drawPile), [...state.exhausted].map(card => card.definitionId).sort().join(','), state.rngState,
   ].join('|')

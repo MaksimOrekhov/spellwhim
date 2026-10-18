@@ -25,9 +25,9 @@ const emit = defineEmits<{ enter: [index: number] }>()
 
     <footer class="party-status">
       <span>ОТРЯД ПУТНИКОВ</span>
-      <strong>Бранн {{ heroes.warrior.health }}/{{ heroes.warrior.maxHealth }}</strong>
+      <strong>Вариан {{ heroes.warrior.health }}/{{ heroes.warrior.maxHealth }}</strong>
       <i>✦</i>
-      <strong>Лира {{ heroes.mage.health }}/{{ heroes.mage.maxHealth }}</strong>
+      <strong>Джайна {{ heroes.mage.health }}/{{ heroes.mage.maxHealth }}</strong>
     </footer>
   </main>
 </template>

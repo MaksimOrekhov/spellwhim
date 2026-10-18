@@ -1,0 +1,1139 @@
+{
+  "options": {
+    "runs": 300,
+    "seed": 1000,
+    "strategy": "all",
+    "configs": [
+      "B"
+    ],
+    "json": "docs/data/hero-identity-breach-v08-baseline-b-1000-300.json",
+    "curve": false,
+    "deaths": false,
+    "detail": false,
+    "trace": null,
+    "full": false
+  },
+  "results": {
+    "B · aggressive": {
+      "economy": "B",
+      "summary": {
+        "strategy": "aggressive",
+        "runs": 300,
+        "wins": 6,
+        "encounters": [
+          {
+            "reached": 300,
+            "wins": 300,
+            "turns": 5.276666666666666,
+            "turnsWon": 5.276666666666666,
+            "enemyActions": 4.276666666666666,
+            "healthEnd": {
+              "warrior": 16.67,
+              "mage": 11.313333333333333
+            },
+            "healthLost": {
+              "warrior": 8.33,
+              "mage": 6.6866666666666665
+            },
+            "lowestMage": 11.313333333333333,
+            "lowestBrann": 16.67,
+            "mageLow": 0.01,
+            "brannLow": 0,
+            "mageFell": 0,
+            "brannFell": 0,
+            "closeCalls": 0.01,
+            "reachedTopMana": 1
+          },
+          {
+            "reached": 300,
+            "wins": 140,
+            "turns": 4.8966666666666665,
+            "turnsWon": 6.014285714285714,
+            "enemyActions": 4.43,
+            "healthEnd": {
+              "warrior": 3.27,
+              "mage": 4.903333333333333
+            },
+            "healthLost": {
+              "warrior": 13.4,
+              "mage": 6.41
+            },
+            "lowestMage": 4.903333333333333,
+            "lowestBrann": 3.27,
+            "mageLow": 0.64,
+            "brannLow": 0.6566666666666666,
+            "mageFell": 82,
+            "brannFell": 78,
+            "closeCalls": 0.9266666666666666,
+            "reachedTopMana": 0.9433333333333334
+          },
+          {
+            "reached": 140,
+            "wins": 6,
+            "turns": 3.7,
+            "turnsWon": 10,
+            "enemyActions": 3.657142857142857,
+            "healthEnd": {
+              "warrior": 1.707142857142857,
+              "mage": 0.6285714285714286
+            },
+            "healthLost": {
+              "warrior": 2.164285714285714,
+              "mage": 4.542857142857143
+            },
+            "lowestMage": 0.6285714285714286,
+            "lowestBrann": 1.707142857142857,
+            "mageLow": 1,
+            "brannLow": 0.9071428571428571,
+            "mageFell": 91,
+            "brannFell": 51,
+            "closeCalls": 1,
+            "reachedTopMana": 0.29285714285714287
+          }
+        ],
+        "runEnd": {
+          "brann": 1,
+          "lira": 1.3333333333333333
+        },
+        "mana": {
+          "availablePerTurn": 4.385994397759104,
+          "spentPerTurn": 3.4630252100840337,
+          "utilization": 0.789564439902925,
+          "turnsWithUnused": 0.37099871959026887,
+          "turnsHoarding": 0.37035851472471193,
+          "turnsStarved": 0.0006402048655569782,
+          "turnsAtTop": 0.5932773109243697
+        },
+        "cardsPerTurn": 2.552941176470588,
+        "handStart": 8.5593837535014,
+        "handEnd": 6.736974789915966,
+        "blockedDrawsPerBattle": 0.7378378378378379,
+        "linksPerTurn": 0.3817927170868347,
+        "linkChains": [
+          0.6372549019607843,
+          0.34369747899159664,
+          0.01904761904761905,
+          0
+        ],
+        "emptyHandTurns": 0.0005602240896358543,
+        "defenseManaShare": 0.0751435735662865,
+        "byIntent": [
+          {
+            "kind": "attack",
+            "turns": 1473,
+            "damage": 12.692464358452138,
+            "armorGained": 2.1900882552613714,
+            "defenseMana": 0.17175831636116767,
+            "cards": 2.5682281059063135,
+            "healthLost": 6.0293896006028636,
+            "armoredShare": 0.5424304141208418
+          },
+          {
+            "kind": "attack_all",
+            "turns": 716,
+            "damage": 9.958100558659218,
+            "armorGained": 3.4916201117318435,
+            "defenseMana": 0.4790502793296089,
+            "cards": 2.921787709497207,
+            "healthLost": 6.364661654135339,
+            "armoredShare": 0.702513966480447
+          },
+          {
+            "kind": "prepare",
+            "turns": 937,
+            "damage": 11.643543223052294,
+            "armorGained": 2.703308431163287,
+            "defenseMana": 0.35538954108858056,
+            "cards": 2.5496264674493063,
+            "healthLost": 0,
+            "armoredShare": 0.4781216648879402
+          },
+          {
+            "kind": "defend",
+            "turns": 344,
+            "damage": 8.529069767441861,
+            "armorGained": 1.2383720930232558,
+            "defenseMana": 0,
+            "cards": 1.8953488372093024,
+            "healthLost": 0,
+            "armoredShare": 0.3808139534883721
+          },
+          {
+            "kind": "recover",
+            "turns": 100,
+            "damage": 9.12,
+            "armorGained": 1.56,
+            "defenseMana": 0,
+            "cards": 1.98,
+            "healthLost": 0,
+            "armoredShare": 0.48
+          }
+        ],
+        "deaths": {
+          "Страж старой рощи · Удар по чародейке (подготовленный удар) → Лира": 82,
+          "Страж старой рощи · Корневой толчок → Бранн": 61,
+          "Сумеречное сердце · Корневая волна → Лира": 54,
+          "Сумеречное сердце · Сумеречный импульс → Лира": 28,
+          "Сумеречное сердце · Всплеск сердца → Бранн+Лира": 2,
+          "Сумеречное сердце · Корневая волна → Бранн": 13,
+          "Сумеречное сердце · Гневное жало → Бранн": 2,
+          "Сумеречное сердце · Корневая волна → Бранн+Лира": 6,
+          "Страж старой рощи · Сокрушающий удар (подготовленный удар) → Бранн": 17,
+          "Сумеречное сердце · Всплеск сердца → Бранн": 27,
+          "Сумеречное сердце · Гнёт чащи (подготовленный удар) → Бранн": 1,
+          "Сумеречное сердце · Сумеречная казнь (подготовленный удар) → Лира": 1
+        },
+        "turnCurve": [
+          {
+            "turn": 1,
+            "battles": 740,
+            "maxMana": 3,
+            "spent": 2.9756756756756757,
+            "cards": 2.2378378378378376,
+            "handStart": 8,
+            "handEnd": 6.367567567567567,
+            "links": 0.527027027027027,
+            "healthLost": 2.810810810810811,
+            "defenseMana": 0.17432432432432432
+          },
+          {
+            "turn": 2,
+            "battles": 712,
+            "maxMana": 4,
+            "spent": 3.853932584269663,
+            "cards": 2.7092696629213484,
+            "handStart": 8.36376404494382,
+            "handEnd": 6.419943820224719,
+            "links": 0.4705056179775281,
+            "healthLost": 4.324438202247191,
+            "defenseMana": 0.22191011235955055
+          },
+          {
+            "turn": 3,
+            "battles": 624,
+            "maxMana": 5,
+            "spent": 4.110576923076923,
+            "cards": 3.0689102564102564,
+            "handStart": 8.549679487179487,
+            "handEnd": 6.649038461538462,
+            "links": 0.3157051282051282,
+            "healthLost": 6.783653846153846,
+            "defenseMana": 0.017628205128205128
+          },
+          {
+            "turn": 4,
+            "battles": 563,
+            "maxMana": 5,
+            "spent": 2.7317939609236235,
+            "cards": 2.0817051509769096,
+            "handStart": 8.6145648312611,
+            "handEnd": 7.134991119005329,
+            "links": 0.22380106571936056,
+            "healthLost": 0,
+            "defenseMana": 0.31438721136767317
+          },
+          {
+            "turn": 5,
+            "battles": 544,
+            "maxMana": 5,
+            "spent": 3.630514705882353,
+            "cards": 2.6433823529411766,
+            "handStart": 9.555147058823529,
+            "handEnd": 7.648897058823529,
+            "links": 0.32536764705882354,
+            "healthLost": 3.485294117647059,
+            "defenseMana": 0.2536764705882353
+          },
+          {
+            "turn": 6,
+            "battles": 237,
+            "maxMana": 5,
+            "spent": 3.1054852320675104,
+            "cards": 2.261603375527426,
+            "handStart": 9.367088607594937,
+            "handEnd": 7.40084388185654,
+            "links": 0.26582278481012656,
+            "healthLost": 0.08438818565400844,
+            "defenseMana": 0.5864978902953587
+          },
+          {
+            "turn": 7,
+            "battles": 76,
+            "maxMana": 5,
+            "spent": 3.9473684210526314,
+            "cards": 3.0526315789473686,
+            "handStart": 7.815789473684211,
+            "handEnd": 5.25,
+            "links": 0.5394736842105263,
+            "healthLost": 0.09210526315789473,
+            "defenseMana": 1.1710526315789473
+          },
+          {
+            "turn": 8,
+            "battles": 49,
+            "maxMana": 5,
+            "spent": 4,
+            "cards": 3.1020408163265305,
+            "handStart": 6.795918367346939,
+            "handEnd": 4.3061224489795915,
+            "links": 0.4897959183673469,
+            "healthLost": 0.9591836734693877,
+            "defenseMana": 1.0816326530612246
+          }
+        ]
+      }
+    },
+    "B · defensive": {
+      "economy": "B",
+      "summary": {
+        "strategy": "defensive",
+        "runs": 300,
+        "wins": 300,
+        "encounters": [
+          {
+            "reached": 300,
+            "wins": 300,
+            "turns": 5.266666666666667,
+            "turnsWon": 5.266666666666667,
+            "enemyActions": 4.266666666666667,
+            "healthEnd": {
+              "warrior": 24.246666666666666,
+              "mage": 17.376666666666665
+            },
+            "healthLost": {
+              "warrior": 0.7533333333333333,
+              "mage": 0.6233333333333333
+            },
+            "lowestMage": 17.376666666666665,
+            "lowestBrann": 24.246666666666666,
+            "mageLow": 0,
+            "brannLow": 0,
+            "mageFell": 0,
+            "brannFell": 0,
+            "closeCalls": 0,
+            "reachedTopMana": 1
+          },
+          {
+            "reached": 300,
+            "wins": 300,
+            "turns": 6.656666666666666,
+            "turnsWon": 6.656666666666666,
+            "enemyActions": 5.656666666666666,
+            "healthEnd": {
+              "warrior": 20.356666666666666,
+              "mage": 17.363333333333333
+            },
+            "healthLost": {
+              "warrior": 3.89,
+              "mage": 0.013333333333333334
+            },
+            "lowestMage": 17.363333333333333,
+            "lowestBrann": 20.356666666666666,
+            "mageLow": 0,
+            "brannLow": 0,
+            "mageFell": 0,
+            "brannFell": 0,
+            "closeCalls": 0,
+            "reachedTopMana": 1
+          },
+          {
+            "reached": 300,
+            "wins": 300,
+            "turns": 10.476666666666667,
+            "turnsWon": 10.476666666666667,
+            "enemyActions": 9.476666666666667,
+            "healthEnd": {
+              "warrior": 17.883333333333333,
+              "mage": 15.113333333333333
+            },
+            "healthLost": {
+              "warrior": 2.473333333333333,
+              "mage": 2.25
+            },
+            "lowestMage": 15.113333333333333,
+            "lowestBrann": 17.883333333333333,
+            "mageLow": 0,
+            "brannLow": 0.0033333333333333335,
+            "mageFell": 0,
+            "brannFell": 0,
+            "closeCalls": 0.0033333333333333335,
+            "reachedTopMana": 1
+          }
+        ],
+        "runEnd": {
+          "brann": 17.883333333333333,
+          "lira": 15.113333333333333
+        },
+        "mana": {
+          "availablePerTurn": 4.598214285714286,
+          "spentPerTurn": 4.133333333333334,
+          "utilization": 0.8988996763754046,
+          "turnsWithUnused": 0.14106529209621993,
+          "turnsHoarding": 0.1331615120274914,
+          "turnsStarved": 0.007903780068728522,
+          "turnsAtTop": 0.7321428571428571
+        },
+        "cardsPerTurn": 3.2802083333333334,
+        "handStart": 6.661607142857143,
+        "handEnd": 4.002976190476191,
+        "blockedDrawsPerBattle": 0.0033333333333333335,
+        "linksPerTurn": 0.5424107142857143,
+        "linkChains": [
+          0.5416666666666666,
+          0.37470238095238095,
+          0.0831845238095238,
+          0.0004464285714285714
+        ],
+        "emptyHandTurns": 0.012202380952380952,
+        "defenseManaShare": 0.32380472350230416,
+        "byIntent": [
+          {
+            "kind": "attack",
+            "turns": 2839,
+            "damage": 12.450862979922508,
+            "armorGained": 5.262064107079958,
+            "defenseMana": 1.0147939415287073,
+            "cards": 3.1010919337794998,
+            "healthLost": 0.2649434571890145,
+            "armoredShare": 0.8756604438182458
+          },
+          {
+            "kind": "attack_all",
+            "turns": 1202,
+            "damage": 10.427620632279535,
+            "armorGained": 9.102329450915141,
+            "defenseMana": 1.807820299500832,
+            "cards": 3.6863560732113143,
+            "healthLost": 2.2855750487329436,
+            "armoredShare": 0.9717138103161398
+          },
+          {
+            "kind": "prepare",
+            "turns": 1657,
+            "damage": 5.936632468316234,
+            "armorGained": 11.353047676523838,
+            "defenseMana": 2.3777911888955945,
+            "cards": 3.592637296318648,
+            "healthLost": 0,
+            "armoredShare": 0.9831019915509958
+          },
+          {
+            "kind": "defend",
+            "turns": 733,
+            "damage": 15.185538881309686,
+            "armorGained": 1.1664392905866303,
+            "defenseMana": 0,
+            "cards": 3.151432469304229,
+            "healthLost": 0,
+            "armoredShare": 0.3656207366984993
+          },
+          {
+            "kind": "recover",
+            "turns": 289,
+            "damage": 8.823529411764707,
+            "armorGained": 1.1522491349480968,
+            "defenseMana": 0,
+            "cards": 1.8858131487889274,
+            "healthLost": 0,
+            "armoredShare": 0.356401384083045
+          }
+        ],
+        "deaths": {},
+        "turnCurve": [
+          {
+            "turn": 1,
+            "battles": 900,
+            "maxMana": 3,
+            "spent": 3,
+            "cards": 2.3222222222222224,
+            "handStart": 8,
+            "handEnd": 5.723333333333334,
+            "links": 0.36,
+            "healthLost": 0.27,
+            "defenseMana": 1.511111111111111
+          },
+          {
+            "turn": 2,
+            "battles": 900,
+            "maxMana": 4,
+            "spent": 3.9966666666666666,
+            "cards": 3.1422222222222222,
+            "handStart": 7.723333333333334,
+            "handEnd": 4.802222222222222,
+            "links": 0.34,
+            "healthLost": 0.8544444444444445,
+            "defenseMana": 1.7277777777777779
+          },
+          {
+            "turn": 3,
+            "battles": 900,
+            "maxMana": 5,
+            "spent": 4.914444444444444,
+            "cards": 3.828888888888889,
+            "handStart": 6.802222222222222,
+            "handEnd": 4.446666666666666,
+            "links": 0.8411111111111111,
+            "healthLost": 1.1666666666666667,
+            "defenseMana": 0.6733333333333333
+          },
+          {
+            "turn": 4,
+            "battles": 900,
+            "maxMana": 5,
+            "spent": 4.754444444444444,
+            "cards": 3.942222222222222,
+            "handStart": 6.446666666666666,
+            "handEnd": 3.3533333333333335,
+            "links": 0.7622222222222222,
+            "healthLost": 0,
+            "defenseMana": 1.72
+          },
+          {
+            "turn": 5,
+            "battles": 866,
+            "maxMana": 5,
+            "spent": 4.536951501154735,
+            "cards": 3.628175519630485,
+            "handStart": 6.285219399538106,
+            "handEnd": 3.5993071593533488,
+            "links": 0.4653579676674365,
+            "healthLost": 0.23787528868360278,
+            "defenseMana": 0.9399538106235565
+          },
+          {
+            "turn": 6,
+            "battles": 699,
+            "maxMana": 5,
+            "spent": 3.3891273247496425,
+            "cards": 2.609442060085837,
+            "handStart": 6.329041487839771,
+            "handEnd": 4.1816881258941345,
+            "links": 0.575107296137339,
+            "healthLost": 0.00715307582260372,
+            "defenseMana": 0.8612303290414879
+          },
+          {
+            "turn": 7,
+            "battles": 428,
+            "maxMana": 5,
+            "spent": 4.579439252336448,
+            "cards": 3.789719626168224,
+            "handStart": 6.41588785046729,
+            "handEnd": 2.9485981308411215,
+            "links": 0.5093457943925234,
+            "healthLost": 0.037383177570093455,
+            "defenseMana": 2.3948598130841123
+          },
+          {
+            "turn": 8,
+            "battles": 379,
+            "maxMana": 5,
+            "spent": 4.20844327176781,
+            "cards": 3.2348284960422165,
+            "handStart": 5.5488126649076515,
+            "handEnd": 3.063324538258575,
+            "links": 0.49340369393139843,
+            "healthLost": 0.35883905013192613,
+            "defenseMana": 1.0765171503957784
+          },
+          {
+            "turn": 9,
+            "battles": 303,
+            "maxMana": 5,
+            "spent": 4.643564356435643,
+            "cards": 3.7557755775577557,
+            "handStart": 5.557755775577558,
+            "handEnd": 2.3432343234323434,
+            "links": 0.5610561056105611,
+            "healthLost": 1.1518151815181519,
+            "defenseMana": 1.9372937293729373
+          },
+          {
+            "turn": 10,
+            "battles": 268,
+            "maxMana": 5,
+            "spent": 3.798507462686567,
+            "cards": 2.9888059701492535,
+            "handStart": 5.231343283582089,
+            "handEnd": 2.548507462686567,
+            "links": 0.5223880597014925,
+            "healthLost": 0.7686567164179104,
+            "defenseMana": 1.3656716417910448
+          },
+          {
+            "turn": 11,
+            "battles": 124,
+            "maxMana": 5,
+            "spent": 2.7580645161290325,
+            "cards": 2.088709677419355,
+            "handStart": 4.879032258064516,
+            "handEnd": 3.064516129032258,
+            "links": 0.28225806451612906,
+            "healthLost": 0.1532258064516129,
+            "defenseMana": 0.5161290322580645
+          },
+          {
+            "turn": 12,
+            "battles": 37,
+            "maxMana": 5,
+            "spent": 3.2162162162162162,
+            "cards": 2.4594594594594597,
+            "handStart": 5.324324324324325,
+            "handEnd": 3,
+            "links": 0.3783783783783784,
+            "healthLost": 0.05405405405405406,
+            "defenseMana": 1.2972972972972974
+          }
+        ]
+      }
+    },
+    "B · balanced": {
+      "economy": "B",
+      "summary": {
+        "strategy": "balanced",
+        "runs": 300,
+        "wins": 300,
+        "encounters": [
+          {
+            "reached": 300,
+            "wins": 300,
+            "turns": 5.076666666666667,
+            "turnsWon": 5.076666666666667,
+            "enemyActions": 4.076666666666667,
+            "healthEnd": {
+              "warrior": 23.64666666666667,
+              "mage": 17.073333333333334
+            },
+            "healthLost": {
+              "warrior": 1.3533333333333333,
+              "mage": 0.9266666666666666
+            },
+            "lowestMage": 17.073333333333334,
+            "lowestBrann": 23.64666666666667,
+            "mageLow": 0,
+            "brannLow": 0,
+            "mageFell": 0,
+            "brannFell": 0,
+            "closeCalls": 0,
+            "reachedTopMana": 1
+          },
+          {
+            "reached": 300,
+            "wins": 300,
+            "turns": 6.326666666666667,
+            "turnsWon": 6.326666666666667,
+            "enemyActions": 5.326666666666667,
+            "healthEnd": {
+              "warrior": 18.533333333333335,
+              "mage": 16.953333333333333
+            },
+            "healthLost": {
+              "warrior": 5.113333333333333,
+              "mage": 0.12
+            },
+            "lowestMage": 16.953333333333333,
+            "lowestBrann": 18.533333333333335,
+            "mageLow": 0,
+            "brannLow": 0,
+            "mageFell": 0,
+            "brannFell": 0,
+            "closeCalls": 0,
+            "reachedTopMana": 1
+          },
+          {
+            "reached": 300,
+            "wins": 300,
+            "turns": 9.61,
+            "turnsWon": 9.61,
+            "enemyActions": 8.61,
+            "healthEnd": {
+              "warrior": 15.076666666666666,
+              "mage": 12.056666666666667
+            },
+            "healthLost": {
+              "warrior": 3.4566666666666666,
+              "mage": 4.8966666666666665
+            },
+            "lowestMage": 12.056666666666667,
+            "lowestBrann": 15.076666666666666,
+            "mageLow": 0.006666666666666667,
+            "brannLow": 0.016666666666666666,
+            "mageFell": 0,
+            "brannFell": 0,
+            "closeCalls": 0.023333333333333334,
+            "reachedTopMana": 1
+          }
+        ],
+        "runEnd": {
+          "brann": 15.076666666666666,
+          "lira": 12.056666666666667
+        },
+        "mana": {
+          "availablePerTurn": 4.571700507614213,
+          "spentPerTurn": 4.123572335025381,
+          "utilization": 0.9019777931991673,
+          "turnsWithUnused": 0.11324944485566248,
+          "turnsHoarding": 0.11084381939304219,
+          "turnsStarved": 0.0024056254626202813,
+          "turnsAtTop": 0.7144670050761421
+        },
+        "cardsPerTurn": 3.2615799492385786,
+        "handStart": 6.8908629441624365,
+        "handEnd": 4.273318527918781,
+        "blockedDrawsPerBattle": 0,
+        "linksPerTurn": 0.4827093908629442,
+        "linkChains": [
+          0.6089784263959391,
+          0.3020304568527919,
+          0.08629441624365482,
+          0.002696700507614213
+        ],
+        "emptyHandTurns": 0.005076142131979695,
+        "defenseManaShare": 0.2860550105789575,
+        "byIntent": [
+          {
+            "kind": "attack",
+            "turns": 2600,
+            "damage": 12.046923076923077,
+            "armorGained": 5.493846153846154,
+            "defenseMana": 1.1242307692307691,
+            "cards": 3.1615384615384614,
+            "healthLost": 0.8358078602620087,
+            "armoredShare": 0.915
+          },
+          {
+            "kind": "attack_all",
+            "turns": 1152,
+            "damage": 11.130208333333334,
+            "armorGained": 8.272569444444445,
+            "defenseMana": 1.6041666666666667,
+            "cards": 3.5234375,
+            "healthLost": 3.014830508474576,
+            "armoredShare": 0.96875
+          },
+          {
+            "kind": "prepare",
+            "turns": 1601,
+            "damage": 9.774515927545284,
+            "armorGained": 8.41099312929419,
+            "defenseMana": 1.6645846346033728,
+            "cards": 3.4647095565271706,
+            "healthLost": 0,
+            "armoredShare": 0.9312929419113054
+          },
+          {
+            "kind": "defend",
+            "turns": 681,
+            "damage": 13.720998531571219,
+            "armorGained": 1.1409691629955947,
+            "defenseMana": 0,
+            "cards": 3.2687224669603525,
+            "healthLost": 0,
+            "armoredShare": 0.3641703377386197
+          },
+          {
+            "kind": "recover",
+            "turns": 270,
+            "damage": 8.381481481481481,
+            "armorGained": 1.288888888888889,
+            "defenseMana": 0,
+            "cards": 1.885185185185185,
+            "healthLost": 0,
+            "armoredShare": 0.3925925925925926
+          }
+        ],
+        "deaths": {},
+        "turnCurve": [
+          {
+            "turn": 1,
+            "battles": 900,
+            "maxMana": 3,
+            "spent": 3,
+            "cards": 2.167777777777778,
+            "handStart": 8,
+            "handEnd": 5.974444444444444,
+            "links": 0.33111111111111113,
+            "healthLost": 0.7755555555555556,
+            "defenseMana": 1.0133333333333334
+          },
+          {
+            "turn": 2,
+            "battles": 900,
+            "maxMana": 4,
+            "spent": 4,
+            "cards": 2.988888888888889,
+            "handStart": 7.974444444444444,
+            "handEnd": 5.325555555555556,
+            "links": 0.49333333333333335,
+            "healthLost": 1.9455555555555555,
+            "defenseMana": 1.2277777777777779
+          },
+          {
+            "turn": 3,
+            "battles": 900,
+            "maxMana": 5,
+            "spent": 4.926666666666667,
+            "cards": 4.061111111111111,
+            "handStart": 7.325555555555556,
+            "handEnd": 4.295555555555556,
+            "links": 0.6222222222222222,
+            "healthLost": 1.3444444444444446,
+            "defenseMana": 1.0444444444444445
+          },
+          {
+            "turn": 4,
+            "battles": 900,
+            "maxMana": 5,
+            "spent": 4.642222222222222,
+            "cards": 3.92,
+            "handStart": 6.295555555555556,
+            "handEnd": 3.398888888888889,
+            "links": 0.6622222222222223,
+            "healthLost": 0,
+            "defenseMana": 1.518888888888889
+          },
+          {
+            "turn": 5,
+            "battles": 832,
+            "maxMana": 5,
+            "spent": 4.486778846153846,
+            "cards": 3.717548076923077,
+            "handStart": 6.325721153846154,
+            "handEnd": 3.639423076923077,
+            "links": 0.3293269230769231,
+            "healthLost": 0.2860576923076923,
+            "defenseMana": 1.1887019230769231
+          },
+          {
+            "turn": 6,
+            "battles": 659,
+            "maxMana": 5,
+            "spent": 3.566009104704097,
+            "cards": 2.6737481031866466,
+            "handStart": 6.298937784522003,
+            "handEnd": 4.098634294385432,
+            "links": 0.5068285280728376,
+            "healthLost": 0.07132018209408195,
+            "defenseMana": 0.8300455235204856
+          },
+          {
+            "turn": 7,
+            "battles": 395,
+            "maxMana": 5,
+            "spent": 4.493670886075949,
+            "cards": 3.5215189873417723,
+            "handStart": 6.508860759493671,
+            "handEnd": 3.5670886075949366,
+            "links": 0.589873417721519,
+            "healthLost": 0.1569620253164557,
+            "defenseMana": 1.4556962025316456
+          },
+          {
+            "turn": 8,
+            "battles": 333,
+            "maxMana": 5,
+            "spent": 4.4624624624624625,
+            "cards": 3.5075075075075075,
+            "handStart": 6.156156156156156,
+            "handEnd": 3.2282282282282284,
+            "links": 0.4294294294294294,
+            "healthLost": 1.075075075075075,
+            "defenseMana": 1.4564564564564564
+          },
+          {
+            "turn": 9,
+            "battles": 273,
+            "maxMana": 5,
+            "spent": 4.062271062271062,
+            "cards": 3.1135531135531136,
+            "handStart": 5.9010989010989015,
+            "handEnd": 3.227106227106227,
+            "links": 0.3626373626373626,
+            "healthLost": 0.9743589743589743,
+            "defenseMana": 1.336996336996337
+          },
+          {
+            "turn": 10,
+            "battles": 154,
+            "maxMana": 5,
+            "spent": 3.116883116883117,
+            "cards": 2.3701298701298703,
+            "handStart": 5.5519480519480515,
+            "handEnd": 3.538961038961039,
+            "links": 0.2857142857142857,
+            "healthLost": 0.8116883116883117,
+            "defenseMana": 0.7792207792207793
+          },
+          {
+            "turn": 11,
+            "battles": 45,
+            "maxMana": 5,
+            "spent": 2.488888888888889,
+            "cards": 1.7333333333333334,
+            "handStart": 5.111111111111111,
+            "handEnd": 3.533333333333333,
+            "links": 0.26666666666666666,
+            "healthLost": 0.1111111111111111,
+            "defenseMana": 0.3333333333333333
+          }
+        ]
+      }
+    },
+    "B · planner": {
+      "economy": "B",
+      "summary": {
+        "strategy": "planner",
+        "runs": 300,
+        "wins": 300,
+        "encounters": [
+          {
+            "reached": 300,
+            "wins": 300,
+            "turns": 4.043333333333333,
+            "turnsWon": 4.043333333333333,
+            "enemyActions": 3.0433333333333334,
+            "healthEnd": {
+              "warrior": 23.223333333333333,
+              "mage": 16.41
+            },
+            "healthLost": {
+              "warrior": 1.7766666666666666,
+              "mage": 1.59
+            },
+            "lowestMage": 16.41,
+            "lowestBrann": 23.223333333333333,
+            "mageLow": 0,
+            "brannLow": 0,
+            "mageFell": 0,
+            "brannFell": 0,
+            "closeCalls": 0,
+            "reachedTopMana": 1
+          },
+          {
+            "reached": 300,
+            "wins": 300,
+            "turns": 4.993333333333333,
+            "turnsWon": 4.993333333333333,
+            "enemyActions": 3.993333333333333,
+            "healthEnd": {
+              "warrior": 14.256666666666666,
+              "mage": 16.203333333333333
+            },
+            "healthLost": {
+              "warrior": 8.966666666666667,
+              "mage": 0.20666666666666667
+            },
+            "lowestMage": 16.203333333333333,
+            "lowestBrann": 14.256666666666666,
+            "mageLow": 0,
+            "brannLow": 0.0033333333333333335,
+            "mageFell": 0,
+            "brannFell": 0,
+            "closeCalls": 0.0033333333333333335,
+            "reachedTopMana": 1
+          },
+          {
+            "reached": 300,
+            "wins": 300,
+            "turns": 7.4366666666666665,
+            "turnsWon": 7.4366666666666665,
+            "enemyActions": 6.4366666666666665,
+            "healthEnd": {
+              "warrior": 10.97,
+              "mage": 10.79
+            },
+            "healthLost": {
+              "warrior": 3.2866666666666666,
+              "mage": 5.413333333333333
+            },
+            "lowestMage": 10.79,
+            "lowestBrann": 10.97,
+            "mageLow": 0.03,
+            "brannLow": 0.04666666666666667,
+            "mageFell": 0,
+            "brannFell": 0,
+            "closeCalls": 0.07666666666666666,
+            "reachedTopMana": 1
+          }
+        ],
+        "runEnd": {
+          "brann": 10.97,
+          "lira": 10.79
+        },
+        "mana": {
+          "availablePerTurn": 4.453662484823958,
+          "spentPerTurn": 4.059692432213678,
+          "utilization": 0.9115402089959109,
+          "turnsWithUnused": 0.0029688273132112814,
+          "turnsHoarding": 0.0029688273132112814,
+          "turnsStarved": 0,
+          "turnsAtTop": 0.6357749898826386
+        },
+        "cardsPerTurn": 3.151760420882234,
+        "handStart": 7.984216916228248,
+        "handEnd": 5.866653176851477,
+        "blockedDrawsPerBattle": 0.10111111111111111,
+        "linksPerTurn": 1.1019830028328612,
+        "linkChains": [
+          0.1875758802104411,
+          0.5315661675435046,
+          0.27215702144880616,
+          0.008700930797248077
+        ],
+        "emptyHandTurns": 0.00020234722784297855,
+        "defenseManaShare": 0.2339630164980312,
+        "byIntent": [
+          {
+            "kind": "attack",
+            "turns": 2092,
+            "damage": 14.060229445506693,
+            "armorGained": 5.635755258126195,
+            "defenseMana": 1.2619502868068833,
+            "cards": 3.145793499043977,
+            "healthLost": 2.140672782874618,
+            "armoredShare": 0.9010516252390057
+          },
+          {
+            "kind": "attack_all",
+            "turns": 748,
+            "damage": 14.622994652406417,
+            "armorGained": 6.209893048128342,
+            "defenseMana": 1.1283422459893049,
+            "cards": 3.197860962566845,
+            "healthLost": 4.551505546751189,
+            "armoredShare": 0.9184491978609626
+          },
+          {
+            "kind": "prepare",
+            "turns": 1485,
+            "damage": 15.512457912457913,
+            "armorGained": 4.600673400673401,
+            "defenseMana": 0.6585858585858586,
+            "cards": 3.334006734006734,
+            "healthLost": 0,
+            "armoredShare": 0.7703703703703704
+          },
+          {
+            "kind": "defend",
+            "turns": 598,
+            "damage": 13.23076923076923,
+            "armorGained": 3.580267558528428,
+            "defenseMana": 0.3795986622073579,
+            "cards": 2.710702341137124,
+            "healthLost": 0,
+            "armoredShare": 0.7441471571906354
+          },
+          {
+            "kind": "recover",
+            "turns": 19,
+            "damage": 5.2631578947368425,
+            "armorGained": 3.1052631578947367,
+            "defenseMana": 0.2631578947368421,
+            "cards": 1.631578947368421,
+            "healthLost": 0,
+            "armoredShare": 0.631578947368421
+          }
+        ],
+        "deaths": {},
+        "turnCurve": [
+          {
+            "turn": 1,
+            "battles": 900,
+            "maxMana": 3,
+            "spent": 3,
+            "cards": 2.741111111111111,
+            "handStart": 8,
+            "handEnd": 6.024444444444445,
+            "links": 1.1544444444444444,
+            "healthLost": 1.281111111111111,
+            "defenseMana": 0.8888888888888888
+          },
+          {
+            "turn": 2,
+            "battles": 900,
+            "maxMana": 4,
+            "spent": 4,
+            "cards": 3.098888888888889,
+            "handStart": 8.024444444444445,
+            "handEnd": 5.841111111111111,
+            "links": 1.0966666666666667,
+            "healthLost": 3.2888888888888888,
+            "defenseMana": 1.1444444444444444
+          },
+          {
+            "turn": 3,
+            "battles": 900,
+            "maxMana": 5,
+            "spent": 4.997777777777777,
+            "cards": 3.66,
+            "handStart": 7.841111111111111,
+            "handEnd": 5.518888888888889,
+            "links": 1.3166666666666667,
+            "healthLost": 2.0355555555555553,
+            "defenseMana": 1.1055555555555556
+          },
+          {
+            "turn": 4,
+            "battles": 895,
+            "maxMana": 5,
+            "spent": 4.283798882681564,
+            "cards": 3.223463687150838,
+            "handStart": 7.5139664804469275,
+            "handEnd": 5.645810055865922,
+            "links": 1.1374301675977654,
+            "healthLost": 0,
+            "defenseMana": 0.6849162011173184
+          },
+          {
+            "turn": 5,
+            "battles": 594,
+            "maxMana": 5,
+            "spent": 3.8686868686868685,
+            "cards": 3.0555555555555554,
+            "handStart": 8.27946127946128,
+            "handEnd": 6.011784511784512,
+            "links": 0.7861952861952862,
+            "healthLost": 0.5471380471380471,
+            "defenseMana": 1.1801346801346801
+          },
+          {
+            "turn": 6,
+            "battles": 321,
+            "maxMana": 5,
+            "spent": 4.8286604361370715,
+            "cards": 3.6510903426791277,
+            "handStart": 8.202492211838006,
+            "handEnd": 5.890965732087228,
+            "links": 1.3925233644859814,
+            "healthLost": 0.09657320872274143,
+            "defenseMana": 0.8473520249221184
+          },
+          {
+            "turn": 7,
+            "battles": 297,
+            "maxMana": 5,
+            "spent": 4.101010101010101,
+            "cards": 2.9797979797979797,
+            "handStart": 8.754208754208754,
+            "handEnd": 6.579124579124579,
+            "links": 0.8518518518518519,
+            "healthLost": 0.11784511784511785,
+            "defenseMana": 0.7037037037037037
+          },
+          {
+            "turn": 8,
+            "battles": 117,
+            "maxMana": 5,
+            "spent": 2.7435897435897436,
+            "cards": 2.0085470085470085,
+            "handStart": 8.35897435897436,
+            "handEnd": 6.666666666666667,
+            "links": 0.4017094017094017,
+            "healthLost": 0.3076923076923077,
+            "defenseMana": 0.5384615384615384
+          }
+        ]
+      }
+    }
+  }
+}

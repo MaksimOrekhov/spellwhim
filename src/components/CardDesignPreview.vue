@@ -30,21 +30,23 @@ function previewFor(id: CardDefinition['id']): CardPreview {
     armorDamage: 0,
     healthDamage: 0,
     bonusDamage: 0,
+    vulnerabilityBonus: 0,
+    armorBonus: 0,
     armor: { warrior: 0, mage: 0 },
     draw: 0,
-    links: [],
+    bonuses: [],
     appliedStatuses: [],
   }
-  if (id === 'sword-strike') return { ...preview, damage: 9, healthDamage: 9, bonusDamage: 3, draw: 1, links: ['Магическая метка'] }
+  if (id === 'sword-strike') return { ...preview, damage: 9, healthDamage: 9, bonusDamage: 3, vulnerabilityBonus: 3, bonuses: ['Уязвимость'] }
   if (id === 'fireball') return { ...preview, damage: 8, healthDamage: 8 }
-  if (id === 'thunderbolt') return { ...preview, damage: 6, healthDamage: 6, bonusDamage: 2, draw: 1, links: ['Защитный резонанс'] }
+  if (id === 'thunderbolt') return { ...preview, damage: 6, healthDamage: 6, bonusDamage: 2, armorBonus: 2, draw: 1, bonuses: ['Броня Джайны'] }
   if (id === 'quick-cut') return { ...preview, damage: 3, healthDamage: 3 }
   if (id === 'guard') return { ...preview, armor: { warrior: 4, mage: 0 } }
   if (id === 'parry') return { ...preview, damage: 3, healthDamage: 3, armor: { warrior: 3, mage: 0 } }
-  if (id === 'shield-bash') return { ...preview, damage: 8, healthDamage: 8, armor: { warrior: 3, mage: 0 }, bonusDamage: 3, links: ['Магическая метка'] }
-  if (id === 'interpose') return { ...preview, armor: { warrior: 0, mage: 5 }, appliedStatuses: ['resonance'] }
-  if (id === 'frostbolt') return { ...preview, damage: 4, healthDamage: 4, appliedStatuses: ['mark'] }
-  if (id === 'arcane-insight') return { ...preview, draw: 1, appliedStatuses: ['mark'] }
+  if (id === 'shield-bash') return { ...preview, damage: 8, healthDamage: 8, armor: { warrior: 3, mage: 0 }, vulnerabilityBonus: 3, bonuses: ['Уязвимость'] }
+  if (id === 'interpose') return { ...preview, armor: { warrior: 0, mage: 5 } }
+  if (id === 'frostbolt') return { ...preview, damage: 6, healthDamage: 6, armorBonus: 2, bonuses: ['Броня Джайны'], appliedStatuses: ['vulnerability'] }
+  if (id === 'arcane-insight') return { ...preview, draw: 1 }
   if (id === 'ice-ward') return { ...preview, armor: { warrior: 2, mage: 3 } }
   return { ...preview, armor: { warrior: 6, mage: 3 } }
 }
@@ -60,7 +62,7 @@ function recordPlay(card: CardDefinition) {
       <div>
         <p class="card-preview-kicker">SPELLWHIM · CLASS CARD IDENTITY v0.1</p>
         <h1>Классовые темы карт</h1>
-        <p>Цвет, форма и эмблема различают классы; индикаторы связки и маны остаются отдельными.</p>
+        <p>Цвет, форма и эмблема различают классы; индикаторы Уязвимости и маны остаются отдельными.</p>
       </div>
       <nav aria-label="Режим предпросмотра">
         <button :aria-pressed="mode === 'hand' && handCount === 8" @click="mode = 'hand'; handCount = 8">Рука · 8</button>
@@ -73,7 +75,7 @@ function recordPlay(card: CardDefinition) {
       <section class="card-preview-legend" aria-label="Классовые цветовые темы">
         <div class="card-preview-class" :style="classThemeStyle('warrior')"><span class="legend-swatch"></span><span><b>ВОИН · STEEL & EMBER</b><small>Багряный · бронза · сталь</small></span></div>
         <div class="card-preview-class" :style="classThemeStyle('mage')"><span class="legend-swatch"></span><span><b>МАГ · ARCANE & WONDER</b><small>Сапфир · аметист · лёд</small></span></div>
-        <p class="card-preview-status">{{ lastPlayed || 'Связка и нехватка маны показаны для проверки состояний.' }}</p>
+        <p class="card-preview-status">{{ lastPlayed || 'Уязвимость и нехватка маны показаны для проверки состояний.' }}</p>
       </section>
       <section class="card-preview-hand" aria-label="Смешанная рука из восьми карт">
         <div class="card-preview-hand-heading"><h2>Смешанная рука · {{ handCount }} карт</h2><span>Наведите на карту, чтобы поднять и прочитать</span></div>

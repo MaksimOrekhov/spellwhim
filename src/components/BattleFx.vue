@@ -380,7 +380,7 @@ function trigger() {
     emit('impact', actionId)
     if (bonus > 0) {
       impactFlashAt(target.x, target.y, 0xce9aff)
-      floatingLabelAt(target.x, target.y + 52, 'Связка +' + bonus, '#ebc9ff')
+      floatingLabelAt(target.x, target.y + 52, 'Бонус +' + bonus, '#ebc9ff')
     }
     if (props.effect === 'guard' && partnerArmor > 0 && partner) {
       impactFlashAt(partner.x, partner.y, 0x72e8ff)

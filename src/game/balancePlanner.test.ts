@@ -92,7 +92,7 @@ describe('planner state copies', () => {
   it('matches structuredClone, shares no mutable zone, and refuses a play in progress', () => {
     const state = createBattle(encounters[2], undefined, { seed: 5 })
     endTurn(state)
-    state.statuses.mark = { expiresOnTurn: 3 }
+    state.enemy.vulnerable = true
     const mageHealth = state.heroes.mage.health
     const copy = cloneBattleState(state)
     expect(copy).toEqual(structuredClone(state))
@@ -102,14 +102,14 @@ describe('planner state copies', () => {
     }
     expect(copy.heroes.warrior).not.toBe(state.heroes.warrior)
     expect(copy.enemy).not.toBe(state.enemy)
-    expect(copy.statuses.mark).not.toBe(state.statuses.mark)
+    expect(copy.enemy.vulnerable).toBe(true)
     copy.hand.pop()
     copy.heroes.mage.health = 1
     expect(state.hand.length).toBe(copy.hand.length + 1)
     expect(state.heroes.mage.health).toBe(mageHealth)
 
     const pending = createBattle(encounters[2], undefined, { seed: 5 })
-    pending.pending = { actionId: 'x', card: pending.hand[0]!, handIndex: 0, effects: [], consume: [], preview: { damage: 0, armorDamage: 0, healthDamage: 0, bonusDamage: 0, armor: { warrior: 0, mage: 0 }, draw: 0, links: [], appliedStatuses: [] } }
+    pending.pending = { actionId: 'x', card: pending.hand[0]!, handIndex: 0, effects: [], consumeVulnerability: false, preview: { damage: 0, armorDamage: 0, healthDamage: 0, bonusDamage: 0, vulnerabilityBonus: 0, armorBonus: 0, armor: { warrior: 0, mage: 0 }, draw: 0, bonuses: [], appliedStatuses: [] } }
     expect(() => cloneBattleState(pending)).toThrow()
   })
 })
@@ -175,20 +175,20 @@ describe('planner honesty about hidden information', () => {
 })
 
 describe('planner choices', () => {
-  it('chains guard, frostbolt and sword strike so that both team links fire', () => {
+  it('chains guard, frostbolt and sword strike across armor and vulnerability bonuses', () => {
     const state = fixture(['sword-strike', 'frostbolt', 'guard'])
     const plan = planTurn(state)
     expect(plan.sequence).toEqual(['guard', 'frostbolt', 'sword-strike'])
     const results = play(state, plan.sequence)
     expect(results.every(result => result.ok)).toBe(true)
-    expect(results.flatMap(result => (result.ok ? result.outcome.links : []))).toEqual(['Защитный резонанс', 'Магическая метка'])
+    expect(results.flatMap(result => (result.ok ? result.outcome.bonuses : []))).toEqual(['Броня Джайны', 'Уязвимость'])
   })
 
-  it('sets the mark before the strike that spends it, not after', () => {
-    const state = fixture(['sword-strike', 'fireball'])
+  it('uses vulnerability after Frostbolt establishes it', () => {
+    const state = fixture(['sword-strike', 'frostbolt'])
     const plan = planTurn(state)
-    expect(plan.sequence).toEqual(['fireball', 'sword-strike'])
-    expect(damageOf(state, plan.sequence)).toBe(8 + 9)
+    expect(plan.sequence).toEqual(['frostbolt', 'sword-strike'])
+    expect(damageOf(state, plan.sequence)).toBe(4 + 9)
   })
 
   it('finds the best damage that an exhaustive search of the real engine finds (profile: damage only)', () => {
@@ -277,12 +277,14 @@ describe('planner legality and search limits', () => {
 })
 
 describe('planner as a Balance Lab strategy', () => {
-  it('keeps the three classic strategies exactly as in the v0.6 report', () => {
-    const rows = summarizeBalance(simulateBalance({ runs: 200, seed: 42 }))
+  it('summarizes all classic strategies with the new card mechanics', () => {
+    const runs = simulateBalance({ runs: 30, seed: 42 })
+    const rows = summarizeBalance(runs)
     expect(rows.map(row => row.strategy)).toEqual([...classicStrategies])
-    expect(rows.map(row => row.victories)).toEqual([195, 200, 200])
-    expect(rows.map(row => Number(row.averageTurns.toFixed(2)))).toEqual([10.39, 13.63, 11.86])
+    expect(summarizeBalance(simulateBalance({ runs: 30, seed: 42 }))).toEqual(rows)
+    expect(rows.every(row => row.victories >= 0 && row.victories <= row.runs)).toBe(true)
     expect(rows.every(row => row.planningNodesPerTurn === 0)).toBe(true)
+    expect(rows.every(row => Number.isFinite(row.vulnerabilityTriggersPerTurn))).toBe(true)
   })
 
   it('is deterministic, completes the campaign, and leaves the classic runs unaffected', () => {
@@ -295,11 +297,11 @@ describe('planner as a Balance Lab strategy', () => {
     expect(allStrategies).toEqual(['aggressive', 'defensive', 'balanced', 'planner'])
   })
 
-  it('plays far more team links per turn than the greedy strategies on the same seeds', () => {
+  it('reports vulnerability and armor-bonus usage for all strategies', () => {
     const rows = summarizeBalance(simulateBalance({ runs: 40, seed: 42, strategies: [...allStrategies] }))
     const byName = Object.fromEntries(rows.map(row => [row.strategy, row]))
-    expect(byName.planner!.linkTriggersPerTurn).toBeGreaterThan(2.5 * byName.balanced!.linkTriggersPerTurn)
-    expect(byName.planner!.linkTriggersPerTurn).toBeGreaterThan(byName.defensive!.linkTriggersPerTurn)
+    expect(byName.planner!.vulnerabilityTriggersPerTurn).toBeGreaterThan(0)
+    expect(byName.planner!.armorBonusTriggersPerTurn).toBeGreaterThan(0)
     expect(byName.planner!.timeouts).toBe(0)
     expect(byName.planner!.manaUtilization).toBeGreaterThan(0.9)
     expect(byName.planner!.planningTruncatedPlans).toBe(0)

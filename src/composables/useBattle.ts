@@ -65,7 +65,7 @@ export function useBattle(options: { seed?: number; deck?: readonly CardId[]; ec
     const result = resolveCardPlay(next, actionId)
     if (!result.ok) return
     current.value = next
-    log.value = result.outcome.links.length ? 'Связка! ' + result.outcome.damage + ' урона.' : 'Карта разыграна.'
+    log.value = result.outcome.bonuses.length ? result.outcome.bonuses.join(' · ') + ': ' + result.outcome.damage + ' урона.' : 'Карта разыграна.'
     return result
   }
 

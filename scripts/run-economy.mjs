@@ -49,11 +49,11 @@ try {
     for (const battle of run.battles) {
       console.log(`\n=== ${battle.encounterName}: ${battle.result}, ходов ${battle.turns} ===`)
       for (const turn of battle.trace) {
-        console.log(`Ход ${turn.turn} · мана ${turn.mana} · враг ${turn.enemy.health} HP, броня ${turn.enemy.armor} · Бранн ${turn.heroes.warrior.health} (бр. ${turn.heroes.warrior.armor}) · Лира ${turn.heroes.mage.health} (бр. ${turn.heroes.mage.armor})`)
+        console.log(`Ход ${turn.turn} · мана ${turn.mana} · враг ${turn.enemy.health} HP, броня ${turn.enemy.armor} · Вариан ${turn.heroes.warrior.health} (бр. ${turn.heroes.warrior.armor}) · Джайна ${turn.heroes.mage.health} (бр. ${turn.heroes.mage.armor})`)
         console.log(`  Рука: ${turn.hand.join(', ')}`)
         console.log(`  Намерение врага: ${turn.intent}`)
-        for (const play of turn.plays) console.log(`  → ${play.name} (${play.cost}): урон ${play.damage}${play.armor.warrior || play.armor.mage ? `, броня Б${play.armor.warrior}/Л${play.armor.mage}` : ''}${play.drawn ? `, добор ${play.drawn}` : ''}${play.links.length ? `, связка: ${play.links.join(', ')}` : ''}`)
-        console.log(`  После: враг ${turn.afterPlays.enemy.health} HP/${turn.afterPlays.enemy.armor} бр. · Бранн бр. ${turn.afterPlays.heroes.warrior.armor} · Лира бр. ${turn.afterPlays.heroes.mage.armor}`)
+        for (const play of turn.plays) console.log(`  → ${play.name} (${play.cost}): урон ${play.damage}${play.armor.warrior || play.armor.mage ? `, броня Б${play.armor.warrior}/Л${play.armor.mage}` : ''}${play.drawn ? `, добор ${play.drawn}` : ''}${play.bonuses.length ? `, бонус: ${play.bonuses.join(', ')}` : ''}`)
+        console.log(`  После: враг ${turn.afterPlays.enemy.health} HP/${turn.afterPlays.enemy.armor} бр. · Вариан бр. ${turn.afterPlays.heroes.warrior.armor} · Джайна бр. ${turn.afterPlays.heroes.mage.armor}`)
       }
     }
     process.exit(0)
@@ -71,16 +71,16 @@ try {
         config: spec, strategy, 'win %': f(summary.wins / summary.runs * 100),
         'turns 1/2/3': e.map(x => f(x.turns)).join(' / '),
         'enemy acts': e.map(x => f(x.enemyActions)).join(' / '),
-        'Brann HP end': e.map(x => f(x.healthEnd.warrior, 0)).join(' / '),
-        'Lira HP end': e.map(x => f(x.healthEnd.mage, 0)).join(' / '),
-        'run end B/L': f(summary.runEnd.brann, 1) + ' / ' + f(summary.runEnd.lira, 1),
+        'Varian HP end': e.map(x => f(x.healthEnd.warrior, 0)).join(' / '),
+        'Jaina HP end': e.map(x => f(x.healthEnd.mage, 0)).join(' / '),
+        'run end V/J': f(summary.runEnd.varian, 1) + ' / ' + f(summary.runEnd.jaina, 1),
         'close calls %': e.map(x => f(x.closeCalls * 100, 0)).join(' / '),
         'mana avail': f(summary.mana.availablePerTurn, 2), spent: f(summary.mana.spentPerTurn, 2),
         'unused %': f(summary.mana.turnsWithUnused * 100, 0), 'hoard %': f(summary.mana.turnsHoarding * 100, 0), 'starved %': f(summary.mana.turnsStarved * 100, 0),
         'at top %': f(summary.mana.turnsAtTop * 100, 0),
         'top reached %': e.map(x => f(x.reachedTopMana * 100, 0)).join(' / '),
         cards: f(summary.cardsPerTurn, 2), 'hand s→e': f(summary.handStart, 1) + '→' + f(summary.handEnd, 1),
-        'blocked/battle': f(summary.blockedDrawsPerBattle, 2), 'links/turn': f(summary.linksPerTurn, 2),
+        'blocked/battle': f(summary.blockedDrawsPerBattle, 2), 'vulnerability setups/battle': f(summary.vulnerabilitySetupsPerBattle, 2), 'vulnerability triggers/turn': f(summary.vulnerabilityTriggersPerTurn, 2), 'wait turns/trigger': f(summary.vulnerabilityWaitTurnsPerTrigger, 2), 'Jaina armor bonus/battle': f(summary.armorBonusTriggersPerBattle, 2),
       })
     }
   }
@@ -96,14 +96,14 @@ try {
     for (const [name, entry] of Object.entries(all)) {
       const s = entry.summary
       console.log('Подробно: ' + name)
-      console.table([{ 'chains 0/1/2/3+ %': s.linkChains.map(x => f(x * 100, 0)).join(' / '), 'defense mana %': f(s.defenseManaShare * 100, 0), 'empty-hand turns %': f(s.emptyHandTurns * 100, 1), 'mage low ≤5 % (1/2/3)': s.encounters.map(x => f(x.mageLow * 100, 0)).join(' / '), 'Brann low ≤5 %': s.encounters.map(x => f(x.brannLow * 100, 0)).join(' / '), 'mage fell': s.encounters.map(x => x.mageFell).join('/'), 'Brann fell': s.encounters.map(x => x.brannFell).join('/') }])
+      console.table([{ 'vulnerability triggers/turn': f(s.vulnerabilityTriggersPerTurn, 2), 'setups/battle': f(s.vulnerabilitySetupsPerBattle, 2), 'wait/trigger': f(s.vulnerabilityWaitTurnsPerTrigger, 2), 'Jaina armor bonuses/battle': f(s.armorBonusTriggersPerBattle, 2), 'defense mana %': f(s.defenseManaShare * 100, 0), 'empty-hand turns %': f(s.emptyHandTurns * 100, 1), 'Jaina low ≤5 % (1/2/3)': s.encounters.map(x => f(x.mageLow * 100, 0)).join('/'), 'Varian low ≤5 %': s.encounters.map(x => f(x.varianLow * 100, 0)).join('/'), 'Jaina fell': s.encounters.map(x => x.mageFell).join('/'), 'Varian fell': s.encounters.map(x => x.varianFell).join('/') }])
       console.table(s.byIntent.map(row => ({ intent: row.kind, turns: row.turns, 'damage/turn': f(row.damage, 1), 'armor/turn': f(row.armorGained, 1), 'defense mana': f(row.defenseMana, 2), cards: f(row.cards, 2), 'armored %': f(row.armoredShare * 100, 0), 'HP lost': f(row.healthLost, 1) })))
     }
   }
   if (options.curve) {
     for (const [name, entry] of Object.entries(all)) {
       console.log('Кривая по ходам: ' + name + ' (по боям, где этот ход был сыгран)')
-      console.table(entry.summary.turnCurve.map(row => ({ turn: row.turn, battles: row.battles, mana: f(row.maxMana, 1), spent: f(row.spent, 2), cards: f(row.cards, 2), 'hand start': f(row.handStart, 1), 'hand end': f(row.handEnd, 1), links: f(row.links, 2), 'HP lost': f(row.healthLost, 1) })))
+      console.table(entry.summary.turnCurve.map(row => ({ turn: row.turn, battles: row.battles, mana: f(row.maxMana, 1), spent: f(row.spent, 2), cards: f(row.cards, 2), 'hand start': f(row.handStart, 1), 'hand end': f(row.handEnd, 1), vulnerability: f(row.vulnerabilityTriggers, 2), 'HP lost': f(row.healthLost, 1) })))
     }
   }
   if (options.json) {

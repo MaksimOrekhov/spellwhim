@@ -21,8 +21,9 @@ export interface CardStats {
   armorGranted: number
   cardsDrawn: number
   manaSpent: number
-  linkSetups: number
-  linkTriggers: number
+  vulnerabilitySetups: number
+  vulnerabilityTriggers: number
+  armorBonusTriggers: number
 }
 
 /** One player turn of a battle, for the per-turn curves of the economy report. */
@@ -34,7 +35,7 @@ export interface TurnRecord {
   cardsPlayed: number
   handStart: number
   handEnd: number
-  links: number
+  vulnerabilityTriggers: number
   /** Cards still affordable with the mana left when the party ended the turn. */
   playableLeft: number
   /** Mana left unspent when the turn ended. */
@@ -60,7 +61,7 @@ export interface DefeatInfo {
   damage: number
 }
 
-export interface TraceCard { name: string; cost: number; damage: number; armor: Record<HeroId, number>; drawn: number; links: string[] }
+export interface TraceCard { name: string; cost: number; damage: number; armor: Record<HeroId, number>; drawn: number; bonuses: string[] }
 export interface TraceTurn {
   turn: number
   mana: number
@@ -96,7 +97,10 @@ export interface BattleRecord {
   blockedDraws: number
   cardsPlayed: Record<string, number>
   enemyActions: Record<string, number>
-  linkTriggers: Record<string, number>
+  vulnerabilitySetups: number
+  vulnerabilityTriggers: number
+  armorBonusTriggers: number
+  vulnerabilityWaitTurns: number
   actionLog: string[]
   /** Economy fields: the curve actually played, per-turn data, health lows and the cause of a defeat. */
   economyId: string
@@ -119,7 +123,10 @@ export interface BalanceRun {
   rewards: CardId[]
   battles: BattleRecord[]
   cards: Record<string, CardStats>
-  linkTriggers: Record<string, number>
+  vulnerabilitySetups: number
+  vulnerabilityTriggers: number
+  armorBonusTriggers: number
+  vulnerabilityWaitTurns: number
   actionCount: number
   /** Cost of planning (planner strategy only; zeros otherwise). Deterministic: counts search nodes, not milliseconds. */
   planning: PlannerStats
@@ -130,9 +137,7 @@ export interface BalanceLimits { maxTurnsPerBattle: number; maxPlaysPerTurn: num
 export interface RunOptions extends Partial<BalanceLimits> { economy?: EconomyConfig; trace?: boolean }
 export const defaultBalanceLimits: BalanceLimits = { maxTurnsPerBattle: 60, maxPlaysPerTurn: 12, maxActionsPerRun: 10_000 }
 
-const linksByStatus = new Map([['mark', 'Магическая метка'], ['resonance', 'Защитный резонанс']])
-
-function blankCardStats(): CardStats { return { plays: 0, healthDamage: 0, armorGranted: 0, cardsDrawn: 0, manaSpent: 0, linkSetups: 0, linkTriggers: 0 } }
+function blankCardStats(): CardStats { return { plays: 0, healthDamage: 0, armorGranted: 0, cardsDrawn: 0, manaSpent: 0, vulnerabilitySetups: 0, vulnerabilityTriggers: 0, armorBonusTriggers: 0 } }
 function ensureCard(stats: Record<string, CardStats>, id: string): CardStats { return stats[id] ??= blankCardStats() }
 function describeAction(action: EnemyAction, heroes: BattleState['heroes']): string {
   const name = (id: HeroId) => heroes[id].name
@@ -165,21 +170,21 @@ function evaluateCard(state: BattleState, instance: CardInstance, strategy: Clas
   }, 0)
   const lethalThreat = forecast.some(hit => hit.lethal || hit.healthLoss >= state.heroes[hit.target].health)
   const blocksLethal = forecast.some(hit => hit.lethal && preview.armor[hit.target] >= hit.healthLoss)
-  const linkValue = preview.bonusDamage + preview.draw * 1.4 + preview.links.length * 1.2
+  const bonusValue = preview.bonusDamage + preview.draw * 1.4 + preview.bonuses.length * 1.2
   const drawValue = preview.draw * 1.7
   if (strategy === 'aggressive') {
     if (lethal) return 10_000 + damage
     if (lethalThreat && blocksLethal) return 9_000 + block
-    return damage * 1.15 + linkValue * 0.75 + drawValue - card.cost * 0.65 + (card.kind === 'defense' ? -3 : 0)
+    return damage * 1.15 + bonusValue * 0.75 + drawValue - card.cost * 0.65 + (card.kind === 'defense' ? -3 : 0)
   }
   if (strategy === 'defensive') {
     if (lethal) return 10_000 + damage
     const defenseWeight = lethalThreat ? 8 : incomingHealth > 0 ? 2.8 : 0.45
-    return block * defenseWeight + (lethalThreat && blocksLethal ? 2_000 : 0) + damage * 0.42 + linkValue * 0.7 + drawValue * 0.6 - card.cost * 0.35
+    return block * defenseWeight + (lethalThreat && blocksLethal ? 2_000 : 0) + damage * 0.42 + bonusValue * 0.7 + drawValue * 0.6 - card.cost * 0.35
   }
   if (lethal) return 10_000 + damage
   const danger = lethalThreat ? 5 : incomingHealth > 0 ? 1.6 : 0.35
-  return damage * 0.9 + block * danger + linkValue + drawValue * 0.7 - card.cost * 0.45
+  return damage * 0.9 + block * danger + bonusValue + drawValue * 0.7 - card.cost * 0.45
 }
 
 function chooseCard(state: BattleState, strategy: ClassicStrategy): CardInstance | undefined {
@@ -222,7 +227,7 @@ interface HandMetrics {
   fullHandAfterActions: number
 }
 
-function recordBattle(state: BattleState, encounterId: string, encounterName: string, deckSizeStart: number, startHealth: Record<HeroId, number>, turns: number, result: BattleRecord['result'], cardsPlayed: Record<string, number>, enemyActions: Record<string, number>, healthDamageTaken: Record<HeroId, number>, armorDamagePrevented: Record<HeroId, number>, enemyHealthDamage: number, cardsPlayedTotal: number, manaAvailable: number, manaSpent: number, handMetrics: HandMetrics, blockedDraws: number, links: Record<string, number>, actionLog: string[], extra: Pick<BattleRecord, 'economyId' | 'turnLog' | 'maxManaReached' | 'lowestHealth' | 'defeat' | 'trace'>): BattleRecord {
+function recordBattle(state: BattleState, encounterId: string, encounterName: string, deckSizeStart: number, startHealth: Record<HeroId, number>, turns: number, result: BattleRecord['result'], cardsPlayed: Record<string, number>, enemyActions: Record<string, number>, healthDamageTaken: Record<HeroId, number>, armorDamagePrevented: Record<HeroId, number>, enemyHealthDamage: number, cardsPlayedTotal: number, manaAvailable: number, manaSpent: number, handMetrics: HandMetrics, blockedDraws: number, vulnerabilitySetups: number, vulnerabilityTriggers: number, armorBonusTriggers: number, vulnerabilityWaitTurns: number, actionLog: string[], extra: Pick<BattleRecord, 'economyId' | 'turnLog' | 'maxManaReached' | 'lowestHealth' | 'defeat' | 'trace'>): BattleRecord {
   const samples = Math.max(1, turns)
   return {
     encounterId, encounterName, deckSizeStart, turns, result, heroesStart: startHealth,
@@ -234,7 +239,7 @@ function recordBattle(state: BattleState, encounterId: string, encounterName: st
     averageHandSizeAfterActions: handMetrics.handSizeAfterActionsTotal / samples,
     fullHandAtTurnStart: handMetrics.fullHandAtTurnStart,
     fullHandAfterActions: handMetrics.fullHandAfterActions,
-    blockedDraws, cardsPlayed, enemyActions, linkTriggers: links, actionLog, ...extra,
+    blockedDraws, cardsPlayed, enemyActions, vulnerabilitySetups, vulnerabilityTriggers, armorBonusTriggers, vulnerabilityWaitTurns, actionLog, ...extra,
   }
 }
 
@@ -253,7 +258,10 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, options: Ru
   const rewards: CardId[] = []
   const battles: BattleRecord[] = []
   const cardStats: Record<string, CardStats> = {}
-  const linkTriggers: Record<string, number> = { 'Магическая метка': 0, 'Защитный резонанс': 0 }
+  let vulnerabilitySetups = 0
+  let vulnerabilityTriggers = 0
+  let armorBonusTriggers = 0
+  let vulnerabilityWaitTurns = 0
   const planning: PlannerStats = { plans: 0, nodes: 0, truncated: 0, maxNodes: 0 }
   const rewardStrategy: ClassicStrategy = strategy === 'planner' ? 'balanced' : strategy
 
@@ -273,7 +281,10 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, options: Ru
     const enemyActions: Record<string, number> = {}
     const healthDamageTaken: Record<HeroId, number> = { warrior: 0, mage: 0 }
     const armorDamagePrevented: Record<HeroId, number> = { warrior: 0, mage: 0 }
-    const localLinks: Record<string, number> = {}
+    let battleVulnerabilitySetups = 0
+    let battleVulnerabilityTriggers = 0
+    let battleArmorBonusTriggers = 0
+    let battleVulnerabilityWaitTurns = 0
     const actionLog: string[] = []
     let enemyHealthDamage = 0
     let cardsPlayedTotal = 0
@@ -302,7 +313,7 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, options: Ru
       const turnMaxMana = battle.mana
       const turnHandStart = battle.hand.length
       let turnSpent = 0
-      let turnLinks = 0
+      let turnVulnerabilityTriggers = 0
       let turnDamage = 0
       let turnArmor = 0
       let turnDefenseMana = 0
@@ -322,11 +333,17 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, options: Ru
         if (!outcome.ok) break
         manaSpent += card.cost
         turnSpent += card.cost
-        turnLinks += outcome.outcome.links.length
+        const usedVulnerability = outcome.outcome.vulnerabilityBonus > 0
+        const usedArmorBonus = outcome.outcome.armorBonus > 0
+        turnVulnerabilityTriggers += Number(usedVulnerability)
+        vulnerabilityTriggers += Number(usedVulnerability)
+        battleVulnerabilityTriggers += Number(usedVulnerability)
+        armorBonusTriggers += Number(usedArmorBonus)
+        battleArmorBonusTriggers += Number(usedArmorBonus)
         turnDamage += outcome.damageDealt
         turnArmor += outcome.outcome.armor.warrior + outcome.outcome.armor.mage
         if (card.kind === 'defense') turnDefenseMana += card.cost
-        traceTurn?.plays.push({ name: card.name, cost: card.cost, damage: outcome.damageDealt, armor: { ...outcome.outcome.armor }, drawn: outcome.drawn, links: [...outcome.outcome.links] })
+        traceTurn?.plays.push({ name: card.name, cost: card.cost, damage: outcome.damageDealt, armor: { ...outcome.outcome.armor }, drawn: outcome.drawn, bonuses: [...outcome.outcome.bonuses] })
         actionLog.push(`Карта: ${card.name}; урон здоровью врага ${outcome.damageDealt}; мана ${card.cost}`)
         const stats = ensureCard(cardStats, card.id)
         stats.plays += 1
@@ -334,13 +351,13 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, options: Ru
         stats.armorGranted += outcome.outcome.armor.warrior + outcome.outcome.armor.mage
         stats.cardsDrawn += outcome.drawn
         stats.manaSpent += card.cost
-        for (const name of outcome.outcome.links) {
-          localLinks[name] = (localLinks[name] ?? 0) + 1
-          linkTriggers[name] = (linkTriggers[name] ?? 0) + 1
-          stats.linkTriggers += 1
-        }
-        for (const status of outcome.outcome.appliedStatuses) {
-          if (linksByStatus.has(status) && battle.statuses[status]) stats.linkSetups += 1
+        stats.vulnerabilityTriggers += Number(usedVulnerability)
+        stats.armorBonusTriggers += Number(usedArmorBonus)
+        const appliedVulnerability = outcome.outcome.appliedStatuses.includes('vulnerability') && battle.enemy.vulnerable
+        if (appliedVulnerability) {
+          stats.vulnerabilitySetups += 1
+          vulnerabilitySetups += 1
+          battleVulnerabilitySetups += 1
         }
         cardsPlayed[card.id] = (cardsPlayed[card.id] ?? 0) + 1
         enemyHealthDamage += outcome.damageDealt
@@ -349,7 +366,7 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, options: Ru
       if (battle.hand.length >= MAX_HAND_SIZE) handMetrics.fullHandAfterActions += 1
       const turnRecord: TurnRecord = {
         turn: turnNumber, maxMana: turnMaxMana, manaSpent: turnSpent, cardsPlayed: playsThisTurn, handStart: turnHandStart, handEnd: battle.hand.length,
-        links: turnLinks, manaLeft: battle.mana, playableLeft: battle.hand.filter(instance => cardDefinition(instance.definitionId).cost <= battle!.mana).length, healthLost: 0, decisive: !!battle.result,
+        vulnerabilityTriggers: turnVulnerabilityTriggers, manaLeft: battle.mana, playableLeft: battle.hand.filter(instance => cardDefinition(instance.definitionId).cost <= battle!.mana).length, healthLost: 0, decisive: !!battle.result,
         intent: turnIntent, damage: turnDamage, armorGained: turnArmor, defenseMana: turnDefenseMana,
       }
       turnLog.push(turnRecord)
@@ -368,6 +385,10 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, options: Ru
       turnRecord.healthLost = predicted.reduce((sum, hit) => sum + hit.healthLoss, 0)
       const wasPrepared = previousActionKind === 'prepare'
       previousActionKind = enemyAction.kind
+      if (battle.enemy.vulnerable) {
+        vulnerabilityWaitTurns += 1
+        battleVulnerabilityWaitTurns += 1
+      }
       if (!endTurn(battle)) break
       actionCount += 1
       lowestHealth.warrior = Math.min(lowestHealth.warrior, battle.heroes.warrior.health)
@@ -385,7 +406,7 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, options: Ru
     else if (battle.result === 'defeat') battleStatus = 'defeat'
     if (battle.result) actionLog.push(battle.result === 'victory' ? 'Бой выигран' : 'Бой проигран')
     else actionLog.push('Ограничение симуляции: бой остановлен техническим таймаутом')
-    battles.push(recordBattle(battle, encounter.id, encounter.name, deck.length, startHealth, battleTurns, battleStatus, cardsPlayed, enemyActions, healthDamageTaken, armorDamagePrevented, enemyHealthDamage, cardsPlayedTotal, manaAvailable, manaSpent, handMetrics, battle.blockedDraws - blockedDrawsStart, localLinks, actionLog, { economyId: economy.id, turnLog, maxManaReached, lowestHealth, defeat, ...(wantTrace ? { trace: traceLog } : {}) }))
+    battles.push(recordBattle(battle, encounter.id, encounter.name, deck.length, startHealth, battleTurns, battleStatus, cardsPlayed, enemyActions, healthDamageTaken, armorDamagePrevented, enemyHealthDamage, cardsPlayedTotal, manaAvailable, manaSpent, handMetrics, battle.blockedDraws - blockedDrawsStart, battleVulnerabilitySetups, battleVulnerabilityTriggers, battleArmorBonusTriggers, battleVulnerabilityWaitTurns, actionLog, { economyId: economy.id, turnLog, maxManaReached, lowestHealth, defeat, ...(wantTrace ? { trace: traceLog } : {}) }))
     if (!battle.result) {
       status = 'timeout'
       failedEncounter = encounter.id
@@ -403,7 +424,7 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, options: Ru
   return {
     seed: seed >>> 0, strategy, status, battlesCompleted, failedEncounter, turns,
     finalHealth: { warrior: battle?.heroes.warrior.health ?? 25, mage: battle?.heroes.mage.health ?? 18 },
-    rewards, battles, cards: cardStats, linkTriggers, actionCount, planning,
+    rewards, battles, cards: cardStats, vulnerabilitySetups, vulnerabilityTriggers, armorBonusTriggers, vulnerabilityWaitTurns, actionCount, planning,
   }
 }
 
@@ -431,13 +452,19 @@ export function summarizeBalance(runs: BalanceRun[]) {
     const totalTurns = Math.max(1, sample.reduce((sum, run) => sum + run.turns, 0))
     const manaAvailable = battles.reduce((sum, battle) => sum + battle.manaAvailable, 0)
     const manaSpent = battles.reduce((sum, battle) => sum + battle.manaSpent, 0)
-    const linkTriggers = sample.reduce((sum, run) => sum + Object.values(run.linkTriggers).reduce((a, b) => a + b, 0), 0)
+    const vulnerabilityTriggers = sample.reduce((sum, run) => sum + run.vulnerabilityTriggers, 0)
+    const armorBonusTriggers = sample.reduce((sum, run) => sum + run.armorBonusTriggers, 0)
     return {
       // Mana economy, combo frequency, fight length and planning cost (nodes are deterministic search counts).
       averageManaAvailablePerTurn: manaAvailable / totalTurns,
       averageManaSpentPerTurn: manaSpent / totalTurns,
       manaUtilization: manaAvailable ? manaSpent / manaAvailable : 0,
-      linkTriggersPerTurn: linkTriggers / totalTurns,
+      vulnerabilitySetupsPerRun: sample.reduce((sum, run) => sum + run.vulnerabilitySetups, 0) / denominator,
+      vulnerabilityTriggersPerRun: vulnerabilityTriggers / denominator,
+      vulnerabilityTriggersPerTurn: vulnerabilityTriggers / totalTurns,
+      vulnerabilityWaitTurnsPerTrigger: vulnerabilityTriggers ? sample.reduce((sum, run) => sum + run.vulnerabilityWaitTurns, 0) / vulnerabilityTriggers : 0,
+      armorBonusTriggersPerRun: armorBonusTriggers / denominator,
+      armorBonusTriggersPerTurn: armorBonusTriggers / totalTurns,
       encounterTurns: Array.from({ length: ENCOUNTER_COUNT }, (_, index) => {
         const fights = sample.filter(run => run.battles[index])
         return fights.length ? fights.reduce((sum, run) => sum + run.battles[index]!.turns, 0) / fights.length : 0
@@ -455,8 +482,8 @@ export function summarizeBalance(runs: BalanceRun[]) {
       fullHandAfterActions: sample.reduce((sum, run) => sum + run.battles.reduce((total, battle) => total + battle.fullHandAfterActions, 0), 0),
       blockedDraws: sample.reduce((sum, run) => sum + run.battles.reduce((total, battle) => total + battle.blockedDraws, 0), 0),
       medianTurns: median(sample.map(run => run.turns)),
-      averageBrannHp: hp.reduce((sum, run) => sum + run.finalHealth.warrior, 0) / hpDenominator,
-      averageLiraHp: hp.reduce((sum, run) => sum + run.finalHealth.mage, 0) / hpDenominator,
+      averageVarianHp: hp.reduce((sum, run) => sum + run.finalHealth.warrior, 0) / hpDenominator,
+      averageJainaHp: hp.reduce((sum, run) => sum + run.finalHealth.mage, 0) / hpDenominator,
       battlesReached: Array.from({ length: ENCOUNTER_COUNT }, (_, index) => sample.filter(run => run.battles.length > index).length),
       battleWins: Array.from({ length: ENCOUNTER_COUNT }, (_, index) => sample.filter(run => run.battles[index]?.result === 'victory').length),
     }
@@ -491,7 +518,7 @@ export function summarizeEconomy(runs: BalanceRun[], economy: EconomyConfig = ba
     for (const run of sample) {
       const lost = run.battles.find(battle => battle.defeat)
       if (!lost?.defeat) continue
-      const key = `${lost.encounterName} · ${lost.defeat.action}${lost.defeat.announced ? ' (подготовленный удар)' : ''} → ${lost.defeat.fallen.map(id => id === 'mage' ? 'Лира' : 'Бранн').join('+')}`
+      const key = `${lost.encounterName} · ${lost.defeat.action}${lost.defeat.announced ? ' (подготовленный удар)' : ''} → ${lost.defeat.fallen.map(id => id === 'mage' ? 'Джайна' : 'Вариан').join('+')}`
       deaths[key] = (deaths[key] ?? 0) + 1
     }
     const lastTurn = Math.max(0, ...turnRows.map(turn => turn.turn))
@@ -509,20 +536,20 @@ export function summarizeEconomy(runs: BalanceRun[], economy: EconomyConfig = ba
           healthEnd: { warrior: mean(fought.map(battle => battle.heroesEnd.warrior)), mage: mean(fought.map(battle => battle.heroesEnd.mage)) },
           healthLost: { warrior: mean(fought.map(battle => battle.heroesStart.warrior - battle.heroesEnd.warrior)), mage: mean(fought.map(battle => battle.heroesStart.mage - battle.heroesEnd.mage)) },
           lowestMage: mean(fought.map(battle => battle.lowestHealth.mage)),
-          lowestBrann: mean(fought.map(battle => battle.lowestHealth.warrior)),
-          /** Battles in which the mage / Brann was at 5 health or less at some moment, and the battles each of them fell in. */
+          lowestVarian: mean(fought.map(battle => battle.lowestHealth.warrior)),
+          /** Battles in which Jaina / Varian was at 5 health or less at some moment, and the battles each of them fell in. */
           mageLow: share(fought.filter(battle => battle.lowestHealth.mage <= 5).length, fought.length),
-          brannLow: share(fought.filter(battle => battle.lowestHealth.warrior <= 5).length, fought.length),
+          varianLow: share(fought.filter(battle => battle.lowestHealth.warrior <= 5).length, fought.length),
           mageFell: fought.filter(battle => battle.defeat?.fallen.includes('mage')).length,
-          brannFell: fought.filter(battle => battle.defeat?.fallen.includes('warrior')).length,
+          varianFell: fought.filter(battle => battle.defeat?.fallen.includes('warrior')).length,
           /** Battles in which either hero was at 5 health or less at some moment. */
           closeCalls: share(fought.filter(battle => battle.lowestHealth.warrior <= 5 || battle.lowestHealth.mage <= 5).length, fought.length),
           reachedTopMana: share(fought.filter(battle => battle.maxManaReached).length, fought.length),
         }
       }),
       runEnd: {
-        brann: mean(sample.filter(run => run.status === 'victory').map(run => run.finalHealth.warrior)),
-        lira: mean(sample.filter(run => run.status === 'victory').map(run => run.finalHealth.mage)),
+        varian: mean(sample.filter(run => run.status === 'victory').map(run => run.finalHealth.warrior)),
+        jaina: mean(sample.filter(run => run.status === 'victory').map(run => run.finalHealth.mage)),
       },
       mana: {
         availablePerTurn: mean(turnRows.map(turn => turn.maxMana)),
@@ -539,9 +566,11 @@ export function summarizeEconomy(runs: BalanceRun[], economy: EconomyConfig = ba
       handStart: mean(turnRows.map(turn => turn.handStart)),
       handEnd: mean(turnRows.map(turn => turn.handEnd)),
       blockedDrawsPerBattle: mean(battles.map(battle => battle.blockedDraws)),
-      linksPerTurn: mean(turnRows.map(turn => turn.links)),
-      /** Share of player turns with 0, 1, 2 and 3 or more combo triggers (three need about five mana). */
-      linkChains: [0, 1, 2, 3].map(count => share(turnRows.filter(turn => (count === 3 ? turn.links >= 3 : turn.links === count)).length, turnRows.length)),
+      vulnerabilityTriggersPerTurn: share(turnRows.reduce((sum, turn) => sum + turn.vulnerabilityTriggers, 0), turnRows.length),
+      vulnerabilitySetupsPerBattle: mean(battles.map(battle => battle.vulnerabilitySetups)),
+      vulnerabilityWaitTurnsPerTrigger: share(battles.reduce((sum, battle) => sum + battle.vulnerabilityWaitTurns, 0), battles.reduce((sum, battle) => sum + battle.vulnerabilityTriggers, 0)),
+      armorBonusTriggersPerBattle: mean(battles.map(battle => battle.armorBonusTriggers)),
+      vulnerabilityTurns: battles.reduce((sum, battle) => sum + battle.vulnerabilityWaitTurns, 0),
       emptyHandTurns: share(turnRows.filter(turn => turn.handEnd === 0).length, turnRows.length),
       defenseManaShare: share(turnRows.reduce((sum, turn) => sum + turn.defenseMana, 0), turnRows.reduce((sum, turn) => sum + turn.manaSpent, 0)),
       /** What the party does on each kind of announced enemy action: quiet turns (prepare, defend, recover) vs. strikes. */
@@ -559,7 +588,7 @@ export function summarizeEconomy(runs: BalanceRun[], economy: EconomyConfig = ba
         return {
           turn: index + 1, battles: rows.length, maxMana: mean(rows.map(turn => turn.maxMana)), spent: mean(rows.map(turn => turn.manaSpent)),
           cards: mean(rows.map(turn => turn.cardsPlayed)), handStart: mean(rows.map(turn => turn.handStart)), handEnd: mean(rows.map(turn => turn.handEnd)),
-          links: mean(rows.map(turn => turn.links)), healthLost: mean(rows.map(turn => turn.healthLost)), defenseMana: mean(rows.map(turn => turn.defenseMana)),
+          vulnerabilityTriggers: mean(rows.map(turn => turn.vulnerabilityTriggers)), healthLost: mean(rows.map(turn => turn.healthLost)), defenseMana: mean(rows.map(turn => turn.defenseMana)),
         }
       }).filter(row => row.battles >= 20),
     }

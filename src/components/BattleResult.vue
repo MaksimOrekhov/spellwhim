@@ -7,7 +7,7 @@ onMounted(() => dialog.value?.showModal())
 </script>
 <template>
   <dialog ref="dialog" class="result-card" aria-labelledby="battle-result-title" @cancel.prevent>
-    <span class="result-spark">{{ result === 'victory' ? '✦' : '◇' }}</span><p>{{ result === 'victory' ? 'Путь открыт' : 'Отряд пал' }}</p><h1 id="battle-result-title">{{ result === 'victory' ? 'Победа!' : 'Поражение' }}</h1><p>{{ result === 'victory' ? 'Чаща отступила. Пора двигаться дальше.' : 'Попробуйте прикрыть героя под прицелом и подготовить связку.' }}</p><button class="game-button" autofocus @click="emit('continue')">{{ result === 'victory' ? continueLabel ?? 'Продолжить' : 'Начать заново' }}</button>
+    <span class="result-spark">{{ result === 'victory' ? '✦' : '◇' }}</span><p>{{ result === 'victory' ? 'Путь открыт' : 'Отряд пал' }}</p><h1 id="battle-result-title">{{ result === 'victory' ? 'Победа!' : 'Поражение' }}</h1><p>{{ result === 'victory' ? 'Чаща отступила. Пора двигаться дальше.' : 'Используйте Уязвимость и прикрывайте героя под прицелом.' }}</p><button class="game-button" autofocus @click="emit('continue')">{{ result === 'victory' ? continueLabel ?? 'Продолжить' : 'Начать заново' }}</button>
   </dialog>
 </template>
 <style scoped>

@@ -71,13 +71,13 @@ try {
     console.log(`Runs: ${options.runs} per strategy | seeds: ${options.seed}–${(options.seed + options.runs - 1) >>> 0} | strategies: ${strategies.join(', ')}`)
 
     console.log('Исход и здоровье:')
-    console.table(summary.map(row => ({ strategy: row.strategy, victories: row.victories, defeats: row.defeats, timeout: row.timeouts, 'win %': f(row.winRate * 100), 'avg turns': f(row.averageTurns), 'median turns': row.medianTurns, 'Brann HP': f(row.averageBrannHp), 'Lira HP': f(row.averageLiraHp) })))
+    console.table(summary.map(row => ({ strategy: row.strategy, victories: row.victories, defeats: row.defeats, timeout: row.timeouts, 'win %': f(row.winRate * 100), 'avg turns': f(row.averageTurns), 'median turns': row.medianTurns, 'Varian HP': f(row.averageVarianHp), 'Jaina HP': f(row.averageJainaHp) })))
 
     console.log('Продолжительность боёв (средние ходы по встречам):')
     console.table(summary.map(row => Object.fromEntries([['strategy', row.strategy], ...row.encounterTurns.map((turns, index) => ['encounter ' + (index + 1), f(turns)])])))
 
-    console.log('Карты, мана и комбинации (на ход игрока):')
-    console.table(summary.map(row => ({ strategy: row.strategy, 'cards / turn': f(row.averageCardsPlayedPerTurn, 2), 'mana available': f(row.averageManaAvailablePerTurn, 2), 'mana spent': f(row.averageManaSpentPerTurn, 2), 'mana use %': f(row.manaUtilization * 100), 'links / turn': f(row.linkTriggersPerTurn, 2), 'hand start': f(row.averageHandSizeAtTurnStart, 2), 'hand after plays': f(row.averageHandSizeAfterActions, 2), 'full at start': row.fullHandAtTurnStart, 'blocked draws': row.blockedDraws })))
+    console.log('Карты, мана и синергии (на ход игрока):')
+    console.table(summary.map(row => ({ strategy: row.strategy, 'cards / turn': f(row.averageCardsPlayedPerTurn, 2), 'mana available': f(row.averageManaAvailablePerTurn, 2), 'mana spent': f(row.averageManaSpentPerTurn, 2), 'mana use %': f(row.manaUtilization * 100), 'vulnerability / turn': f(row.vulnerabilityTriggersPerTurn, 2), 'armor bonuses / run': f(row.armorBonusTriggersPerRun, 2), 'setups / run': f(row.vulnerabilitySetupsPerRun, 2), 'wait turns / trigger': f(row.vulnerabilityWaitTurnsPerTrigger, 2), 'hand start': f(row.averageHandSizeAtTurnStart, 2), 'hand after plays': f(row.averageHandSizeAfterActions, 2), 'full at start': row.fullHandAtTurnStart, 'blocked draws': row.blockedDraws })))
 
     console.log('Победы по встречам (победы / сколько дошло):')
     console.table(summary.flatMap(row => row.battlesReached.map((reached, index) => ({ strategy: row.strategy, encounter: index + 1, wins: row.battleWins[index], reached, 'win %': reached ? f(row.battleWins[index] / reached * 100) : '—' }))))
@@ -85,7 +85,7 @@ try {
     const deaths = {}
     const cardTotals = {}
     const rewardTotals = {}
-    const linkTotals = {}
+    const effectTotals = { vulnerabilitySetups: {}, vulnerabilityTriggers: {}, armorBonusTriggers: {}, vulnerabilityWaitTurns: {} }
     for (const run of runs) {
       if (run.status === 'defeat' && run.failedEncounter) deaths[run.strategy + ' / ' + run.failedEncounter] = (deaths[run.strategy + ' / ' + run.failedEncounter] ?? 0) + 1
       for (const [id, stats] of Object.entries(run.cards)) {
@@ -96,10 +96,7 @@ try {
         rewardTotals[reward] ??= {}
         rewardTotals[reward][run.strategy] = (rewardTotals[reward][run.strategy] ?? 0) + 1
       }
-      for (const [name, count] of Object.entries(run.linkTriggers)) {
-        linkTotals[name] ??= {}
-        linkTotals[name][run.strategy] = (linkTotals[name][run.strategy] ?? 0) + count
-      }
+      for (const metric of Object.keys(effectTotals)) effectTotals[metric][run.strategy] = (effectTotals[metric][run.strategy] ?? 0) + run[metric]
     }
     if (Object.keys(deaths).length) {
       console.log('Поражения по встречам:')
@@ -114,8 +111,8 @@ try {
       return row
     }).sort((a, b) => Number(b[strategies[strategies.length - 1]]) - Number(a[strategies[strategies.length - 1]])))
 
-    console.log('Срабатывания связок за поход:')
-    console.table(Object.entries(linkTotals).map(([link, byStrategy]) => Object.fromEntries([['link', link], ...strategies.map(strategy => [strategy, f((byStrategy[strategy] ?? 0) / options.runs, 2)])])))
+    console.log('Уязвимость и бонус брони Джайны за поход:')
+    console.table(Object.entries(effectTotals).map(([effect, byStrategy]) => Object.fromEntries([['effect', effect], ...strategies.map(strategy => [strategy, f((byStrategy[strategy] ?? 0) / options.runs, 2)])])))
 
     console.log('Выбранные награды (выборов за 100 походов):')
     console.table(Object.entries(rewardTotals).map(([card, byStrategy]) => Object.fromEntries([['card', card], ...strategies.map(strategy => [strategy, f((byStrategy[strategy] ?? 0) / options.runs * 100, 0)])])))

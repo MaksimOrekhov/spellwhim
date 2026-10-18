@@ -8,8 +8,8 @@ describe('repeatable headless combat scenarios', () => {
   it('offers a damage versus health tradeoff for three mana without changing boss stats', () => {
     const offense = runCombatScenario(combatScenarios[1]!)
     const defense = runCombatScenario(combatScenarios[2]!)
-    expect(offense).toMatchObject({ damage: 17, manaSpent: 3, health: { lira: 12 } })
-    expect(defense).toMatchObject({ damage: 10, manaSpent: 3, health: { lira: 16 } })
+    expect(offense).toMatchObject({ damage: 13, manaSpent: 2, health: { jaina: 12 } })
+    expect(defense).toMatchObject({ damage: 6, manaSpent: 2, health: { jaina: 16 } })
   })
   it('reports mana rejection, empty draws, victory and defeat', () => {
     expect(runCombatScenario(combatScenarios[4]!).rejected).toEqual(['mana'])

@@ -30,7 +30,7 @@ function play() {
 
 <template>
   <GameTooltip :label="card.name" :disabled="playing" class="hand-card-wrap" :class="{ 'hand-card-wrap--fan': fan, 'hand-card-wrap--fan-first': fan && index === 0 }">
-    <button :id="'card-' + instanceId" class="spell-card" :class="[`spell-card--${theme.ornament}`, { 'is-unavailable': !!reason, 'is-link-ready': preview.links.length > 0 && !reason, 'is-playing': playing }]" :style="themeStyle" :data-card-class="theme.id" :aria-disabled="!!reason || playing" :aria-label="(index === 9 ? 0 : index + 1) + '. ' + card.name + ', ' + card.cost + ' маны. Класс: ' + theme.name + '. ' + (reason ?? card.description)" @click="play">
+    <button :id="'card-' + instanceId" class="spell-card" :class="[`spell-card--${theme.ornament}`, { 'is-unavailable': !!reason, 'is-bonus-ready': preview.bonuses.length > 0 && !reason, 'is-playing': playing }]" :style="themeStyle" :data-card-class="theme.id" :aria-disabled="!!reason || playing" :aria-label="(index === 9 ? 0 : index + 1) + '. ' + card.name + ', ' + card.cost + ' маны. Класс: ' + theme.name + '. ' + (reason ?? card.description)" @click="play">
       <span class="card-cost">{{ card.cost }}</span>
       <span class="card-class-emblem" aria-hidden="true"><img :src="theme.emblem" alt="" draggable="false" /></span>
       <span class="card-art"><img :src="artOverride ?? cardArt[card.id]" alt="" draggable="false" /></span>
@@ -38,14 +38,17 @@ function play() {
       <span class="card-description">{{ card.description }}</span>
       <span class="card-footer">
         <span class="card-class-label">{{ theme.label }}</span>
-        <b v-if="preview.links.length" class="card-link" aria-label="Связка готова"><span>СВЯЗКА</span> +{{ preview.bonusDamage }}</b>
+        <b v-if="preview.bonuses.length" class="card-bonus" aria-label="Бонус урона готов"><span>БОНУС</span> +{{ preview.bonusDamage }}</b>
         <kbd v-else>{{ index === 9 ? 0 : index + 1 }}</kbd>
       </span>
     </button>
     <template #content>
       <p>{{ card.description }}</p>
       <p v-if="preview.damage">Урон: {{ preview.healthDamage }} здоровью<template v-if="preview.armorDamage">, {{ preview.armorDamage }} снимет с брони врага</template>.</p>
-      <p v-if="preview.links.length" class="tooltip-accent">{{ preview.links.join(' · ') }}: +{{ preview.bonusDamage }} → {{ preview.damage }} урона.</p>
+      <p v-if="preview.vulnerabilityBonus" class="tooltip-accent">Уязвимость: +3 урона. Карта расходует Уязвимость.</p>
+      <p v-if="preview.armorBonus" class="tooltip-accent">Броня Джайны: +{{ preview.armorBonus }} урона.</p>
+      <p v-if="preview.bonusDamage">Итоговый урон карты: {{ preview.damage }}.</p>
+      <p v-if="card.damageBonus && preview.damage > 0 && !preview.armorBonus">Бонус от брони Джайны не активен.</p>
       <p v-if="preview.draw">Добор: до {{ preview.draw }} {{ preview.draw === 1 ? 'карты' : 'карт' }}.</p>
       <p v-if="card.exhaust">Эта копия выбывает до конца боя.</p>
       <p v-if="reason" class="tooltip-reason">{{ reason }}</p>
@@ -84,10 +87,10 @@ function play() {
 .card-footer{display:flex;align-items:center;justify-content:space-between;gap:5px;height:24px;min-height:24px;border-top:1px solid color-mix(in srgb,var(--class-accent) 36%,transparent);padding-top:4px;color:#d2c5a7;font-size:11px}
 .card-class-label{color:var(--class-accent);font-weight:800;letter-spacing:.12em}
 .card-footer kbd{font:12px inherit;border:1px solid #ad9d7766;border-radius:4px;padding:0 4px}
-.card-link{display:flex;align-items:center;gap:5px;border:1px solid #edc6ff8c;border-radius:9px;background:#3b285088;padding:2px 7px;color:#f1d8ff;font-size:12px}
-.card-link span{font-size:9px;letter-spacing:.08em}
-.is-link-ready{box-shadow:0 0 0 2px #dfc4f0,0 0 15px color-mix(in srgb,var(--class-accent) 45%,transparent),0 6px 16px #0b202c70}
-.is-link-ready .card-class-emblem{box-shadow:0 0 0 2px #e2c9f3}
+.card-bonus{display:flex;align-items:center;gap:5px;border:1px solid #edc6ff8c;border-radius:9px;background:#3b285088;padding:2px 7px;color:#f1d8ff;font-size:12px}
+.card-bonus span{font-size:9px;letter-spacing:.08em}
+.is-bonus-ready{box-shadow:0 0 0 2px #dfc4f0,0 0 15px color-mix(in srgb,var(--class-accent) 45%,transparent),0 6px 16px #0b202c70}
+.is-bonus-ready .card-class-emblem{box-shadow:0 0 0 2px #e2c9f3}
 .is-unavailable{filter:saturate(.62);border-color:color-mix(in srgb,var(--class-primary) 52%,#737980)}
 .is-unavailable .card-cost{filter:grayscale(.42);opacity:.78}
 .is-playing{pointer-events:none;animation:card-play .36s ease-in forwards}

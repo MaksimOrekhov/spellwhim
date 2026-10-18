@@ -72,111 +72,82 @@ describe('card transactions and identities', () => {
   })
 })
 
-describe('dual-class links', () => {
-  it('consumes Lira’s mark on one warrior strike for +3 damage and one real draw', () => {
-    const state = fixture(['fireball', 'sword-strike', 'sword-strike'])
-    cast(state, 'fireball')
-    expect(hasStatus(state, 'mark')).toBe(true)
+describe('universal vulnerability', () => {
+  it('lets an attack from either class use the same +3 vulnerability bonus', () => {
+    const state = fixture(['frostbolt', 'sword-strike'])
+    cast(state, 'frostbolt')
+    expect(state.enemy.vulnerable).toBe(true)
     const beforePreview = structuredClone(state)
-    expect(previewCard(state, cardDefinition('sword-strike'))).toMatchObject({ damage: 9, bonusDamage: 3, draw: 1 })
+    expect(previewCard(state, cardDefinition('sword-strike'))).toMatchObject({ damage: 9, bonusDamage: 3, vulnerabilityBonus: 3, bonuses: ['Уязвимость'] })
     expect(state).toEqual(beforePreview)
-    const hit = cast(state, 'sword-strike')
-    expect(hit).toMatchObject({ ok: true, damageDealt: 9, drawn: 1 })
-    expect(hasStatus(state, 'mark')).toBe(false)
-    expect(previewCard(state, cardDefinition('sword-strike')).damage).toBe(6)
-    expect(state.enemy.health).toBe(83)
-    expect(state.hand).toHaveLength(2)
+    expect(cast(state, 'sword-strike')).toMatchObject({ ok: true, damageDealt: 9 })
+    expect(hasStatus(state, 'vulnerability')).toBe(false)
   })
 
-  it('creates resonance with protection and consumes it with an offensive mage spell', () => {
-    const state = fixture(['guard', 'fireball'])
-    cast(state, 'guard')
-    expect(state.heroes.warrior.armor).toBe(4)
-    expect(hasStatus(state, 'resonance')).toBe(true)
-    expect(previewCard(state, cardDefinition('fireball')).bonusDamage).toBe(2)
-    expect(cast(state, 'fireball')).toMatchObject({ ok: true, damageDealt: 10 })
-    expect(hasStatus(state, 'resonance')).toBe(false)
-    expect(hasStatus(state, 'mark')).toBe(true)
-    expect(state.mana).toBe(0)
+  it('is applied by a warrior card and used by a mage card', () => {
+    const state = fixture(['shield-bash', 'frostbolt'])
+    cast(state, 'shield-bash')
+    expect(hasStatus(state, 'vulnerability')).toBe(true)
+    expect(previewCard(state, cardDefinition('frostbolt')).damage).toBe(7)
+    expect(cast(state, 'frostbolt')).toMatchObject({ ok: true, damageDealt: 7 })
+    expect(hasStatus(state, 'vulnerability')).toBe(true)
   })
 
-  it('does not trigger a link just because hero classes alternate', () => {
-    const state = fixture(['thunderbolt', 'sword-strike'])
-    expect(cast(state, 'thunderbolt')).toMatchObject({ ok: true, damageDealt: 4 })
-    expect(hasStatus(state, 'mark')).toBe(false)
-    expect(cast(state, 'sword-strike')).toMatchObject({ ok: true, damageDealt: 6 })
-    expect(hasStatus(state, 'resonance')).toBe(false)
-  })
-
-  it('requires both the correct class and an eligible tag to use a state', () => {
-    const state = fixture(['fireball'])
-    cast(state, 'fireball')
-    const sword = cardDefinition('sword-strike')
-    expect(previewCard(state, { ...sword, className: 'mage' }).bonusDamage).toBe(0)
-    expect(previewCard(state, { ...sword, tags: [] }).bonusDamage).toBe(0)
-    expect(hasStatus(state, 'mark')).toBe(true)
-  })
-
-  it('can complete both directions in one paid turn with a finite free finisher', () => {
-    const state = fixture(['guard', 'fireball', 'quick-cut'])
-    cast(state, 'guard')
-    expect(cast(state, 'fireball')).toMatchObject({ ok: true, damageDealt: 10 })
-    expect(cast(state, 'quick-cut')).toMatchObject({ ok: true, damageDealt: 6 })
-    expect(state.enemy.health).toBe(84)
-    expect(state.mana).toBe(0)
-    expect(state.heroes.warrior.armor).toBe(4)
-    expect(state.statuses).toEqual({})
-    expect(state.exhausted).toHaveLength(1)
-  })
-
-  it('refreshes a state without stacking its bonus', () => {
-    const state = fixture(['guard', 'guard', 'thunderbolt'])
-    cast(state, 'guard')
-    cast(state, 'guard')
-    expect(cast(state, 'thunderbolt')).toMatchObject({ ok: true, damageDealt: 6 })
-    expect(hasStatus(state, 'resonance')).toBe(false)
-  })
-
-  it('expires unused mark and resonance at the end of the current player turn', () => {
-    const state = fixture(['guard', 'fireball'])
-    cast(state, 'guard')
-    cast(state, 'fireball')
-    expect(hasStatus(state, 'mark')).toBe(true)
+  it('persists between turns and repeated applications never stack', () => {
+    const state = fixture(['frostbolt', 'frostbolt', 'sword-strike'])
+    cast(state, 'frostbolt')
     endTurn(state)
-    expect(state.statuses).toEqual({})
-    expect(previewCard(state, cardDefinition('sword-strike')).bonusDamage).toBe(0)
-    const second = fixture(['guard'])
-    cast(second, 'guard')
-    endTurn(second)
-    expect(hasStatus(second, 'resonance')).toBe(false)
-    expect(previewCard(second, cardDefinition('fireball')).bonusDamage).toBe(0)
+    expect(hasStatus(state, 'vulnerability')).toBe(true)
+    expect(cast(state, 'frostbolt')).toMatchObject({ ok: true, damageDealt: 7 })
+    expect(state.enemy.vulnerable).toBe(true)
+    expect(cast(state, 'sword-strike')).toMatchObject({ ok: true, damageDealt: 9 })
+    expect(state.enemy.vulnerable).toBe(false)
   })
 
-  it('protects Lira when she is the announced target', () => {
-    const state = fixture(['guard'])
-    state.enemy.nextAction = { kind: 'attack', name: 'Удар', damage: 4, target: 'mage' }
-    state.enemy.focus = 'mage'
-    cast(state, 'guard')
-    endTurn(state)
-    expect(state.heroes.mage.health).toBe(18)
-    expect(state.heroes.mage.armor).toBe(0)
-    expect(state.heroes.warrior.health).toBe(25)
+  it('uses a prior vulnerability before the same card reapplies it', () => {
+    const state = fixture(['shield-bash', 'frostbolt'])
+    cast(state, 'shield-bash')
+    expect(cast(state, 'frostbolt')).toMatchObject({ ok: true, damageDealt: 7 })
+    expect(state.enemy.vulnerable).toBe(true)
+    expect(previewCard(state, cardDefinition('sword-strike')).damage).toBe(9)
   })
 
-  it('keeps Bastion’s partner shield until that hero is attacked, without healing', () => {
-    const state = fixture(['bastion'])
-    state.enemy.nextAction = { kind: 'attack', name: 'Удар', damage: 5, target: 'warrior' }
-    state.enemy.focus = 'warrior'
-    cast(state, 'bastion')
-    endTurn(state)
-    expect(state.heroes.warrior.health).toBe(25)
-    expect(state.heroes.warrior.armor).toBe(0)
-    expect(state.heroes.mage.armor).toBe(3)
-    state.enemy.nextAction = { kind: 'attack', name: 'Удар', damage: 5, target: 'mage' }
-    state.enemy.focus = 'mage'
-    endTurn(state)
-    expect(state.heroes.mage.health).toBe(16)
-    expect(state.heroes.mage.armor).toBe(0)
+  it('does not consume vulnerability when a conditional damage effect is inactive', () => {
+    const state = fixture(['frostbolt', 'parry'])
+    cast(state, 'frostbolt')
+    expect(previewCard(state, cardDefinition('parry')).damage).toBe(0)
+    cast(state, 'parry')
+    expect(state.enemy.vulnerable).toBe(true)
+  })
+
+  it('consumes vulnerability before armor absorbs the hit and shows armor and health damage separately', () => {
+    const state = fixture(['frostbolt', 'sword-strike'])
+    state.enemy.armor = 100
+    cast(state, 'frostbolt')
+    expect(cast(state, 'sword-strike')).toMatchObject({ ok: true, outcome: { damage: 9, armorDamage: 9, healthDamage: 0 } })
+    expect(state.enemy.vulnerable).toBe(false)
+  })
+
+  it('does not apply a fresh vulnerability after a lethal hit', () => {
+    const state = fixture(['frostbolt'], 4)
+    expect(cast(state, 'frostbolt')).toMatchObject({ ok: true, damageDealt: 4 })
+    expect(state.result).toBe('victory')
+    expect(state.enemy.vulnerable).toBe(false)
+  })
+})
+
+describe('Jaina armor spell bonus', () => {
+  it('grants +2 only with armor, without consuming it, and stacks clearly with vulnerability', () => {
+    const state = fixture(['frostbolt', 'thunderbolt'])
+    expect(previewCard(state, cardDefinition('frostbolt'))).toMatchObject({ damage: 4, armorBonus: 0 })
+    state.heroes.mage.armor = 2
+    expect(previewCard(state, cardDefinition('frostbolt'))).toMatchObject({ damage: 6, armorBonus: 2 })
+    cast(state, 'frostbolt')
+    expect(state.heroes.mage.armor).toBe(2)
+    expect(previewCard(state, cardDefinition('thunderbolt'))).toMatchObject({ damage: 9, bonusDamage: 5, vulnerabilityBonus: 3, armorBonus: 2 })
+    cast(state, 'thunderbolt')
+    expect(state.heroes.mage.armor).toBe(2)
+    expect(state.enemy.vulnerable).toBe(false)
   })
 })
 
@@ -273,7 +244,7 @@ describe('deck, draw, recycle and exhaustion', () => {
   it('exhausts free attacks for this battle so recycling cannot create an infinite free loop', () => {
     const state = fixture(['fireball', 'quick-cut'])
     cast(state, 'fireball')
-    expect(cast(state, 'quick-cut')).toMatchObject({ ok: true, damageDealt: 6, drawn: 1 })
+    expect(cast(state, 'quick-cut')).toMatchObject({ ok: true, damageDealt: 3, drawn: 0 })
     expect(state.exhausted).toHaveLength(1)
     expect(state.exhausted[0]!.definitionId).toBe('quick-cut')
     endTurn(state)
@@ -352,7 +323,7 @@ describe('terminal states and run adapter', () => {
     const state = fixture(['fireball', 'sword-strike'], 8)
     expect(cast(state, 'fireball')).toMatchObject({ ok: true, damageDealt: 8 })
     expect(state.result).toBe('victory')
-    expect(state.statuses).toEqual({})
+    expect(state.enemy.vulnerable).toBe(false)
     expect(state.pending).toBeNull()
     const won = structuredClone(state)
     expect(cast(state, 'sword-strike')).toEqual({ ok: false, reason: 'finished' })
@@ -384,7 +355,7 @@ describe('terminal states and run adapter', () => {
     expect(next.heroes.warrior.health).toBe(17)
     expect(next.heroes.warrior.armor).toBe(0)
     expect(next.heroes.mage.armor).toBe(0)
-    expect(next.statuses).toEqual({})
+    expect(next.enemy.vulnerable).toBe(false)
     previous.heroes.mage.health = 0
     expect(createBattle(encounters[0]!, previous.heroes).result).toBe('defeat')
   })

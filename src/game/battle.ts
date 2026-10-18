@@ -1,4 +1,4 @@
-import { cardDefinition, encounters, links, startingDeck } from './types'
+import { cardDefinition, encounters, startingDeck } from './types'
 import { drawForTurn, gameEconomy, manaForTurn } from './economy'
 import type { EconomyConfig } from './economy'
 import { drawCards, shuffle } from './deck'
@@ -22,7 +22,7 @@ function updateResult(state: BattleState): void {
   if (state.result) return
   if (Object.values(state.heroes).some(hero => hero.health <= 0)) state.result = 'defeat'
   else if (state.enemy.health <= 0) state.result = 'victory'
-  if (state.result) state.statuses = {}
+  if (state.result) state.enemy.vulnerable = false
 }
 
 export function createBattle(encounter: EncounterDefinition = encounters[1]!, previousHeroes?: BattleState['heroes'], options: BattleOptions = {}): BattleState {
@@ -32,13 +32,13 @@ export function createBattle(encounter: EncounterDefinition = encounters[1]!, pr
   const heroes = previousHeroes
     ? { warrior: { ...previousHeroes.warrior, armor: 0 }, mage: { ...previousHeroes.mage, armor: 0 } }
     : {
-      warrior: { id: 'warrior' as const, name: 'Бранн', title: 'Хранитель клятвы', health: 25, maxHealth: 25, armor: 0, icon: '⚔' },
-      mage: { id: 'mage' as const, name: 'Лира', title: 'Искра чародейки', health: 18, maxHealth: 18, armor: 0, icon: '✦' },
+      warrior: { id: 'warrior' as const, name: 'Вариан Ринн', title: 'Король Штормграда', health: 25, maxHealth: 25, armor: 0, icon: '⚔' },
+      mage: { id: 'mage' as const, name: 'Джайна Праудмур', title: 'Верховная волшебница Кирин-Тора', health: 18, maxHealth: 18, armor: 0, icon: '✦' },
     }
   const state: BattleState = {
     battleId, seed, rngState: seed, nextActionId: 1, heroes,
-    enemy: { name: encounter.name, title: encounter.title, health: encounter.maxHealth, maxHealth: encounter.maxHealth, armor: 0, appearance: encounter.appearance, phase: 1, nextActionPhase: 1, behavior: encounter.behavior, behaviorIndex: 1, nextAction: encounter.behavior.phase1[0]!, focus: initialFocus(encounter.behavior.phase1[0]!) },
-    statuses: {}, hand: [], blockedDraws: 0, drawPile: [], discardPile: [], exhausted: [], pending: null,
+    enemy: { name: encounter.name, title: encounter.title, health: encounter.maxHealth, maxHealth: encounter.maxHealth, armor: 0, vulnerable: false, appearance: encounter.appearance, phase: 1, nextActionPhase: 1, behavior: encounter.behavior, behaviorIndex: 1, nextAction: encounter.behavior.phase1[0]!, focus: initialFocus(encounter.behavior.phase1[0]!) },
+    hand: [], blockedDraws: 0, drawPile: [], discardPile: [], exhausted: [], pending: null,
     economy, mana: manaForTurn(economy, 1), maxMana: manaForTurn(economy, 1), turn: 1, result: null,
   }
   state.drawPile = shuffle(state, (options.deck ?? startingDeck).map((id, index) => ({
@@ -57,17 +57,17 @@ function schedule(state: BattleState): EnemyAction[] { return state.enemy.phase 
 function initialFocus(action: EnemyAction): HeroId { return hitFocus(action, 'warrior') }
 
 export function hasStatus(state: BattleState, status: StatusId): boolean {
-  const active = state.statuses[status]
-  return !state.result && !!active && active.expiresOnTurn >= state.turn
+  return status === 'vulnerability' && !state.result && state.enemy.vulnerable
 }
 
 function buildPlan(state: BattleState, card: CardDefinition): Omit<PendingPlay, 'actionId' | 'card' | 'handIndex'> {
-  const activeLinks = links.filter(link => hasStatus(state, link.status) && link.actor === card.className && card.tags.includes(link.tag))
-  const bonusEffects = activeLinks.flatMap(link => link.effects)
   const enemyAction = state.enemy.nextAction
   const enemyAttacking = enemyAction.kind === 'attack' || enemyAction.kind === 'attack_all'
-  const allEffects = [...card.effects, ...bonusEffects].filter(effect => effect.type !== 'damage' || effect.when !== 'enemy-attacking' || enemyAttacking)
-  const damage = allEffects.reduce((sum, effect) => sum + (effect.type === 'damage' ? effect.amount : 0), 0)
+  const allEffects = card.effects.filter(effect => effect.type !== 'damage' || effect.when !== 'enemy-attacking' || enemyAttacking)
+  const baseDamage = allEffects.reduce((sum, effect) => sum + (effect.type === 'damage' ? effect.amount : 0), 0)
+  const vulnerabilityBonus = state.enemy.vulnerable && baseDamage > 0 ? 3 : 0
+  const armorBonus = card.damageBonus?.condition === 'hero-has-armor' && state.heroes[card.damageBonus.hero].armor > 0 && baseDamage > 0 ? card.damageBonus.amount : 0
+  const damage = baseDamage + vulnerabilityBonus + armorBonus
   const armorDamage = Math.min(state.enemy.armor, damage)
   const healthDamage = Math.min(state.enemy.health, Math.max(0, damage - armorDamage))
   const effects: CardEffect[] = allEffects.filter(effect => effect.type !== 'damage')
@@ -81,12 +81,12 @@ function buildPlan(state: BattleState, card: CardDefinition): Omit<PendingPlay, 
   }
   return {
     effects,
-    consume: [...new Set(activeLinks.map(link => link.status))],
+    consumeVulnerability: vulnerabilityBonus > 0,
     preview: {
       damage, armorDamage, healthDamage, armor,
-      bonusDamage: bonusEffects.reduce((sum, effect) => sum + (effect.type === 'damage' ? effect.amount : 0), 0),
+      bonusDamage: vulnerabilityBonus + armorBonus, vulnerabilityBonus, armorBonus,
       draw: effects.reduce((sum, effect) => sum + (effect.type === 'draw' ? effect.amount : 0), 0),
-      links: activeLinks.map(link => link.name),
+      bonuses: [vulnerabilityBonus ? 'Уязвимость' : '', armorBonus ? 'Броня Джайны' : ''].filter(Boolean),
       appliedStatuses: effects.flatMap(effect => effect.type === 'status' ? [effect.status] : []),
     },
   }
@@ -121,7 +121,7 @@ export function resolveCardPlay(state: BattleState, actionId: string): PlayResul
   let drawn = 0
   let damageDealt = 0
   if (!state.result) {
-    for (const status of pending.consume) delete state.statuses[status]
+    if (pending.consumeVulnerability) state.enemy.vulnerable = false
     for (const effect of pending.effects) {
       if (effect.type === 'damage') {
         const absorbed = Math.min(state.enemy.armor, effect.amount)
@@ -139,7 +139,7 @@ export function resolveCardPlay(state: BattleState, actionId: string): PlayResul
       } else if (effect.type === 'draw') {
         drawn += drawCards(state, effect.amount).length
       } else {
-        state.statuses[effect.status] = { expiresOnTurn: state.turn + effect.durationTurns - 1 }
+        state.enemy.vulnerable = true
       }
       updateResult(state)
       if (state.result) break
@@ -221,9 +221,6 @@ export function endTurn(state: BattleState): boolean {
     hero.health -= incoming.healthLoss
     // Only hit heroes consume armor; a partner shield remains available until that hero is hit.
     hero.armor = 0
-  }
-  for (const status of Object.keys(state.statuses) as StatusId[]) {
-    if (state.statuses[status]!.expiresOnTurn <= state.turn) delete state.statuses[status]
   }
   updateResult(state)
   if (state.result) return true

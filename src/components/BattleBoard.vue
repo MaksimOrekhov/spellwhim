@@ -5,14 +5,12 @@ import type { BattleState } from '../game/types'
 import type { BattlePhase, BattlePresentation } from '../composables/useBattleAnimation'
 import HeroPortrait from './HeroPortrait.vue'
 import BattleFx from './BattleFx.vue'
-import GameTooltip from './GameTooltip.vue'
 import EnemyIntent from './EnemyIntent.vue'
 import BattleResult from './BattleResult.vue'
 import BattleHelp from './BattleHelp.vue'
 const props = defineProps<{ state: BattleState; animation: BattlePresentation; phase: BattlePhase; continueLabel?: string }>()
 const emit = defineEmits<{ impact: [actionId: string]; endTurn: []; continue: [] }>()
-const mark = computed(() => hasStatus(props.state, 'mark'))
-const resonance = computed(() => hasStatus(props.state, 'resonance'))
+const vulnerability = computed(() => hasStatus(props.state, 'vulnerability'))
 const forecast = computed(() => props.phase === 'enemy' && props.animation.incoming ? props.animation.incoming : forecastEnemyAction(props.state))
 const phaseTitle = computed(() => ({ player: 'Ваш ход', card: 'Способность отряда', enemy: 'Ход противника', finished: 'Бой завершён' })[props.phase])
 const enemyHero = computed(() => ({ id: 'mage' as const, name: props.state.enemy.name, title: props.state.enemy.title, health: props.state.enemy.health, maxHealth: props.state.enemy.maxHealth, armor: props.state.enemy.armor, icon: '✧' }))
@@ -33,20 +31,17 @@ const threatened = computed(() => new Set(forecast.value.threatened))
     </svg>
     <header class="battle-header">
       <div class="location-label"><span>✦ Сумеречная чаща</span><small>{{ state.enemy.title }}</small></div>
-      <div :key="phase + (phase === 'player' ? state.turn : '')" class="phase-indicator" :class="'phase-indicator--' + phase" role="status" aria-live="polite"><strong>{{ phaseTitle }}</strong><span>{{ phase === 'player' ? 'Бранн и Лира · Ход ' + state.turn : phase === 'finished' ? 'Сражение завершено' : animation.label }}</span></div>
+      <div :key="phase + (phase === 'player' ? state.turn : '')" class="phase-indicator" :class="'phase-indicator--' + phase" role="status" aria-live="polite"><strong>{{ phaseTitle }}</strong><span>{{ phase === 'player' ? 'Вариан и Джайна · Ход ' + state.turn : phase === 'finished' ? 'Сражение завершено' : animation.label }}</span></div>
       <BattleHelp />
     </header>
     <div class="arena">
       <section class="enemy-encounter" aria-label="Противник">
-        <HeroPortrait :hero="enemyHero" side="enemy" :appearance="state.enemy.appearance" :marked="mark" :active="phase === 'enemy'" :damaged="animation.impactTarget === 'enemy'" :boss-phase="state.enemy.behavior.phase2 ? state.enemy.phase : undefined" />
+        <HeroPortrait :hero="enemyHero" side="enemy" :appearance="state.enemy.appearance" :vulnerable="vulnerability" :active="phase === 'enemy'" :damaged="animation.impactTarget === 'enemy'" :boss-phase="state.enemy.behavior.phase2 ? state.enemy.phase : undefined" />
         <div class="enemy-plan"><EnemyIntent :forecast="forecast" :hero-names="{ warrior: state.heroes.warrior.name, mage: state.heroes.mage.name }" :executing="phase === 'enemy'" /></div>
       </section>
-      <section class="party" aria-label="Бранн и Лира — общий ход отряда">
+      <section class="party" aria-label="Вариан и Джайна — общий ход отряда">
         <HeroPortrait :hero="state.heroes.warrior" side="player" :targeted="threatened.has('warrior')" :damaged="animation.impactTarget === 'warrior' || animation.impactTarget === 'both'" :active="phase === 'card' && animation.source === 'warrior'" />
-        <div class="party-link">
-          <GameTooltip v-if="resonance" label="Защитный резонанс"><button class="resonance-token" aria-label="Активен защитный резонанс">⬡ <span>Резонанс</span></button><template #content><p>Следующее атакующее заклинание Лиры: +2 урона.</p><p>До конца текущего хода.</p></template></GameTooltip>
-          <span v-else class="party-link-line" aria-hidden="true">✦</span>
-        </div>
+        <div class="party-divider"><span aria-hidden="true">✦</span></div>
         <HeroPortrait :hero="state.heroes.mage" side="player" :targeted="threatened.has('mage')" :damaged="animation.impactTarget === 'mage' || animation.impactTarget === 'both'" :active="phase === 'card' && animation.source === 'mage'" />
       </section>
     </div>
@@ -57,9 +52,9 @@ const threatened = computed(() => new Set(forecast.value.threatened))
 <style scoped>
 .battle-scene{position:absolute;inset:0;padding-bottom:var(--hand-height);display:grid;grid-template-rows:clamp(68px,8vh,104px) minmax(0,1fr);overflow:hidden;background:#355d50}.scene-art{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.battle-scene::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:1;background:linear-gradient(#112f2b80,transparent 28% 65%,#152c2ac9);transition:background .25s}.battle-scene--enemy::after{background:linear-gradient(#82482b80,#6b38261c 40%,#152c2ac9)}
 .battle-header{position:relative;z-index:7;display:flex;align-items:center;justify-content:space-between;padding:10px clamp(24px,3vw,70px);background:linear-gradient(#173632ad,transparent)}.location-label{display:grid;gap:5px;width:27%}.location-label>span{font:700 clamp(15px,1.2vw,21px) var(--display);color:#f4d7a2}.location-label small{font-size:13px;color:#ccd6c4}.phase-indicator{position:absolute;left:50%;transform:translateX(-50%);width:45%;max-width:600px;text-align:center;display:grid;gap:4px;animation:phase-enter .3s ease-out}.phase-indicator strong{font:700 clamp(25px,2.3vw,38px)/1.1 var(--display);color:#fff0c2;text-shadow:0 2px 10px #1a392b}.phase-indicator>span{font-size:clamp(13px,1vw,17px);color:#e4dfca;min-height:18px}.phase-indicator--enemy strong{color:#ffc198}.phase-indicator--card strong{color:#ddd4f3;font-size:clamp(22px,1.9vw,32px)}
-.arena{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:space-around;gap:8px;padding:0 5vw 4px;min-height:0}.enemy-encounter{position:relative;display:flex;justify-content:center;width:100%}.enemy-plan{position:absolute;left:calc(50% + var(--enemy-size) / 2 + 32px);top:22%}.party{position:relative;display:flex;justify-content:center;align-items:center;gap:clamp(80px,18vw,400px);width:100%}.party-link{position:absolute;left:50%;top:36%;transform:translate(-50%,-50%)}.party-link-line{color:#d3c68d8c;font-size:22px}.resonance-token{display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid #a4dbe0;border-radius:20px;background:#31595ee8;color:#caf5ee;font-weight:700;font-size:20px}.resonance-token span{font-size:14px}
+.arena{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:space-around;gap:8px;padding:0 5vw 4px;min-height:0}.enemy-encounter{position:relative;display:flex;justify-content:center;width:100%}.enemy-plan{position:absolute;left:calc(50% + var(--enemy-size) / 2 + 32px);top:22%}.party{position:relative;display:flex;justify-content:center;align-items:center;gap:clamp(80px,18vw,400px);width:100%}.party-divider{position:absolute;left:50%;top:36%;transform:translate(-50%,-50%);color:#d3c68d8c;font-size:22px}
 
 @keyframes phase-enter{from{opacity:.3;translate:0 -5px}to{opacity:1;translate:0 0}}
 @media(max-height:700px){.battle-scene{grid-template-rows:60px minmax(0,1fr)}.battle-header{padding-top:5px;padding-bottom:5px}.phase-indicator strong{font-size:25px}.phase-indicator>span{font-size:13px}.location-label small{display:none}.arena{padding-bottom:5px;gap:5px}}
-@media(max-width:1000px){.enemy-plan{left:calc(50% + var(--enemy-size) / 2 + 10px)}.location-label>span{font-size:15px}.party{gap:22vw}.resonance-token{padding:7px 9px}.resonance-token span{font-size:12px}}
+@media(max-width:1000px){.enemy-plan{left:calc(50% + var(--enemy-size) / 2 + 10px)}.location-label>span{font-size:15px}.party{gap:22vw}}
 </style>
