@@ -3,7 +3,10 @@ import { drawForTurn, gameEconomy, manaForTurn } from './economy'
 import type { EconomyConfig } from './economy'
 import { drawCards, shuffle } from './deck'
 import { artifactDefinition } from './artifacts'
-import type { ArtifactInstance, BattleArtifactState, BattleState, CardEffect, CardDefinition, CardId, CardPreview, EncounterDefinition, EnemyAction, EnemyHit, HeroId, PendingArtifactTrigger, PendingPlay, StatusId } from './types'
+import { composeHit, splitDamage, sumParts } from './damage'
+import { cardOwner, characterGenitive, heroForClass, heroIdsInPartyOrder, partnerOf as partnerOfHero, resolveArmorTarget } from './party'
+import { applyStatus, carrierHasStatus, clearStatuses, consumeStatus, createStatuses, decayStatus, dueTicks, hitBonuses } from './statuses'
+import type { ArtifactInstance, BattleArtifactState, BattleState, CardClassId, CardEffect, CardDefinition, CardId, CardPreview, ConsumedStatus, EncounterDefinition, EnemyAction, EnemyHit, HeroId, HitPart, PendingArtifactTrigger, PendingPlay, StatusCarrierId, StatusId } from './types'
 
 export interface BattleOptions {
   deck?: readonly CardId[]
@@ -24,7 +27,7 @@ function updateResult(state: BattleState): void {
   if (state.result) return
   if (Object.values(state.heroes).some(hero => hero.health <= 0)) state.result = 'defeat'
   else if (state.enemy.health <= 0) state.result = 'victory'
-  if (state.result) state.enemy.vulnerable = false
+  if (state.result) clearStatuses(state)
 }
 
 export function createBattle(encounter: EncounterDefinition = encounters[1]!, previousHeroes?: BattleState['heroes'], options: BattleOptions = {}): BattleState {
@@ -39,8 +42,8 @@ export function createBattle(encounter: EncounterDefinition = encounters[1]!, pr
     }
   const artifacts: BattleArtifactState[] = (options.artifacts ?? []).map(item => ({ ...item, usedThisBattle: false, lastTriggeredTurn: null, armedThisTurn: false }))
   const state: BattleState = {
-    battleId, seed, rngState: seed, nextActionId: 1, heroes, artifacts, artifactNotices: [],
-    enemy: { name: encounter.name, title: encounter.title, health: encounter.maxHealth, maxHealth: encounter.maxHealth, armor: 0, vulnerable: false, appearance: encounter.appearance, phase: 1, nextActionPhase: 1, behavior: encounter.behavior, behaviorIndex: 1, nextAction: encounter.behavior.phase1[0]!, focus: initialFocus(encounter.behavior.phase1[0]!) },
+    battleId, seed, rngState: seed, nextActionId: 1, heroes, statuses: createStatuses(), artifacts, artifactNotices: [],
+    enemy: { name: encounter.name, title: encounter.title, health: encounter.maxHealth, maxHealth: encounter.maxHealth, armor: 0, appearance: encounter.appearance, phase: 1, nextActionPhase: 1, behavior: encounter.behavior, behaviorIndex: 1, nextAction: encounter.behavior.phase1[0]!, focus: initialFocus(heroes, encounter.behavior.phase1[0]!) },
     hand: [], blockedDraws: 0, drawPile: [], discardPile: [], exhausted: [], pending: null,
     economy, mana: manaForTurn(economy, 1), maxMana: manaForTurn(economy, 1), turn: 1, result: null,
   }
@@ -57,7 +60,8 @@ function hitFocus(action: EnemyAction, fallback: HeroId): HeroId {
   return hit.kind === 'attack' ? hit.target : hit.kind === 'attack_all' ? hit.primaryTarget : fallback
 }
 function schedule(state: BattleState): EnemyAction[] { return state.enemy.phase === 2 ? state.enemy.behavior.phase2 ?? state.enemy.behavior.phase1 : state.enemy.behavior.phase1 }
-function initialFocus(action: EnemyAction): HeroId { return hitFocus(action, 'warrior') }
+/** Without a named target the focus starts on the first party slot. */
+function initialFocus(heroes: BattleState['heroes'], action: EnemyAction): HeroId { return hitFocus(action, heroIdsInPartyOrder(heroes)[0]!) }
 
 function heroForArtifact(state: BattleState, artifact: BattleArtifactState): HeroId | undefined {
   return (Object.keys(state.heroes) as HeroId[]).find(id => state.heroes[id].instanceId === artifact.ownerInstanceId)
@@ -69,8 +73,53 @@ function markArtifactUsed(state: BattleState, artifact: BattleArtifactState, rea
   state.artifactNotices.push(`${artifactDefinition(artifact.definitionId).name}: ${reason}`)
 }
 
-export function hasStatus(state: BattleState, status: StatusId): boolean {
-  return status === 'vulnerability' && !state.result && state.enemy.vulnerable
+/** Whether `carrier` (the enemy unless stated) currently holds the status. A finished battle holds none. */
+export function hasStatus(state: BattleState, status: StatusId, carrier: StatusCarrierId = 'enemy'): boolean {
+  return !state.result && carrierHasStatus(state, carrier, status)
+}
+
+function zeroArmor(heroes: BattleState['heroes']): Record<HeroId, number> {
+  const result = {} as Record<HeroId, number>
+  for (const id of heroIdsInPartyOrder(heroes)) result[id] = 0
+  return result
+}
+
+function resolvedClassHeroes(heroes: BattleState['heroes']): Partial<Record<CardClassId, HeroId>> {
+  const result: Partial<Record<CardClassId, HeroId>> = {}
+  for (const id of heroIdsInPartyOrder(heroes)) {
+    const lookup = heroForClass(heroes, heroes[id].classId)
+    if (lookup.ok) result[heroes[id].classId] = lookup.hero
+  }
+  return result
+}
+
+/**
+ * The only place where the enemy loses armor and health, shared by card damage and (future) status ticks, so both
+ * reach the same phase threshold and the same end of battle. Returns the health actually lost.
+ */
+function damageEnemy(state: BattleState, amount: number, ignoresArmor = false): number {
+  const enemy = state.enemy
+  const split = splitDamage({ armor: ignoresArmor ? 0 : enemy.armor, health: enemy.health }, amount)
+  enemy.armor -= split.absorbed
+  enemy.health = Math.max(0, enemy.health - split.healthLoss)
+  if (enemy.phase === 1 && enemy.behavior.phase2 && enemy.health * 2 <= enemy.maxHealth) {
+    enemy.phase = 2
+    enemy.behaviorIndex = 0
+  }
+  return split.healthLoss
+}
+
+/**
+ * Start of the enemy's turn, after "end turn" and before its announced action. Statuses with a `tick` rule act here.
+ * The loop is data-driven: no gameplay status declares a tick yet, so today it does nothing.
+ */
+function runEnemyTurnStart(state: BattleState): void {
+  for (const due of dueTicks(state, 'enemy', 'enemy-turn-start')) {
+    if (state.result) return
+    if (due.tick.damage) damageEnemy(state, due.value, due.tick.ignoresArmor)
+    decayStatus(state, 'enemy', due.id, due.tick.decay)
+    updateResult(state)
+  }
 }
 
 function buildPlan(state: BattleState, card: CardDefinition): Omit<PendingPlay, 'actionId' | 'card' | 'handIndex'> {
@@ -78,54 +127,86 @@ function buildPlan(state: BattleState, card: CardDefinition): Omit<PendingPlay, 
   const enemyAttacking = enemyAction.kind === 'attack' || enemyAction.kind === 'attack_all'
   const allEffects = card.effects.filter(effect => effect.type !== 'damage' || effect.when !== 'enemy-attacking' || enemyAttacking)
   const baseDamage = allEffects.reduce((sum, effect) => sum + (effect.type === 'damage' ? effect.amount : 0), 0)
-  const vulnerabilityBonus = state.enemy.vulnerable && baseDamage > 0 ? 3 : 0
-  const armorBonus = card.damageBonus?.condition === 'hero-has-armor' && state.heroes[card.damageBonus.hero].armor > 0 && baseDamage > 0 ? card.damageBonus.amount : 0
+  // One list of labelled parts, in the order fixed by damage.ts: base, class condition, statuses, artifacts.
+  const owner = cardOwner(state.heroes, card)
+  const parts: HitPart[] = []
+  const consumedStatuses: ConsumedStatus[] = []
   const spool = state.artifacts.find(artifact => artifact.definitionId === 'tension-spool' && artifact.armedThisTurn && artifact.lastTriggeredTurn !== state.turn && baseDamage > 0)
-  const artifactDamage = spool ? 2 : 0
-  const damage = baseDamage + vulnerabilityBonus + armorBonus + artifactDamage
-  const armorDamage = Math.min(state.enemy.armor, damage)
-  const healthDamage = Math.min(state.enemy.health, Math.max(0, damage - armorDamage))
+  if (baseDamage > 0) {
+    parts.push({ kind: 'base', id: 'card', label: 'Урон карты', amount: baseDamage })
+    if (card.damageBonus?.condition === 'owner-has-armor' && owner.ok && state.heroes[owner.hero].armor > 0) {
+      parts.push({ kind: 'class-bonus', id: 'owner-armor', label: 'Броня ' + characterGenitive(state.heroes[owner.hero].characterId), amount: card.damageBonus.amount })
+    }
+    for (const bonus of hitBonuses(state, 'enemy')) {
+      parts.push({ kind: 'status', id: bonus.id, label: bonus.label, amount: bonus.amount })
+      consumedStatuses.push({ carrier: 'enemy', id: bonus.id })
+    }
+    if (spool) parts.push({ kind: 'artifact', id: 'tension-spool', label: 'Натяжной шкив', detail: 'Натяжной шкив · первая атакующая карта отряда', amount: 2 })
+  }
+  const hit = composeHit(parts)
+  const damage = hit.total
+  // Most plays carry no modifier at all, so the per-kind totals are only gathered when there is one.
+  let vulnerabilityBonus = 0
+  let armorBonus = 0
+  let artifactDamage = 0
+  const bonusLabels: string[] = []
+  if (hit.parts.length > 1) {
+    for (const part of hit.parts) {
+      if (part.kind === 'status' && part.id === 'vulnerability') vulnerabilityBonus += part.amount
+      else if (part.kind === 'class-bonus') armorBonus += part.amount
+      else if (part.kind === 'artifact') artifactDamage += part.amount
+    }
+    // Labels keep the established reading order of the log: statuses, then class condition, then artifacts.
+    for (const kind of ['status', 'class-bonus', 'artifact'] as const) for (const part of hit.parts) if (part.kind === kind && part.amount > 0) bonusLabels.push(part.label)
+  }
+  const split = splitDamage(state.enemy, damage)
+  const armorDamage = split.absorbed
+  const healthDamage = split.healthLoss
   const effects: CardEffect[] = allEffects.filter(effect => effect.type !== 'damage')
   // Deal the entire hit together, before secondary effects. A lethal hit stops the action.
   if (damage > 0) effects.unshift({ type: 'damage', amount: damage })
-  const armor: Record<HeroId, number> = { warrior: 0, mage: 0 }
+  const armor = zeroArmor(state.heroes)
   for (const effect of effects) {
     if (effect.type !== 'armor') continue
-    const target = armorTarget(effect.target, state.enemy.focus)
-    armor[target] += effect.amount
+    const target = resolveArmorTarget(state.heroes, effect.target, state.enemy.focus)
+    if (target) armor[target] += effect.amount
   }
-  const artifactArmor: Record<HeroId, number> = { warrior: 0, mage: 0 }
+  const artifactArmor = zeroArmor(state.heroes)
   const artifactTriggers: PendingArtifactTrigger[] = []
+  const consumesVulnerability = consumedStatuses.some(item => item.carrier === 'enemy' && item.id === 'vulnerability')
   if (spool) {
-    const owner = heroForArtifact(state, spool)
-    if (owner) artifactTriggers.push({ artifactInstanceId: spool.instanceId, reason: 'Натяжной шкив: +2 к первой наносящей урон карте отряда этого хода', kind: 'turn-damage', owner, amount: 2 })
+    const spoolOwner = heroForArtifact(state, spool)
+    if (spoolOwner) artifactTriggers.push({ artifactInstanceId: spool.instanceId, reason: 'Натяжной шкив: +2 к первой наносящей урон карте отряда этого хода', kind: 'turn-damage', owner: spoolOwner, amount: 2 })
   }
   for (const artifact of state.artifacts) {
-    const owner = heroForArtifact(state, artifact)
-    if (!owner) continue
-    if (artifact.definitionId === 'weakpoint-lens' && vulnerabilityBonus > 0 && state.enemy.health - healthDamage > 0 && !artifact.usedThisBattle) {
-      artifactArmor[owner] += 2
-      artifactTriggers.push({ artifactInstanceId: artifact.instanceId, reason: 'Уязвимость была израсходована', kind: 'armor', owner, amount: 2, target: owner })
+    const artifactOwner = heroForArtifact(state, artifact)
+    if (!artifactOwner) continue
+    if (artifact.definitionId === 'weakpoint-lens' && consumesVulnerability && state.enemy.health - healthDamage > 0 && !artifact.usedThisBattle) {
+      artifactArmor[artifactOwner] += 2
+      artifactTriggers.push({ artifactInstanceId: artifact.instanceId, reason: 'Уязвимость была израсходована', kind: 'armor', owner: artifactOwner, amount: 2, target: artifactOwner })
     }
-    if (artifact.definitionId === 'double-pulley' && armor[owner] > 0 && artifact.lastTriggeredTurn !== state.turn) {
-      const partner = partnerOf(owner)
+    if (artifact.definitionId === 'double-pulley' && armor[artifactOwner] > 0 && artifact.lastTriggeredTurn !== state.turn) {
+      const partner = partnerOfHero(state.heroes, artifactOwner)
       artifactArmor[partner] += 2
-      artifactTriggers.push({ artifactInstanceId: artifact.instanceId, reason: 'Карта укрепила владельца', kind: 'armor', owner, amount: 2, target: partner })
+      artifactTriggers.push({ artifactInstanceId: artifact.instanceId, reason: 'Карта укрепила владельца', kind: 'armor', owner: artifactOwner, amount: 2, target: partner })
     }
   }
-  armor.warrior += artifactArmor.warrior
-  armor.mage += artifactArmor.mage
+  for (const id of heroIdsInPartyOrder(state.heroes)) armor[id] += artifactArmor[id]
+  const usesClassTarget = effects.some(effect => effect.type === 'armor' && effect.target.startsWith('class:'))
   return {
     effects,
-    consumeVulnerability: vulnerabilityBonus > 0,
+    consumedStatuses,
     artifactTriggers,
     preview: {
       damage, armorDamage, healthDamage, armor, artifactDamage, artifactArmor,
-      bonusDamage: vulnerabilityBonus + armorBonus + artifactDamage, vulnerabilityBonus, armorBonus,
+      bonusDamage: damage > 0 && hit.parts.length > 1 ? sumParts(hit.parts) - baseDamage : 0, vulnerabilityBonus, armorBonus,
       draw: effects.reduce((sum, effect) => sum + (effect.type === 'draw' ? effect.amount : 0), 0),
-      bonuses: [vulnerabilityBonus ? 'Уязвимость' : '', armorBonus ? 'Броня Джайны' : '', artifactDamage ? 'Натяжной шкив' : ''].filter(Boolean),
+      bonuses: bonusLabels,
       artifactBonuses: artifactTriggers.map(trigger => trigger.reason),
       appliedStatuses: effects.flatMap(effect => effect.type === 'status' ? [effect.status] : []),
+      damageParts: hit.parts,
+      bonusOwner: card.damageBonus && owner.ok ? { hero: owner.hero, characterId: state.heroes[owner.hero].characterId } : null,
+      classHeroes: usesClassTarget ? resolvedClassHeroes(state.heroes) : {},
     },
   }
 }
@@ -160,19 +241,15 @@ export function resolveCardPlay(state: BattleState, actionId: string): PlayResul
   let drawn = 0
   let damageDealt = 0
   if (!state.result) {
-    if (pending.consumeVulnerability) state.enemy.vulnerable = false
+    for (const spent of pending.consumedStatuses) consumeStatus(state, spent.carrier, spent.id)
     for (const effect of pending.effects) {
       if (effect.type === 'damage') {
-        const absorbed = Math.min(state.enemy.armor, effect.amount)
-        state.enemy.armor -= absorbed
-        const healthDamage = Math.min(state.enemy.health, effect.amount - absorbed)
-        damageDealt += healthDamage
-        state.enemy.health = Math.max(0, state.enemy.health - (effect.amount - absorbed))
+        damageDealt += damageEnemy(state, effect.amount)
         for (const trigger of pending.artifactTriggers.filter(item => item.kind === 'turn-damage')) {
           const artifact = state.artifacts.find(item => item.instanceId === trigger.artifactInstanceId)
           if (artifact && artifact.lastTriggeredTurn !== state.turn) markArtifactUsed(state, artifact, trigger.reason, true)
         }
-        if (pending.consumeVulnerability && state.enemy.health > 0) {
+        if (pending.consumedStatuses.some(item => item.carrier === 'enemy' && item.id === 'vulnerability') && state.enemy.health > 0) {
           for (const trigger of pending.artifactTriggers.filter(item => item.kind === 'armor' && item.reason === 'Уязвимость была израсходована')) {
             const artifact = state.artifacts.find(item => item.instanceId === trigger.artifactInstanceId)
             if (!artifact || artifact.usedThisBattle) continue
@@ -180,13 +257,9 @@ export function resolveCardPlay(state: BattleState, actionId: string): PlayResul
             markArtifactUsed(state, artifact, trigger.reason)
           }
         }
-        if (state.enemy.phase === 1 && state.enemy.behavior.phase2 && state.enemy.health * 2 <= state.enemy.maxHealth) {
-          state.enemy.phase = 2
-          state.enemy.behaviorIndex = 0
-        }
       } else if (effect.type === 'armor') {
-        const target = armorTarget(effect.target, state.enemy.focus)
-        state.heroes[target].armor += effect.amount
+        const target = resolveArmorTarget(state.heroes, effect.target, state.enemy.focus)
+        if (target) state.heroes[target].armor += effect.amount
         for (const trigger of pending.artifactTriggers.filter(item => item.kind === 'armor' && item.reason === 'Карта укрепила владельца' && item.owner === target)) {
           const artifact = state.artifacts.find(item => item.instanceId === trigger.artifactInstanceId)
           if (!artifact || artifact.lastTriggeredTurn === state.turn) continue
@@ -196,7 +269,7 @@ export function resolveCardPlay(state: BattleState, actionId: string): PlayResul
       } else if (effect.type === 'draw') {
         drawn += drawCards(state, effect.amount).length
       } else {
-        state.enemy.vulnerable = true
+        applyStatus(state, 'enemy', effect.status, effect.amount ?? 1)
       }
       updateResult(state)
       if (state.result) break
@@ -214,18 +287,18 @@ export function playCard(state: BattleState, instanceId: string): PlayResult {
   return start.ok ? resolveCardPlay(state, start.play.actionId) : start
 }
 
-function partnerOf(id: HeroId): HeroId { return id === 'warrior' ? 'mage' : 'warrior' }
-function armorTarget(target: 'threatened' | 'partner' | HeroId, threatened: HeroId): HeroId {
-  return target === 'threatened' ? threatened : target === 'partner' ? partnerOf(threatened) : target
-}
-
 export interface EnemyTargetForecast {
   target: HeroId
+  /** Damage that reaches armor: the announced damage after the target's statuses and artifacts. */
   attack: number
   absorbed: number
   healthLoss: number
   lethal: boolean
   artifactReduction: number
+  /** The same `attack`, itemised in the order fixed by damage.ts. */
+  parts: HitPart[]
+  /** Statuses this hit spends when it lands. */
+  consumedStatuses: ConsumedStatus[]
 }
 
 export interface EnemyActionForecast {
@@ -238,16 +311,22 @@ export interface EnemyActionForecast {
 }
 
 function forecastHit(state: BattleState, hit: EnemyHit): EnemyTargetForecast[] {
-  const targets = hit.kind === 'attack' ? [hit.target] : ['warrior', 'mage'] as HeroId[]
-  // Every AoE hit reads the same pre-hit armor/health snapshot.
+  const targets = hit.kind === 'attack' ? [hit.target] : heroIdsInPartyOrder(state.heroes)
+  // Every AoE hit reads the same pre-hit armor/health snapshot; the same numbers are executed by endTurn.
   return targets.map(target => {
-  const hero = state.heroes[target]
-  const wedge = state.artifacts.find(artifact => artifact.definitionId === 'reliable-wedge' && !artifact.usedThisBattle && heroForArtifact(state, artifact) === target)
-  const artifactReduction = wedge ? Math.min(2, hit.damage) : 0
-  const attack = hit.damage - artifactReduction
-  const absorbed = Math.min(attack, hero.armor)
-  const remaining = Math.max(0, attack - absorbed)
-  return { target, attack, absorbed, healthLoss: Math.min(hero.health, remaining), lethal: remaining >= hero.health, artifactReduction }
+    const hero = state.heroes[target]
+    const parts: HitPart[] = [{ kind: 'base', id: 'enemy-action', label: hit.name, amount: hit.damage }]
+    const consumedStatuses: ConsumedStatus[] = []
+    for (const bonus of hitBonuses(state, target)) {
+      parts.push({ kind: 'status', id: bonus.id, label: bonus.label, amount: bonus.amount })
+      consumedStatuses.push({ carrier: target, id: bonus.id })
+    }
+    const wedge = state.artifacts.find(artifact => artifact.definitionId === 'reliable-wedge' && !artifact.usedThisBattle && heroForArtifact(state, artifact) === target)
+    if (wedge) parts.push({ kind: 'artifact', id: 'reliable-wedge', label: 'Верный расклин', amount: -2 })
+    const composed = composeHit(parts)
+    const split = splitDamage(hero, composed.total)
+    const artifactReduction = -composed.parts.filter(part => part.kind === 'artifact' && part.amount < 0).reduce((sum, part) => sum + part.amount, 0)
+    return { target, attack: composed.total, absorbed: split.absorbed, healthLoss: split.healthLoss, lethal: split.lethal, artifactReduction, parts: composed.parts, consumedStatuses }
   })
 }
 
@@ -258,7 +337,7 @@ export function forecastEnemyAction(state: BattleState): EnemyActionForecast {
   const targets = hit ? forecastHit(state, hit) : []
   const futureTargets = futureHit ? forecastHit(state, futureHit) : []
   const announcedHit = hit ?? futureHit
-  const threatened: HeroId[] = announcedHit?.kind === 'attack' ? [announcedHit.target] : announcedHit?.kind === 'attack_all' ? ['warrior', 'mage'] : []
+  const threatened: HeroId[] = announcedHit?.kind === 'attack' ? [announcedHit.target] : announcedHit?.kind === 'attack_all' ? heroIdsInPartyOrder(state.heroes) : []
   return { action, phase: state.enemy.nextActionPhase, targets, futureTargets, threatened, armorGain: action.kind === 'defend' || action.kind === 'recover' ? Math.min(action.armor, Math.max(0, ENEMY_ARMOR_CAP - state.enemy.armor)) : 0 }
 }
 
@@ -266,7 +345,7 @@ export function forecastEnemyAction(state: BattleState): EnemyActionForecast {
 export interface EnemyAttackForecast extends EnemyTargetForecast { action?: EnemyAction; phase?: 1 | 2; targets?: EnemyTargetForecast[]; futureTargets?: EnemyTargetForecast[]; threatened?: HeroId[]; armorGain?: number }
 export function forecastEnemyAttack(state: BattleState): EnemyAttackForecast {
   const forecast = forecastEnemyAction(state)
-  const item = forecast.targets[0] ?? forecast.futureTargets[0] ?? { target: state.enemy.focus, attack: 0, absorbed: 0, healthLoss: 0, lethal: false }
+  const item = forecast.targets[0] ?? forecast.futureTargets[0] ?? { target: state.enemy.focus, attack: 0, absorbed: 0, healthLoss: 0, lethal: false, parts: [], consumedStatuses: [] }
   return { artifactReduction: 0, ...item, ...forecast }
 }
 
@@ -274,6 +353,11 @@ export function endTurn(state: BattleState): boolean {
   state.artifactNotices = []
   updateResult(state)
   if (state.result || state.pending) return false
+  // Enemy turn, step 1: statuses that act at its start (none yet). They may end the battle or move the phase threshold.
+  runEnemyTurnStart(state)
+  updateResult(state)
+  if (state.result) return true
+  // Step 2: the announced action, executed from the very forecast the player saw (recomputed only after step 1).
   const forecast = forecastEnemyAction(state)
   const action = state.enemy.nextAction
   if (action.kind === 'defend' || action.kind === 'recover') state.enemy.armor = Math.min(ENEMY_ARMOR_CAP, state.enemy.armor + action.armor)
@@ -286,6 +370,7 @@ export function endTurn(state: BattleState): boolean {
     hero.health -= incoming.healthLoss
     // Only hit heroes consume armor; a partner shield remains available until that hero is hit.
     hero.armor = 0
+    for (const spent of incoming.consumedStatuses) consumeStatus(state, spent.carrier, spent.id)
   }
   updateResult(state)
   if (state.result) return true

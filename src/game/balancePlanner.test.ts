@@ -1,10 +1,11 @@
 import { describe, expect, it, vi } from 'vitest'
-import { createBattle, endTurn, playCard } from './battle'
+import { createBattle, endTurn, hasStatus, playCard } from './battle'
 import { allStrategies, classicStrategies, simulateBalance, simulateRun, summarizeBalance } from './balance'
 import { cloneBattleState, createTurnPlanner, determinize, observableSeed, planTurn } from './balancePlanner'
 import { createCampaignBattle } from './campaign'
 import { cardDefinition, encounters, startingDeck } from './types'
 import type { BattleState, CardId } from './types'
+import { applyStatus } from './statuses'
 
 interface PlannerCall { snapshot: BattleState; fresh: boolean; chosen: string | undefined; options: unknown }
 /** Records every decision the Balance Lab asks its planner for, with the exact state it saw. */
@@ -92,7 +93,7 @@ describe('planner state copies', () => {
   it('matches structuredClone, shares no mutable zone, and refuses a play in progress', () => {
     const state = createBattle(encounters[2], undefined, { seed: 5 })
     endTurn(state)
-    state.enemy.vulnerable = true
+    applyStatus(state, 'enemy', 'vulnerability')
     const mageHealth = state.heroes.mage.health
     const copy = cloneBattleState(state)
     expect(copy).toEqual(structuredClone(state))
@@ -102,14 +103,14 @@ describe('planner state copies', () => {
     }
     expect(copy.heroes.warrior).not.toBe(state.heroes.warrior)
     expect(copy.enemy).not.toBe(state.enemy)
-    expect(copy.enemy.vulnerable).toBe(true)
+    expect(hasStatus(copy, 'vulnerability')).toBe(true)
     copy.hand.pop()
     copy.heroes.mage.health = 1
     expect(state.hand.length).toBe(copy.hand.length + 1)
     expect(state.heroes.mage.health).toBe(mageHealth)
 
     const pending = createBattle(encounters[2], undefined, { seed: 5 })
-    pending.pending = { actionId: 'x', card: pending.hand[0]!, handIndex: 0, effects: [], consumeVulnerability: false, artifactTriggers: [], preview: { damage: 0, armorDamage: 0, healthDamage: 0, bonusDamage: 0, vulnerabilityBonus: 0, armorBonus: 0, artifactDamage: 0, artifactArmor: { warrior: 0, mage: 0 }, artifactBonuses: [], armor: { warrior: 0, mage: 0 }, draw: 0, bonuses: [], appliedStatuses: [] } }
+    pending.pending = { actionId: 'x', card: pending.hand[0]!, handIndex: 0, effects: [], consumedStatuses: [], artifactTriggers: [], preview: { damage: 0, armorDamage: 0, healthDamage: 0, bonusDamage: 0, vulnerabilityBonus: 0, armorBonus: 0, artifactDamage: 0, artifactArmor: { warrior: 0, mage: 0 }, artifactBonuses: [], armor: { warrior: 0, mage: 0 }, draw: 0, bonuses: [], appliedStatuses: [], damageParts: [], bonusOwner: null, classHeroes: {} } }
     expect(() => cloneBattleState(pending)).toThrow()
   })
 })

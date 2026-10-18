@@ -1,4 +1,4 @@
-import { endTurn, forecastEnemyAction, playCard, previewCard } from './battle'
+import { endTurn, forecastEnemyAction, hasStatus, playCard, previewCard } from './battle'
 import { addCampaignReward, advanceCampaign, campaignEncounter, campaignEncounters, campaignRewardOptions, campaignRewards, carriedHeroes, createCampaignBattle } from './campaign'
 import { baselineEconomy } from './economy'
 import type { EconomyConfig } from './economy'
@@ -353,7 +353,7 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, options: Ru
         stats.manaSpent += card.cost
         stats.vulnerabilityTriggers += Number(usedVulnerability)
         stats.armorBonusTriggers += Number(usedArmorBonus)
-        const appliedVulnerability = outcome.outcome.appliedStatuses.includes('vulnerability') && battle.enemy.vulnerable
+        const appliedVulnerability = outcome.outcome.appliedStatuses.includes('vulnerability') && hasStatus(battle, 'vulnerability')
         if (appliedVulnerability) {
           stats.vulnerabilitySetups += 1
           vulnerabilitySetups += 1
@@ -385,7 +385,7 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, options: Ru
       turnRecord.healthLost = predicted.reduce((sum, hit) => sum + hit.healthLoss, 0)
       const wasPrepared = previousActionKind === 'prepare'
       previousActionKind = enemyAction.kind
-      if (battle.enemy.vulnerable) {
+      if (hasStatus(battle, 'vulnerability')) {
         vulnerabilityWaitTurns += 1
         battleVulnerabilityWaitTurns += 1
       }

@@ -76,7 +76,7 @@ describe('universal vulnerability', () => {
   it('lets an attack from either class use the same +3 vulnerability bonus', () => {
     const state = fixture(['frostbolt', 'sword-strike'])
     cast(state, 'frostbolt')
-    expect(state.enemy.vulnerable).toBe(true)
+    expect(hasStatus(state, 'vulnerability')).toBe(true)
     const beforePreview = structuredClone(state)
     expect(previewCard(state, cardDefinition('sword-strike'))).toMatchObject({ damage: 9, bonusDamage: 3, vulnerabilityBonus: 3, bonuses: ['Уязвимость'] })
     expect(state).toEqual(beforePreview)
@@ -99,16 +99,16 @@ describe('universal vulnerability', () => {
     endTurn(state)
     expect(hasStatus(state, 'vulnerability')).toBe(true)
     expect(cast(state, 'frostbolt')).toMatchObject({ ok: true, damageDealt: 7 })
-    expect(state.enemy.vulnerable).toBe(true)
+    expect(hasStatus(state, 'vulnerability')).toBe(true)
     expect(cast(state, 'sword-strike')).toMatchObject({ ok: true, damageDealt: 9 })
-    expect(state.enemy.vulnerable).toBe(false)
+    expect(hasStatus(state, 'vulnerability')).toBe(false)
   })
 
   it('uses a prior vulnerability before the same card reapplies it', () => {
     const state = fixture(['shield-bash', 'frostbolt'])
     cast(state, 'shield-bash')
     expect(cast(state, 'frostbolt')).toMatchObject({ ok: true, damageDealt: 7 })
-    expect(state.enemy.vulnerable).toBe(true)
+    expect(hasStatus(state, 'vulnerability')).toBe(true)
     expect(previewCard(state, cardDefinition('sword-strike')).damage).toBe(9)
   })
 
@@ -117,7 +117,7 @@ describe('universal vulnerability', () => {
     cast(state, 'frostbolt')
     expect(previewCard(state, cardDefinition('parry')).damage).toBe(0)
     cast(state, 'parry')
-    expect(state.enemy.vulnerable).toBe(true)
+    expect(hasStatus(state, 'vulnerability')).toBe(true)
   })
 
   it('consumes vulnerability before armor absorbs the hit and shows armor and health damage separately', () => {
@@ -125,14 +125,14 @@ describe('universal vulnerability', () => {
     state.enemy.armor = 100
     cast(state, 'frostbolt')
     expect(cast(state, 'sword-strike')).toMatchObject({ ok: true, outcome: { damage: 9, armorDamage: 9, healthDamage: 0 } })
-    expect(state.enemy.vulnerable).toBe(false)
+    expect(hasStatus(state, 'vulnerability')).toBe(false)
   })
 
   it('does not apply a fresh vulnerability after a lethal hit', () => {
     const state = fixture(['frostbolt'], 4)
     expect(cast(state, 'frostbolt')).toMatchObject({ ok: true, damageDealt: 4 })
     expect(state.result).toBe('victory')
-    expect(state.enemy.vulnerable).toBe(false)
+    expect(hasStatus(state, 'vulnerability')).toBe(false)
   })
 })
 
@@ -147,7 +147,7 @@ describe('Jaina armor spell bonus', () => {
     expect(previewCard(state, cardDefinition('thunderbolt'))).toMatchObject({ damage: 9, bonusDamage: 5, vulnerabilityBonus: 3, armorBonus: 2 })
     cast(state, 'thunderbolt')
     expect(state.heroes.mage.armor).toBe(2)
-    expect(state.enemy.vulnerable).toBe(false)
+    expect(hasStatus(state, 'vulnerability')).toBe(false)
   })
 })
 
@@ -323,7 +323,7 @@ describe('terminal states and run adapter', () => {
     const state = fixture(['fireball', 'sword-strike'], 8)
     expect(cast(state, 'fireball')).toMatchObject({ ok: true, damageDealt: 8 })
     expect(state.result).toBe('victory')
-    expect(state.enemy.vulnerable).toBe(false)
+    expect(hasStatus(state, 'vulnerability')).toBe(false)
     expect(state.pending).toBeNull()
     const won = structuredClone(state)
     expect(cast(state, 'sword-strike')).toEqual({ ok: false, reason: 'finished' })
@@ -355,7 +355,7 @@ describe('terminal states and run adapter', () => {
     expect(next.heroes.warrior.health).toBe(17)
     expect(next.heroes.warrior.armor).toBe(0)
     expect(next.heroes.mage.armor).toBe(0)
-    expect(next.enemy.vulnerable).toBe(false)
+    expect(hasStatus(next, 'vulnerability')).toBe(false)
     previous.heroes.mage.health = 0
     expect(createBattle(encounters[0]!, previous.heroes).result).toBe('defeat')
   })

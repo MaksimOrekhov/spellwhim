@@ -1,0 +1,3845 @@
+[
+ {
+  "key": "root-sentinel/3/aggressive/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 14,
+  "manaSpent": 7,
+  "digest": "1f7e9aa4"
+ },
+ {
+  "key": "root-sentinel/3/defensive/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 7,
+  "digest": "e1818808"
+ },
+ {
+  "key": "root-sentinel/3/balanced/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 17,
+  "manaSpent": 5,
+  "digest": "361e1340"
+ },
+ {
+  "key": "root-sentinel/3/random/none",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 14,
+  "digest": "573e6c5d"
+ },
+ {
+  "key": "root-sentinel/11/aggressive/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 14,
+  "manaSpent": 6,
+  "digest": "c0c39c91"
+ },
+ {
+  "key": "root-sentinel/11/defensive/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 7,
+  "digest": "2cbd0a9c"
+ },
+ {
+  "key": "root-sentinel/11/balanced/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 17,
+  "manaSpent": 5,
+  "digest": "15aa1afe"
+ },
+ {
+  "key": "root-sentinel/11/random/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 14,
+  "manaSpent": 13,
+  "digest": "2de71e4f"
+ },
+ {
+  "key": "root-sentinel/29/aggressive/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 17,
+  "manaSpent": 6,
+  "digest": "d9415861"
+ },
+ {
+  "key": "root-sentinel/29/defensive/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 6,
+  "digest": "85258798"
+ },
+ {
+  "key": "root-sentinel/29/balanced/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 17,
+  "manaSpent": 6,
+  "digest": "c7fdd5b9"
+ },
+ {
+  "key": "root-sentinel/29/random/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 7,
+  "digest": "3b27d534"
+ },
+ {
+  "key": "root-sentinel/5/planner/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "2a9e495f"
+ },
+ {
+  "key": "twilight-guardian/3/aggressive/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 18,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "17d6e5f3"
+ },
+ {
+  "key": "twilight-guardian/3/defensive/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "c8f593cf"
+ },
+ {
+  "key": "twilight-guardian/3/balanced/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 7,
+  "digest": "074dbcd2"
+ },
+ {
+  "key": "twilight-guardian/3/random/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 19,
+  "digest": "fd7c4d22"
+ },
+ {
+  "key": "twilight-guardian/11/aggressive/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 7,
+  "digest": "498aea98"
+ },
+ {
+  "key": "twilight-guardian/11/defensive/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "72c3cbfe"
+ },
+ {
+  "key": "twilight-guardian/11/balanced/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 8,
+  "digest": "e5977b14"
+ },
+ {
+  "key": "twilight-guardian/11/random/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 15,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "1c78a948"
+ },
+ {
+  "key": "twilight-guardian/29/aggressive/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 7,
+  "digest": "4120bcbd"
+ },
+ {
+  "key": "twilight-guardian/29/defensive/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 8,
+  "digest": "78556848"
+ },
+ {
+  "key": "twilight-guardian/29/balanced/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 7,
+  "digest": "f96c200d"
+ },
+ {
+  "key": "twilight-guardian/29/random/none",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 21,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "ef558373"
+ },
+ {
+  "key": "twilight-guardian/5/planner/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 11,
+  "digest": "0355f123"
+ },
+ {
+  "key": "twilight-heart/3/aggressive/none",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 24,
+  "mageHealth": 9,
+  "manaSpent": 13,
+  "digest": "7e877f3d"
+ },
+ {
+  "key": "twilight-heart/3/defensive/none",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 15,
+  "manaSpent": 16,
+  "digest": "900b1557"
+ },
+ {
+  "key": "twilight-heart/3/balanced/none",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 12,
+  "manaSpent": 13,
+  "digest": "8275c16d"
+ },
+ {
+  "key": "twilight-heart/3/random/none",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 23,
+  "mageHealth": 15,
+  "manaSpent": 26,
+  "digest": "3fd58cb0"
+ },
+ {
+  "key": "twilight-heart/11/aggressive/none",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 15,
+  "mageHealth": 9,
+  "manaSpent": 12,
+  "digest": "a518cc97"
+ },
+ {
+  "key": "twilight-heart/11/defensive/none",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 22,
+  "mageHealth": 15,
+  "manaSpent": 14,
+  "digest": "6fd7cc23"
+ },
+ {
+  "key": "twilight-heart/11/balanced/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 14,
+  "manaSpent": 10,
+  "digest": "2edc7049"
+ },
+ {
+  "key": "twilight-heart/11/random/none",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 22,
+  "mageHealth": 8,
+  "manaSpent": 20,
+  "digest": "0812364e"
+ },
+ {
+  "key": "twilight-heart/29/aggressive/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 12,
+  "manaSpent": 10,
+  "digest": "a43e9ad0"
+ },
+ {
+  "key": "twilight-heart/29/defensive/none",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "842335f5"
+ },
+ {
+  "key": "twilight-heart/29/balanced/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 12,
+  "manaSpent": 10,
+  "digest": "615bbbf6"
+ },
+ {
+  "key": "twilight-heart/29/random/none",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 21,
+  "mageHealth": 18,
+  "manaSpent": 22,
+  "digest": "ad695858"
+ },
+ {
+  "key": "twilight-heart/5/planner/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 19,
+  "digest": "260f160c"
+ },
+ {
+  "key": "root-sentinel/3/aggressive/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 23,
+  "mageHealth": 12,
+  "manaSpent": 16,
+  "digest": "711af24c"
+ },
+ {
+  "key": "root-sentinel/3/defensive/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 18,
+  "digest": "2180cfdd"
+ },
+ {
+  "key": "root-sentinel/3/balanced/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 15,
+  "manaSpent": 17,
+  "digest": "885160f4"
+ },
+ {
+  "key": "root-sentinel/3/random/none",
+  "result": "victory",
+  "turns": 8,
+  "warriorHealth": 19,
+  "mageHealth": 18,
+  "manaSpent": 27,
+  "digest": "0deb5f08"
+ },
+ {
+  "key": "root-sentinel/11/aggressive/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 14,
+  "mageHealth": 12,
+  "manaSpent": 15,
+  "digest": "4614596a"
+ },
+ {
+  "key": "root-sentinel/11/defensive/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 17,
+  "digest": "7fddc62e"
+ },
+ {
+  "key": "root-sentinel/11/balanced/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 17,
+  "manaSpent": 17,
+  "digest": "712751c0"
+ },
+ {
+  "key": "root-sentinel/11/random/none",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 17,
+  "mageHealth": 12,
+  "manaSpent": 19,
+  "digest": "576c9072"
+ },
+ {
+  "key": "root-sentinel/29/aggressive/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 20,
+  "mageHealth": 15,
+  "manaSpent": 15,
+  "digest": "30352489"
+ },
+ {
+  "key": "root-sentinel/29/defensive/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 18,
+  "digest": "3d968f36"
+ },
+ {
+  "key": "root-sentinel/29/balanced/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 15,
+  "manaSpent": 16,
+  "digest": "a09bfc03"
+ },
+ {
+  "key": "root-sentinel/29/random/none",
+  "result": "victory",
+  "turns": 8,
+  "warriorHealth": 21,
+  "mageHealth": 9,
+  "manaSpent": 25,
+  "digest": "59fd0d99"
+ },
+ {
+  "key": "root-sentinel/5/planner/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 20,
+  "digest": "bf2b74fd"
+ },
+ {
+  "key": "twilight-guardian/3/aggressive/none",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 11,
+  "mageHealth": 11,
+  "manaSpent": 20,
+  "digest": "af494c90"
+ },
+ {
+  "key": "twilight-guardian/3/defensive/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 20,
+  "mageHealth": 18,
+  "manaSpent": 22,
+  "digest": "132abe61"
+ },
+ {
+  "key": "twilight-guardian/3/balanced/none",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 18,
+  "mageHealth": 18,
+  "manaSpent": 23,
+  "digest": "94dbf642"
+ },
+ {
+  "key": "twilight-guardian/3/random/none",
+  "result": "victory",
+  "turns": 11,
+  "warriorHealth": 10,
+  "mageHealth": 16,
+  "manaSpent": 30,
+  "digest": "67666caf"
+ },
+ {
+  "key": "twilight-guardian/11/aggressive/none",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 8,
+  "mageHealth": 12,
+  "manaSpent": 17,
+  "digest": "3688135f"
+ },
+ {
+  "key": "twilight-guardian/11/defensive/none",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 15,
+  "mageHealth": 18,
+  "manaSpent": 24,
+  "digest": "a60f40c7"
+ },
+ {
+  "key": "twilight-guardian/11/balanced/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 15,
+  "mageHealth": 18,
+  "manaSpent": 22,
+  "digest": "20901f9b"
+ },
+ {
+  "key": "twilight-guardian/11/random/none",
+  "result": "victory",
+  "turns": 10,
+  "warriorHealth": 3,
+  "mageHealth": 18,
+  "manaSpent": 31,
+  "digest": "0e14806d"
+ },
+ {
+  "key": "twilight-guardian/29/aggressive/none",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 14,
+  "mageHealth": 6,
+  "manaSpent": 19,
+  "digest": "27060f4e"
+ },
+ {
+  "key": "twilight-guardian/29/defensive/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 22,
+  "digest": "8d71621b"
+ },
+ {
+  "key": "twilight-guardian/29/balanced/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 22,
+  "digest": "7ebaa76b"
+ },
+ {
+  "key": "twilight-guardian/29/random/none",
+  "result": "victory",
+  "turns": 9,
+  "warriorHealth": 13,
+  "mageHealth": 13,
+  "manaSpent": 31,
+  "digest": "f02dd8f5"
+ },
+ {
+  "key": "twilight-guardian/5/planner/none",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 19,
+  "mageHealth": 18,
+  "manaSpent": 23,
+  "digest": "4f281154"
+ },
+ {
+  "key": "twilight-heart/3/aggressive/none",
+  "result": "victory",
+  "turns": 8,
+  "warriorHealth": 13,
+  "mageHealth": 4,
+  "manaSpent": 30,
+  "digest": "715189b9"
+ },
+ {
+  "key": "twilight-heart/3/defensive/none",
+  "result": "victory",
+  "turns": 10,
+  "warriorHealth": 22,
+  "mageHealth": 14,
+  "manaSpent": 39,
+  "digest": "b78ef116"
+ },
+ {
+  "key": "twilight-heart/3/balanced/none",
+  "result": "victory",
+  "turns": 8,
+  "warriorHealth": 22,
+  "mageHealth": 7,
+  "manaSpent": 33,
+  "digest": "d37dc6d6"
+ },
+ {
+  "key": "twilight-heart/3/random/none",
+  "result": "defeat",
+  "turns": 15,
+  "warriorHealth": 0,
+  "mageHealth": 6,
+  "manaSpent": 43,
+  "digest": "fbee1507"
+ },
+ {
+  "key": "twilight-heart/11/aggressive/none",
+  "result": "victory",
+  "turns": 8,
+  "warriorHealth": 13,
+  "mageHealth": 4,
+  "manaSpent": 30,
+  "digest": "3c9b4351"
+ },
+ {
+  "key": "twilight-heart/11/defensive/none",
+  "result": "victory",
+  "turns": 9,
+  "warriorHealth": 21,
+  "mageHealth": 12,
+  "manaSpent": 39,
+  "digest": "7d995e6d"
+ },
+ {
+  "key": "twilight-heart/11/balanced/none",
+  "result": "victory",
+  "turns": 9,
+  "warriorHealth": 17,
+  "mageHealth": 9,
+  "manaSpent": 35,
+  "digest": "7e3a4e1b"
+ },
+ {
+  "key": "twilight-heart/11/random/none",
+  "result": "defeat",
+  "turns": 7,
+  "warriorHealth": 18,
+  "mageHealth": 0,
+  "manaSpent": 20,
+  "digest": "2e837171"
+ },
+ {
+  "key": "twilight-heart/29/aggressive/none",
+  "result": "victory",
+  "turns": 9,
+  "warriorHealth": 7,
+  "mageHealth": 4,
+  "manaSpent": 30,
+  "digest": "80fe79a0"
+ },
+ {
+  "key": "twilight-heart/29/defensive/none",
+  "result": "victory",
+  "turns": 10,
+  "warriorHealth": 19,
+  "mageHealth": 17,
+  "manaSpent": 40,
+  "digest": "fe976353"
+ },
+ {
+  "key": "twilight-heart/29/balanced/none",
+  "result": "victory",
+  "turns": 9,
+  "warriorHealth": 19,
+  "mageHealth": 12,
+  "manaSpent": 34,
+  "digest": "960b44fc"
+ },
+ {
+  "key": "twilight-heart/29/random/none",
+  "result": "defeat",
+  "turns": 7,
+  "warriorHealth": 16,
+  "mageHealth": 0,
+  "manaSpent": 17,
+  "digest": "da9b0149"
+ },
+ {
+  "key": "twilight-heart/5/planner/none",
+  "result": "victory",
+  "turns": 9,
+  "warriorHealth": 21,
+  "mageHealth": 16,
+  "manaSpent": 39,
+  "digest": "6163fade"
+ },
+ {
+  "key": "defias-cutpurse/3/aggressive/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 14,
+  "manaSpent": 7,
+  "digest": "b63344bd"
+ },
+ {
+  "key": "defias-cutpurse/3/defensive/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "7cc99359"
+ },
+ {
+  "key": "defias-cutpurse/3/balanced/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 17,
+  "manaSpent": 7,
+  "digest": "928d4b08"
+ },
+ {
+  "key": "defias-cutpurse/3/random/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 21,
+  "mageHealth": 17,
+  "manaSpent": 14,
+  "digest": "de20a216"
+ },
+ {
+  "key": "defias-cutpurse/11/aggressive/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 14,
+  "manaSpent": 7,
+  "digest": "6426ebc9"
+ },
+ {
+  "key": "defias-cutpurse/11/defensive/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 7,
+  "digest": "4f09b917"
+ },
+ {
+  "key": "defias-cutpurse/11/balanced/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 17,
+  "manaSpent": 7,
+  "digest": "efb9f139"
+ },
+ {
+  "key": "defias-cutpurse/11/random/none",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 21,
+  "mageHealth": 14,
+  "manaSpent": 10,
+  "digest": "bef0c200"
+ },
+ {
+  "key": "defias-cutpurse/29/aggressive/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 17,
+  "manaSpent": 7,
+  "digest": "acb75fdb"
+ },
+ {
+  "key": "defias-cutpurse/29/defensive/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 7,
+  "digest": "fd480903"
+ },
+ {
+  "key": "defias-cutpurse/29/balanced/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 17,
+  "manaSpent": 6,
+  "digest": "9c282de8"
+ },
+ {
+  "key": "defias-cutpurse/29/random/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 14,
+  "manaSpent": 11,
+  "digest": "b05d471a"
+ },
+ {
+  "key": "defias-cutpurse/5/planner/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "73c71beb"
+ },
+ {
+  "key": "mine-overseer/3/aggressive/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 11,
+  "digest": "7cd4a476"
+ },
+ {
+  "key": "mine-overseer/3/defensive/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "5166eb3e"
+ },
+ {
+  "key": "mine-overseer/3/balanced/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "02e2bb8e"
+ },
+ {
+  "key": "mine-overseer/3/random/none",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "9e45cd11"
+ },
+ {
+  "key": "mine-overseer/11/aggressive/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 8,
+  "digest": "0eab33b5"
+ },
+ {
+  "key": "mine-overseer/11/defensive/none",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "2ed24080"
+ },
+ {
+  "key": "mine-overseer/11/balanced/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 11,
+  "digest": "eab157ca"
+ },
+ {
+  "key": "mine-overseer/11/random/none",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 19,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "d4bca2a3"
+ },
+ {
+  "key": "mine-overseer/29/aggressive/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 8,
+  "digest": "899b487b"
+ },
+ {
+  "key": "mine-overseer/29/defensive/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 11,
+  "digest": "e9c266ec"
+ },
+ {
+  "key": "mine-overseer/29/balanced/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 10,
+  "digest": "61a74ad3"
+ },
+ {
+  "key": "mine-overseer/29/random/none",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 24,
+  "mageHealth": 18,
+  "manaSpent": 19,
+  "digest": "e507d1af"
+ },
+ {
+  "key": "mine-overseer/5/planner/none",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 14,
+  "digest": "42300a93"
+ },
+ {
+  "key": "goblin-powder-runner/3/aggressive/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 20,
+  "mageHealth": 16,
+  "manaSpent": 9,
+  "digest": "f596f8dc"
+ },
+ {
+  "key": "goblin-powder-runner/3/defensive/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 24,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "d46656d4"
+ },
+ {
+  "key": "goblin-powder-runner/3/balanced/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 7,
+  "digest": "cabe882e"
+ },
+ {
+  "key": "goblin-powder-runner/3/random/none",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 24,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "9ab37e21"
+ },
+ {
+  "key": "goblin-powder-runner/11/aggressive/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 7,
+  "digest": "6d1afdfa"
+ },
+ {
+  "key": "goblin-powder-runner/11/defensive/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 6,
+  "digest": "a32f17ac"
+ },
+ {
+  "key": "goblin-powder-runner/11/balanced/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 6,
+  "digest": "a32f17ac"
+ },
+ {
+  "key": "goblin-powder-runner/11/random/none",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 19,
+  "mageHealth": 13,
+  "manaSpent": 12,
+  "digest": "c3c445a6"
+ },
+ {
+  "key": "goblin-powder-runner/29/aggressive/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 5,
+  "digest": "2651481d"
+ },
+ {
+  "key": "goblin-powder-runner/29/defensive/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "92ba66cf"
+ },
+ {
+  "key": "goblin-powder-runner/29/balanced/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 6,
+  "digest": "bf45985e"
+ },
+ {
+  "key": "goblin-powder-runner/29/random/none",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 20,
+  "mageHealth": 18,
+  "manaSpent": 10,
+  "digest": "76596a97"
+ },
+ {
+  "key": "goblin-powder-runner/5/planner/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 24,
+  "mageHealth": 18,
+  "manaSpent": 11,
+  "digest": "ee0377b9"
+ },
+ {
+  "key": "defias-lookout/3/aggressive/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 13,
+  "manaSpent": 9,
+  "digest": "f5b09c36"
+ },
+ {
+  "key": "defias-lookout/3/defensive/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "d10381fc"
+ },
+ {
+  "key": "defias-lookout/3/balanced/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 7,
+  "digest": "e27e9a63"
+ },
+ {
+  "key": "defias-lookout/3/random/none",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 17,
+  "digest": "7516ccec"
+ },
+ {
+  "key": "defias-lookout/11/aggressive/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 7,
+  "digest": "1379cdde"
+ },
+ {
+  "key": "defias-lookout/11/defensive/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 7,
+  "digest": "f164899f"
+ },
+ {
+  "key": "defias-lookout/11/balanced/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 6,
+  "digest": "4021d981"
+ },
+ {
+  "key": "defias-lookout/11/random/none",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 24,
+  "mageHealth": 10,
+  "manaSpent": 8,
+  "digest": "333f8294"
+ },
+ {
+  "key": "defias-lookout/29/aggressive/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 6,
+  "digest": "2979781f"
+ },
+ {
+  "key": "defias-lookout/29/defensive/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 7,
+  "digest": "5a391d62"
+ },
+ {
+  "key": "defias-lookout/29/balanced/none",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 6,
+  "digest": "cf05b599"
+ },
+ {
+  "key": "defias-lookout/29/random/none",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 24,
+  "mageHealth": 16,
+  "manaSpent": 13,
+  "digest": "959b3da1"
+ },
+ {
+  "key": "defias-lookout/5/planner/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "e3b83e41"
+ },
+ {
+  "key": "foundry-tinkerer/3/aggressive/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 20,
+  "mageHealth": 18,
+  "manaSpent": 11,
+  "digest": "b3be11da"
+ },
+ {
+  "key": "foundry-tinkerer/3/defensive/none",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 23,
+  "mageHealth": 18,
+  "manaSpent": 14,
+  "digest": "f530962d"
+ },
+ {
+  "key": "foundry-tinkerer/3/balanced/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 23,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "bc3dfe59"
+ },
+ {
+  "key": "foundry-tinkerer/3/random/none",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 18,
+  "mageHealth": 18,
+  "manaSpent": 14,
+  "digest": "864c6357"
+ },
+ {
+  "key": "foundry-tinkerer/11/aggressive/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 20,
+  "mageHealth": 18,
+  "manaSpent": 8,
+  "digest": "52f1572f"
+ },
+ {
+  "key": "foundry-tinkerer/11/defensive/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 23,
+  "mageHealth": 18,
+  "manaSpent": 10,
+  "digest": "7f668ec5"
+ },
+ {
+  "key": "foundry-tinkerer/11/balanced/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 23,
+  "mageHealth": 18,
+  "manaSpent": 8,
+  "digest": "5f4d9781"
+ },
+ {
+  "key": "foundry-tinkerer/11/random/none",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 20,
+  "mageHealth": 18,
+  "manaSpent": 16,
+  "digest": "4e3ab206"
+ },
+ {
+  "key": "foundry-tinkerer/29/aggressive/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 23,
+  "mageHealth": 18,
+  "manaSpent": 8,
+  "digest": "e1ddb1cc"
+ },
+ {
+  "key": "foundry-tinkerer/29/defensive/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "70583b2d"
+ },
+ {
+  "key": "foundry-tinkerer/29/balanced/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "70583b2d"
+ },
+ {
+  "key": "foundry-tinkerer/29/random/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 23,
+  "mageHealth": 17,
+  "manaSpent": 13,
+  "digest": "882a6ca8"
+ },
+ {
+  "key": "foundry-tinkerer/5/planner/none",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 14,
+  "digest": "ec8fd1c0"
+ },
+ {
+  "key": "defias-deckhand/3/aggressive/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 19,
+  "mageHealth": 15,
+  "manaSpent": 9,
+  "digest": "d5c89380"
+ },
+ {
+  "key": "defias-deckhand/3/defensive/none",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 14,
+  "digest": "9ead3bfe"
+ },
+ {
+  "key": "defias-deckhand/3/balanced/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 22,
+  "mageHealth": 15,
+  "manaSpent": 9,
+  "digest": "2bb5c8f2"
+ },
+ {
+  "key": "defias-deckhand/3/random/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 16,
+  "digest": "40d52b2c"
+ },
+ {
+  "key": "defias-deckhand/11/aggressive/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 16,
+  "mageHealth": 15,
+  "manaSpent": 8,
+  "digest": "37706a54"
+ },
+ {
+  "key": "defias-deckhand/11/defensive/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 23,
+  "mageHealth": 18,
+  "manaSpent": 11,
+  "digest": "f0233c8b"
+ },
+ {
+  "key": "defias-deckhand/11/balanced/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 23,
+  "mageHealth": 15,
+  "manaSpent": 10,
+  "digest": "64a6b8d6"
+ },
+ {
+  "key": "defias-deckhand/11/random/none",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 16,
+  "mageHealth": 15,
+  "manaSpent": 11,
+  "digest": "c759df02"
+ },
+ {
+  "key": "defias-deckhand/29/aggressive/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 22,
+  "mageHealth": 15,
+  "manaSpent": 8,
+  "digest": "2b6e3ee7"
+ },
+ {
+  "key": "defias-deckhand/29/defensive/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 11,
+  "digest": "2d892bc3"
+ },
+ {
+  "key": "defias-deckhand/29/balanced/none",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 15,
+  "manaSpent": 8,
+  "digest": "0a8dfc92"
+ },
+ {
+  "key": "defias-deckhand/29/random/none",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "3224bad3"
+ },
+ {
+  "key": "defias-deckhand/5/planner/none",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 14,
+  "digest": "85c1de47"
+ },
+ {
+  "key": "defias-veteran/3/aggressive/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 13,
+  "mageHealth": 18,
+  "manaSpent": 14,
+  "digest": "35e295b7"
+ },
+ {
+  "key": "defias-veteran/3/defensive/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 21,
+  "mageHealth": 18,
+  "manaSpent": 18,
+  "digest": "e672be83"
+ },
+ {
+  "key": "defias-veteran/3/balanced/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 20,
+  "mageHealth": 18,
+  "manaSpent": 18,
+  "digest": "a35ab362"
+ },
+ {
+  "key": "defias-veteran/3/random/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 16,
+  "mageHealth": 18,
+  "manaSpent": 20,
+  "digest": "feed0f54"
+ },
+ {
+  "key": "defias-veteran/11/aggressive/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 10,
+  "mageHealth": 14,
+  "manaSpent": 14,
+  "digest": "9d5ca058"
+ },
+ {
+  "key": "defias-veteran/11/defensive/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 17,
+  "mageHealth": 18,
+  "manaSpent": 18,
+  "digest": "10bd8e69"
+ },
+ {
+  "key": "defias-veteran/11/balanced/none",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 17,
+  "mageHealth": 18,
+  "manaSpent": 14,
+  "digest": "09bb661f"
+ },
+ {
+  "key": "defias-veteran/11/random/none",
+  "result": "victory",
+  "turns": 9,
+  "warriorHealth": 10,
+  "mageHealth": 13,
+  "manaSpent": 22,
+  "digest": "89970ca0"
+ },
+ {
+  "key": "defias-veteran/29/aggressive/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 16,
+  "mageHealth": 17,
+  "manaSpent": 14,
+  "digest": "fc1463f3"
+ },
+ {
+  "key": "defias-veteran/29/defensive/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 23,
+  "mageHealth": 18,
+  "manaSpent": 19,
+  "digest": "0f85f62c"
+ },
+ {
+  "key": "defias-veteran/29/balanced/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 23,
+  "mageHealth": 17,
+  "manaSpent": 17,
+  "digest": "370715c0"
+ },
+ {
+  "key": "defias-veteran/29/random/none",
+  "result": "victory",
+  "turns": 8,
+  "warriorHealth": 16,
+  "mageHealth": 18,
+  "manaSpent": 20,
+  "digest": "4f302481"
+ },
+ {
+  "key": "defias-veteran/5/planner/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 17,
+  "mageHealth": 18,
+  "manaSpent": 19,
+  "digest": "b8f8d8f6"
+ },
+ {
+  "key": "goblin-foundry-chief/3/aggressive/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 24,
+  "mageHealth": 14,
+  "manaSpent": 16,
+  "digest": "0ff30644"
+ },
+ {
+  "key": "goblin-foundry-chief/3/defensive/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 21,
+  "digest": "369b730d"
+ },
+ {
+  "key": "goblin-foundry-chief/3/balanced/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 24,
+  "mageHealth": 14,
+  "manaSpent": 19,
+  "digest": "0bdce377"
+ },
+ {
+  "key": "goblin-foundry-chief/3/random/none",
+  "result": "victory",
+  "turns": 10,
+  "warriorHealth": 12,
+  "mageHealth": 9,
+  "manaSpent": 23,
+  "digest": "0921fb36"
+ },
+ {
+  "key": "goblin-foundry-chief/11/aggressive/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 15,
+  "mageHealth": 14,
+  "manaSpent": 15,
+  "digest": "71dd3aae"
+ },
+ {
+  "key": "goblin-foundry-chief/11/defensive/none",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 24,
+  "digest": "fa92ab7d"
+ },
+ {
+  "key": "goblin-foundry-chief/11/balanced/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 24,
+  "mageHealth": 18,
+  "manaSpent": 19,
+  "digest": "6799b3a3"
+ },
+ {
+  "key": "goblin-foundry-chief/11/random/none",
+  "result": "victory",
+  "turns": 10,
+  "warriorHealth": 19,
+  "mageHealth": 14,
+  "manaSpent": 25,
+  "digest": "876a02c5"
+ },
+ {
+  "key": "goblin-foundry-chief/29/aggressive/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 16,
+  "mageHealth": 14,
+  "manaSpent": 15,
+  "digest": "040fe71d"
+ },
+ {
+  "key": "goblin-foundry-chief/29/defensive/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 19,
+  "digest": "a75b84a9"
+ },
+ {
+  "key": "goblin-foundry-chief/29/balanced/none",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 20,
+  "digest": "d77d5a19"
+ },
+ {
+  "key": "goblin-foundry-chief/29/random/none",
+  "result": "victory",
+  "turns": 8,
+  "warriorHealth": 21,
+  "mageHealth": 16,
+  "manaSpent": 22,
+  "digest": "0cb4b916"
+ },
+ {
+  "key": "goblin-foundry-chief/5/planner/none",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 20,
+  "digest": "e9d7a757"
+ },
+ {
+  "key": "twilight-guardian/2/balanced/reliable-wedge@first",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 7,
+  "digest": "656cdc75"
+ },
+ {
+  "key": "twilight-guardian/2/defensive/reliable-wedge@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 8,
+  "digest": "20ba3459"
+ },
+ {
+  "key": "twilight-guardian/2/random/reliable-wedge@first",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 17,
+  "mageHealth": 18,
+  "manaSpent": 15,
+  "digest": "ca3a0c95"
+ },
+ {
+  "key": "twilight-guardian/17/balanced/reliable-wedge@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 11,
+  "digest": "4858018c"
+ },
+ {
+  "key": "twilight-guardian/17/defensive/reliable-wedge@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "355a3f6a"
+ },
+ {
+  "key": "twilight-guardian/17/random/reliable-wedge@first",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 24,
+  "mageHealth": 18,
+  "manaSpent": 18,
+  "digest": "28d2f4dd"
+ },
+ {
+  "key": "mine-overseer/2/balanced/reliable-wedge@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 10,
+  "digest": "4a602e48"
+ },
+ {
+  "key": "mine-overseer/2/defensive/reliable-wedge@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 10,
+  "digest": "bb170721"
+ },
+ {
+  "key": "mine-overseer/2/random/reliable-wedge@first",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 20,
+  "mageHealth": 18,
+  "manaSpent": 17,
+  "digest": "c785edb7"
+ },
+ {
+  "key": "mine-overseer/17/balanced/reliable-wedge@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "53faccf6"
+ },
+ {
+  "key": "mine-overseer/17/defensive/reliable-wedge@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "0b905197"
+ },
+ {
+  "key": "mine-overseer/17/random/reliable-wedge@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 17,
+  "digest": "8e4c3578"
+ },
+ {
+  "key": "foundry-tinkerer/2/balanced/reliable-wedge@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 11,
+  "digest": "6c8bdbd9"
+ },
+ {
+  "key": "foundry-tinkerer/2/defensive/reliable-wedge@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 11,
+  "digest": "6c8bdbd9"
+ },
+ {
+  "key": "foundry-tinkerer/2/random/reliable-wedge@first",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 17,
+  "digest": "ac8591c7"
+ },
+ {
+  "key": "foundry-tinkerer/17/balanced/reliable-wedge@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 24,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "9e65d572"
+ },
+ {
+  "key": "foundry-tinkerer/17/defensive/reliable-wedge@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "3a6b1ff9"
+ },
+ {
+  "key": "foundry-tinkerer/17/random/reliable-wedge@first",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 20,
+  "digest": "3c3ca861"
+ },
+ {
+  "key": "goblin-foundry-chief/2/balanced/reliable-wedge@first",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 20,
+  "digest": "f2214be8"
+ },
+ {
+  "key": "goblin-foundry-chief/2/defensive/reliable-wedge@first",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 20,
+  "digest": "689e5205"
+ },
+ {
+  "key": "goblin-foundry-chief/2/random/reliable-wedge@first",
+  "result": "victory",
+  "turns": 9,
+  "warriorHealth": 18,
+  "mageHealth": 16,
+  "manaSpent": 27,
+  "digest": "995fe90b"
+ },
+ {
+  "key": "goblin-foundry-chief/17/balanced/reliable-wedge@first",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 19,
+  "digest": "3d8dde92"
+ },
+ {
+  "key": "goblin-foundry-chief/17/defensive/reliable-wedge@first",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 25,
+  "mageHealth": 17,
+  "manaSpent": 21,
+  "digest": "2b37807f"
+ },
+ {
+  "key": "goblin-foundry-chief/17/random/reliable-wedge@first",
+  "result": "victory",
+  "turns": 9,
+  "warriorHealth": 13,
+  "mageHealth": 11,
+  "manaSpent": 27,
+  "digest": "bd4bafc5"
+ },
+ {
+  "key": "twilight-guardian/2/balanced/reliable-wedge@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 24,
+  "mageHealth": 18,
+  "manaSpent": 8,
+  "digest": "8fe508a4"
+ },
+ {
+  "key": "twilight-guardian/2/defensive/reliable-wedge@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "a019bc77"
+ },
+ {
+  "key": "twilight-guardian/2/random/reliable-wedge@second",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 15,
+  "mageHealth": 18,
+  "manaSpent": 15,
+  "digest": "3fc97651"
+ },
+ {
+  "key": "twilight-guardian/17/balanced/reliable-wedge@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 11,
+  "digest": "f306f480"
+ },
+ {
+  "key": "twilight-guardian/17/defensive/reliable-wedge@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "ea687912"
+ },
+ {
+  "key": "twilight-guardian/17/random/reliable-wedge@second",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 18,
+  "digest": "b511c703"
+ },
+ {
+  "key": "mine-overseer/2/balanced/reliable-wedge@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 10,
+  "digest": "3d4ea22c"
+ },
+ {
+  "key": "mine-overseer/2/defensive/reliable-wedge@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 11,
+  "digest": "f34369ee"
+ },
+ {
+  "key": "mine-overseer/2/random/reliable-wedge@second",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 18,
+  "mageHealth": 18,
+  "manaSpent": 17,
+  "digest": "a2ab5bec"
+ },
+ {
+  "key": "mine-overseer/17/balanced/reliable-wedge@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "1c24d09b"
+ },
+ {
+  "key": "mine-overseer/17/defensive/reliable-wedge@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "1ef9466c"
+ },
+ {
+  "key": "mine-overseer/17/random/reliable-wedge@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 17,
+  "digest": "e4a3f390"
+ },
+ {
+  "key": "foundry-tinkerer/2/balanced/reliable-wedge@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "fbda7d14"
+ },
+ {
+  "key": "foundry-tinkerer/2/defensive/reliable-wedge@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "fbda7d14"
+ },
+ {
+  "key": "foundry-tinkerer/2/random/reliable-wedge@second",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 17,
+  "digest": "c4a77e96"
+ },
+ {
+  "key": "foundry-tinkerer/17/balanced/reliable-wedge@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "f67ec20a"
+ },
+ {
+  "key": "foundry-tinkerer/17/defensive/reliable-wedge@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "e0c6c0c8"
+ },
+ {
+  "key": "foundry-tinkerer/17/random/reliable-wedge@second",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 20,
+  "digest": "88c446d2"
+ },
+ {
+  "key": "goblin-foundry-chief/2/balanced/reliable-wedge@second",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 22,
+  "digest": "51b6665b"
+ },
+ {
+  "key": "goblin-foundry-chief/2/defensive/reliable-wedge@second",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 22,
+  "digest": "7375c02e"
+ },
+ {
+  "key": "goblin-foundry-chief/2/random/reliable-wedge@second",
+  "result": "victory",
+  "turns": 9,
+  "warriorHealth": 18,
+  "mageHealth": 18,
+  "manaSpent": 27,
+  "digest": "ed8af8cd"
+ },
+ {
+  "key": "goblin-foundry-chief/17/balanced/reliable-wedge@second",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 19,
+  "digest": "c14cab39"
+ },
+ {
+  "key": "goblin-foundry-chief/17/defensive/reliable-wedge@second",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 20,
+  "digest": "57c0029c"
+ },
+ {
+  "key": "goblin-foundry-chief/17/random/reliable-wedge@second",
+  "result": "victory",
+  "turns": 9,
+  "warriorHealth": 13,
+  "mageHealth": 11,
+  "manaSpent": 27,
+  "digest": "73214289"
+ },
+ {
+  "key": "defias-veteran/8/planner/reliable-wedge@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 20,
+  "mageHealth": 18,
+  "manaSpent": 14,
+  "digest": "b8f5554f"
+ },
+ {
+  "key": "twilight-guardian/2/balanced/double-pulley@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 24,
+  "mageHealth": 18,
+  "manaSpent": 8,
+  "digest": "09ce3441"
+ },
+ {
+  "key": "twilight-guardian/2/defensive/double-pulley@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "c6a75baa"
+ },
+ {
+  "key": "twilight-guardian/2/random/double-pulley@first",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 15,
+  "mageHealth": 18,
+  "manaSpent": 15,
+  "digest": "361e6398"
+ },
+ {
+  "key": "twilight-guardian/17/balanced/double-pulley@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 11,
+  "digest": "bb401429"
+ },
+ {
+  "key": "twilight-guardian/17/defensive/double-pulley@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "f78c93fc"
+ },
+ {
+  "key": "twilight-guardian/17/random/double-pulley@first",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 18,
+  "digest": "c413939f"
+ },
+ {
+  "key": "mine-overseer/2/balanced/double-pulley@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 10,
+  "digest": "dad85c00"
+ },
+ {
+  "key": "mine-overseer/2/defensive/double-pulley@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 11,
+  "digest": "d16c6cce"
+ },
+ {
+  "key": "mine-overseer/2/random/double-pulley@first",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 18,
+  "mageHealth": 18,
+  "manaSpent": 17,
+  "digest": "30da62d9"
+ },
+ {
+  "key": "mine-overseer/17/balanced/double-pulley@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "cc01c7a3"
+ },
+ {
+  "key": "mine-overseer/17/defensive/double-pulley@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "6baf59a8"
+ },
+ {
+  "key": "mine-overseer/17/random/double-pulley@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 17,
+  "digest": "eae3b62f"
+ },
+ {
+  "key": "foundry-tinkerer/2/balanced/double-pulley@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "cd49d0f7"
+ },
+ {
+  "key": "foundry-tinkerer/2/defensive/double-pulley@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "cd49d0f7"
+ },
+ {
+  "key": "foundry-tinkerer/2/random/double-pulley@first",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 17,
+  "digest": "adb9b588"
+ },
+ {
+  "key": "foundry-tinkerer/17/balanced/double-pulley@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "54e5fbda"
+ },
+ {
+  "key": "foundry-tinkerer/17/defensive/double-pulley@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "925bf2a2"
+ },
+ {
+  "key": "foundry-tinkerer/17/random/double-pulley@first",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 20,
+  "digest": "aee5e474"
+ },
+ {
+  "key": "goblin-foundry-chief/2/balanced/double-pulley@first",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 18,
+  "digest": "17ae46a1"
+ },
+ {
+  "key": "goblin-foundry-chief/2/defensive/double-pulley@first",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 20,
+  "digest": "f4c487ed"
+ },
+ {
+  "key": "goblin-foundry-chief/2/random/double-pulley@first",
+  "result": "victory",
+  "turns": 9,
+  "warriorHealth": 18,
+  "mageHealth": 18,
+  "manaSpent": 27,
+  "digest": "d3cd499a"
+ },
+ {
+  "key": "goblin-foundry-chief/17/balanced/double-pulley@first",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 18,
+  "digest": "8a5dd354"
+ },
+ {
+  "key": "goblin-foundry-chief/17/defensive/double-pulley@first",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 19,
+  "digest": "4fb8b83a"
+ },
+ {
+  "key": "goblin-foundry-chief/17/random/double-pulley@first",
+  "result": "victory",
+  "turns": 9,
+  "warriorHealth": 13,
+  "mageHealth": 15,
+  "manaSpent": 27,
+  "digest": "9749703d"
+ },
+ {
+  "key": "twilight-guardian/2/balanced/double-pulley@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 8,
+  "digest": "f7720fb6"
+ },
+ {
+  "key": "twilight-guardian/2/defensive/double-pulley@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 8,
+  "digest": "36a233c8"
+ },
+ {
+  "key": "twilight-guardian/2/random/double-pulley@second",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 17,
+  "mageHealth": 18,
+  "manaSpent": 15,
+  "digest": "f8e07a39"
+ },
+ {
+  "key": "twilight-guardian/17/balanced/double-pulley@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 11,
+  "digest": "edc8cc91"
+ },
+ {
+  "key": "twilight-guardian/17/defensive/double-pulley@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "bdcfa815"
+ },
+ {
+  "key": "twilight-guardian/17/random/double-pulley@second",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 24,
+  "mageHealth": 18,
+  "manaSpent": 18,
+  "digest": "c9780581"
+ },
+ {
+  "key": "mine-overseer/2/balanced/double-pulley@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 10,
+  "digest": "3288f0c0"
+ },
+ {
+  "key": "mine-overseer/2/defensive/double-pulley@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 10,
+  "digest": "e9da41f8"
+ },
+ {
+  "key": "mine-overseer/2/random/double-pulley@second",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 18,
+  "mageHealth": 18,
+  "manaSpent": 17,
+  "digest": "9dd2f465"
+ },
+ {
+  "key": "mine-overseer/17/balanced/double-pulley@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 14,
+  "digest": "899e3ec9"
+ },
+ {
+  "key": "mine-overseer/17/defensive/double-pulley@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 14,
+  "digest": "86c7c8df"
+ },
+ {
+  "key": "mine-overseer/17/random/double-pulley@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 17,
+  "digest": "a06485d9"
+ },
+ {
+  "key": "foundry-tinkerer/2/balanced/double-pulley@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "fbda7d14"
+ },
+ {
+  "key": "foundry-tinkerer/2/defensive/double-pulley@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "ce220504"
+ },
+ {
+  "key": "foundry-tinkerer/2/random/double-pulley@second",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 24,
+  "mageHealth": 18,
+  "manaSpent": 17,
+  "digest": "0187d778"
+ },
+ {
+  "key": "foundry-tinkerer/17/balanced/double-pulley@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 24,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "c6b059eb"
+ },
+ {
+  "key": "foundry-tinkerer/17/defensive/double-pulley@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "1b393dc7"
+ },
+ {
+  "key": "foundry-tinkerer/17/random/double-pulley@second",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 20,
+  "digest": "232698b7"
+ },
+ {
+  "key": "goblin-foundry-chief/2/balanced/double-pulley@second",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 19,
+  "digest": "354e451c"
+ },
+ {
+  "key": "goblin-foundry-chief/2/defensive/double-pulley@second",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 19,
+  "digest": "354e451c"
+ },
+ {
+  "key": "goblin-foundry-chief/2/random/double-pulley@second",
+  "result": "victory",
+  "turns": 9,
+  "warriorHealth": 20,
+  "mageHealth": 16,
+  "manaSpent": 27,
+  "digest": "cdd0c740"
+ },
+ {
+  "key": "goblin-foundry-chief/17/balanced/double-pulley@second",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 18,
+  "digest": "feec152c"
+ },
+ {
+  "key": "goblin-foundry-chief/17/defensive/double-pulley@second",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 17,
+  "manaSpent": 20,
+  "digest": "984c7e16"
+ },
+ {
+  "key": "goblin-foundry-chief/17/random/double-pulley@second",
+  "result": "victory",
+  "turns": 9,
+  "warriorHealth": 13,
+  "mageHealth": 11,
+  "manaSpent": 27,
+  "digest": "44395c1f"
+ },
+ {
+  "key": "defias-veteran/8/planner/double-pulley@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 18,
+  "mageHealth": 18,
+  "manaSpent": 14,
+  "digest": "086b571e"
+ },
+ {
+  "key": "twilight-guardian/2/balanced/weakpoint-lens@first",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 7,
+  "digest": "221f2f41"
+ },
+ {
+  "key": "twilight-guardian/2/defensive/weakpoint-lens@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 8,
+  "digest": "09a60ec4"
+ },
+ {
+  "key": "twilight-guardian/2/random/weakpoint-lens@first",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 15,
+  "mageHealth": 18,
+  "manaSpent": 15,
+  "digest": "e3e332dc"
+ },
+ {
+  "key": "twilight-guardian/17/balanced/weakpoint-lens@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 11,
+  "digest": "3f0008a3"
+ },
+ {
+  "key": "twilight-guardian/17/defensive/weakpoint-lens@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "bdaae488"
+ },
+ {
+  "key": "twilight-guardian/17/random/weakpoint-lens@first",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 18,
+  "digest": "7a2e5c86"
+ },
+ {
+  "key": "mine-overseer/2/balanced/weakpoint-lens@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 10,
+  "digest": "20658518"
+ },
+ {
+  "key": "mine-overseer/2/defensive/weakpoint-lens@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 10,
+  "digest": "8d9db7cf"
+ },
+ {
+  "key": "mine-overseer/2/random/weakpoint-lens@first",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 18,
+  "mageHealth": 18,
+  "manaSpent": 17,
+  "digest": "fddcb5a4"
+ },
+ {
+  "key": "mine-overseer/17/balanced/weakpoint-lens@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "e7d95fdc"
+ },
+ {
+  "key": "mine-overseer/17/defensive/weakpoint-lens@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "2adeff3d"
+ },
+ {
+  "key": "mine-overseer/17/random/weakpoint-lens@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 17,
+  "digest": "3573052e"
+ },
+ {
+  "key": "foundry-tinkerer/2/balanced/weakpoint-lens@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 11,
+  "digest": "f35657ba"
+ },
+ {
+  "key": "foundry-tinkerer/2/defensive/weakpoint-lens@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 11,
+  "digest": "f35657ba"
+ },
+ {
+  "key": "foundry-tinkerer/2/random/weakpoint-lens@first",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 24,
+  "mageHealth": 18,
+  "manaSpent": 17,
+  "digest": "605a07ed"
+ },
+ {
+  "key": "foundry-tinkerer/17/balanced/weakpoint-lens@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 23,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "af1c4307"
+ },
+ {
+  "key": "foundry-tinkerer/17/defensive/weakpoint-lens@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "be531bd5"
+ },
+ {
+  "key": "foundry-tinkerer/17/random/weakpoint-lens@first",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 20,
+  "digest": "abc650b5"
+ },
+ {
+  "key": "goblin-foundry-chief/2/balanced/weakpoint-lens@first",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 20,
+  "digest": "de4c0485"
+ },
+ {
+  "key": "goblin-foundry-chief/2/defensive/weakpoint-lens@first",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 20,
+  "digest": "64b4afe2"
+ },
+ {
+  "key": "goblin-foundry-chief/2/random/weakpoint-lens@first",
+  "result": "victory",
+  "turns": 9,
+  "warriorHealth": 18,
+  "mageHealth": 16,
+  "manaSpent": 27,
+  "digest": "367c6c48"
+ },
+ {
+  "key": "goblin-foundry-chief/17/balanced/weakpoint-lens@first",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 20,
+  "digest": "51c9b09d"
+ },
+ {
+  "key": "goblin-foundry-chief/17/defensive/weakpoint-lens@first",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 25,
+  "mageHealth": 17,
+  "manaSpent": 21,
+  "digest": "f022f526"
+ },
+ {
+  "key": "goblin-foundry-chief/17/random/weakpoint-lens@first",
+  "result": "victory",
+  "turns": 9,
+  "warriorHealth": 13,
+  "mageHealth": 11,
+  "manaSpent": 27,
+  "digest": "94499c3e"
+ },
+ {
+  "key": "twilight-guardian/2/balanced/weakpoint-lens@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 24,
+  "mageHealth": 18,
+  "manaSpent": 8,
+  "digest": "07153491"
+ },
+ {
+  "key": "twilight-guardian/2/defensive/weakpoint-lens@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "7748badc"
+ },
+ {
+  "key": "twilight-guardian/2/random/weakpoint-lens@second",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 15,
+  "mageHealth": 18,
+  "manaSpent": 15,
+  "digest": "e3e332dc"
+ },
+ {
+  "key": "twilight-guardian/17/balanced/weakpoint-lens@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 11,
+  "digest": "7d862cfb"
+ },
+ {
+  "key": "twilight-guardian/17/defensive/weakpoint-lens@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "c939ec68"
+ },
+ {
+  "key": "twilight-guardian/17/random/weakpoint-lens@second",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 18,
+  "digest": "d7a53a55"
+ },
+ {
+  "key": "mine-overseer/2/balanced/weakpoint-lens@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 10,
+  "digest": "db860453"
+ },
+ {
+  "key": "mine-overseer/2/defensive/weakpoint-lens@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 11,
+  "digest": "b53e1211"
+ },
+ {
+  "key": "mine-overseer/2/random/weakpoint-lens@second",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 18,
+  "mageHealth": 18,
+  "manaSpent": 17,
+  "digest": "97a590cc"
+ },
+ {
+  "key": "mine-overseer/17/balanced/weakpoint-lens@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "4c4bd470"
+ },
+ {
+  "key": "mine-overseer/17/defensive/weakpoint-lens@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "bc1d4201"
+ },
+ {
+  "key": "mine-overseer/17/random/weakpoint-lens@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 17,
+  "digest": "4f6f724c"
+ },
+ {
+  "key": "foundry-tinkerer/2/balanced/weakpoint-lens@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "5abcd68d"
+ },
+ {
+  "key": "foundry-tinkerer/2/defensive/weakpoint-lens@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "5abcd68d"
+ },
+ {
+  "key": "foundry-tinkerer/2/random/weakpoint-lens@second",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 17,
+  "digest": "fc8841fb"
+ },
+ {
+  "key": "foundry-tinkerer/17/balanced/weakpoint-lens@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "080e42d3"
+ },
+ {
+  "key": "foundry-tinkerer/17/defensive/weakpoint-lens@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "62f3ee0f"
+ },
+ {
+  "key": "foundry-tinkerer/17/random/weakpoint-lens@second",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 20,
+  "digest": "6eba230f"
+ },
+ {
+  "key": "goblin-foundry-chief/2/balanced/weakpoint-lens@second",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 22,
+  "digest": "af108c06"
+ },
+ {
+  "key": "goblin-foundry-chief/2/defensive/weakpoint-lens@second",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 20,
+  "digest": "d6ecbf8a"
+ },
+ {
+  "key": "goblin-foundry-chief/2/random/weakpoint-lens@second",
+  "result": "victory",
+  "turns": 9,
+  "warriorHealth": 18,
+  "mageHealth": 18,
+  "manaSpent": 27,
+  "digest": "f709b109"
+ },
+ {
+  "key": "goblin-foundry-chief/17/balanced/weakpoint-lens@second",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 19,
+  "digest": "1f2ae75b"
+ },
+ {
+  "key": "goblin-foundry-chief/17/defensive/weakpoint-lens@second",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 25,
+  "mageHealth": 17,
+  "manaSpent": 21,
+  "digest": "c82a1aa5"
+ },
+ {
+  "key": "goblin-foundry-chief/17/random/weakpoint-lens@second",
+  "result": "victory",
+  "turns": 9,
+  "warriorHealth": 13,
+  "mageHealth": 13,
+  "manaSpent": 27,
+  "digest": "dbd00d94"
+ },
+ {
+  "key": "defias-veteran/8/planner/weakpoint-lens@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 20,
+  "mageHealth": 18,
+  "manaSpent": 14,
+  "digest": "d3fcd039"
+ },
+ {
+  "key": "twilight-guardian/2/balanced/shift-whistle@first",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 7,
+  "digest": "cb675a2a"
+ },
+ {
+  "key": "twilight-guardian/2/defensive/shift-whistle@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 8,
+  "digest": "eb4bd4b1"
+ },
+ {
+  "key": "twilight-guardian/2/random/shift-whistle@first",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 18,
+  "mageHealth": 18,
+  "manaSpent": 15,
+  "digest": "ccb3a3d5"
+ },
+ {
+  "key": "twilight-guardian/17/balanced/shift-whistle@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 11,
+  "digest": "87e29fd3"
+ },
+ {
+  "key": "twilight-guardian/17/defensive/shift-whistle@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "758ad609"
+ },
+ {
+  "key": "twilight-guardian/17/random/shift-whistle@first",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 18,
+  "digest": "7134bb83"
+ },
+ {
+  "key": "mine-overseer/2/balanced/shift-whistle@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 10,
+  "digest": "66cc76b9"
+ },
+ {
+  "key": "mine-overseer/2/defensive/shift-whistle@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 11,
+  "digest": "282c91dd"
+ },
+ {
+  "key": "mine-overseer/2/random/shift-whistle@first",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 21,
+  "mageHealth": 18,
+  "manaSpent": 17,
+  "digest": "a1c69f17"
+ },
+ {
+  "key": "mine-overseer/17/balanced/shift-whistle@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "15edc174"
+ },
+ {
+  "key": "mine-overseer/17/defensive/shift-whistle@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "02c05a75"
+ },
+ {
+  "key": "mine-overseer/17/random/shift-whistle@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 17,
+  "digest": "44b13e33"
+ },
+ {
+  "key": "foundry-tinkerer/2/balanced/shift-whistle@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "fbda7d14"
+ },
+ {
+  "key": "foundry-tinkerer/2/defensive/shift-whistle@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "fbda7d14"
+ },
+ {
+  "key": "foundry-tinkerer/2/random/shift-whistle@first",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 17,
+  "digest": "eedcc2f5"
+ },
+ {
+  "key": "foundry-tinkerer/17/balanced/shift-whistle@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "0e8311ec"
+ },
+ {
+  "key": "foundry-tinkerer/17/defensive/shift-whistle@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "8d8305c6"
+ },
+ {
+  "key": "foundry-tinkerer/17/random/shift-whistle@first",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 20,
+  "digest": "06bc9e14"
+ },
+ {
+  "key": "goblin-foundry-chief/2/balanced/shift-whistle@first",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 24,
+  "mageHealth": 18,
+  "manaSpent": 20,
+  "digest": "85f87120"
+ },
+ {
+  "key": "goblin-foundry-chief/2/defensive/shift-whistle@first",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 20,
+  "digest": "c9977047"
+ },
+ {
+  "key": "goblin-foundry-chief/2/random/shift-whistle@first",
+  "result": "victory",
+  "turns": 9,
+  "warriorHealth": 20,
+  "mageHealth": 16,
+  "manaSpent": 27,
+  "digest": "75ac930e"
+ },
+ {
+  "key": "goblin-foundry-chief/17/balanced/shift-whistle@first",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 20,
+  "digest": "1d923b70"
+ },
+ {
+  "key": "goblin-foundry-chief/17/defensive/shift-whistle@first",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 25,
+  "mageHealth": 17,
+  "manaSpent": 21,
+  "digest": "7202c5f5"
+ },
+ {
+  "key": "goblin-foundry-chief/17/random/shift-whistle@first",
+  "result": "victory",
+  "turns": 9,
+  "warriorHealth": 16,
+  "mageHealth": 11,
+  "manaSpent": 27,
+  "digest": "151c0de0"
+ },
+ {
+  "key": "twilight-guardian/2/balanced/shift-whistle@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 24,
+  "mageHealth": 18,
+  "manaSpent": 8,
+  "digest": "8fe508a4"
+ },
+ {
+  "key": "twilight-guardian/2/defensive/shift-whistle@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "a019bc77"
+ },
+ {
+  "key": "twilight-guardian/2/random/shift-whistle@second",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 15,
+  "mageHealth": 18,
+  "manaSpent": 15,
+  "digest": "2506b209"
+ },
+ {
+  "key": "twilight-guardian/17/balanced/shift-whistle@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 11,
+  "digest": "f306f480"
+ },
+ {
+  "key": "twilight-guardian/17/defensive/shift-whistle@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "ea687912"
+ },
+ {
+  "key": "twilight-guardian/17/random/shift-whistle@second",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 18,
+  "digest": "0728d5dc"
+ },
+ {
+  "key": "mine-overseer/2/balanced/shift-whistle@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 10,
+  "digest": "3d4ea22c"
+ },
+ {
+  "key": "mine-overseer/2/defensive/shift-whistle@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 11,
+  "digest": "f34369ee"
+ },
+ {
+  "key": "mine-overseer/2/random/shift-whistle@second",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 18,
+  "mageHealth": 18,
+  "manaSpent": 17,
+  "digest": "a2ab5bec"
+ },
+ {
+  "key": "mine-overseer/17/balanced/shift-whistle@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "1c24d09b"
+ },
+ {
+  "key": "mine-overseer/17/defensive/shift-whistle@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "1ef9466c"
+ },
+ {
+  "key": "mine-overseer/17/random/shift-whistle@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 17,
+  "digest": "e4a3f390"
+ },
+ {
+  "key": "foundry-tinkerer/2/balanced/shift-whistle@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "fbda7d14"
+ },
+ {
+  "key": "foundry-tinkerer/2/defensive/shift-whistle@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "fbda7d14"
+ },
+ {
+  "key": "foundry-tinkerer/2/random/shift-whistle@second",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 17,
+  "digest": "eedcc2f5"
+ },
+ {
+  "key": "foundry-tinkerer/17/balanced/shift-whistle@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "0e8311ec"
+ },
+ {
+  "key": "foundry-tinkerer/17/defensive/shift-whistle@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "8d8305c6"
+ },
+ {
+  "key": "foundry-tinkerer/17/random/shift-whistle@second",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 20,
+  "digest": "06bc9e14"
+ },
+ {
+  "key": "goblin-foundry-chief/2/balanced/shift-whistle@second",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 24,
+  "mageHealth": 18,
+  "manaSpent": 20,
+  "digest": "219ad66e"
+ },
+ {
+  "key": "goblin-foundry-chief/2/defensive/shift-whistle@second",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 20,
+  "digest": "ff78902a"
+ },
+ {
+  "key": "goblin-foundry-chief/2/random/shift-whistle@second",
+  "result": "victory",
+  "turns": 9,
+  "warriorHealth": 18,
+  "mageHealth": 16,
+  "manaSpent": 27,
+  "digest": "f2b4a545"
+ },
+ {
+  "key": "goblin-foundry-chief/17/balanced/shift-whistle@second",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 20,
+  "digest": "23c880b6"
+ },
+ {
+  "key": "goblin-foundry-chief/17/defensive/shift-whistle@second",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 25,
+  "mageHealth": 17,
+  "manaSpent": 21,
+  "digest": "bf9ed33d"
+ },
+ {
+  "key": "goblin-foundry-chief/17/random/shift-whistle@second",
+  "result": "victory",
+  "turns": 9,
+  "warriorHealth": 13,
+  "mageHealth": 11,
+  "manaSpent": 27,
+  "digest": "cfb8aecb"
+ },
+ {
+  "key": "defias-veteran/8/planner/shift-whistle@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 21,
+  "mageHealth": 18,
+  "manaSpent": 14,
+  "digest": "d3c5a70e"
+ },
+ {
+  "key": "twilight-guardian/2/balanced/tension-spool@first",
+  "result": "victory",
+  "turns": 2,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 7,
+  "digest": "0211db06"
+ },
+ {
+  "key": "twilight-guardian/2/defensive/tension-spool@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 8,
+  "digest": "9dce140a"
+ },
+ {
+  "key": "twilight-guardian/2/random/tension-spool@first",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 15,
+  "mageHealth": 18,
+  "manaSpent": 14,
+  "digest": "3a4db995"
+ },
+ {
+  "key": "twilight-guardian/17/balanced/tension-spool@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 11,
+  "digest": "cbb3747a"
+ },
+ {
+  "key": "twilight-guardian/17/defensive/tension-spool@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "b0c5dfdf"
+ },
+ {
+  "key": "twilight-guardian/17/random/tension-spool@first",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 16,
+  "digest": "c62bd9d0"
+ },
+ {
+  "key": "mine-overseer/2/balanced/tension-spool@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "802c5f27"
+ },
+ {
+  "key": "mine-overseer/2/defensive/tension-spool@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 11,
+  "digest": "2de199de"
+ },
+ {
+  "key": "mine-overseer/2/random/tension-spool@first",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 18,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "fc44c71f"
+ },
+ {
+  "key": "mine-overseer/17/balanced/tension-spool@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "913c5f74"
+ },
+ {
+  "key": "mine-overseer/17/defensive/tension-spool@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "9056f671"
+ },
+ {
+  "key": "mine-overseer/17/random/tension-spool@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 17,
+  "digest": "c4d6a027"
+ },
+ {
+  "key": "foundry-tinkerer/2/balanced/tension-spool@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "fbda7d14"
+ },
+ {
+  "key": "foundry-tinkerer/2/defensive/tension-spool@first",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "fbda7d14"
+ },
+ {
+  "key": "foundry-tinkerer/2/random/tension-spool@first",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 17,
+  "digest": "0849bf95"
+ },
+ {
+  "key": "foundry-tinkerer/17/balanced/tension-spool@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "0e8311ec"
+ },
+ {
+  "key": "foundry-tinkerer/17/defensive/tension-spool@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "8d8305c6"
+ },
+ {
+  "key": "foundry-tinkerer/17/random/tension-spool@first",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 20,
+  "digest": "669f9bd0"
+ },
+ {
+  "key": "goblin-foundry-chief/2/balanced/tension-spool@first",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 24,
+  "mageHealth": 18,
+  "manaSpent": 18,
+  "digest": "bda09674"
+ },
+ {
+  "key": "goblin-foundry-chief/2/defensive/tension-spool@first",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 19,
+  "digest": "ab4a5594"
+ },
+ {
+  "key": "goblin-foundry-chief/2/random/tension-spool@first",
+  "result": "victory",
+  "turns": 9,
+  "warriorHealth": 18,
+  "mageHealth": 16,
+  "manaSpent": 25,
+  "digest": "c59db2a6"
+ },
+ {
+  "key": "goblin-foundry-chief/17/balanced/tension-spool@first",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 18,
+  "digest": "9de6cb90"
+ },
+ {
+  "key": "goblin-foundry-chief/17/defensive/tension-spool@first",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 18,
+  "digest": "28c2a252"
+ },
+ {
+  "key": "goblin-foundry-chief/17/random/tension-spool@first",
+  "result": "victory",
+  "turns": 9,
+  "warriorHealth": 13,
+  "mageHealth": 11,
+  "manaSpent": 26,
+  "digest": "c5e8a997"
+ },
+ {
+  "key": "twilight-guardian/2/balanced/tension-spool@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 24,
+  "mageHealth": 18,
+  "manaSpent": 8,
+  "digest": "8fe508a4"
+ },
+ {
+  "key": "twilight-guardian/2/defensive/tension-spool@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 8,
+  "digest": "acd1e001"
+ },
+ {
+  "key": "twilight-guardian/2/random/tension-spool@second",
+  "result": "victory",
+  "turns": 7,
+  "warriorHealth": 15,
+  "mageHealth": 18,
+  "manaSpent": 14,
+  "digest": "12f9b570"
+ },
+ {
+  "key": "twilight-guardian/17/balanced/tension-spool@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 11,
+  "digest": "f306f480"
+ },
+ {
+  "key": "twilight-guardian/17/defensive/tension-spool@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "ea687912"
+ },
+ {
+  "key": "twilight-guardian/17/random/tension-spool@second",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 16,
+  "digest": "a364276a"
+ },
+ {
+  "key": "mine-overseer/2/balanced/tension-spool@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "802c5f27"
+ },
+ {
+  "key": "mine-overseer/2/defensive/tension-spool@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 11,
+  "digest": "2de199de"
+ },
+ {
+  "key": "mine-overseer/2/random/tension-spool@second",
+  "result": "victory",
+  "turns": 6,
+  "warriorHealth": 18,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "fc44c71f"
+ },
+ {
+  "key": "mine-overseer/17/balanced/tension-spool@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "1c24d09b"
+ },
+ {
+  "key": "mine-overseer/17/defensive/tension-spool@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "1ef9466c"
+ },
+ {
+  "key": "mine-overseer/17/random/tension-spool@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 17,
+  "digest": "fdf3bcea"
+ },
+ {
+  "key": "foundry-tinkerer/2/balanced/tension-spool@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "fbda7d14"
+ },
+ {
+  "key": "foundry-tinkerer/2/defensive/tension-spool@second",
+  "result": "victory",
+  "turns": 3,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 9,
+  "digest": "fbda7d14"
+ },
+ {
+  "key": "foundry-tinkerer/2/random/tension-spool@second",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 14,
+  "digest": "37d0d69e"
+ },
+ {
+  "key": "foundry-tinkerer/17/balanced/tension-spool@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 22,
+  "mageHealth": 18,
+  "manaSpent": 12,
+  "digest": "0e8311ec"
+ },
+ {
+  "key": "foundry-tinkerer/17/defensive/tension-spool@second",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 13,
+  "digest": "8d8305c6"
+ },
+ {
+  "key": "foundry-tinkerer/17/random/tension-spool@second",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 18,
+  "digest": "2f10b9f7"
+ },
+ {
+  "key": "goblin-foundry-chief/2/balanced/tension-spool@second",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 24,
+  "mageHealth": 18,
+  "manaSpent": 19,
+  "digest": "483d510b"
+ },
+ {
+  "key": "goblin-foundry-chief/2/defensive/tension-spool@second",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 20,
+  "digest": "8407618d"
+ },
+ {
+  "key": "goblin-foundry-chief/2/random/tension-spool@second",
+  "result": "victory",
+  "turns": 9,
+  "warriorHealth": 18,
+  "mageHealth": 16,
+  "manaSpent": 25,
+  "digest": "255508cc"
+ },
+ {
+  "key": "goblin-foundry-chief/17/balanced/tension-spool@second",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 19,
+  "digest": "31c15bce"
+ },
+ {
+  "key": "goblin-foundry-chief/17/defensive/tension-spool@second",
+  "result": "victory",
+  "turns": 5,
+  "warriorHealth": 25,
+  "mageHealth": 18,
+  "manaSpent": 19,
+  "digest": "95b5f1e0"
+ },
+ {
+  "key": "goblin-foundry-chief/17/random/tension-spool@second",
+  "result": "victory",
+  "turns": 9,
+  "warriorHealth": 13,
+  "mageHealth": 11,
+  "manaSpent": 26,
+  "digest": "4324efc6"
+ },
+ {
+  "key": "defias-veteran/8/planner/tension-spool@first",
+  "result": "victory",
+  "turns": 4,
+  "warriorHealth": 18,
+  "mageHealth": 18,
+  "manaSpent": 14,
+  "digest": "4ce40c7e"
+ }
+]

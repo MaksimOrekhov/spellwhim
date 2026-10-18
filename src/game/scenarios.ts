@@ -33,7 +33,7 @@ export function runCombatScenario(scenario: CombatScenario, seed = 42) {
     const card = state.hand.find(instance => instance.definitionId === definitionId)
     return playCard(state, card?.instanceId ?? 'missing')
   })
-  const statusesAfterCards = state.enemy.vulnerable ? ['vulnerability'] : []
+  const statusesAfterCards = state.statuses.enemy.map(item => item.id)
   if (scenario.enemyTurn) endTurn(state)
   return {
     name: scenario.name, seed,

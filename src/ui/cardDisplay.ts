@@ -2,8 +2,10 @@
 // short rule lines and the detailed notes shown on hover. It only presents numbers the engine already computed
 // (previewCard); it never re-implements damage rules. New cards need effects/tags in types.ts, not UI code.
 import { encounters, statusDefinitions } from '../game/types'
-import type { BattleState, CardDefinition, CardEffect, CardPreview, HeroId } from '../game/types'
+import type { ArmorTarget, BattleState, CardDefinition, CardEffect, CardPreview, HeroId } from '../game/types'
 import { createBattle, previewCard } from '../game/battle'
+import { characterGenitive } from '../game/party'
+import { getClassTheme } from '../game/classThemes'
 
 export type GlyphKind = 'damage' | 'armor' | 'draw' | 'vulnerable' | 'exhaust' | 'bonus' | 'lock'
 export type Tone = 'on' | 'off' | 'plain'
@@ -24,14 +26,14 @@ export interface StatChip {
 /** `short` is used when the card is partly covered by its neighbour and only a narrow strip is visible. */
 export interface RuleLine { tone: Tone; glyph?: GlyphKind; text: string; short: string }
 export interface CardTag { id: 'vulnerability' | 'exhaust'; glyph: GlyphKind; text: string; short: string }
-export interface DamagePart { label: string; amount: number; kind: 'base' | 'armor' | 'vulnerability' | 'artifact' }
+export interface DamagePart { label: string; amount: number; kind: 'base' | 'armor' | 'vulnerability' | 'status' | 'artifact' }
 export interface Keyword { glyph: GlyphKind; name: string; text: string }
 export interface CardNotesModel {
   title: string
   subtitle: string
   description: string
   damage: { total: number; parts: DamagePart[]; formula: string; armorDamage: number; healthDamage: number } | null
-  armor: { hero: HeroId | 'threatened' | 'partner'; name: string; amount: number }[]
+  armor: { hero: ArmorTarget | HeroId; name: string; amount: number }[]
   draw: number
   conditions: RuleLine[]
   keywords: Keyword[]
@@ -44,8 +46,19 @@ const heroDative: Record<HeroId, string> = { warrior: 'Вариану', mage: '�
 const heroName: Record<HeroId, string> = { warrior: 'Вариан', mage: 'Джайна' }
 const kindLabel = { attack: 'атака', spell: 'заклинание', defense: 'защита' } as const
 
-const armorCaption = (target: Extract<CardEffect, { type: 'armor' }>['target']) =>
-  target === 'threatened' ? 'цели' : target === 'partner' ? 'напарнику' : heroDative[target]
+/** Who an armor effect goes to, as shown on the card. Class targets name whoever owns that class in the current party. */
+function armorRecipient(target: Extract<CardEffect, { type: 'armor' }>['target'], preview: CardPreview, neutralThreatened: string): string {
+  if (target === 'threatened') return neutralThreatened
+  if (target === 'partner') return 'напарнику'
+  if (target.startsWith('class:')) {
+    const hero = preview.classHeroes[target.slice('class:'.length) as keyof CardPreview['classHeroes']]
+    return hero ? heroDative[hero] : 'союзнику'
+  }
+  return heroDative[target as HeroId]
+}
+const armorCaption = (target: Extract<CardEffect, { type: 'armor' }>['target'], preview: CardPreview) => armorRecipient(target, preview, 'цели')
+/** The party member whose armor powers the card's class bonus, in the genitive ("броня Джайны"). */
+const bonusOwnerGenitive = (preview: CardPreview) => preview.bonusOwner ? characterGenitive(preview.bonusOwner.characterId) : 'героя'
 function plural(n: number, one: string, few: string, many: string) {
   const m = n % 100
   if (m >= 11 && m <= 14) return many
@@ -66,7 +79,7 @@ export function statChips(card: CardDefinition, preview: CardPreview): StatChip[
     chips.push({ kind: 'damage', value: preview.damage, caption: 'врагу', base: preview.damage - preview.bonusDamage, boosted: preview.bonusDamage > 0, inactive: false, spoken: `${preview.damage} ${damageWord(preview.damage)} врагу` })
   }
   for (const effect of card.effects) {
-    if (effect.type === 'armor') chips.push({ kind: 'armor', value: effect.amount, caption: armorCaption(effect.target), base: 0, boosted: false, inactive: false, spoken: `${effect.amount} брони ${armorCaption(effect.target)}` })
+    if (effect.type === 'armor') chips.push({ kind: 'armor', value: effect.amount, caption: armorCaption(effect.target, preview), base: 0, boosted: false, inactive: false, spoken: `${effect.amount} брони ${armorCaption(effect.target, preview)}` })
   }
   if (preview.draw > 0) chips.push({ kind: 'draw', value: preview.draw, caption: cardsWord(preview.draw), base: 0, boosted: false, inactive: false, spoken: `добор: ${preview.draw} ${cardsWord(preview.draw)}` })
   if (preview.damage === 0 && totalBase > 0) {
@@ -85,8 +98,8 @@ export function ruleLines(card: CardDefinition, preview: CardPreview): RuleLine[
   }
   if (card.damageBonus) {
     lines.push(preview.armorBonus > 0
-      ? { tone: 'on', glyph: 'armor', text: `+${preview.armorBonus} — броня Джайны`, short: `+${preview.armorBonus} броня` }
-      : { tone: 'off', glyph: 'armor', text: `+${card.damageBonus.amount} при броне Джайны`, short: `+${card.damageBonus.amount} при броне` })
+      ? { tone: 'on', glyph: 'armor', text: `+${preview.armorBonus} — броня ${bonusOwnerGenitive(preview)}`, short: `+${preview.armorBonus} броня` }
+      : { tone: 'off', glyph: 'armor', text: `+${card.damageBonus.amount} при броне ${bonusOwnerGenitive(preview)}`, short: `+${card.damageBonus.amount} при броне` })
   }
   if (preview.vulnerabilityBonus > 0) lines.push({ tone: 'on', glyph: 'vulnerable', text: `+${preview.vulnerabilityBonus} — враг Уязвим`, short: `+${preview.vulnerabilityBonus} Уязвим` })
   if (preview.artifactDamage > 0) lines.push({ tone: 'on', glyph: 'bonus', text: `+${preview.artifactDamage} — первая атакующая карта отряда: Натяжной шкив`, short: `+${preview.artifactDamage} шкив` })
@@ -107,11 +120,13 @@ export function cardFace(card: CardDefinition, preview: CardPreview): CardFace {
 /** Where the final damage number comes from, e.g. 4 + 2 + 3 = 9. Empty when the card deals no damage now. */
 export function damageParts(preview: CardPreview): DamagePart[] {
   if (preview.damage <= 0) return []
-  const parts: DamagePart[] = [{ label: 'Урон карты', amount: preview.damage - preview.bonusDamage, kind: 'base' }]
-  if (preview.armorBonus > 0) parts.push({ label: 'Броня Джайны', amount: preview.armorBonus, kind: 'armor' })
-  if (preview.vulnerabilityBonus > 0) parts.push({ label: 'Уязвимость', amount: preview.vulnerabilityBonus, kind: 'vulnerability' })
-  if (preview.artifactDamage > 0) parts.push({ label: 'Натяжной шкив · первая атакующая карта отряда', amount: preview.artifactDamage, kind: 'artifact' })
-  return parts
+  // The engine already itemised the total in rule order; this only maps its parts onto display kinds.
+  const kinds = { base: 'base', 'class-bonus': 'armor', status: 'status', artifact: 'artifact' } as const
+  return preview.damageParts.filter(part => part.amount > 0).map(part => ({
+    label: part.kind === 'base' ? part.label : part.detail ?? part.label,
+    amount: part.amount,
+    kind: part.kind === 'status' && part.id === 'vulnerability' ? 'vulnerability' : kinds[part.kind],
+  }))
 }
 
 /** `neutral`: no board context (reward screen), so armor is described by its target rule instead of a concrete hero. */
@@ -127,8 +142,8 @@ export function cardNotes(card: CardDefinition, preview: CardPreview, context: '
   }
   if (card.damageBonus) {
     conditions.push(preview.armorBonus > 0
-      ? { tone: 'on', glyph: 'armor', text: `Бонус активен: у Джайны есть броня, +${preview.armorBonus} урона. Броня не расходуется.`, short: '' }
-      : { tone: 'off', glyph: 'armor', text: `Бонус не активен: +${card.damageBonus.amount} урона, пока у Джайны есть броня.`, short: '' })
+      ? { tone: 'on', glyph: 'armor', text: `Бонус активен: у ${bonusOwnerGenitive(preview)} есть броня, +${preview.armorBonus} урона. Броня не расходуется.`, short: '' }
+      : { tone: 'off', glyph: 'armor', text: `Бонус не активен: +${card.damageBonus.amount} урона, пока у ${bonusOwnerGenitive(preview)} есть броня.`, short: '' })
   }
   if (preview.vulnerabilityBonus > 0) conditions.push({ tone: 'on', glyph: 'vulnerable', text: `Враг Уязвим: +${preview.vulnerabilityBonus} урона. Уязвимость будет снята.`, short: '' })
   if (preview.artifactBonuses.length) conditions.push({ tone: 'on', glyph: 'bonus', text: `Артефакт сработает: ${preview.artifactBonuses.join('; ')}.`, short: '' })
@@ -143,7 +158,7 @@ export function cardNotes(card: CardDefinition, preview: CardPreview, context: '
     })
   }
   const armor = context === 'neutral'
-    ? card.effects.flatMap(effect => effect.type === 'armor' ? [{ hero: effect.target, name: effect.target === 'threatened' ? 'цели врага' : effect.target === 'partner' ? 'напарнику' : heroDative[effect.target], amount: effect.amount }] : [])
+    ? card.effects.flatMap(effect => effect.type === 'armor' ? [{ hero: effect.target, name: armorRecipient(effect.target, preview, 'цели врага'), amount: effect.amount }] : [])
     : (['warrior', 'mage'] as const).map(hero => ({ hero, name: heroName[hero], amount: preview.armor[hero] })).filter(item => item.amount > 0)
   if (context === 'board' && card.effects.some(effect => effect.type === 'armor' && effect.target === 'threatened')) keywords.push({ glyph: 'armor', name: 'Броня', text: 'Поглощает урон и исчезает после следующей атаки по герою. «Цель» — герой, которого атакует противник.' })
   if (card.exhaust) keywords.push({ glyph: 'exhaust', name: 'Выбывает', text: 'Эта копия не вернётся в колоду до конца боя.' })
@@ -152,7 +167,7 @@ export function cardNotes(card: CardDefinition, preview: CardPreview, context: '
   const shownConditions = parts.length > 1 ? conditions.filter(line => line.tone !== 'on' || line.glyph === 'damage') : conditions
   return {
     title: card.name,
-    subtitle: `${card.className === 'warrior' ? 'Воин' : 'Маг'} · ${kindLabel[card.kind]} · ${card.cost} ${plural(card.cost, 'мана', 'маны', 'маны')}`,
+    subtitle: `${getClassTheme(card.className).name} · ${kindLabel[card.kind]} · ${card.cost} ${plural(card.cost, 'мана', 'маны', 'маны')}`,
     description: card.description,
     damage: preview.damage > 0
       ? { total: preview.damage, parts, formula: parts.length > 1 ? `${parts.map(part => part.amount).join(' + ')} = ${preview.damage}` : String(preview.damage), armorDamage: preview.armorDamage, healthDamage: preview.healthDamage }

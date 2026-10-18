@@ -1,6 +1,8 @@
 import { computed, onUnmounted, shallowRef } from 'vue'
 import { cardDefinition } from '../game/types'
 import { forecastEnemyAction } from '../game/battle'
+import { getClassTheme } from '../game/classThemes'
+import { cardOwner, partnerOf } from '../game/party'
 import type { EnemyActionForecast, PlayResult } from '../game/battle'
 import type { Ref } from 'vue'
 import type { BattleState, HeroId, PendingPlay } from '../game/types'
@@ -59,10 +61,12 @@ export function useBattleAnimation(options: { state: Readonly<Ref<BattleState>>;
     const state = options.state.value
     const preview = play.preview
     const target = state.enemy.focus
-    const partner = target === 'warrior' ? 'mage' : 'warrior'
-    const actor = state.heroes[card.className].name
+    const partner = partnerOf(state.heroes, target)
+    // The acting hero is whoever owns the card's class; an absent or ambiguous owner is not guessed.
+    const owner = cardOwner(state.heroes, card)
+    const actor = owner.ok ? state.heroes[owner.hero].name : getClassTheme(card.className).name
     start({
-      phase: 'card', source: card.className, incoming: null,
+      phase: 'card', source: owner.ok ? owner.hero : null, incoming: null,
       effect: card.kind === 'defense' ? 'guard' : card.kind === 'spell' ? 'spell' : 'attack',
       target: card.kind === 'defense' ? target : 'enemy',
       amount: card.kind === 'defense' ? preview.armor[target] : preview.healthDamage,

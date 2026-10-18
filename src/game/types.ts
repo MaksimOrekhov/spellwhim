@@ -8,12 +8,23 @@ export type ArtifactId = 'reliable-wedge' | 'double-pulley' | 'weakpoint-lens' |
 export type GameResult = 'victory' | 'defeat' | null
 export type CardId = 'sword-strike' | 'fireball' | 'guard' | 'quick-cut' | 'thunderbolt' | 'bastion' | 'parry' | 'shield-bash' | 'interpose' | 'frostbolt' | 'arcane-insight' | 'ice-ward'
 export type StatusId = 'vulnerability'
+/** Who can hold a status. `'enemy'` is the current opponent; hero keys follow the legacy engine key (`Hero.id`). */
+export type StatusCarrierId = 'enemy' | HeroId
+/** A status held by one carrier. `value` is read according to the definition: charges or intensity. */
+export interface StatusInstance {
+  id: StatusId
+  value: number
+}
+/** The only store of battle statuses; the engine keeps no per-status flags elsewhere. */
+export type BattleStatuses = Record<StatusCarrierId, StatusInstance[]>
 export type CardTag = 'strike' | 'offensive-spell' | 'defense'
+/** The bonus belongs to the party member who owns the card's class (see `party.ts`), never to a named character. */
 export interface CardDamageBonus {
-  condition: 'hero-has-armor'
-  hero: HeroId
+  condition: 'owner-has-armor'
   amount: number
 }
+/** `class:<id>` addresses the party member of that class; it resolves through the actual party and fails safe if absent or ambiguous. */
+export type ArmorTarget = 'threatened' | 'partner' | HeroId | `class:${CardClassId}`
 export const MAX_HAND_SIZE = 10
 export const OPENING_HAND_SIZE = 8
 export const CARDS_DRAWN_PER_TURN = 2
@@ -36,9 +47,10 @@ export interface Hero {
 
 export type CardEffect =
   | { type: 'damage'; amount: number; when?: 'enemy-attacking' }
-  | { type: 'armor'; amount: number; target: 'threatened' | 'partner' | HeroId }
+  | { type: 'armor'; amount: number; target: ArmorTarget }
   | { type: 'draw'; amount: number }
-  | { type: 'status'; status: StatusId }
+  /** Applies the status to the enemy; `amount` (default 1) is charges or intensity by the status definition. */
+  | { type: 'status'; status: StatusId; amount?: number }
 
 export interface CardDefinition {
   id: CardId
@@ -90,9 +102,7 @@ export interface PendingArtifactTrigger {
   target?: HeroId
 }
 
-export const statusDefinitions: Record<StatusId, { name: string; shortName: string; description: string }> = {
-  vulnerability: { name: 'Уязвимость', shortName: 'Уязвим', description: 'Следующая наносящая урон карта получает +3 урона и снимает Уязвимость.' },
-}
+export { statusDefinitions } from './statuses'
 
 export const cards: CardDefinition[] = [
   { id: 'sword-strike', name: 'Удар мечом', className: 'warrior', cost: 1, description: '6 урона.', icon: '⚔', kind: 'attack', tags: ['strike'], effects: [{ type: 'damage', amount: 6 }] },
@@ -100,12 +110,12 @@ export const cards: CardDefinition[] = [
   { id: 'guard', name: 'Защитная стойка', className: 'warrior', cost: 1, description: '4 брони цели врага.', icon: '⬡', kind: 'defense', tags: ['defense'], effects: [{ type: 'armor', amount: 4, target: 'threatened' }] },
   { id: 'parry', name: 'Парирование', className: 'warrior', cost: 1, description: '3 брони цели. Если текущее действие врага — атака, наносит 3 урона.', icon: '⛨', kind: 'defense', tags: ['defense'], effects: [{ type: 'armor', amount: 3, target: 'threatened' }, { type: 'damage', amount: 3, when: 'enemy-attacking' }], reward: true },
   { id: 'shield-bash', name: 'Удар щитом', className: 'warrior', cost: 2, description: '5 урона и 3 брони цели. Накладывает Уязвимость.', icon: '⬡', kind: 'attack', tags: ['strike'], effects: [{ type: 'damage', amount: 5 }, { type: 'armor', amount: 3, target: 'threatened' }, { type: 'status', status: 'vulnerability' }], reward: true },
-  { id: 'interpose', name: 'Прикрыть союзника', className: 'warrior', cost: 1, description: '5 брони союзнику-магу.', icon: '⬡', kind: 'defense', tags: ['defense'], effects: [{ type: 'armor', amount: 5, target: 'mage' }], reward: true },
-  { id: 'frostbolt', name: 'Ледяная стрела', className: 'mage', cost: 1, description: '4 урона. Накладывает Уязвимость. При броне Джайны: +2 урона.', icon: '❄', kind: 'spell', tags: ['offensive-spell'], effects: [{ type: 'damage', amount: 4 }, { type: 'status', status: 'vulnerability' }], damageBonus: { condition: 'hero-has-armor', hero: 'mage', amount: 2 }, reward: true },
+  { id: 'interpose', name: 'Прикрыть союзника', className: 'warrior', cost: 1, description: '5 брони союзнику-магу.', icon: '⬡', kind: 'defense', tags: ['defense'], effects: [{ type: 'armor', amount: 5, target: 'class:mage' }], reward: true },
+  { id: 'frostbolt', name: 'Ледяная стрела', className: 'mage', cost: 1, description: '4 урона. Накладывает Уязвимость. При броне Джайны: +2 урона.', icon: '❄', kind: 'spell', tags: ['offensive-spell'], effects: [{ type: 'damage', amount: 4 }, { type: 'status', status: 'vulnerability' }], damageBonus: { condition: 'owner-has-armor', amount: 2 }, reward: true },
   { id: 'arcane-insight', name: 'Тайное предвидение', className: 'mage', cost: 1, description: 'Добор карты.', icon: '✦', kind: 'spell', tags: [], effects: [{ type: 'draw', amount: 1 }], reward: true },
   { id: 'ice-ward', name: 'Ледяной покров', className: 'mage', cost: 1, description: '3 брони цели и 2 брони напарнику.', icon: '❄', kind: 'defense', tags: ['defense'], effects: [{ type: 'armor', amount: 3, target: 'threatened' }, { type: 'armor', amount: 2, target: 'partner' }], reward: true },
   { id: 'quick-cut', name: 'Быстрый выпад', className: 'warrior', cost: 0, description: '3 урона. Выбывает до конца боя.', icon: '⚔', kind: 'attack', tags: ['strike'], effects: [{ type: 'damage', amount: 3 }], exhaust: true, reward: true },
-  { id: 'thunderbolt', name: 'Грозовой разряд', className: 'mage', cost: 1, description: '4 урона. Добор карты. При броне Джайны: +2 урона.', icon: '✹', kind: 'spell', tags: ['offensive-spell'], effects: [{ type: 'damage', amount: 4 }, { type: 'draw', amount: 1 }], damageBonus: { condition: 'hero-has-armor', hero: 'mage', amount: 2 }, reward: true },
+  { id: 'thunderbolt', name: 'Грозовой разряд', className: 'mage', cost: 1, description: '4 урона. Добор карты. При броне Джайны: +2 урона.', icon: '✹', kind: 'spell', tags: ['offensive-spell'], effects: [{ type: 'damage', amount: 4 }, { type: 'draw', amount: 1 }], damageBonus: { condition: 'owner-has-armor', amount: 2 }, reward: true },
   { id: 'bastion', name: 'Каменный бастион', className: 'warrior', cost: 2, description: '6 брони цели, 3 — напарнику.', icon: '⬡', kind: 'defense', tags: ['defense'], effects: [{ type: 'armor', amount: 6, target: 'threatened' }, { type: 'armor', amount: 3, target: 'partner' }], reward: true },
 ]
 
@@ -137,7 +147,7 @@ export type EnemyHit = { kind: 'attack'; name: string; damage: number; target: H
 export type EnemyAction = EnemyHit | { kind: 'defend'; name: string; armor: number } | { kind: 'prepare'; name: string; prepared: EnemyHit } | { kind: 'recover'; name: string; armor: number }
 export interface EnemyBehavior { phase1: EnemyAction[]; phase2?: EnemyAction[] }
 export interface EnemyState {
-  name: string; title: string; health: number; maxHealth: number; armor: number; vulnerable: boolean
+  name: string; title: string; health: number; maxHealth: number; armor: number
   appearance: EncounterDefinition['appearance']; phase: 1 | 2; nextActionPhase: 1 | 2; behavior: EnemyBehavior
   behaviorIndex: number; nextAction: EnemyAction; focus: HeroId
 }
@@ -147,6 +157,25 @@ export const encounters: EncounterDefinition[] = [
   { id: 'twilight-guardian', name: 'Страж старой рощи', title: 'Древний хранитель', maxHealth: 30, behavior: { phase1: [{ kind: 'prepare', name: 'Тяжёлый удар', prepared: { kind: 'attack', name: 'Сокрушающий удар', damage: 10, target: 'warrior' } }, { kind: 'recover', name: 'Передышка', armor: 2 }, { kind: 'prepare', name: 'Прицелился в Джайну', prepared: { kind: 'attack', name: 'Удар по чародейке', damage: 9, target: 'mage' } }, { kind: 'recover', name: 'Передышка', armor: 2 }] }, appearance: 'guardian', mapLabel: 'Забытый алтарь' },
   { id: 'twilight-heart', name: 'Сумеречное сердце', title: 'Пробудившаяся чаща', maxHealth: 46, behavior: { phase1: [{ kind: 'attack', name: 'Сумеречный импульс', damage: 6, target: 'mage' }, { kind: 'attack_all', name: 'Корневая волна', damage: 3, primaryTarget: 'warrior' }, { kind: 'defend', name: 'Оболочка чащи', armor: 5 }], phase2: [{ kind: 'attack', name: 'Гневное жало', damage: 7, target: 'warrior' }, { kind: 'attack_all', name: 'Всплеск сердца', damage: 4, primaryTarget: 'mage' }, { kind: 'defend', name: 'Сумеречный панцирь', armor: 6 }] }, appearance: 'heart', mapLabel: 'Сердце чащи' },
 ]
+
+/**
+ * One labelled contribution to a hit. `base` opens the list, additive modifiers follow in the fixed order
+ * class condition → status → artifact, and reductions (negative amounts) come last. See `damage.ts`.
+ */
+export interface HitPart {
+  kind: 'base' | 'status' | 'class-bonus' | 'artifact'
+  id: string
+  label: string
+  /** Longer wording for the damage breakdown; `label` is used where space is tight. */
+  detail?: string
+  amount: number
+}
+
+/** A status that a play will spend, decided when the play starts. */
+export interface ConsumedStatus {
+  carrier: StatusCarrierId
+  id: StatusId
+}
 
 export interface CardPreview {
   damage: number
@@ -162,6 +191,12 @@ export interface CardPreview {
   draw: number
   bonuses: string[]
   appliedStatuses: StatusId[]
+  /** The same total as `damage`, itemised in rule order. Empty when the card deals no damage now. */
+  damageParts: HitPart[]
+  /** Party member whose armor drives the card's class bonus, when the card has one and the owner is unambiguous. */
+  bonusOwner: { hero: HeroId; characterId: string } | null
+  /** Who `class:<id>` armor targets resolve to right now (classes that are absent or ambiguous are omitted). */
+  classHeroes: Partial<Record<CardClassId, HeroId>>
 }
 
 export interface PendingPlay {
@@ -169,7 +204,7 @@ export interface PendingPlay {
   card: CardInstance
   handIndex: number
   effects: CardEffect[]
-  consumeVulnerability: boolean
+  consumedStatuses: ConsumedStatus[]
   artifactTriggers: PendingArtifactTrigger[]
   preview: CardPreview
 }
@@ -180,6 +215,8 @@ export interface BattleState {
   rngState: number
   nextActionId: number
   heroes: Record<HeroId, Hero>
+  /** Statuses of the enemy and of each hero; cleared when the battle ends. */
+  statuses: BattleStatuses
   artifacts: BattleArtifactState[]
   artifactNotices: string[]
   enemy: EnemyState

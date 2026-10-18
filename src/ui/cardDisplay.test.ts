@@ -9,12 +9,13 @@ import { cardFace, cardNotes, damageParts, neutralPreview, ruleLines, spokenSumm
 import { COMPACT_BELOW, fanLayout, handMode, handOrder, zoomFactor, zoomShift } from './handLayout'
 import SpellCard from '../components/SpellCard.vue'
 import CardReward from '../components/CardReward.vue'
+import { applyStatus } from '../game/statuses'
 
 const card = (id: CardId) => cardDefinition(id)
 /** A board where the enemy is attacking (root sentinel opens with an attack), optionally Vulnerable and with armor on Jaina. */
 function board(options: { vulnerable?: boolean; mageArmor?: number; enemy?: string } = {}): BattleState {
   const state = createBattle(encounters.find(item => item.id === (options.enemy ?? 'root-sentinel'))!, undefined, { seed: 3 })
-  state.enemy.vulnerable = options.vulnerable ?? false
+  if (options.vulnerable) applyStatus(state, 'enemy', 'vulnerability')
   state.heroes.mage.armor = options.mageArmor ?? 0
   return state
 }

@@ -6,6 +6,7 @@ import BattleBoard from './BattleBoard.vue'
 import BattleHand from './BattleHand.vue'
 import CardReward from './CardReward.vue'
 import { createBattle, previewCard, resolveCardPlay, startCardPlay, endTurn } from '../game/battle'
+import { applyStatus } from '../game/statuses'
 import { useBattleAnimation } from '../composables/useBattleAnimation'
 import { useBattleControls } from '../composables/useBattleControls'
 import { cardDefinition, cards, encounters } from '../game/types'
@@ -24,7 +25,7 @@ function labState(): BattleState {
   state.hand = ids.map((id, index) => ({ instanceId: `lab/${index + 1}`, definitionId: id }))
   state.drawPile = state.drawPile.slice(0, 8)
   if (query.get('mana')) { state.mana = Number(query.get('mana')); state.maxMana = Math.max(state.maxMana, state.mana) }
-  if (query.get('bonus') === '1') { state.enemy.vulnerable = true; state.heroes.mage.armor = 3 }
+  if (query.get('bonus') === '1') { applyStatus(state, 'enemy', 'vulnerability'); state.heroes.mage.armor = 3 }
   return state
 }
 

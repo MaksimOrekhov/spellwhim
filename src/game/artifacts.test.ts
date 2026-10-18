@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import { artifactDefinitions } from './artifacts'
-import { createBattle, endTurn, forecastEnemyAction, playCard, previewCard, resolveCardPlay, startCardPlay } from './battle'
+import { createBattle, endTurn, forecastEnemyAction, hasStatus, playCard, previewCard, resolveCardPlay, startCardPlay } from './battle'
 import { claimDungeonArtifact, claimDungeonReward, createDungeonRun, dungeonArtifactOptions, dungeonEncounter, dungeonNode, dungeonRewardOptions, resolveDungeonBattle } from './campaign'
 import { createCampaignBattle } from './campaign'
 import { deriveDungeonSeed } from './campaign'
 import { cardDefinition, encounters } from './types'
 import type { ArtifactId, BattleState, CardId, HeroId } from './types'
+import { applyStatus } from './statuses'
 
 function battleWith(id: ArtifactId, owner: HeroId, deck: CardId[] = ['sword-strike']) {
   const state = createBattle(encounters[1]!, undefined, { deck, seed: 17, openingHandSize: deck.length })
@@ -90,13 +91,13 @@ describe('artifact combat effects', () => {
 
   it('converts a consumed Vulnerability into owner armor even when enemy armor absorbs the hit', () => {
     const state = battleWith('weakpoint-lens', 'mage', ['sword-strike'])
-    state.enemy.vulnerable = true
+    applyStatus(state, 'enemy', 'vulnerability')
     state.enemy.armor = 50
     expect(previewCard(state, cardDefinition('sword-strike'))).toMatchObject({ damage: 9, armor: { warrior: 0, mage: 2 }, artifactArmor: { warrior: 0, mage: 2 } })
     const started = startCardPlay(state, copyId(state, 'sword-strike'))
     if (!started.ok) throw new Error('Expected a valid play')
     resolveCardPlay(state, started.play.actionId)
-    expect(state.enemy.vulnerable).toBe(false)
+    expect(hasStatus(state, 'vulnerability')).toBe(false)
     expect(state.heroes.mage.armor).toBe(2)
     expect(state.artifacts[0]?.usedThisBattle).toBe(true)
     expect(resolveCardPlay(state, started.play.actionId)).toMatchObject({ ok: false, reason: 'stale-action' })
@@ -106,7 +107,7 @@ describe('artifact combat effects', () => {
   it('does not apply the lens after a lethal hit or when no Vulnerability is consumed', () => {
     const state = battleWith('weakpoint-lens', 'warrior', ['sword-strike'])
     state.enemy.health = 4
-    state.enemy.vulnerable = true
+    applyStatus(state, 'enemy', 'vulnerability')
     expect(previewCard(state, cardDefinition('sword-strike'))).toMatchObject({ artifactArmor: { warrior: 0, mage: 0 }, artifactBonuses: [] })
     playCard(state, copyId(state, 'sword-strike'))
     expect(state.result).toBe('victory')

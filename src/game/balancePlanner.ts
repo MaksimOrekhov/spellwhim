@@ -1,6 +1,7 @@
 import { endTurn, playCard } from './battle'
 import { shuffle } from './deck'
 import { cloneEconomy } from './economy'
+import { cloneStatuses, statusSignature } from './statuses'
 import { cardDefinition } from './types'
 import type { BattleState, CardId, CardInstance } from './types'
 
@@ -77,6 +78,7 @@ export function cloneBattleState(state: BattleState): BattleState {
     heroes: { warrior: { ...state.heroes.warrior }, mage: { ...state.heroes.mage } },
     artifacts: state.artifacts.map(artifact => ({ ...artifact })),
     artifactNotices: [...state.artifactNotices],
+    statuses: cloneStatuses(state.statuses),
     enemy: { ...state.enemy },
     economy: cloneEconomy(state.economy),
     hand: [...state.hand], drawPile: [...state.drawPile], discardPile: [...state.discardPile], exhausted: [...state.exhausted],
@@ -101,6 +103,15 @@ function hashText(text: string): number {
   return hash
 }
 
+/**
+ * Every status except the enemy's Vulnerability, which keeps its original slot in the key so existing Balance Lab seeds
+ * and plans are unchanged. Adds nothing while no other status exists.
+ */
+function extraStatusSignature(state: BattleState): string[] {
+  const text = statusSignature(state, { carrier: 'enemy', id: 'vulnerability' })
+  return text ? [text] : []
+}
+
 function visibleArtifactState(state: BattleState): string {
   return state.artifacts.map(artifact => {
     const owner = Object.values(state.heroes).find(hero => hero.instanceId === artifact.ownerInstanceId)
@@ -116,9 +127,10 @@ function visibleArtifactState(state: BattleState): string {
 export function observableSeed(state: BattleState, salt = 0): number {
   const zone = (cards: readonly CardInstance[]) => cards.map(card => card.definitionId).sort().join(',')
   const text = [
-    state.turn, state.mana, state.maxMana, zone(state.hand), zone(state.drawPile), zone(state.discardPile), zone(state.exhausted), state.enemy.vulnerable,
+    state.turn, state.mana, state.maxMana, zone(state.hand), zone(state.drawPile), zone(state.discardPile), zone(state.exhausted), state.statuses.enemy.some(item => item.id === 'vulnerability'),
     state.heroes.warrior.health, state.heroes.warrior.armor, state.heroes.mage.health, state.heroes.mage.armor,
     ...(state.artifacts.length ? [visibleArtifactState(state)] : []),
+    ...extraStatusSignature(state),
     state.enemy.health, state.enemy.armor, state.enemy.nextAction.name,
   ].join('|')
   return mix(hashText(text), salt >>> 0)
@@ -141,9 +153,10 @@ export function determinize(state: BattleState, salt = 0): BattleState {
 function digest(state: BattleState): string {
   const ids = (cards: readonly CardInstance[]) => cards.map(card => card.definitionId).join(',')
   return [
-    state.mana, [...state.hand].map(card => card.definitionId).sort().join(','), state.enemy.vulnerable, state.enemy.health, state.enemy.armor,
+    state.mana, [...state.hand].map(card => card.definitionId).sort().join(','), state.statuses.enemy.some(item => item.id === 'vulnerability'), state.enemy.health, state.enemy.armor,
     state.heroes.warrior.armor, state.heroes.warrior.health, state.heroes.mage.armor, state.heroes.mage.health,
     ...(state.artifacts.length ? [visibleArtifactState(state)] : []),
+    ...extraStatusSignature(state),
     ids(state.drawPile), [...state.exhausted].map(card => card.definitionId).sort().join(','), state.rngState,
   ].join('|')
 }

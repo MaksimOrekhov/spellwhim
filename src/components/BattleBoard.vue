@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { forecastEnemyAction, hasStatus } from '../game/battle'
+import { forecastEnemyAction } from '../game/battle'
+import { statusViews } from '../game/statuses'
 import type { BattleState } from '../game/types'
 import type { BattlePhase, BattlePresentation } from '../composables/useBattleAnimation'
 import HeroPortrait from './HeroPortrait.vue'
@@ -10,7 +11,7 @@ import BattleResult from './BattleResult.vue'
 import BattleHelp from './BattleHelp.vue'
 const props = defineProps<{ state: BattleState; animation: BattlePresentation; phase: BattlePhase; artifactNotices?: string[]; continueLabel?: string }>()
 const emit = defineEmits<{ impact: [actionId: string]; endTurn: []; continue: [] }>()
-const vulnerability = computed(() => hasStatus(props.state, 'vulnerability'))
+const enemyStatuses = computed(() => statusViews(props.state, 'enemy'))
 const forecast = computed(() => props.phase === 'enemy' && props.animation.incoming ? props.animation.incoming : forecastEnemyAction(props.state))
 const phaseTitle = computed(() => ({ player: 'Ваш ход', card: 'Способность отряда', enemy: 'Ход противника', finished: 'Бой завершён' })[props.phase])
 const enemyHero = computed(() => ({ id: 'mage' as const, characterId: props.state.enemy.name, classId: 'mage' as const, partySlot: 'second' as const, instanceId: 'enemy/' + props.state.battleId, name: props.state.enemy.name, title: props.state.enemy.title, health: props.state.enemy.health, maxHealth: props.state.enemy.maxHealth, armor: props.state.enemy.armor, icon: '✧' }))
@@ -36,13 +37,13 @@ const threatened = computed(() => new Set(forecast.value.threatened))
     </header>
     <div class="arena">
       <section class="enemy-encounter" aria-label="Противник">
-        <HeroPortrait :hero="enemyHero" side="enemy" :appearance="state.enemy.appearance" :vulnerable="vulnerability" :active="phase === 'enemy'" :damaged="animation.impactTarget === 'enemy'" :boss-phase="state.enemy.behavior.phase2 ? state.enemy.phase : undefined" />
+        <HeroPortrait :hero="enemyHero" side="enemy" :appearance="state.enemy.appearance" :statuses="enemyStatuses" :active="phase === 'enemy'" :damaged="animation.impactTarget === 'enemy'" :boss-phase="state.enemy.behavior.phase2 ? state.enemy.phase : undefined" />
         <div class="enemy-plan"><EnemyIntent :forecast="forecast" :hero-names="{ warrior: state.heroes.warrior.name, mage: state.heroes.mage.name }" :executing="phase === 'enemy'" /></div>
       </section>
       <section class="party" aria-label="Вариан и Джайна — общий ход отряда">
-        <HeroPortrait :hero="state.heroes.warrior" :artifacts="state.artifacts" :turn="state.turn" side="player" :targeted="threatened.has('warrior')" :damaged="animation.impactTarget === 'warrior' || animation.impactTarget === 'both'" :active="phase === 'card' && animation.source === 'warrior'" />
+        <HeroPortrait :hero="state.heroes.warrior" :statuses="statusViews(state, 'warrior')" :artifacts="state.artifacts" :turn="state.turn" side="player" :targeted="threatened.has('warrior')" :damaged="animation.impactTarget === 'warrior' || animation.impactTarget === 'both'" :active="phase === 'card' && animation.source === 'warrior'" />
         <div class="party-divider"><span aria-hidden="true">✦</span></div>
-        <HeroPortrait :hero="state.heroes.mage" :artifacts="state.artifacts" :turn="state.turn" side="player" :targeted="threatened.has('mage')" :damaged="animation.impactTarget === 'mage' || animation.impactTarget === 'both'" :active="phase === 'card' && animation.source === 'mage'" />
+        <HeroPortrait :hero="state.heroes.mage" :statuses="statusViews(state, 'mage')" :artifacts="state.artifacts" :turn="state.turn" side="player" :targeted="threatened.has('mage')" :damaged="animation.impactTarget === 'mage' || animation.impactTarget === 'both'" :active="phase === 'card' && animation.source === 'mage'" />
       </section>
     </div>
     <p v-if="artifactNotices?.length" class="artifact-feedback" role="status" aria-live="polite">{{ artifactNotices.join(' · ') }}</p>
