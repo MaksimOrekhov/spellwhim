@@ -180,7 +180,7 @@
 
 ## 6. Тесты и проверки
 
-- `npm test` — **247** тестов (было 212): +9 `encountersV10`, +19 `bleeding`, +6 `threatDisplay`, прочее. Эталон 427 боёв (`statusFoundation.regression`) не переписан и проходит — он использует каталоги v0.9 и прежний пул наград (`campaignRewardOptions` исключает `OVERHAUL_CARD_IDS`, поэтому числа Balance Lab не сдвинулись).
+- `npm test` — **247** тестов (было 212): +9 `encountersV10`, +19 `bleeding`, +7 `threatDisplay`, прочее. Эталон 427 боёв (`statusFoundation.regression`) не переписан и проходит — он использует каталоги v0.9 и прежний пул наград (`campaignRewardOptions` исключает `OVERHAUL_CARD_IDS`, поэтому числа Balance Lab не сдвинулись).
 - `npm run build`, `npm run balance:smoke`, `npm run scenarios -- 42` — зелёные; `npm run dungeon:routes -- 42 100`, `npm run artifacts:lab -- --runs 20 --seed 7` отработали (результаты в разделах 2 и 7).
 - Ожидаемые расхождения со старым эталоном: сложность `dungeon:routes` (100 % → 91–94 % на `safe`/`mixed`, 38 % на `risky`), награды (`campaignRewards()` теперь 12 карт), артефактный лаб (карты выбирает та же эвристика, число предложений другое). Регрессией считалось бы изменение Balance Lab (`balance:smoke`, `economy`) и эталона; их числа не двигались.
 - Скрытая информация бота: планировщик не менялся; новый статус учтён ключом дедупликации (`statusSignature`) и клонированием (тесты `bleeding.test.ts`). Одношаговые боты видят `statusDamage`/`statusFuture` только через предпросмотр движка.
