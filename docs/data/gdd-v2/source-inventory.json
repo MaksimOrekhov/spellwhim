@@ -1,0 +1,283 @@
+{
+  "base": "a64b434a08a09ded10dfacbe7fa01e088954e83d",
+  "node": "v22.17.1",
+  "inspected": [
+    {
+      "revision": "4900ff34337052c9a94c3c2ac423b27637d5397d",
+      "file": "docs/data/dungeon-campaign-research-v01/README.md",
+      "sha256": "9424902f6f7aa6c326aff8292b259a26a2cfcd094553241e10d293c4064ccf20",
+      "bytes": 3228,
+      "rows": null,
+      "fields": null
+    },
+    {
+      "revision": "4900ff34337052c9a94c3c2ac423b27637d5397d",
+      "file": "docs/data/dungeon-campaign-research-v01/deck-size.json",
+      "sha256": "b6428e14459f452047188d0a38d5d0dd9d05a688f60101172c9ef81deeb7508c",
+      "bytes": 16972,
+      "rows": 72,
+      "fields": [
+        "deck",
+        "hand",
+        "strategy",
+        "group",
+        "win",
+        "turns",
+        "hpLost",
+        "varian",
+        "jaina",
+        "manaLeft",
+        "starvedPct",
+        "cycles",
+        "blocked"
+      ]
+    },
+    {
+      "revision": "4900ff34337052c9a94c3c2ac423b27637d5397d",
+      "file": "docs/data/dungeon-campaign-research-v01/lab-common.mjs",
+      "sha256": "dcd4f0d5168a7c2c14bb9644fbce671ac08894a7bbdd34a951fa6c5ae4b0c953",
+      "bytes": 3140,
+      "rows": null,
+      "fields": null
+    },
+    {
+      "revision": "4900ff34337052c9a94c3c2ac423b27637d5397d",
+      "file": "docs/data/dungeon-campaign-research-v01/lab-deck-size.mjs",
+      "sha256": "c2f4c6430774fed14b9c028bf7c5176d516841df57476aff3172777961f0c5ac",
+      "bytes": 2684,
+      "rows": null,
+      "fields": null
+    },
+    {
+      "revision": "4900ff34337052c9a94c3c2ac423b27637d5397d",
+      "file": "docs/data/dungeon-campaign-research-v01/lab-long-run.mjs",
+      "sha256": "0af1387ec75ad00b50f83d3095d5ac612898da9868592d846e6c6718b31b7cec",
+      "bytes": 8319,
+      "rows": null,
+      "fields": null
+    },
+    {
+      "revision": "4900ff34337052c9a94c3c2ac423b27637d5397d",
+      "file": "docs/data/dungeon-campaign-research-v01/lab-power-curve.mjs",
+      "sha256": "27a124fdc4d99b6eb0ab117417fdc5eb567061de7617116bdf0e20e1554ca220",
+      "bytes": 2639,
+      "rows": null,
+      "fields": null
+    },
+    {
+      "revision": "4900ff34337052c9a94c3c2ac423b27637d5397d",
+      "file": "docs/data/dungeon-campaign-research-v01/lab-synergy-odds.mjs",
+      "sha256": "5950c9bee5c731aedc6fcf2492550cba8b55e3cb5bfe4536c2501387c0ab8de3",
+      "bytes": 2668,
+      "rows": null,
+      "fields": null
+    },
+    {
+      "revision": "4900ff34337052c9a94c3c2ac423b27637d5397d",
+      "file": "docs/data/dungeon-campaign-research-v01/long-run-dmg0.75-hp0.8.json",
+      "sha256": "cb1eb22bac4bbf9ccd6c409ea317ef31a60407c2af29a2d85ceacbfec48e9a24",
+      "bytes": 53967,
+      "rows": 168,
+      "fields": [
+        "path",
+        "fights",
+        "deck",
+        "heal",
+        "strategy",
+        "skip",
+        "win",
+        "diedOnBoss",
+        "diedOnElite",
+        "diedOnNormal",
+        "nLossEarly",
+        "nLossLate",
+        "nTurns",
+        "totalTurns",
+        "finalDeck",
+        "endHp"
+      ]
+    },
+    {
+      "revision": "4900ff34337052c9a94c3c2ac423b27637d5397d",
+      "file": "docs/data/dungeon-campaign-research-v01/long-run-dmg1-hp1.json",
+      "sha256": "3d1765a8307a7ae7ad2b8b08028f9f19c30d2b15d596b7758be56e74a564e70d",
+      "bytes": 53792,
+      "rows": 168,
+      "fields": [
+        "path",
+        "fights",
+        "deck",
+        "heal",
+        "strategy",
+        "skip",
+        "win",
+        "diedOnBoss",
+        "diedOnElite",
+        "diedOnNormal",
+        "nLossEarly",
+        "nLossLate",
+        "nTurns",
+        "totalTurns",
+        "finalDeck",
+        "endHp"
+      ]
+    },
+    {
+      "revision": "4900ff34337052c9a94c3c2ac423b27637d5397d",
+      "file": "docs/data/dungeon-campaign-research-v01/power-curve.json",
+      "sha256": "56acda20329a807a2aaa70d3c706422ee821b5df31bb4a88ee2687cc1b0b0aad",
+      "bytes": 4374,
+      "rows": 30,
+      "fields": [
+        "picks",
+        "mode",
+        "strategy",
+        "group",
+        "deck",
+        "win",
+        "turns",
+        "hpLost"
+      ]
+    },
+    {
+      "revision": "4900ff34337052c9a94c3c2ac423b27637d5397d",
+      "file": "docs/data/dungeon-campaign-research-v01/synergy-odds.json",
+      "sha256": "d7696ed2116d74314e25dfd98d6dbaec7831a58168681bf3ebd4bcdd29d4ba46",
+      "bytes": 3294,
+      "rows": 24,
+      "fields": [
+        "archetype",
+        "run",
+        "offer",
+        "deckAware",
+        "chance"
+      ]
+    },
+    {
+      "revision": "4900ff34337052c9a94c3c2ac423b27637d5397d",
+      "file": "docs/dungeon-campaign-redesign-research-v01.md",
+      "sha256": "69ccf9e50a52e96dc3ec428e59fd268a9267f69d8309d21c42dcd58dce7abae5",
+      "bytes": 131200,
+      "lines": 916
+    },
+    {
+      "revision": "b16c65192a20eb7055f5eb62d8c8a4d386fb9e7d",
+      "file": "docs/research/deadmines-progression-independent-2026-10-19.md",
+      "sha256": "cfbadcf27a3b76401e58faf4c6eac5b9ce51a2d3fd41faebea48682101969891",
+      "bytes": 156476,
+      "lines": 772
+    },
+    {
+      "revision": "b16c65192a20eb7055f5eb62d8c8a4d386fb9e7d",
+      "file": "research/deadmines-independent/README.md",
+      "sha256": "9d94b1d623c5254634c6887cbebac000697a7ce53e11d6e1eab3634cc0a6a162",
+      "bytes": 4192,
+      "lines": 36
+    },
+    {
+      "revision": "b16c65192a20eb7055f5eb62d8c8a4d386fb9e7d",
+      "file": "research/deadmines-independent/run.mjs",
+      "sha256": "4c8ee17ff7c239ef97dcebc22efde45fa1998925f55d619a4866d0f760716aad",
+      "bytes": 21911,
+      "lines": 276
+    },
+    {
+      "revision": "b16c65192a20eb7055f5eb62d8c8a4d386fb9e7d",
+      "file": "docs/data/deadmines-independent-2026-10-19/battles.json",
+      "sha256": "d7c94717ea23bd1fcf22905ca784be0f20002a8e07fae1f88419b6072f1fb136",
+      "bytes": 156310,
+      "csvRows": null
+    },
+    {
+      "revision": "b16c65192a20eb7055f5eb62d8c8a4d386fb9e7d",
+      "file": "docs/data/deadmines-independent-2026-10-19/holdout/battles.json",
+      "sha256": "40b7fd88c9083898dfe445dfc309d9a95b8434dc782dc38cdf8880f58c32934c",
+      "bytes": 121621,
+      "csvRows": null
+    },
+    {
+      "revision": "b16c65192a20eb7055f5eb62d8c8a4d386fb9e7d",
+      "file": "docs/data/deadmines-independent-2026-10-19/holdout/maps.json",
+      "sha256": "c08db6e67268cf77fe1a4fa14fd7002b273a47ca59d3e37403d6e371fe2637e0",
+      "bytes": 35405,
+      "csvRows": null
+    },
+    {
+      "revision": "b16c65192a20eb7055f5eb62d8c8a4d386fb9e7d",
+      "file": "docs/data/deadmines-independent-2026-10-19/holdout/math.json",
+      "sha256": "09867158b354368315a7fe04a74e9ecff3cb07a0d32ba3e530fcff348b59cd95",
+      "bytes": 4326,
+      "csvRows": null
+    },
+    {
+      "revision": "b16c65192a20eb7055f5eb62d8c8a4d386fb9e7d",
+      "file": "docs/data/deadmines-independent-2026-10-19/holdout/metadata.json",
+      "sha256": "d5838998848a4b6890e22c7f31f95cd169c4da79170521166668e0f8762547f6",
+      "bytes": 422,
+      "csvRows": null
+    },
+    {
+      "revision": "b16c65192a20eb7055f5eb62d8c8a4d386fb9e7d",
+      "file": "docs/data/deadmines-independent-2026-10-19/holdout/run-samples.csv",
+      "sha256": "21eb513b8d53f6d573e3dd4c09c0b62b75b33838d30eb435c83af25fc9456d8a",
+      "bytes": 440181,
+      "csvRows": 7200
+    },
+    {
+      "revision": "b16c65192a20eb7055f5eb62d8c8a4d386fb9e7d",
+      "file": "docs/data/deadmines-independent-2026-10-19/holdout/runs.json",
+      "sha256": "cb6992c9612b4f737ec18d732ab376317de2b1c2996d1e4daaf9dfd9162bb4da",
+      "bytes": 13416,
+      "csvRows": null
+    },
+    {
+      "revision": "b16c65192a20eb7055f5eb62d8c8a4d386fb9e7d",
+      "file": "docs/data/deadmines-independent-2026-10-19/holdout/sensitivity.json",
+      "sha256": "a47729dd4696154716204ece4073da06894598489b9adefee868c6e8774ff0aa",
+      "bytes": 4547,
+      "csvRows": null
+    },
+    {
+      "revision": "b16c65192a20eb7055f5eb62d8c8a4d386fb9e7d",
+      "file": "docs/data/deadmines-independent-2026-10-19/maps.json",
+      "sha256": "f3cf9c8471c6d2ce46484974fdeb318d144d95bdd3e5e6ce36341e3df7923efd",
+      "bytes": 35322,
+      "csvRows": null
+    },
+    {
+      "revision": "b16c65192a20eb7055f5eb62d8c8a4d386fb9e7d",
+      "file": "docs/data/deadmines-independent-2026-10-19/math.json",
+      "sha256": "09867158b354368315a7fe04a74e9ecff3cb07a0d32ba3e530fcff348b59cd95",
+      "bytes": 4326,
+      "csvRows": null
+    },
+    {
+      "revision": "b16c65192a20eb7055f5eb62d8c8a4d386fb9e7d",
+      "file": "docs/data/deadmines-independent-2026-10-19/metadata.json",
+      "sha256": "900c7a9a1301be22cdf6b5f59dcc9c84b0c2cf934256c473a5a8aefdb2e28001",
+      "bytes": 423,
+      "csvRows": null
+    },
+    {
+      "revision": "b16c65192a20eb7055f5eb62d8c8a4d386fb9e7d",
+      "file": "docs/data/deadmines-independent-2026-10-19/run-samples.csv",
+      "sha256": "eb84e7d000a1bc7d994cfc211062898b50b1288ddfc79435f8b5fd3316441479",
+      "bytes": 440035,
+      "csvRows": 7200
+    },
+    {
+      "revision": "b16c65192a20eb7055f5eb62d8c8a4d386fb9e7d",
+      "file": "docs/data/deadmines-independent-2026-10-19/runs.json",
+      "sha256": "2a6a0ffa9e7aa5814f6ac2c6f59a33d8843eff16b8c2e457043bfbd3e3089161",
+      "bytes": 13425,
+      "csvRows": null
+    },
+    {
+      "revision": "b16c65192a20eb7055f5eb62d8c8a4d386fb9e7d",
+      "file": "docs/data/deadmines-independent-2026-10-19/sensitivity.json",
+      "sha256": "c17ffa188f434e63d65acd4e3f7c4228d97d773e31ec62e10edf8b13869acc75",
+      "bytes": 4562,
+      "csvRows": null
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "sourceRevision": "4900ff34337052c9a94c3c2ac423b27637d5397d",
+  "changes": [
+    "Only sort comparator shuffle replaced by seeded Fisher-Yates; output path redirected; logs suppressed."
+  ],
+  "limitations": [
+    "Same seed does not preserve later random draws: algorithms consume different numbers of RNG calls. In long-run a shared RNG also selects later enemies, so differences are joint scenario/shuffle effects.",
+    "Rerun uses current Node runtime; random comparator behavior is runtime-dependent.",
+    "No upgrades, gold cards, artifacts or route choice added to the linear experiment."
+  ],
+  "comparisons": [
+    {
+      "file": "power-curve.json",
+      "historicalRows": 30,
+      "rerunRows": 30,
+      "exactHistoricalReproduction": true,
+      "maxWinShift": 2,
+      "maxTurnShift": 0.3199999999999994
+    },
+    {
+      "file": "long-run-dmg1-hp1.json",
+      "historicalRows": 40,
+      "rerunRows": 40,
+      "exactHistoricalReproduction": true,
+      "maxWinShift": 12.5,
+      "maxTurnShift": 0.06999999999999984
+    },
+    {
+      "file": "long-run-dmg0.75-hp0.8.json",
+      "historicalRows": 40,
+      "rerunRows": 40,
+      "exactHistoricalReproduction": true,
+      "maxWinShift": 13.799999999999997,
+      "maxTurnShift": 0.0900000000000003
+    }
+  ]
+}
