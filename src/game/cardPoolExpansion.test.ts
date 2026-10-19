@@ -234,8 +234,8 @@ describe('Card Pool Expansion v0.1', () => {
     expect(pulley.heroes.mage.armor).toBe(2)
   })
 
-  it('leaves draft card art unintegrated with a readable UI fallback and supports ID-based enemy art', () => {
-    expect(expansionIds.every(id => !cardArt[id])).toBe(true)
+  it('has Krea art for every expansion card and supports ID-based enemy art', () => {
+    expect(expansionIds.every(id => !!cardArt[id])).toBe(true)
     const state = fight(['ice-echo'])
     const cardPreview = previewCard(state, cardDefinition('ice-echo'))
     expect(cardNotes(cardDefinition('ice-echo'), cardPreview).description).toBe(cardDefinition('ice-echo').description)

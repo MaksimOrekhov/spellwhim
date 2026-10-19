@@ -73,7 +73,7 @@ const style = computed(() => ({ ...classThemeStyle(props.card.className), '--vis
 .sc-body{position:absolute;inset:.45em;display:flex;flex-direction:column;overflow:hidden;border-radius:1.15em .95em 1.25em 1em/1em 1.15em .95em 1.25em;background:linear-gradient(175deg,color-mix(in srgb,var(--class-primary) 38%,var(--class-surface)),var(--class-surface) 50%,color-mix(in srgb,var(--class-surface) 68%,#000));box-shadow:inset 0 0 1.2em #000a}
 .sc--arcane .sc-body{border-radius:1.9em 1.9em 1.1em 1.2em/1.7em 2em 1.2em 1.1em}
 .sc-art{position:relative;display:block;flex:none;height:5.6em;overflow:hidden;border-bottom:.14em solid color-mix(in srgb,var(--class-accent) 82%,#fff);background:var(--class-surface)}
-.sc-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 45%}
+.sc-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 75%}
 .sc-art-pending{position:absolute;inset:0;display:grid;place-items:center;padding:.4em;background:var(--class-surface);color:var(--class-accent);text-shadow:none;text-align:center}
 .sc-art-pending small{font:800 .72em/1.1 var(--font-ui);letter-spacing:.03em;color:var(--ink);text-transform:uppercase}
 .sc-shade{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,#0000 58%,#0006),linear-gradient(#0000 62%,#000a)}

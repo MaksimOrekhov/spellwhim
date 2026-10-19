@@ -148,6 +148,8 @@
 
 ## Полный инвентарь арта способностей
 
+> Устарело: таблица ниже описывает прежние арты. Актуальная привязка — раздел «Интеграция иллюстраций карт Krea v0.1».
+
 Пути в колонке «Отображается сейчас» — фактические связи из `src/ui/cardArt.ts`. Старые шесть JPEG уже используются, но их пейзажные фоны привязывают способность к отдельному биому: после утверждения нового направления заменять их на нейтральные версии по очереди. Это не мешает текущему пилоту. SVG остаются техническими заглушками; три карты Кровотечения используют повторный арт; восемь новых карт показывают читаемый арт-pending fallback. Пилотные JPEG вне production-каталога и в карту пока не подключены.
 
 | Card ID | Карта | Отображается сейчас | Статус и следующее действие |
@@ -199,6 +201,40 @@
 Неиспользованные пользовательские варианты сохранены в исходном виде: `02_scarlet_swordsman.png` (не передаёт возраст и силуэт ветерана), `04_goblin_saboteur.png` (дублирует роль пороховщика), `05_forge_mechanic.png` и `06_iron_cyber_smith.png` (не совпадает вид существа), `09_tunnel_brute.png`, `10_mad_alchemist.png`, `11_scarlet_battlecaster.png` (нет соответствующих встреч в текущем ростере). Они остаются входными черновиками, не подключены и не считаются утверждёнными. Выбор финальных изображений врагов остаётся отдельным этапом, в том числе с альтернативами Crimson Oath.
 
 Реальные снимки боевого экрана для проверки портретов и кадрирования: `docs/data/krea-character-portraits-v01/battle-1280x720.png` и `docs/data/krea-character-portraits-v01/battle-1920x1080.png`. Контактный лист игровых вариантов для быстрой проверки: `art-exploration/krea-character-portraits-v01/selected-portraits-review.jpg`.
+
+## Интеграция иллюстраций карт Krea v0.1
+
+Источник: пользовательские генерации Krea 2 Turbo (3:2, 1256×840 PNG). Статус: **подключено для игрового ревью, окончательное художественное утверждение ожидается.** Исходные PNG сохранены без изменений в `src/assets/art/<id>.png`; в игру импортируются только оптимизированные WebP 1024×685 (пропорции 3:2 не обрезаны, качество 84, ≈2,1 МБ на 23 файла), поэтому PNG в production-сборку не попадают. Прежние JPEG/SVG (`sword-strike.jpg`, `parry.svg` и др.) остаются на диске для отката и сравнения, но больше не импортируются. Вариантов `interpose-v2/v3` в проекте не найдено — использован единственный `interpose.png`; художественное решение по нему принимает ревью.
+
+Показ: `object-fit: cover`, `object-position: center 75%` в `SpellCard.vue` и `CompactCard.vue` — смещение вниз показывает основное действие, которое иначе уходило под ленту названия. Геометрия карты не менялась. Реестр — `src/ui/cardArt.ts`, проверка полноты — `src/ui/cardArt.test.ts`. Контактные листы: `art-exploration/krea-card-art-v01/contact-sheet.jpg` (арты) и `contact-sheet-cards.jpg` (карты в игре); скриншоты — `docs/data/krea-card-art-v01/`.
+
+| ID | Карта | Класс | Исходный PNG | Игровой файл | Статус |
+| --- | --- | --- | --- | --- | --- |
+| `sword-strike` | Удар мечом | Воин | `src/assets/art/sword-strike.png` | `src/assets/art/sword-strike-krea.webp` | подключено (`cardArt.ts`) |
+| `fireball` | Огненный шар | Маг | `src/assets/art/fireball.png` | `src/assets/art/fireball-krea.webp` | подключено (`cardArt.ts`) |
+| `guard` | Защитная стойка | Воин | `src/assets/art/guard.png` | `src/assets/art/guard-krea.webp` | подключено (`cardArt.ts`) |
+| `parry` | Парирование | Воин | `src/assets/art/parry.png` | `src/assets/art/parry-krea.webp` | подключено (`cardArt.ts`) |
+| `shield-bash` | Удар щитом | Воин | `src/assets/art/shield-bash.png` | `src/assets/art/shield-bash-krea.webp` | подключено (`cardArt.ts`) |
+| `interpose` | Прикрыть союзника | Воин | `src/assets/art/interpose.png` | `src/assets/art/interpose-krea.webp` | подключено (`cardArt.ts`) |
+| `frostbolt` | Ледяная стрела | Маг | `src/assets/art/frostbolt.png` | `src/assets/art/frostbolt-krea.webp` | подключено (`cardArt.ts`) |
+| `arcane-insight` | Тайное предвидение | Маг | `src/assets/art/arcane-insight.png` | `src/assets/art/arcane-insight-krea.webp` | подключено (`cardArt.ts`) |
+| `ice-ward` | Ледяной покров | Маг | `src/assets/art/ice-ward.png` | `src/assets/art/ice-ward-krea.webp` | подключено (`cardArt.ts`) |
+| `quick-cut` | Быстрый выпад | Воин | `src/assets/art/quick-cut.png` | `src/assets/art/quick-cut-krea.webp` | подключено (`cardArt.ts`) |
+| `thunderbolt` | Грозовой разряд | Маг | `src/assets/art/thunderbolt.png` | `src/assets/art/thunderbolt-krea.webp` | подключено (`cardArt.ts`) |
+| `rend` | Рассекающий удар | Воин | `src/assets/art/rend.png` | `src/assets/art/rend-krea.webp` | подключено (`cardArt.ts`) |
+| `reaping-blow` | Кровавая расплата | Воин | `src/assets/art/reaping-blow.png` | `src/assets/art/reaping-blow-krea.webp` | подключено (`cardArt.ts`) |
+| `boil-blood` | Жар в венах | Маг | `src/assets/art/boil-blood.png` | `src/assets/art/boil-blood-krea.webp` | подключено (`cardArt.ts`) |
+| `bastion` | Каменный бастион | Воин | `src/assets/art/bastion.png` | `src/assets/art/bastion-krea.webp` | подключено (`cardArt.ts`) |
+| `stance-strike` | Удар из стойки | Воин | `src/assets/art/stance-strike.png` | `src/assets/art/stance-strike-krea.webp` | подключено (`cardArt.ts`) |
+| `wound-clamp` | Зажать рану | Воин | `src/assets/art/wound-clamp.png` | `src/assets/art/wound-clamp-krea.webp` | подключено (`cardArt.ts`) |
+| `covering-counter` | Перехват удара | Воин | `src/assets/art/covering-counter.png` | `src/assets/art/covering-counter-krea.webp` | подключено (`cardArt.ts`) |
+| `crushing-swing` | Сокрушительный замах | Воин | `src/assets/art/crushing-swing.png` | `src/assets/art/crushing-swing-krea.webp` | подключено (`cardArt.ts`) |
+| `arcane-mark` | Арканная метка | Маг | `src/assets/art/arcane-mark.png` | `src/assets/art/arcane-mark-krea.webp` | подключено (`cardArt.ts`) |
+| `ice-echo` | Ледяное эхо | Маг | `src/assets/art/ice-echo.png` | `src/assets/art/ice-echo-krea.webp` | подключено (`cardArt.ts`) |
+| `frost-seal` | Синяя печать | Маг | `src/assets/art/frost-seal.png` | `src/assets/art/frost-seal-krea.webp` | подключено (`cardArt.ts`) |
+| `blood-resonance` | Кровавый резонанс | Маг | `src/assets/art/blood-resonance.png` | `src/assets/art/blood-resonance-krea.webp` | подключено (`cardArt.ts`) |
+
+Неподключённых карт нет: все 23 ID имеют собственное изображение.
 
 ## Англоязычные промпты
 

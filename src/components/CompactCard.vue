@@ -41,7 +41,7 @@ const style = computed(() => classThemeStyle(props.card.className))
 .tc>*{pointer-events:none}
 .tc-art{position:relative;display:block;overflow:hidden;border-radius:.8em .7em .3em .3em;background:var(--class-surface);border:.1em solid color-mix(in srgb,var(--class-accent) 80%,#fff)}
 .tc--arcane .tc-art{border-radius:1.2em 1.2em .3em .3em}
-.tc-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 45%}
+.tc-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 75%}
 .tc-art-pending{position:absolute;inset:0;display:grid;place-items:center;padding:.35em;background:var(--class-surface);color:var(--class-accent);font:800 .58em/1.05 var(--font-ui);letter-spacing:.025em;text-align:center;text-transform:uppercase}
 .tc-marks{position:absolute;right:.2em;top:.2em;display:flex;gap:.15em}
 .tc-marks .glyph{width:1.25em;height:1.25em;padding:.2em;border-radius:50%;background:#1b1210d0;color:var(--c-vulnerable)}
