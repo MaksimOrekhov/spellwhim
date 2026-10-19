@@ -1,0 +1,589 @@
+{
+  "metadata": {
+    "seedBase": 42100,
+    "runs": 300,
+    "information": "public",
+    "rewardPolicy": "fixed rank; artifact first until both slots occupied; no skip (unimplemented)",
+    "restPolicy": "lowest health ratio",
+    "warning": "Actual current map, not the proposed 21-room design",
+    "rawSamples": "run-samples.csv"
+  },
+  "rows": [
+    {
+      "config": "18/h8",
+      "strategy": "balanced",
+      "policy": "safe",
+      "n": 300,
+      "wins": 266,
+      "winRate": 0.8866666666666667,
+      "win95": [
+        0.8457997619361538,
+        0.917755985532264
+      ],
+      "fights": 4.756666666666667,
+      "elites": 0,
+      "rests": 2.236666666666667,
+      "healed": 9.553333333333333,
+      "deck": 21.756666666666668,
+      "fallen": {
+        "mage": 23,
+        "none": 266,
+        "warrior": 11
+      },
+      "bossEntries": 298,
+      "bossEntryMage": 15.46979865771812
+    },
+    {
+      "config": "18/h8",
+      "strategy": "balanced",
+      "policy": "mixed",
+      "n": 300,
+      "wins": 243,
+      "winRate": 0.81,
+      "win95": [
+        0.7617952561979654,
+        0.8503658172034386
+      ],
+      "fights": 5.556666666666667,
+      "elites": 0.34,
+      "rests": 1.3866666666666667,
+      "healed": 8.32,
+      "deck": 22.216666666666665,
+      "fallen": {
+        "warrior": 23,
+        "none": 243,
+        "mage": 32,
+        "warrior+mage": 2
+      },
+      "bossEntries": 291,
+      "bossEntryMage": 13.65635738831615
+    },
+    {
+      "config": "18/h8",
+      "strategy": "balanced",
+      "policy": "risky",
+      "n": 300,
+      "wins": 70,
+      "winRate": 0.23333333333333334,
+      "win95": [
+        0.18902749123816998,
+        0.28438233809395574
+      ],
+      "fights": 6.206666666666667,
+      "elites": 1.4866666666666666,
+      "rests": 0,
+      "healed": 0,
+      "deck": 21.843333333333334,
+      "fallen": {
+        "warrior": 183,
+        "none": 70,
+        "warrior+mage": 2,
+        "mage": 45
+      },
+      "bossEntries": 180,
+      "bossEntryMage": 9.4
+    },
+    {
+      "config": "18/h8",
+      "strategy": "defensive",
+      "policy": "safe",
+      "n": 300,
+      "wins": 298,
+      "winRate": 0.9933333333333333,
+      "win95": [
+        0.9760219257685385,
+        0.9981698899670288
+      ],
+      "fights": 4.763333333333334,
+      "elites": 0,
+      "rests": 2.236666666666667,
+      "healed": 6.223333333333334,
+      "deck": 21.763333333333332,
+      "fallen": {
+        "none": 298,
+        "warrior": 2
+      },
+      "bossEntries": 300,
+      "bossEntryMage": 17.73
+    },
+    {
+      "config": "18/h8",
+      "strategy": "defensive",
+      "policy": "mixed",
+      "n": 300,
+      "wins": 290,
+      "winRate": 0.9666666666666667,
+      "win95": [
+        0.9397375485424309,
+        0.9817952501263492
+      ],
+      "fights": 6.023333333333333,
+      "elites": 0.68,
+      "rests": 0.9666666666666667,
+      "healed": 5.8,
+      "deck": 22.343333333333334,
+      "fallen": {
+        "none": 290,
+        "warrior": 10
+      },
+      "bossEntries": 298,
+      "bossEntryMage": 16.956375838926174
+    },
+    {
+      "config": "18/h8",
+      "strategy": "defensive",
+      "policy": "risky",
+      "n": 300,
+      "wins": 202,
+      "winRate": 0.6733333333333333,
+      "win95": [
+        0.6183611701576165,
+        0.7239224407765018
+      ],
+      "fights": 6.75,
+      "elites": 1.56,
+      "rests": 0,
+      "healed": 0,
+      "deck": 22.243333333333332,
+      "fallen": {
+        "none": 202,
+        "warrior": 98
+      },
+      "bossEntries": 255,
+      "bossEntryMage": 16.266666666666666
+    },
+    {
+      "config": "14/h8",
+      "strategy": "balanced",
+      "policy": "safe",
+      "n": 300,
+      "wins": 275,
+      "winRate": 0.9166666666666666,
+      "win95": [
+        0.8798776190248736,
+        0.94291952264368
+      ],
+      "fights": 4.763333333333334,
+      "elites": 0,
+      "rests": 2.236666666666667,
+      "healed": 9.06,
+      "deck": 17.763333333333332,
+      "fallen": {
+        "mage": 22,
+        "none": 275,
+        "warrior": 3
+      },
+      "bossEntries": 300,
+      "bossEntryMage": 15.25
+    },
+    {
+      "config": "14/h8",
+      "strategy": "balanced",
+      "policy": "mixed",
+      "n": 300,
+      "wins": 247,
+      "winRate": 0.8233333333333334,
+      "win95": [
+        0.7761666509606149,
+        0.8623239309741828
+      ],
+      "fights": 5.6866666666666665,
+      "elites": 0.37666666666666665,
+      "rests": 1.2933333333333332,
+      "healed": 7.76,
+      "deck": 18.31,
+      "fallen": {
+        "none": 247,
+        "mage": 43,
+        "warrior": 10
+      },
+      "bossEntries": 297,
+      "bossEntryMage": 13.067340067340067
+    },
+    {
+      "config": "14/h8",
+      "strategy": "balanced",
+      "policy": "risky",
+      "n": 300,
+      "wins": 97,
+      "winRate": 0.3233333333333333,
+      "win95": [
+        0.27292452032605247,
+        0.3782094916064807
+      ],
+      "fights": 6.503333333333333,
+      "elites": 1.5333333333333334,
+      "rests": 0,
+      "healed": 0,
+      "deck": 18.036666666666665,
+      "fallen": {
+        "mage": 79,
+        "warrior": 121,
+        "none": 97,
+        "warrior+mage": 3
+      },
+      "bossEntries": 212,
+      "bossEntryMage": 7.995283018867925
+    },
+    {
+      "config": "14/h8",
+      "strategy": "defensive",
+      "policy": "safe",
+      "n": 300,
+      "wins": 300,
+      "winRate": 1,
+      "win95": [
+        0.9873565700022643,
+        0.9999999999999999
+      ],
+      "fights": 4.763333333333334,
+      "elites": 0,
+      "rests": 2.236666666666667,
+      "healed": 5.336666666666667,
+      "deck": 17.763333333333332,
+      "fallen": {
+        "none": 300
+      },
+      "bossEntries": 300,
+      "bossEntryMage": 17.7
+    },
+    {
+      "config": "14/h8",
+      "strategy": "defensive",
+      "policy": "mixed",
+      "n": 300,
+      "wins": 299,
+      "winRate": 0.9966666666666667,
+      "win95": [
+        0.9813628354450568,
+        0.9994113574238592
+      ],
+      "fights": 6.193333333333333,
+      "elites": 0.8366666666666667,
+      "rests": 0.8033333333333333,
+      "healed": 4.82,
+      "deck": 18.356666666666666,
+      "fallen": {
+        "none": 299,
+        "warrior": 1
+      },
+      "bossEntries": 299,
+      "bossEntryMage": 16.879598662207357
+    },
+    {
+      "config": "14/h8",
+      "strategy": "defensive",
+      "policy": "risky",
+      "n": 300,
+      "wins": 267,
+      "winRate": 0.89,
+      "win95": [
+        0.8495429318702987,
+        0.9205951927314675
+      ],
+      "fights": 6.923333333333333,
+      "elites": 1.58,
+      "rests": 0,
+      "healed": 0,
+      "deck": 18.363333333333333,
+      "fallen": {
+        "none": 267,
+        "warrior": 33
+      },
+      "bossEntries": 285,
+      "bossEntryMage": 16.480701754385965
+    },
+    {
+      "config": "14/h7",
+      "strategy": "balanced",
+      "policy": "safe",
+      "n": 300,
+      "wins": 264,
+      "winRate": 0.88,
+      "win95": [
+        0.8383413318338598,
+        0.9120496613678611
+      ],
+      "fights": 4.76,
+      "elites": 0,
+      "rests": 2.236666666666667,
+      "healed": 9.71,
+      "deck": 17.76,
+      "fallen": {
+        "mage": 33,
+        "none": 264,
+        "warrior": 3
+      },
+      "bossEntries": 299,
+      "bossEntryMage": 15.073578595317725
+    },
+    {
+      "config": "14/h7",
+      "strategy": "balanced",
+      "policy": "mixed",
+      "n": 300,
+      "wins": 227,
+      "winRate": 0.7566666666666667,
+      "win95": [
+        0.7050638169697229,
+        0.8017792222981063
+      ],
+      "fights": 5.676666666666667,
+      "elites": 0.3566666666666667,
+      "rests": 1.2866666666666666,
+      "healed": 7.72,
+      "deck": 18.32,
+      "fallen": {
+        "mage": 54,
+        "none": 227,
+        "warrior": 18,
+        "warrior+mage": 1
+      },
+      "bossEntries": 295,
+      "bossEntryMage": 12.793220338983051
+    },
+    {
+      "config": "14/h7",
+      "strategy": "balanced",
+      "policy": "risky",
+      "n": 300,
+      "wins": 67,
+      "winRate": 0.22333333333333333,
+      "win95": [
+        0.1798706282757476,
+        0.27379206965633285
+      ],
+      "fights": 6.33,
+      "elites": 1.5066666666666666,
+      "rests": 0,
+      "healed": 0,
+      "deck": 17.933333333333334,
+      "fallen": {
+        "warrior": 149,
+        "mage": 80,
+        "none": 67,
+        "warrior+mage": 4
+      },
+      "bossEntries": 194,
+      "bossEntryMage": 7.958762886597938
+    },
+    {
+      "config": "14/h7",
+      "strategy": "defensive",
+      "policy": "safe",
+      "n": 300,
+      "wins": 299,
+      "winRate": 0.9966666666666667,
+      "win95": [
+        0.9813628354450568,
+        0.9994113574238592
+      ],
+      "fights": 4.763333333333334,
+      "elites": 0,
+      "rests": 2.236666666666667,
+      "healed": 6.1466666666666665,
+      "deck": 17.763333333333332,
+      "fallen": {
+        "none": 299,
+        "warrior": 1
+      },
+      "bossEntries": 300,
+      "bossEntryMage": 17.596666666666668
+    },
+    {
+      "config": "14/h7",
+      "strategy": "defensive",
+      "policy": "mixed",
+      "n": 300,
+      "wins": 292,
+      "winRate": 0.9733333333333334,
+      "win95": [
+        0.9482704597024538,
+        0.9864270932330232
+      ],
+      "fights": 6.046666666666667,
+      "elites": 0.7133333333333334,
+      "rests": 0.95,
+      "healed": 5.7,
+      "deck": 18.333333333333332,
+      "fallen": {
+        "none": 292,
+        "warrior": 7,
+        "mage": 1
+      },
+      "bossEntries": 299,
+      "bossEntryMage": 16.434782608695652
+    },
+    {
+      "config": "14/h7",
+      "strategy": "defensive",
+      "policy": "risky",
+      "n": 300,
+      "wins": 221,
+      "winRate": 0.7366666666666667,
+      "win95": [
+        0.6840594845533765,
+        0.7832892919143619
+      ],
+      "fights": 6.773333333333333,
+      "elites": 1.5666666666666667,
+      "rests": 0,
+      "healed": 0,
+      "deck": 18.26,
+      "fallen": {
+        "none": 221,
+        "warrior": 77,
+        "mage": 2
+      },
+      "bossEntries": 259,
+      "bossEntryMage": 15.455598455598455
+    },
+    {
+      "config": "12/h6",
+      "strategy": "balanced",
+      "policy": "safe",
+      "n": 300,
+      "wins": 245,
+      "winRate": 0.8166666666666667,
+      "win95": [
+        0.7689704376794906,
+        0.85635538998861
+      ],
+      "fights": 4.753333333333333,
+      "elites": 0,
+      "rests": 2.236666666666667,
+      "healed": 9.233333333333333,
+      "deck": 15.753333333333334,
+      "fallen": {
+        "warrior": 12,
+        "none": 245,
+        "mage": 42,
+        "warrior+mage": 1
+      },
+      "bossEntries": 299,
+      "bossEntryMage": 15.441471571906355
+    },
+    {
+      "config": "12/h6",
+      "strategy": "balanced",
+      "policy": "mixed",
+      "n": 300,
+      "wins": 190,
+      "winRate": 0.6333333333333333,
+      "win95": [
+        0.5774356684994387,
+        0.6858594168344984
+      ],
+      "fights": 5.5633333333333335,
+      "elites": 0.38,
+      "rests": 1.3533333333333333,
+      "healed": 8.12,
+      "deck": 16.183333333333334,
+      "fallen": {
+        "none": 190,
+        "warrior": 35,
+        "mage": 75
+      },
+      "bossEntries": 287,
+      "bossEntryMage": 12.874564459930314
+    },
+    {
+      "config": "12/h6",
+      "strategy": "balanced",
+      "policy": "risky",
+      "n": 300,
+      "wins": 26,
+      "winRate": 0.08666666666666667,
+      "win95": [
+        0.05982848995477098,
+        0.12395674551002385
+      ],
+      "fights": 5.933333333333334,
+      "elites": 1.4566666666666668,
+      "rests": 0,
+      "healed": 0,
+      "deck": 15.67,
+      "fallen": {
+        "warrior": 186,
+        "mage": 83,
+        "none": 26,
+        "warrior+mage": 5
+      },
+      "bossEntries": 140,
+      "bossEntryMage": 7.178571428571429
+    },
+    {
+      "config": "12/h6",
+      "strategy": "defensive",
+      "policy": "safe",
+      "n": 300,
+      "wins": 293,
+      "winRate": 0.9766666666666667,
+      "win95": [
+        0.952627445667121,
+        0.9886524844017043
+      ],
+      "fights": 4.763333333333334,
+      "elites": 0,
+      "rests": 2.236666666666667,
+      "healed": 6.953333333333333,
+      "deck": 15.763333333333334,
+      "fallen": {
+        "none": 293,
+        "warrior": 4,
+        "mage": 3
+      },
+      "bossEntries": 300,
+      "bossEntryMage": 17.336666666666666
+    },
+    {
+      "config": "12/h6",
+      "strategy": "defensive",
+      "policy": "mixed",
+      "n": 300,
+      "wins": 275,
+      "winRate": 0.9166666666666666,
+      "win95": [
+        0.8798776190248736,
+        0.94291952264368
+      ],
+      "fights": 5.8966666666666665,
+      "elites": 0.6166666666666667,
+      "rests": 1.0733333333333333,
+      "healed": 6.44,
+      "deck": 16.28,
+      "fallen": {
+        "none": 275,
+        "warrior": 23,
+        "mage": 2
+      },
+      "bossEntries": 295,
+      "bossEntryMage": 16.16271186440678
+    },
+    {
+      "config": "12/h6",
+      "strategy": "defensive",
+      "policy": "risky",
+      "n": 300,
+      "wins": 143,
+      "winRate": 0.4766666666666667,
+      "win95": [
+        0.4208006536261767,
+        0.5331227064403843
+      ],
+      "fights": 6.473333333333334,
+      "elites": 1.55,
+      "rests": 0,
+      "healed": 0,
+      "deck": 16.046666666666667,
+      "fallen": {
+        "none": 143,
+        "warrior": 151,
+        "mage": 5,
+        "warrior+mage": 1
+      },
+      "bossEntries": 206,
+      "bossEntryMage": 14.364077669902912
+    }
+  ]
+}

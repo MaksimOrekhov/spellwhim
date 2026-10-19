@@ -1,0 +1,181 @@
+{
+  "pairedCurrentRuns": [
+    {
+      "strategy": "balanced",
+      "policy": "safe",
+      "n": 300,
+      "gained": 22,
+      "lost": 13,
+      "netPercentagePoints": 3
+    },
+    {
+      "strategy": "balanced",
+      "policy": "mixed",
+      "n": 300,
+      "gained": 39,
+      "lost": 35,
+      "netPercentagePoints": 1.3333333333333333
+    },
+    {
+      "strategy": "balanced",
+      "policy": "risky",
+      "n": 300,
+      "gained": 65,
+      "lost": 38,
+      "netPercentagePoints": 9
+    },
+    {
+      "strategy": "defensive",
+      "policy": "safe",
+      "n": 300,
+      "gained": 2,
+      "lost": 0,
+      "netPercentagePoints": 0.6666666666666666
+    },
+    {
+      "strategy": "defensive",
+      "policy": "mixed",
+      "n": 300,
+      "gained": 10,
+      "lost": 1,
+      "netPercentagePoints": 3
+    },
+    {
+      "strategy": "defensive",
+      "policy": "risky",
+      "n": 300,
+      "gained": 74,
+      "lost": 9,
+      "netPercentagePoints": 21.666666666666668
+    }
+  ],
+  "growth": {
+    "assumptions": "8 ordinary rewards accepted independently with p=.65; 2 boss cards accepted; 2 elite cards accepted with p=.6; two removals; replacements/upgrades do not change size",
+    "expectedSize": 20.4,
+    "probability18to22": 0.893406928253125
+  },
+  "health": {
+    "warning": "Synthetic attrition model, NOT the battle engine and NOT a forecast of game win rate. Independent categorical TOTAL party HP loss per fight, all assigned to one hero. No cards, armor or adaptive enemies.",
+    "timeline": [
+      "normal",
+      "normal",
+      "event",
+      "event",
+      "normal",
+      "camp",
+      "boss",
+      "normal",
+      "normal",
+      "elite",
+      "event",
+      "normal",
+      "camp",
+      "boss",
+      "normal",
+      "event",
+      "elite",
+      "event",
+      "normal",
+      "camp",
+      "boss"
+    ],
+    "rows": [
+      {
+        "mageFocus": 0.5,
+        "checkpointEach": 0,
+        "campPolicy": "lowest-ratio",
+        "n": 100000,
+        "toySurvival": 0.45206,
+        "deadWarrior": 14576,
+        "deadMage": 40218,
+        "actualHealing": 13.13034,
+        "wastedHealing": 1.65984,
+        "survivorsFinalMinRatio10": 0.08
+      },
+      {
+        "mageFocus": 0.5,
+        "checkpointEach": 0,
+        "campPolicy": "split",
+        "n": 100000,
+        "toySurvival": 0.3488,
+        "deadWarrior": 18109,
+        "deadMage": 47011,
+        "actualHealing": 11.65656,
+        "wastedHealing": 2.52996,
+        "survivorsFinalMinRatio10": 0.05555555555555555
+      },
+      {
+        "mageFocus": 0.5,
+        "checkpointEach": 4,
+        "campPolicy": "lowest-ratio",
+        "n": 100000,
+        "toySurvival": 0.85077,
+        "deadWarrior": 2148,
+        "deadMage": 12775,
+        "actualHealing": 26.661,
+        "wastedHealing": 6.0691,
+        "survivorsFinalMinRatio10": 0.16666666666666666
+      },
+      {
+        "mageFocus": 0.5,
+        "checkpointEach": 4,
+        "campPolicy": "split",
+        "n": 100000,
+        "toySurvival": 0.73896,
+        "deadWarrior": 4776,
+        "deadMage": 21328,
+        "actualHealing": 24.49402,
+        "wastedHealing": 7.41666,
+        "survivorsFinalMinRatio10": 0.12
+      },
+      {
+        "mageFocus": 0.7,
+        "checkpointEach": 0,
+        "campPolicy": "lowest-ratio",
+        "n": 100000,
+        "toySurvival": 0.27931,
+        "deadWarrior": 2936,
+        "deadMage": 69133,
+        "actualHealing": 11.12873,
+        "wastedHealing": 1.56739,
+        "survivorsFinalMinRatio10": 0.05555555555555555
+      },
+      {
+        "mageFocus": 0.7,
+        "checkpointEach": 0,
+        "campPolicy": "split",
+        "n": 100000,
+        "toySurvival": 0.15365,
+        "deadWarrior": 2501,
+        "deadMage": 82134,
+        "actualHealing": 8.91214,
+        "wastedHealing": 2.71208,
+        "survivorsFinalMinRatio10": 0.05555555555555555
+      },
+      {
+        "mageFocus": 0.7,
+        "checkpointEach": 4,
+        "campPolicy": "lowest-ratio",
+        "n": 100000,
+        "toySurvival": 0.67164,
+        "deadWarrior": 248,
+        "deadMage": 32588,
+        "actualHealing": 24.67653,
+        "wastedHealing": 6.02603,
+        "survivorsFinalMinRatio10": 0.16666666666666666
+      },
+      {
+        "mageFocus": 0.7,
+        "checkpointEach": 4,
+        "campPolicy": "split",
+        "n": 100000,
+        "toySurvival": 0.45045,
+        "deadWarrior": 377,
+        "deadMage": 54578,
+        "actualHealing": 20.58304,
+        "wastedHealing": 7.84726,
+        "survivorsFinalMinRatio10": 0.1111111111111111
+      }
+    ]
+  }
+}

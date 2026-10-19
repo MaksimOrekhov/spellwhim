@@ -1,0 +1,12 @@
+{
+  "baseCommit": "a64b434a08a09ded10dfacbe7fa01e088954e83d",
+  "seedBase": 73100,
+  "runs": 300,
+  "plannerRuns": 0,
+  "mapRuns": 1000,
+  "node": "v22.17.1",
+  "script": "research/deadmines-independent/run.mjs",
+  "battleCount": 56700,
+  "actualRunCount": 7200,
+  "note": "All engine fights and actual routes use unchanged source. Proposed map has only topology/room types; no proposed encounter/reward balance claims."
+}

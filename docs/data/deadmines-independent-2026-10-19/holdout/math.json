@@ -1,0 +1,165 @@
+{
+  "opening": [
+    {
+      "config": "18/h8",
+      "N": 18,
+      "H": 8,
+      "armorCards": 10,
+      "pAnyArmor": 0.9999771470359705,
+      "pFrostbolt": 0.7058823529411764,
+      "pFrostboltAndSword": 0.48039215686274506,
+      "pSpecificSingleton": 0.4444444444444444,
+      "nominalAllSeenTurn": 6
+    },
+    {
+      "config": "16/h8",
+      "N": 16,
+      "H": 8,
+      "armorCards": 10,
+      "pAnyArmor": 1,
+      "pFrostbolt": 0.7666666666666666,
+      "pFrostboltAndSword": 0.5717948717948717,
+      "pSpecificSingleton": 0.5,
+      "nominalAllSeenTurn": 5
+    },
+    {
+      "config": "14/h8",
+      "N": 14,
+      "H": 8,
+      "armorCards": 7,
+      "pAnyArmor": 1,
+      "pFrostbolt": 0.8351648351648352,
+      "pFrostboltAndSword": 0.6853146853146854,
+      "pSpecificSingleton": 0.5714285714285714,
+      "nominalAllSeenTurn": 4
+    },
+    {
+      "config": "14/h7",
+      "N": 14,
+      "H": 7,
+      "armorCards": 7,
+      "pAnyArmor": 0.9997086247086248,
+      "pFrostbolt": 0.7692307692307692,
+      "pFrostboltAndSword": 0.5734265734265733,
+      "pSpecificSingleton": 0.5,
+      "nominalAllSeenTurn": 5
+    },
+    {
+      "config": "12/h8",
+      "N": 12,
+      "H": 8,
+      "armorCards": 6,
+      "pAnyArmor": 1,
+      "pFrostbolt": 0.9090909090909091,
+      "pFrostboltAndSword": 0.8202020202020202,
+      "pSpecificSingleton": 0.6666666666666666,
+      "nominalAllSeenTurn": 3
+    },
+    {
+      "config": "12/h6",
+      "N": 12,
+      "H": 6,
+      "armorCards": 6,
+      "pAnyArmor": 0.9989177489177489,
+      "pFrostbolt": 0.7727272727272727,
+      "pFrostboltAndSword": 0.5757575757575757,
+      "pSpecificSingleton": 0.5,
+      "nominalAllSeenTurn": 4
+    },
+    {
+      "config": "10/h6",
+      "N": 10,
+      "H": 6,
+      "armorCards": 5,
+      "pAnyArmor": 1,
+      "pFrostbolt": 0.6,
+      "pFrostboltAndSword": 0.33333333333333326,
+      "pSpecificSingleton": 0.6,
+      "nominalAllSeenTurn": 3
+    }
+  ],
+  "rewardPool": 20,
+  "rewardOffers": [
+    {
+      "choices": 3,
+      "pRend": 0.15,
+      "pAnyBleedApplier": 0.28421052631578947,
+      "pSeeRendIn8": 0.7275094749609375,
+      "pSeeRendAndReapingIn8": 0.5239289831514943
+    },
+    {
+      "choices": 5,
+      "pRend": 0.25,
+      "pAnyBleedApplier": 0.4473684210526315,
+      "pSeeRendIn8": 0.8998870849609375,
+      "pSeeRendAndReapingIn8": 0.8084734955005085
+    }
+  ],
+  "dilution": [
+    {
+      "N": 14,
+      "pOneNewCardIn8": 0.5714285714285714,
+      "pOneEachComboIn8": 0.3076923076923077,
+      "pTwoEachComboIn8": 0.6853146853146854
+    },
+    {
+      "N": 18,
+      "pOneNewCardIn8": 0.4444444444444444,
+      "pOneEachComboIn8": 0.18300653594771238,
+      "pTwoEachComboIn8": 0.48039215686274506
+    },
+    {
+      "N": 22,
+      "pOneNewCardIn8": 0.36363636363636365,
+      "pOneEachComboIn8": 0.12121212121212122,
+      "pTwoEachComboIn8": 0.34896331738437003
+    },
+    {
+      "N": 26,
+      "pOneNewCardIn8": 0.3076923076923077,
+      "pOneEachComboIn8": 0.08615384615384619,
+      "pTwoEachComboIn8": 0.26314381270903003
+    }
+  ],
+  "rareOfferModels": [
+    {
+      "elites": 0,
+      "guaranteedBossOffers": 2,
+      "expectedRareSelectionsIfTakeAll": 2,
+      "expectedRandomExtraSlots8Normals": 0.72,
+      "pAtLeastOneRandomRare8Normals": 0.5185827780882766
+    },
+    {
+      "elites": 1,
+      "guaranteedBossOffers": 2,
+      "expectedRareSelectionsIfTakeAll": 3,
+      "expectedRandomExtraSlots8Normals": 0.72,
+      "pAtLeastOneRandomRare8Normals": 0.5185827780882766
+    },
+    {
+      "elites": 2,
+      "guaranteedBossOffers": 2,
+      "expectedRareSelectionsIfTakeAll": 4,
+      "expectedRandomExtraSlots8Normals": 0.72,
+      "pAtLeastOneRandomRare8Normals": 0.5185827780882766
+    },
+    {
+      "elites": 3,
+      "guaranteedBossOffers": 2,
+      "expectedRareSelectionsIfTakeAll": 5,
+      "expectedRandomExtraSlots8Normals": 0.72,
+      "pAtLeastOneRandomRare8Normals": 0.5185827780882766
+    }
+  ],
+  "healthBudget": {
+    "initial": 43,
+    "checkpoint4EachTwice": 16,
+    "camp6ChosenThreeTimes": 18,
+    "availableUpperBound": 77,
+    "normalLoss2EightFights": 16,
+    "eliteLoss5TwoFights": 10,
+    "bossLoss7ThreeFights": 21,
+    "remainingAggregate": 30,
+    "warning": "A deterministic budget scenario, not survival probability. Per-hero losses and wasted healing matter."
+  }
+}
