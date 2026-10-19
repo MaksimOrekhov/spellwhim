@@ -2,7 +2,7 @@
 // Dev-only lab (card-preview.html): the real board, hand and reward screen driven by the real rules engine
 // in reproducible states. Query: ?view=hand|reward  &hand=8|10  &bonus=1  &mana=N  &elite=1  &ids=a,b,c  &rewardIds=a,b,c
 // &scene=<id of battleSceneIds> (battle scenes of src/ui/battleScenes.ts; replaces &enemy)  &intent=caption (banner variant with the action name)
-import { computed, shallowRef } from 'vue'
+import { computed, onMounted, shallowRef } from 'vue'
 import BattleBoard from './BattleBoard.vue'
 import BattleHand from './BattleHand.vue'
 import CardReward from './CardReward.vue'
@@ -18,6 +18,8 @@ import type { BattleState, CardDefinition, CardId } from '../game/types'
 import type { HandCardView } from '../composables/useBattle'
 
 const query = new URLSearchParams(window.location.search)
+// &still=1 freezes transitions so headless screenshots capture the settled layout.
+if (query.get('still') === '1') document.head.appendChild(Object.assign(document.createElement('style'), { textContent: '*,*::before,*::after{transition:none!important;animation:none!important}' }))
 const view = query.get('view') ?? 'hand'
 const handSize = Number(query.get('hand') ?? 8)
 const mixed: CardId[] = ['sword-strike', 'frostbolt', 'bastion', 'parry', 'thunderbolt', 'shield-bash', 'ice-ward', 'quick-cut', 'interpose', 'arcane-insight', 'fireball', 'guard']
@@ -43,6 +45,8 @@ function labState(): BattleState {
 }
 
 const state = shallowRef(labState())
+// &hover=N opens the zoomed card of the N-th hand slot (for screenshots; headless Chrome cannot hover).
+onMounted(() => { const n = Number(query.get('hover')); if (n) setTimeout(() => document.querySelectorAll('.slot')[n - 1]?.dispatchEvent(new MouseEvent('mouseenter')), 400) })
 function resolvePlay(actionId: string) {
   const next = structuredClone(state.value)
   const result = resolveCardPlay(next, actionId)

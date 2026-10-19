@@ -43,7 +43,7 @@ export function zoomFactor(trackBottom: number, dockTop: number, cardHeight: num
 /** Below this visible fraction a fan hides too much of every card; the hand switches to compact tiles instead. */
 export const COMPACT_BELOW = 0.75
 export const TILE_EM_WIDTH = 7.2
-export const TILE_EM_HEIGHT = 10
+export const TILE_EM_HEIGHT = 11
 
 export interface HandMode {
   compact: boolean

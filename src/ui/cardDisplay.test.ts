@@ -6,6 +6,7 @@ import { availableDungeonNodes, claimDungeonReward, createCampaignBattle, create
 import { cardDefinition, cards, encounters } from '../game/types'
 import type { BattleState, CardDefinition, CardId } from '../game/types'
 import { cardFace, cardNotes, damageParts, neutralPreview, ruleLines, spokenSummary, statChips } from './cardDisplay'
+import { cardNameScale } from './cardDisplay'
 import { COMPACT_BELOW, fanLayout, handMode, handOrder, zoomFactor, zoomShift } from './handLayout'
 import SpellCard from '../components/SpellCard.vue'
 import CardReward from '../components/CardReward.vue'
@@ -250,5 +251,17 @@ describe('hand layout', () => {
     expect(handMode(3, 950, 162, 7).compact).toBe(false)
     expect(wide.compact).toBe(fanLayout(10, 1380, 210, 9).visible < COMPACT_BELOW)
     expect(handMode(0, 950, 162, 7).compact).toBe(false)
+  })
+
+  it('keeps every card title on one line by shrinking long names in steps', () => {
+    expect(cardNameScale('Удар мечом')).toBe(1.2)
+    expect(cardNameScale('Сокрушительный замах')).toBeLessThan(cardNameScale('Ледяная стрела'))
+    let previous = Infinity
+    for (const name of ['а'.repeat(5), 'а'.repeat(14), 'а'.repeat(16), 'а'.repeat(18), 'а'.repeat(20), 'а'.repeat(24)]) {
+      const scale = cardNameScale(name)
+      expect(scale).toBeLessThanOrEqual(previous)
+      previous = scale
+    }
+    for (const card of cards) expect(cardNameScale(card.name)).toBeGreaterThanOrEqual(0.72)
   })
 })

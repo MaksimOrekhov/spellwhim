@@ -44,7 +44,7 @@ export interface CardFace { chips: StatChip[]; lines: RuleLine[]; tags: CardTag[
 
 const heroDative: Record<HeroId, string> = { warrior: 'Вариану', mage: 'Джайне' }
 const heroName: Record<HeroId, string> = { warrior: 'Вариан', mage: 'Джайна' }
-const kindLabel = { attack: 'атака', spell: 'заклинание', defense: 'защита' } as const
+export const kindLabel = { attack: 'атака', spell: 'заклинание', defense: 'защита' } as const
 
 /** Who an armor effect goes to, as shown on the card. Class targets name whoever owns that class in the current party. */
 function armorRecipient(target: Extract<CardEffect, { type: 'armor' }>['target'], preview: CardPreview, neutralThreatened: string): string {
@@ -217,4 +217,10 @@ let neutralState: BattleState | null = null
 export function neutralPreview(card: CardDefinition): CardPreview {
   neutralState ??= createBattle(encounters.find(encounter => encounter.id === 'twilight-guardian')!, undefined, { seed: 1 })
   return previewCard(neutralState, card)
+}
+
+/** Title scale (em) on the full card: a title stays on one line over the art, so longer ones shrink in steps instead of wrapping. */
+export function cardNameScale(name: string): number {
+  const n = name.length
+  return n <= 13 ? 1.2 : n <= 15 ? 1.05 : n <= 17 ? .88 : n <= 18 ? .84 : n <= 20 ? .8 : .72
 }
