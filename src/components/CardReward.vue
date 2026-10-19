@@ -4,16 +4,17 @@
 import { computed } from 'vue'
 import SpellCard from './SpellCard.vue'
 import CardNotes from './CardNotes.vue'
+import DeckViewer from './DeckViewer.vue'
 import { neutralPreview } from '../ui/cardDisplay'
-import type { CardDefinition } from '../game/types'
+import type { CardDefinition, PersistentCard } from '../game/types'
 
-const props = defineProps<{ options: CardDefinition[]; encounterName: string; elite?: boolean }>()
-const emit = defineEmits<{ choose: [card: CardDefinition] }>()
+const props = defineProps<{ options: CardDefinition[]; encounterName: string; elite?: boolean; deck?: readonly PersistentCard[]; offerId?: string }>()
+const emit = defineEmits<{ choose: [card: CardDefinition, offerId?: string]; skip: [offerId: string] }>()
 const items = computed(() => props.options.map(card => ({ card, preview: neutralPreview(card) })))
 </script>
 
 <template>
-  <main class="reward-screen">
+  <main class="reward-screen" :class="{ 'reward-screen--progression': deck || offerId }">
     <div class="reward-content">
       <header class="reward-heading">
         <span class="reward-spark" aria-hidden="true">✦</span>
@@ -22,25 +23,32 @@ const items = computed(() => props.options.map(card => ({ card, preview: neutral
         <p class="reward-copy">Выберите одну карту из {{ options.length }}. Она останется с отрядом до конца похода.</p>
       </header>
       <div class="reward-options" :style="{ '--n': options.length }">
-        <button v-for="{ card, preview } in items" :key="card.id" class="reward-option" :data-card-id="card.id" :aria-label="'Взять карту: ' + card.name + ', ' + card.cost + ' маны. ' + card.description" @click="emit('choose', card)">
+        <button v-for="{ card, preview } in items" :key="card.id" class="reward-option" :data-card-id="card.id" :aria-label="'Взять карту: ' + card.name + ', ' + card.cost + ' маны. ' + card.description" @click="emit('choose', card, offerId)">
           <SpellCard :card="card" :preview="preview" />
           <CardNotes class="reward-notes" :card="card" :preview="preview" mode="choose" />
         </button>
       </div>
+      <footer class="reward-actions">
+        <DeckViewer v-if="deck" :deck="deck" />
+        <button v-if="offerId && !elite" class="game-button" @click="emit('skip', offerId)">Пропустить награду</button>
+        <p v-if="offerId && !elite">Пропуск не даёт дополнительных наград.</p>
+      </footer>
     </div>
   </main>
 </template>
 
 <style scoped>
-.reward-screen{position:absolute;z-index:8;inset:0;display:grid;place-items:center;overflow:auto;padding:3vh 3vw;background:radial-gradient(ellipse at 50% 30%,#758768,#35564e 62%,#203c3a);color:var(--ink)}
+.reward-screen{--reward-room:330px;position:absolute;z-index:8;inset:0;display:grid;place-items:center;overflow:auto;padding:3vh 3vw;background:radial-gradient(ellipse at 50% 30%,#758768,#35564e 62%,#203c3a);color:var(--ink)}
+.reward-screen--progression{--reward-room:410px}
 .reward-content{width:min(1320px,100%);text-align:center}
+.reward-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--sp-3);margin-top:var(--sp-4)}.reward-actions p{flex-basis:100%;margin:0;color:var(--muted);font-size:var(--fs-sm)}
 .reward-heading{display:block}
 .reward-spark{font-size:30px;color:#ffe1a0}
 .reward-kicker{margin:6px 0;font-size:14px;color:#e1d4b4}
 .reward-content h1{margin:0;font:700 clamp(28px,3vw,46px) var(--font-display);color:#fff0ca}
 .reward-copy{margin:8px 0 clamp(14px,3vh,28px);color:#e4dfcb;font-size:16px}
 /* One card scale for the whole row: limited by the viewport height (card + notes + header) and by the width shared between the options. */
-.reward-options{--em:min(calc((100vh - 330px) / 22),calc((100vw - 9rem - (var(--n) - 1) * 1.5rem) / (12.4 * var(--n))),23px);display:flex;justify-content:center;align-items:flex-start;gap:clamp(12px,1.6vw,28px);font-size:var(--em)}
+.reward-options{--em:min(calc((100vh - var(--reward-room)) / 22),calc((100vw - 9rem - (var(--n) - 1) * 1.5rem) / (12.4 * var(--n))),23px);display:flex;justify-content:center;align-items:flex-start;gap:clamp(12px,1.6vw,28px);font-size:var(--em)}
 .reward-option{display:flex;flex-direction:column;gap:.9em;align-items:center;width:12.4em;padding:.2em;border:0;border-radius:2em;background:none;font-size:inherit;transition:transform var(--dur-base) var(--ease-out)}
 .reward-option:hover,.reward-option:focus-visible{transform:translateY(-.5em)}
 .reward-option:focus-visible{outline:var(--focus-ring);outline-offset:.2em}

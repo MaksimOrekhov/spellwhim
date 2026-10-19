@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, shallowRef } from 'vue'
+import { computed, ref, shallowRef, watch } from 'vue'
 import BattleBoard from './components/BattleBoard.vue'
 import BattleHand from './components/BattleHand.vue'
 import CampaignMap from './components/CampaignMap.vue'
@@ -10,22 +10,88 @@ import RunComplete from './components/RunComplete.vue'
 import { useBattle } from './composables/useBattle'
 import { useBattleControls } from './composables/useBattleControls'
 import { useBattleAnimation } from './composables/useBattleAnimation'
-import { availableDungeonNodes, claimDungeonArtifact, claimDungeonReward, createDungeonRun, deriveDungeonSeed, dungeonArtifactOptions, dungeonEncounter, dungeonNode, dungeonRewardOptions, enterDungeonNode, resolveDungeonBattle, resolveDungeonRest } from './game/campaign'
+import { availableDungeonNodes, claimDungeonArtifact, claimDungeonReward, createDungeonRun, dungeonArtifactOptions, dungeonEncounter, dungeonNode, dungeonRewardOptions, dungeonRunPhase, enterDungeonNode, resolveDungeonBattle, resolveDungeonRest, skipDungeonReward } from './game/campaign'
+import type { DungeonRunState } from './game/campaign'
+import { createRunSaveStore } from './game/runSave'
+import type { RunSnapshot } from './game/runSave'
+import { resolveCardDefinition } from './game/cardProgression'
 import { drawForTurn, economyFromSearch, gameEconomy, manaForTurn } from './game/economy'
 import type { CardDefinition, HeroId } from './game/types'
 
 // Model B is the standard economy in development, production and Tauri. A and U remain dev-only comparisons.
-const economy = import.meta.env.DEV
+const configuredEconomy = import.meta.env.DEV
   ? economyFromSearch(window.location.search || (import.meta.env.VITE_SPELLWHIM_ECONOMY ? '?economy=' + import.meta.env.VITE_SPELLWHIM_ECONOMY : ''))
   : gameEconomy
-const experimental = economy !== gameEconomy
+const saveStore = createRunSaveStore(() => window.localStorage)
+const loaded = saveStore.load()
+const saved = shallowRef<RunSnapshot | null>(loaded.snapshot)
+const economy = loaded.snapshot?.economy ?? configuredEconomy
+const experimental = economy.id !== gameEconomy.id
+const saveError = ref('')
+const loadNotice = ref(loaded.message)
 const initialSeed = Date.now() >>> 0
 const run = shallowRef(createDungeonRun(initialSeed, economy))
-const { state, isOver, cards, pendingCard, drawCount, discardCount, beginPlay, resolvePlay, finishTurn, startBattle, addCard, restart } = useBattle({ economy, seed: initialSeed })
+const { state, isOver, cards, pendingCard, drawCount, discardCount, beginPlay, resolvePlay, finishTurn, startBattle, restart } = useBattle({ economy, seed: initialSeed, runDeck: () => run.value.deck })
 const { animation, phase: battlePhase, impact, play, enemyTurn, cancel } = useBattleAnimation({ state, resolvePlay, finishTurn })
-const phase = ref<'map' | 'battle' | 'reward' | 'rest' | 'complete'>('map')
-const selectedNodeId = ref<string | null>(null)
-const rewardOptions = ref<CardDefinition[]>([])
+const phase = ref<ReturnType<typeof dungeonRunPhase> | 'resume'>(loaded.snapshot || loaded.blocked ? 'resume' : 'map')
+const rewardOptions = computed(() => dungeonRewardOptions(run.value))
+const selectedNodeId = computed(() => run.value.currentNodeId)
+const encounterName = computed(() => {
+  const node = run.value.currentNodeId ? dungeonNode(run.value.map, run.value.currentNodeId) : undefined
+  return node && node.type !== 'rest' ? dungeonEncounter(node, economy).name : ''
+})
+
+function persist() {
+  const result = saveStore.save(run.value, economy)
+  saveError.value = result.message
+}
+function publish(next: DungeonRunState) {
+  run.value = next
+  persist()
+}
+if (phase.value === 'map') persist()
+
+function startCurrentBattle() {
+  const entry = run.value.battleEntry!
+  startBattle(dungeonEncounter(dungeonNode(run.value.map, entry.nodeId)!, economy), run.value.heroes, entry.seed, entry.nodeId, run.value.artifacts)
+}
+function continueSavedRun() {
+  if (!saved.value) return
+  if (saved.value.economy.id !== economy.id) {
+    loadNotice.value = 'Перезапустите приложение, чтобы загрузить поход с другой моделью экономики.'
+    return
+  }
+  try {
+    saved.value.run.deck.forEach(resolveCardDefinition)
+    saved.value.run.pendingReward?.cards.forEach(resolveCardDefinition)
+    cancel()
+    run.value = structuredClone(saved.value.run)
+    if (run.value.battleEntry) startCurrentBattle()
+    phase.value = dungeonRunPhase(run.value)
+    persist()
+  } catch (error) { loadNotice.value = error instanceof Error ? error.message : 'Не удалось восстановить поход.' }
+}
+function retryLoad() {
+  const result = saveStore.load()
+  saved.value = result.snapshot
+  loadNotice.value = result.message
+  if (result.snapshot && result.snapshot.economy.id !== economy.id) loadNotice.value = 'Перезапустите приложение, чтобы загрузить поход с другой моделью экономики.'
+}
+function downloadSave() {
+  const raw = saveStore.exportSnapshot()
+  if (!raw) return
+  const url = URL.createObjectURL(new Blob([raw], { type: 'application/json' }))
+  const anchor = document.createElement('a')
+  anchor.href = url
+  anchor.download = 'spellwhim-run.json'
+  anchor.click()
+  URL.revokeObjectURL(url)
+}
+
+// Commit victory/defeat immediately, even if the result panel has not been acknowledged yet.
+watch(() => state.value.result, result => {
+  if (result && phase.value === 'battle' && run.value.battleEntry) publish(resolveDungeonBattle(run.value, state.value))
+}, { flush: 'sync' })
 
 function playCard(instanceId: string) {
   if (animation.value.busy || isOver.value) return
@@ -43,57 +109,54 @@ useBattleControls({ enabled: () => phase.value === 'battle' && battlePhase.value
 function enterNode(nodeId: string) {
   if (phase.value !== 'map' || !availableDungeonNodes(run.value).some(node => node.id === nodeId)) return
   const nextRun = enterDungeonNode(run.value, nodeId)
-  run.value = nextRun
-  selectedNodeId.value = nodeId
+  publish(nextRun)
   const node = dungeonNode(nextRun.map, nodeId)!
   if (node.type === 'rest') {
     phase.value = 'rest'
     return
   }
   cancel()
-  const encounter = dungeonEncounter(node, economy)
-  const battleSeed = deriveDungeonSeed(nextRun.seed, `battle:${node.id}`)
-  startBattle(encounter, nextRun.heroes, battleSeed, node.id, nextRun.artifacts)
+  startCurrentBattle()
   phase.value = 'battle'
 }
 
 function onBattleContinue() {
+  if (phase.value !== 'battle' || !isOver.value || run.value.battleEntry) return
   cancel()
-  const nextRun = resolveDungeonBattle(run.value, state.value)
-  run.value = nextRun
-  if (nextRun.status !== 'active') { phase.value = 'complete'; return }
-  rewardOptions.value = dungeonRewardOptions(nextRun)
-  phase.value = 'reward'
+  phase.value = dungeonRunPhase(run.value)
 }
 
-function chooseReward(card: CardDefinition) {
-  if (phase.value !== 'reward' || !run.value.pendingReward) return
-  run.value = claimDungeonReward(run.value, card)
-  addCard(card)
-  selectedNodeId.value = null
+function chooseReward(card: CardDefinition, offerId?: string) {
+  if (phase.value !== 'reward' || !offerId || run.value.pendingReward?.id !== offerId) return
+  publish(claimDungeonReward(run.value, card, offerId))
   phase.value = 'map'
 }
 
-function chooseArtifact(artifactId: Parameters<typeof claimDungeonArtifact>[1], ownerInstanceId: string, replaceInstanceId?: string) {
-  if (phase.value !== 'reward' || !run.value.pendingReward) return
-  run.value = claimDungeonArtifact(run.value, artifactId, ownerInstanceId, replaceInstanceId)
-  selectedNodeId.value = null
+function skipReward(offerId: string) {
+  if (phase.value !== 'reward' || run.value.pendingReward?.id !== offerId) return
+  publish(skipDungeonReward(run.value, offerId))
   phase.value = 'map'
 }
 
-function chooseRestTarget(heroId: HeroId | null) {
-  run.value = resolveDungeonRest(run.value, heroId)
-  selectedNodeId.value = null
+function chooseArtifact(artifactId: Parameters<typeof claimDungeonArtifact>[1], ownerInstanceId: string, replaceInstanceId?: string, offerId?: string) {
+  if (phase.value !== 'reward' || !offerId || run.value.pendingReward?.id !== offerId) return
+  publish(claimDungeonArtifact(run.value, artifactId, ownerInstanceId, replaceInstanceId, offerId))
+  phase.value = 'map'
+}
+
+function chooseRestTarget(heroId: HeroId | null, sourceId?: string) {
+  if (phase.value !== 'rest' || sourceId !== run.value.runId + '/' + run.value.currentNodeId) return
+  publish(resolveDungeonRest(run.value, heroId))
   phase.value = 'map'
 }
 
 function restartRun() {
   cancel()
   const nextSeed = ((Date.now() >>> 0) === run.value.seed ? run.value.seed + 1 : Date.now()) >>> 0
-  run.value = createDungeonRun(nextSeed, economy)
+  publish(createDungeonRun(nextSeed, economy))
   restart(nextSeed)
-  selectedNodeId.value = null
-  rewardOptions.value = []
+  saved.value = null
+  loadNotice.value = ''
   phase.value = 'map'
 }
 </script>
@@ -101,18 +164,33 @@ function restartRun() {
   <div class="app-shell">
     <div class="game-wrap">
       <p v-if="experimental" class="economy-badge" :title="economy.label">Режим сравнения · модель {{ economy.manaCurve }} · {{ economy.label }}</p>
-      <CampaignMap v-if="phase === 'map'" :map="run.map" :run="run" @enter="enterNode" @restart="restartRun" />
-      <EliteReward v-else-if="phase === 'reward' && run.pendingReward?.elite" :options="rewardOptions" :artifacts="dungeonArtifactOptions(run)" :heroes="run.heroes" :owned-artifacts="run.artifacts" :encounter-name="state.enemy.name" @choose-card="chooseReward" @choose-artifact="chooseArtifact" />
-      <CardReward v-else-if="phase === 'reward'" :options="rewardOptions" :encounter-name="state.enemy.name" @choose="chooseReward" />
-      <RestSite v-else-if="phase === 'rest'" :heroes="run.heroes" :heal-amount="selectedNodeId ? dungeonNode(run.map, selectedNodeId)?.healAmount ?? 6 : 6" @choose="chooseRestTarget" />
+      <main v-if="phase === 'resume'" class="resume-screen">
+        <section class="resume-panel">
+          <h1>Spellwhim</h1>
+          <p v-if="saved?.run.status === 'active'">Отряд ждёт у последней комнаты. Прерванный бой начнётся заново с тем же здоровьем и колодой.</p>
+          <p v-else-if="saved">Сохранённый поход завершён.</p>
+          <p v-if="loadNotice" role="status">{{ loadNotice }}</p>
+          <button v-if="saved" class="game-button" @click="continueSavedRun">{{ saved.run.status === 'active' ? 'Продолжить поход' : 'Посмотреть итог' }}</button>
+          <button v-if="saved" class="game-button" @click="downloadSave">Скачать копию</button>
+          <button v-else class="game-button" @click="retryLoad">Повторить загрузку</button>
+          <button class="game-button" @click="restartRun">Начать новый поход</button>
+        </section>
+      </main>
+      <CampaignMap v-else-if="phase === 'map'" :map="run.map" :run="run" @enter="enterNode" @restart="restartRun" />
+      <EliteReward v-else-if="phase === 'reward' && run.pendingReward?.elite" :key="run.pendingReward.id" :offer-id="run.pendingReward.id" :deck="run.deck" :options="rewardOptions" :artifacts="dungeonArtifactOptions(run)" :heroes="run.heroes" :owned-artifacts="run.artifacts" :encounter-name="encounterName" @choose-card="chooseReward" @choose-artifact="chooseArtifact" />
+      <CardReward v-else-if="phase === 'reward'" :key="run.pendingReward!.id" :offer-id="run.pendingReward!.id" :deck="run.deck" :options="rewardOptions" :encounter-name="encounterName" @choose="chooseReward" @skip="skipReward" />
+      <RestSite v-else-if="phase === 'rest'" :key="run.runId + '/' + selectedNodeId" :source-id="run.runId + '/' + selectedNodeId" :heroes="run.heroes" :heal-amount="selectedNodeId ? dungeonNode(run.map, selectedNodeId)?.healAmount ?? 6 : 6" @choose="chooseRestTarget" />
       <RunComplete v-else-if="phase === 'complete'" :result="run.status === 'defeat' ? 'defeat' : 'victory'" @restart="restartRun" />
       <template v-else>
         <BattleBoard :state="state" :animation="animation" :phase="battlePhase" :artifact-notices="state.artifactNotices" :continue-label="dungeonNode(run.map, selectedNodeId ?? '')?.type === 'final' ? 'Завершить поход' : 'Выбрать награду'" @impact="impact" @end-turn="onEndTurn" @continue="onBattleContinue" />
         <BattleHand v-if="!isOver" :cards="cards" :outgoing="pendingCard" :outgoing-index="state.pending?.handIndex ?? 0" :draw-count="drawCount" :discard-count="discardCount" :exhausted-count="state.exhausted.length" :phase="battlePhase" :mana="state.mana" :max-mana="state.maxMana" :next-mana="manaForTurn(state.economy, state.turn + 1)" :next-draw="drawForTurn(state.economy, state.turn + 1)" :draw-boost-from="state.economy.drawSchedule.boost?.fromTurn" :draw-boost-amount="state.economy.drawSchedule.boost?.amount" @play="playCard" @end-turn="onEndTurn" />
       </template>
+      <aside v-if="saveError && phase !== 'resume'" class="save-error" role="alert"><p>{{ saveError }}</p><button class="game-button" @click="persist">Повторить сохранение</button><button class="game-button" @click="downloadSave">Скачать копию</button></aside>
     </div>
   </div>
 </template>
 <style scoped>
+.resume-screen{position:absolute;inset:0;display:grid;place-items:center;background:var(--mat-wood);color:var(--ink)}.resume-panel{max-width:650px;padding:var(--sp-6);border:var(--border-brass);border-radius:var(--shape-dialog);background:var(--mat-quiet);box-shadow:var(--shadow-4)}.resume-panel h1{font:700 var(--fs-4xl) var(--font-display);margin:0}.resume-panel p{line-height:var(--lh-body)}.resume-panel button{margin:var(--sp-2)}
+.save-error{position:absolute;z-index:100;bottom:var(--sp-3);left:50%;transform:translateX(-50%);width:min(760px,95%);padding:var(--sp-3);border:var(--border-brass);border-radius:var(--shape-scroll);background:var(--wood-1);color:var(--ink);box-shadow:var(--shadow-3)}.save-error p{margin:0 0 var(--sp-2)}.save-error button{margin-right:var(--sp-2);font-size:var(--fs-sm)}
 .economy-badge{position:absolute;z-index:40;top:64px;left:24px;max-width:230px;margin:0;padding:5px 12px;border-radius:12px;border:1px solid #f0c36a;background:#3b2a52e6;color:#ffe8b0;font-size:12px;line-height:1.35;pointer-events:none;letter-spacing:.02em}
 </style>

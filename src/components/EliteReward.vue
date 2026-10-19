@@ -3,9 +3,10 @@ import { computed, ref } from 'vue'
 import { Bell, Crosshair, Gauge, Link2, Shield } from '@lucide/vue'
 import SpellCard from './SpellCard.vue'
 import CardNotes from './CardNotes.vue'
+import DeckViewer from './DeckViewer.vue'
 import { neutralPreview } from '../ui/cardDisplay'
 import { artifactDefinition } from '../game/artifacts'
-import type { ArtifactDefinition, ArtifactId, ArtifactInstance, CardDefinition, Hero, HeroId } from '../game/types'
+import type { ArtifactDefinition, ArtifactId, ArtifactInstance, CardDefinition, Hero, HeroId, PersistentCard } from '../game/types'
 
 const props = defineProps<{
   options: CardDefinition[]
@@ -13,10 +14,12 @@ const props = defineProps<{
   heroes: Record<HeroId, Hero>
   ownedArtifacts: ArtifactInstance[]
   encounterName: string
+  deck?: readonly PersistentCard[]
+  offerId?: string
 }>()
 const emit = defineEmits<{
-  chooseCard: [card: CardDefinition]
-  chooseArtifact: [artifactId: ArtifactId, ownerInstanceId: string, replaceInstanceId?: string]
+  chooseCard: [card: CardDefinition, offerId?: string]
+  chooseArtifact: [artifactId: ArtifactId, ownerInstanceId: string, replaceInstanceId?: string, offerId?: string]
 }>()
 const section = ref<'cards' | 'artifacts'>('cards')
 const selectedArtifactId = ref<ArtifactId | null>(null)
@@ -33,7 +36,7 @@ function selectArtifact(id: ArtifactId) {
 }
 function takeArtifact() {
   if (!selectedArtifact.value || !selectedOwner.value) return
-  emit('chooseArtifact', selectedArtifact.value.id, selectedOwner.value.instanceId, replaced.value?.instanceId)
+  emit('chooseArtifact', selectedArtifact.value.id, selectedOwner.value.instanceId, replaced.value?.instanceId, props.offerId)
 }
 </script>
 
@@ -50,7 +53,7 @@ function takeArtifact() {
       </div>
 
       <section v-if="section === 'cards'" class="card-offer" aria-label="Карты на выбор">
-        <button v-for="{ card, preview } in cardItems" :key="card.id" class="reward-option" :aria-label="'Взять карту: ' + card.name + '. ' + card.description" @click="emit('chooseCard', card)">
+        <button v-for="{ card, preview } in cardItems" :key="card.id" class="reward-option" :aria-label="'Взять карту: ' + card.name + '. ' + card.description" @click="emit('chooseCard', card, offerId)">
           <SpellCard :card="card" :preview="preview" />
           <CardNotes class="reward-notes" :card="card" :preview="preview" mode="choose" />
         </button>
@@ -85,6 +88,7 @@ function takeArtifact() {
         </div>
       </section>
       <p v-if="section === 'artifacts'" class="decline-hint">Выбор карты в соседней вкладке означает отказаться от всех предложенных артефактов.</p>
+      <DeckViewer v-if="deck" :deck="deck" />
     </div>
   </main>
 </template>

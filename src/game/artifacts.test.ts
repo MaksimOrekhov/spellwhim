@@ -20,8 +20,8 @@ function copyId(state: BattleState, id: CardId): string {
   return card.instanceId
 }
 
-function winElite(seed: number, artifacts: ReturnType<typeof createDungeonRun>['artifacts'] = []) {
-  const run = createDungeonRun(seed)
+function winElite(seed: number, artifacts: ReturnType<typeof createDungeonRun>['artifacts'] = [], runId?: string) {
+  const run = createDungeonRun(seed, undefined, undefined, undefined, runId)
   run.artifacts = artifacts.map(item => ({ ...item }))
   const node = run.map.layers.flat().find(item => item.type === 'elite')!
   const entered = { ...run, currentNodeId: node.id, visitedNodeIds: [node.id] }
@@ -187,7 +187,7 @@ describe('elite artifact rewards', () => {
     const nextSeed = 414
     const base = createDungeonRun(nextSeed)
     const owned = { instanceId: `run/${nextSeed}/artifact/old/reliable-wedge`, definitionId: 'reliable-wedge' as const, ownerInstanceId: base.heroes.warrior.instanceId }
-    const next = winElite(nextSeed, [owned])
+    const next = winElite(nextSeed, [owned], base.runId)
     const second = dungeonArtifactOptions(next.run).find(item => item.id !== first.id)!
     expect(() => claimDungeonArtifact(next.run, second.id, next.run.heroes.warrior.instanceId, 'wrong-instance')).toThrow(/confirm its replacement/)
     const replaced = claimDungeonArtifact(next.run, second.id, next.run.heroes.warrior.instanceId, owned.instanceId)

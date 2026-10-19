@@ -5,6 +5,8 @@ import { gameEconomy } from '../game/economy'
 import type { EconomyConfig } from '../game/economy'
 import type { ArtifactInstance } from '../game/types'
 import { cardDefinition, startingDeck } from '../game/types'
+import { resolveCardDefinition } from '../game/cardProgression'
+import type { DeckInput } from '../game/types'
 import type { BattleState, CardDefinition, CardId, CardInstance, CardPreview, EncounterDefinition } from '../game/types'
 
 export interface HandCardView {
@@ -14,15 +16,18 @@ export interface HandCardView {
   playable: boolean
 }
 
-export function useBattle(options: { seed?: number; deck?: readonly CardId[]; economy?: EconomyConfig } = {}) {
+export function useBattle(options: { seed?: number; deck?: readonly CardId[]; runDeck?: () => DeckInput; economy?: EconomyConfig } = {}) {
   const economy = options.economy ?? gameEconomy
   let seed = (options.seed ?? Date.now()) >>> 0
   let battleSequence = 0
   let runGeneration = 0
-  const ownedDeck = shallowRef<CardId[]>([...(options.deck ?? startingDeck)])
-  const ownedCards = computed(() => ownedDeck.value.map(cardDefinition))
+  // Standalone legacy laboratories own definitions; the app always reads the authoritative run deck.
+  const legacyDeck = shallowRef<CardId[]>([...(options.deck ?? startingDeck)])
+  const deck = () => options.runDeck?.() ?? legacyDeck.value
+  const ownedCards = computed(() => deck().map(card => typeof card === 'string' ? cardDefinition(card) : resolveCardDefinition(card)))
+  const sessionId = crypto.randomUUID()
   function previewBattle() {
-    return createCampaignBattle({ deck: ownedDeck.value, seed, economy, battleId: 'run/' + seed + '/generation/' + runGeneration + '/preview' })
+    return createCampaignBattle({ deck: deck(), seed, economy, battleId: sessionId + '/generation/' + runGeneration + '/preview' })
   }
   // The map needs hero state, but its preview battle must not consume the first real battle seed.
   const current = shallowRef(previewBattle())
@@ -33,7 +38,7 @@ export function useBattle(options: { seed?: number; deck?: readonly CardId[]; ec
   const discardCount = computed(() => current.value.discardPile.length)
 
   function cardView(instance: CardInstance, preview?: CardPreview): HandCardView {
-    const card = cardDefinition(instance.definitionId)
+    const card = resolveCardDefinition(instance)
     return {
       instanceId: instance.instanceId, card,
       preview: preview ?? previewCard(current.value, card),
@@ -76,23 +81,24 @@ export function useBattle(options: { seed?: number; deck?: readonly CardId[]; ec
   function startBattle(encounter: EncounterDefinition, heroes?: BattleState['heroes'], battleSeed?: number, nodeId?: string, artifacts: readonly ArtifactInstance[] = []): void {
     const sequence = battleSequence++
     current.value = createCampaignBattle({
-      encounter, heroes: heroes ?? current.value.heroes, deck: ownedDeck.value,
+      encounter, heroes: heroes ?? current.value.heroes, deck: deck(),
       seed: battleSeed ?? (seed + sequence) >>> 0, economy,
-      battleId: 'run/' + seed + '/generation/' + runGeneration + '/battle/' + (nodeId ?? sequence),
+      battleId: sessionId + '/generation/' + runGeneration + '/battle/' + sequence + '/' + (nodeId ?? ''),
       artifacts,
     })
     log.value = encounter.name + ' преграждает путь.'
   }
 
   function addCard(card: CardDefinition): void {
-    ownedDeck.value = addCampaignReward(ownedDeck.value, card)
+    if (options.runDeck) throw new Error('Change the persistent run deck through campaign operations')
+    legacyDeck.value = addCampaignReward(legacyDeck.value, card)
   }
 
   function restart(nextSeed = options.seed ?? Date.now()): void {
     seed = nextSeed >>> 0
     battleSequence = 0
     runGeneration += 1
-    ownedDeck.value = [...(options.deck ?? startingDeck)]
+    legacyDeck.value = [...(options.deck ?? startingDeck)]
     current.value = previewBattle()
     log.value = 'Ваш ход. Разыграйте карты, затем завершите ход.'
   }

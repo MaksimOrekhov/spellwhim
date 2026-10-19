@@ -74,7 +74,17 @@ export interface CardDefinition {
 export interface CardInstance {
   instanceId: string
   definitionId: CardId
+  /** Absent on legacy definition-only fixtures; persistent combat copies carry the saved level. */
+  upgrade?: 0 | 1
 }
+
+/** Run-owned copy. Combat zones contain detached copies of these same identities. */
+export interface PersistentCard extends CardInstance {
+  upgrade: 0 | 1
+}
+
+/** Legacy laboratories can still supply definitions without creating a run. */
+export type DeckInput = readonly CardId[] | readonly PersistentCard[]
 
 export interface ArtifactDefinition {
   id: ArtifactId

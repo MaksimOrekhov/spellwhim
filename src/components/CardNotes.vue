@@ -8,14 +8,15 @@ import type { CardBlock } from '../ui/cardDisplay'
 import { classThemeStyle } from '../game/classThemes'
 import CardGlyph from './CardGlyph.vue'
 
-const props = defineProps<{ card: CardDefinition; preview: CardPreview; block?: CardBlock | null; hotkey?: string; mode?: 'play' | 'choose'; brief?: boolean }>()
-const notes = computed(() => cardNotes(props.card, props.preview, props.mode === 'choose' ? 'neutral' : 'board'))
+const props = defineProps<{ card: CardDefinition; preview: CardPreview; block?: CardBlock | null; hotkey?: string; mode?: 'play' | 'choose' | 'inspect'; brief?: boolean }>()
+const neutral = computed(() => props.mode === 'choose' || props.mode === 'inspect')
+const notes = computed(() => cardNotes(props.card, props.preview, neutral.value ? 'neutral' : 'board'))
 const footer = computed(() => props.block?.text ?? (props.mode === 'choose' ? 'Нажмите, чтобы взять карту.' : `Нажмите или клавиша ${props.hotkey ?? ''} — разыграть.`))
 </script>
 
 <template>
   <aside class="notes" :class="{ 'notes--brief': brief }" :style="classThemeStyle(card.className)">
-    <header><strong v-if="mode !== 'choose'">{{ notes.title }}</strong><small>{{ notes.subtitle }}</small></header>
+    <header><strong v-if="!neutral">{{ notes.title }}</strong><small>{{ notes.subtitle }}</small></header>
     <p class="notes-text">{{ notes.description }}</p>
     <div v-if="notes.damage" class="notes-math notes-math--damage">
       <CardGlyph kind="damage" />
@@ -23,15 +24,15 @@ const footer = computed(() => props.block?.text ?? (props.mode === 'choose' ? '�
       <ul v-if="notes.damage.parts.length > 1" class="notes-sum" aria-label="Из чего складывается урон">
         <li v-for="part in notes.damage.parts" :key="part.kind" :class="'part--' + part.kind"><span>{{ part.label }}</span><b>{{ part.kind === 'base' ? part.amount : '+' + part.amount }}</b></li>
       </ul>
-      <small v-if="mode !== 'choose'" class="notes-sub">Враг: {{ notes.damage.armorDamage ? `броня −${notes.damage.armorDamage}, ` : '' }}здоровье −{{ notes.damage.healthDamage }}</small>
+      <small v-if="!neutral" class="notes-sub">Враг: {{ notes.damage.armorDamage ? `броня −${notes.damage.armorDamage}, ` : '' }}здоровье −{{ notes.damage.healthDamage }}</small>
     </div>
     <p v-for="item in notes.armor" :key="item.hero" class="notes-math notes-math--armor"><CardGlyph kind="armor" /><span>Броня: {{ item.name }} <b>+{{ item.amount }}</b></span></p>
     <p v-if="notes.draw" class="notes-math notes-math--draw"><CardGlyph kind="draw" /><span>Добор: <b>{{ notes.draw }}</b></span></p>
-    <p v-for="(line, i) in (mode === 'choose' ? notes.conditions.filter(item => item.tone === 'on') : notes.conditions)" :key="'c' + i" class="notes-cond" :class="'notes-cond--' + line.tone"><CardGlyph v-if="line.glyph" :kind="line.glyph" /><span>{{ line.text }}</span></p>
+    <p v-for="(line, i) in (neutral ? notes.conditions.filter(item => item.tone === 'on') : notes.conditions)" :key="'c' + i" class="notes-cond" :class="'notes-cond--' + line.tone"><CardGlyph v-if="line.glyph" :kind="line.glyph" /><span>{{ line.text }}</span></p>
     <dl v-if="notes.keywords.length" class="notes-keys">
       <div v-for="key in notes.keywords" :key="key.name"><dt><CardGlyph :kind="key.glyph" />{{ key.name }}</dt><dd>{{ key.text }}</dd></div>
     </dl>
-    <footer :class="{ bad: !!block }">{{ footer }}</footer>
+    <footer v-if="mode !== 'inspect'" :class="{ bad: !!block }">{{ footer }}</footer>
   </aside>
 </template>
 

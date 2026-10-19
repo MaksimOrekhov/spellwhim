@@ -2,14 +2,16 @@ import { cardDefinition, encounters, startingDeck } from './types'
 import { drawForTurn, gameEconomy, manaForTurn } from './economy'
 import type { EconomyConfig } from './economy'
 import { drawCards, shuffle } from './deck'
+import { resolveCardDefinition } from './cardProgression'
+import type { DeckInput } from './types'
 import { artifactDefinition } from './artifacts'
 import { composeHit, splitDamage, sumParts } from './damage'
 import { cardOwner, characterGenitive, heroForClass, heroIdsInPartyOrder, partnerOf as partnerOfHero, resolveArmorTarget } from './party'
 import { applyStatus, carrierHasStatus, clearStatuses, cloneStatuses, consumeStatus, createStatuses, decayStatus, dueTicks, hitBonuses, lifetimeTickDamage, statusDefinition, statusValue } from './statuses'
-import type { ArtifactInstance, BattleArtifactState, BattleState, CardClassId, CardEffect, CardDefinition, CardId, CardPreview, ConsumedStatus, EncounterDefinition, EnemyAction, EnemyHit, HeroId, HitPart, PendingArtifactTrigger, PendingPlay, StatusCarrierId, StatusId } from './types'
+import type { ArtifactInstance, BattleArtifactState, BattleState, CardClassId, CardEffect, CardDefinition, CardPreview, ConsumedStatus, EncounterDefinition, EnemyAction, EnemyHit, HeroId, HitPart, PendingArtifactTrigger, PendingPlay, StatusCarrierId, StatusId } from './types'
 
 export interface BattleOptions {
-  deck?: readonly CardId[]
+  deck?: DeckInput
   seed?: number
   battleId?: string
   openingHandSize?: number
@@ -47,9 +49,13 @@ export function createBattle(encounter: EncounterDefinition = encounters[1]!, pr
     hand: [], blockedDraws: 0, drawPile: [], discardPile: [], exhausted: [], pending: null,
     economy, mana: manaForTurn(economy, 1), maxMana: manaForTurn(economy, 1), turn: 1, result: null,
   }
-  state.drawPile = shuffle(state, (options.deck ?? startingDeck).map((id, index) => ({
-    instanceId: battleId + '/card/' + (index + 1), definitionId: cardDefinition(id).id,
-  })))
+  const copies = (options.deck ?? startingDeck).map((card, index) => {
+    if (typeof card === 'string') return { instanceId: battleId + '/card/' + (index + 1), definitionId: cardDefinition(card).id }
+    resolveCardDefinition(card)
+    return { ...card }
+  })
+  if (new Set(copies.map(card => card.instanceId)).size !== copies.length) throw new Error('Duplicate card instance')
+  state.drawPile = shuffle(state, copies)
   updateResult(state)
   drawCards(state, options.openingHandSize ?? economy.openingHand)
   return state
@@ -248,7 +254,7 @@ export function startCardPlay(state: BattleState, instanceId: string): PlayStart
   const index = state.hand.findIndex(card => card.instanceId === instanceId)
   const instance = state.hand[index]
   if (!instance) return { ok: false, reason: 'not-in-hand' }
-  const definition = cardDefinition(instance.definitionId)
+  const definition = resolveCardDefinition(instance)
   if (state.mana < definition.cost) return { ok: false, reason: 'mana' }
   const plan = buildPlan(state, definition)
   state.mana -= definition.cost
@@ -304,7 +310,7 @@ export function resolveCardPlay(state: BattleState, actionId: string): PlayResul
     }
   }
   // The resolving copy cannot draw itself. Free cards exhaust, so they cannot form recycle loops.
-  const destination = cardDefinition(pending.card.definitionId).exhaust ? state.exhausted : state.discardPile
+  const destination = resolveCardDefinition(pending.card).exhaust ? state.exhausted : state.discardPile
   destination.push(pending.card)
   return { ok: true, outcome: pending.preview, drawn, damageDealt }
 }

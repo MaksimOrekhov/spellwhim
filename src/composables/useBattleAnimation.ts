@@ -1,5 +1,5 @@
 import { computed, onUnmounted, shallowRef } from 'vue'
-import { cardDefinition } from '../game/types'
+import { resolveCardDefinition } from '../game/cardProgression'
 import { forecastEnemyAction } from '../game/battle'
 import { getClassTheme } from '../game/classThemes'
 import { cardOwner, partnerOf } from '../game/party'
@@ -57,7 +57,7 @@ export function useBattleAnimation(options: { state: Readonly<Ref<BattleState>>;
     }, recoveryMs)
   }
   function play(play: PendingPlay) {
-    const card = cardDefinition(play.card.definitionId)
+    const card = resolveCardDefinition(play.card)
     const state = options.state.value
     const preview = play.preview
     const target = state.enemy.focus

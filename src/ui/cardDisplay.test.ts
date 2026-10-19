@@ -195,7 +195,7 @@ describe('reward screen', () => {
     for (const option of options) {
       const claimed = claimDungeonReward(run, option)
       expect(claimed.deck.length).toBe(run.deck.length + 1)
-      expect(claimed.deck.filter(id => id === option.id).length).toBe(run.deck.filter(id => id === option.id).length + 1)
+      expect(claimed.deck.filter(card => card.definitionId === option.id).length).toBe(run.deck.filter(card => card.definitionId === option.id).length + 1)
     }
   })
 })

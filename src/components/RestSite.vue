@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { BattleState } from '../game/types'
 
-const props = defineProps<{ heroes: BattleState['heroes']; healAmount: number }>()
-const emit = defineEmits<{ choose: [heroId: 'warrior' | 'mage' | null] }>()
+const props = defineProps<{ heroes: BattleState['heroes']; healAmount: number; sourceId?: string }>()
+const emit = defineEmits<{ choose: [heroId: 'warrior' | 'mage' | null, sourceId?: string] }>()
 
 function amount(hero: BattleState['heroes']['warrior']) {
   return Math.min(props.healAmount, Math.max(0, hero.maxHealth - hero.health))
@@ -17,14 +17,14 @@ function amount(hero: BattleState['heroes']['warrior']) {
       <h1>Передышка у фонаря</h1>
       <p>Распределите до {{ healAmount }} HP одному герою. Здоровье не может превысить максимум.</p>
       <div class="rest-heroes">
-        <button class="rest-hero rest-hero--warrior" :disabled="amount(heroes.warrior) === 0" @click="emit('choose', 'warrior')">
+        <button class="rest-hero rest-hero--warrior" :disabled="amount(heroes.warrior) === 0" @click="emit('choose', 'warrior', sourceId)">
           <span class="rest-portrait" aria-hidden="true">⚔</span>
           <span class="rest-name">Вариан Ринн</span>
           <strong>{{ heroes.warrior.health }} / {{ heroes.warrior.maxHealth }} HP</strong>
           <em>{{ amount(heroes.warrior) ? `+${amount(heroes.warrior)} HP` : 'Здоровье полное' }}</em>
           <span class="rest-action">ПЕРЕДЫШКА</span>
         </button>
-        <button class="rest-hero rest-hero--mage" :disabled="amount(heroes.mage) === 0" @click="emit('choose', 'mage')">
+        <button class="rest-hero rest-hero--mage" :disabled="amount(heroes.mage) === 0" @click="emit('choose', 'mage', sourceId)">
           <span class="rest-portrait" aria-hidden="true">✦</span>
           <span class="rest-name">Джайна Праудмур</span>
           <strong>{{ heroes.mage.health }} / {{ heroes.mage.maxHealth }} HP</strong>
@@ -32,7 +32,7 @@ function amount(hero: BattleState['heroes']['warrior']) {
           <span class="rest-action">ПЕРЕДЫШКА</span>
         </button>
       </div>
-      <button v-if="amount(heroes.warrior) === 0 && amount(heroes.mage) === 0" class="skip-rest" @click="emit('choose', null)">Здоровье полное · продолжить путь</button>
+      <button v-if="amount(heroes.warrior) === 0 && amount(heroes.mage) === 0" class="skip-rest" @click="emit('choose', null, sourceId)">Здоровье полное · продолжить путь</button>
     </section>
   </main>
 </template>
