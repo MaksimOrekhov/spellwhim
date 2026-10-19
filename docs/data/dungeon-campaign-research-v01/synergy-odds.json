@@ -1,0 +1,170 @@
+[
+ {
+  "archetype": "bleed",
+  "run": "текущий поход (≈4 обычн.+1 элита)",
+  "offer": 3,
+  "deckAware": false,
+  "chance": "22.3%"
+ },
+ {
+  "archetype": "bleed",
+  "run": "текущий поход (≈4 обычн.+1 элита)",
+  "offer": 3,
+  "deckAware": true,
+  "chance": "28.9%"
+ },
+ {
+  "archetype": "bleed",
+  "run": "текущий поход (≈4 обычн.+1 элита)",
+  "offer": 4,
+  "deckAware": false,
+  "chance": "28.9%"
+ },
+ {
+  "archetype": "bleed",
+  "run": "текущий поход (≈4 обычн.+1 элита)",
+  "offer": 4,
+  "deckAware": true,
+  "chance": "34.8%"
+ },
+ {
+  "archetype": "bleed",
+  "run": "средний (≈9+3)",
+  "offer": 3,
+  "deckAware": false,
+  "chance": "79.3%"
+ },
+ {
+  "archetype": "bleed",
+  "run": "средний (≈9+3)",
+  "offer": 3,
+  "deckAware": true,
+  "chance": "84.7%"
+ },
+ {
+  "archetype": "bleed",
+  "run": "средний (≈9+3)",
+  "offer": 4,
+  "deckAware": false,
+  "chance": "83.8%"
+ },
+ {
+  "archetype": "bleed",
+  "run": "средний (≈9+3)",
+  "offer": 4,
+  "deckAware": true,
+  "chance": "86.9%"
+ },
+ {
+  "archetype": "bleed",
+  "run": "длинный (≈13+4)",
+  "offer": 3,
+  "deckAware": false,
+  "chance": "92.2%"
+ },
+ {
+  "archetype": "bleed",
+  "run": "длинный (≈13+4)",
+  "offer": 3,
+  "deckAware": true,
+  "chance": "95.3%"
+ },
+ {
+  "archetype": "bleed",
+  "run": "длинный (≈13+4)",
+  "offer": 4,
+  "deckAware": false,
+  "chance": "95.0%"
+ },
+ {
+  "archetype": "bleed",
+  "run": "длинный (≈13+4)",
+  "offer": 4,
+  "deckAware": true,
+  "chance": "96.1%"
+ },
+ {
+  "archetype": "armorPayoff",
+  "run": "текущий поход (≈4 обычн.+1 элита)",
+  "offer": 3,
+  "deckAware": false,
+  "chance": "18.7%"
+ },
+ {
+  "archetype": "armorPayoff",
+  "run": "текущий поход (≈4 обычн.+1 элита)",
+  "offer": 3,
+  "deckAware": true,
+  "chance": "46.7%"
+ },
+ {
+  "archetype": "armorPayoff",
+  "run": "текущий поход (≈4 обычн.+1 элита)",
+  "offer": 4,
+  "deckAware": false,
+  "chance": "29.3%"
+ },
+ {
+  "archetype": "armorPayoff",
+  "run": "текущий поход (≈4 обычн.+1 элита)",
+  "offer": 4,
+  "deckAware": true,
+  "chance": "59.2%"
+ },
+ {
+  "archetype": "armorPayoff",
+  "run": "средний (≈9+3)",
+  "offer": 3,
+  "deckAware": false,
+  "chance": "80.2%"
+ },
+ {
+  "archetype": "armorPayoff",
+  "run": "средний (≈9+3)",
+  "offer": 3,
+  "deckAware": true,
+  "chance": "95.5%"
+ },
+ {
+  "archetype": "armorPayoff",
+  "run": "средний (≈9+3)",
+  "offer": 4,
+  "deckAware": false,
+  "chance": "90.2%"
+ },
+ {
+  "archetype": "armorPayoff",
+  "run": "средний (≈9+3)",
+  "offer": 4,
+  "deckAware": true,
+  "chance": "98.5%"
+ },
+ {
+  "archetype": "armorPayoff",
+  "run": "длинный (≈13+4)",
+  "offer": 3,
+  "deckAware": false,
+  "chance": "94.8%"
+ },
+ {
+  "archetype": "armorPayoff",
+  "run": "длинный (≈13+4)",
+  "offer": 3,
+  "deckAware": true,
+  "chance": "99.2%"
+ },
+ {
+  "archetype": "armorPayoff",
+  "run": "длинный (≈13+4)",
+  "offer": 4,
+  "deckAware": false,
+  "chance": "98.5%"
+ },
+ {
+  "archetype": "armorPayoff",
+  "run": "длинный (≈13+4)",
+  "offer": 4,
+  "deckAware": true,
+  "chance": "99.9%"
+ }
+]

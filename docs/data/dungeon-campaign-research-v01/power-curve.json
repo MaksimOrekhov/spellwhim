@@ -1,0 +1,302 @@
+[
+ {
+  "picks": 0,
+  "mode": "rank",
+  "strategy": "balanced",
+  "group": "normal",
+  "deck": 18,
+  "win": 100,
+  "turns": 3.33,
+  "hpLost": 5.8
+ },
+ {
+  "picks": 0,
+  "mode": "rank",
+  "strategy": "balanced",
+  "group": "elite",
+  "deck": 18,
+  "win": 100,
+  "turns": 6,
+  "hpLost": 10.1
+ },
+ {
+  "picks": 0,
+  "mode": "rank",
+  "strategy": "balanced",
+  "group": "boss",
+  "deck": 18,
+  "win": 100,
+  "turns": 9,
+  "hpLost": 15.2
+ },
+ {
+  "picks": 0,
+  "mode": "rank",
+  "strategy": "planner",
+  "group": "normal",
+  "deck": 18,
+  "win": 100,
+  "turns": 3.24,
+  "hpLost": 6.2
+ },
+ {
+  "picks": 0,
+  "mode": "rank",
+  "strategy": "planner",
+  "group": "elite",
+  "deck": 18,
+  "win": 100,
+  "turns": 5.98,
+  "hpLost": 11.3
+ },
+ {
+  "picks": 0,
+  "mode": "rank",
+  "strategy": "planner",
+  "group": "boss",
+  "deck": 18,
+  "win": 98,
+  "turns": 9.28,
+  "hpLost": 16.9
+ },
+ {
+  "picks": 4,
+  "mode": "rank",
+  "strategy": "balanced",
+  "group": "normal",
+  "deck": 22,
+  "win": 100,
+  "turns": 3.23,
+  "hpLost": 5.1
+ },
+ {
+  "picks": 4,
+  "mode": "rank",
+  "strategy": "balanced",
+  "group": "elite",
+  "deck": 22,
+  "win": 100,
+  "turns": 5.51,
+  "hpLost": 10
+ },
+ {
+  "picks": 4,
+  "mode": "rank",
+  "strategy": "balanced",
+  "group": "boss",
+  "deck": 22,
+  "win": 100,
+  "turns": 8.46,
+  "hpLost": 13.6
+ },
+ {
+  "picks": 4,
+  "mode": "rank",
+  "strategy": "planner",
+  "group": "normal",
+  "deck": 22,
+  "win": 100,
+  "turns": 3.1,
+  "hpLost": 5.6
+ },
+ {
+  "picks": 4,
+  "mode": "rank",
+  "strategy": "planner",
+  "group": "elite",
+  "deck": 22,
+  "win": 100,
+  "turns": 5.46,
+  "hpLost": 11.1
+ },
+ {
+  "picks": 4,
+  "mode": "rank",
+  "strategy": "planner",
+  "group": "boss",
+  "deck": 22,
+  "win": 100,
+  "turns": 8.44,
+  "hpLost": 13.3
+ },
+ {
+  "picks": 8,
+  "mode": "rank",
+  "strategy": "balanced",
+  "group": "normal",
+  "deck": 26,
+  "win": 100,
+  "turns": 3.11,
+  "hpLost": 5.7
+ },
+ {
+  "picks": 8,
+  "mode": "rank",
+  "strategy": "balanced",
+  "group": "elite",
+  "deck": 26,
+  "win": 100,
+  "turns": 5.29,
+  "hpLost": 10.9
+ },
+ {
+  "picks": 8,
+  "mode": "rank",
+  "strategy": "balanced",
+  "group": "boss",
+  "deck": 26,
+  "win": 100,
+  "turns": 8.34,
+  "hpLost": 14.4
+ },
+ {
+  "picks": 8,
+  "mode": "rank",
+  "strategy": "planner",
+  "group": "normal",
+  "deck": 26,
+  "win": 100,
+  "turns": 3.01,
+  "hpLost": 6
+ },
+ {
+  "picks": 8,
+  "mode": "rank",
+  "strategy": "planner",
+  "group": "elite",
+  "deck": 26,
+  "win": 100,
+  "turns": 5.19,
+  "hpLost": 11.1
+ },
+ {
+  "picks": 8,
+  "mode": "rank",
+  "strategy": "planner",
+  "group": "boss",
+  "deck": 26,
+  "win": 100,
+  "turns": 8.04,
+  "hpLost": 13.8
+ },
+ {
+  "picks": 8,
+  "mode": "thin",
+  "strategy": "balanced",
+  "group": "normal",
+  "deck": 22,
+  "win": 100,
+  "turns": 2.92,
+  "hpLost": 5.1
+ },
+ {
+  "picks": 8,
+  "mode": "thin",
+  "strategy": "balanced",
+  "group": "elite",
+  "deck": 22,
+  "win": 100,
+  "turns": 4.86,
+  "hpLost": 11.1
+ },
+ {
+  "picks": 8,
+  "mode": "thin",
+  "strategy": "balanced",
+  "group": "boss",
+  "deck": 22,
+  "win": 100,
+  "turns": 7.54,
+  "hpLost": 14.3
+ },
+ {
+  "picks": 8,
+  "mode": "thin",
+  "strategy": "planner",
+  "group": "normal",
+  "deck": 22,
+  "win": 100,
+  "turns": 2.83,
+  "hpLost": 6.3
+ },
+ {
+  "picks": 8,
+  "mode": "thin",
+  "strategy": "planner",
+  "group": "elite",
+  "deck": 22,
+  "win": 100,
+  "turns": 4.88,
+  "hpLost": 11.5
+ },
+ {
+  "picks": 8,
+  "mode": "thin",
+  "strategy": "planner",
+  "group": "boss",
+  "deck": 22,
+  "win": 100,
+  "turns": 7.48,
+  "hpLost": 14
+ },
+ {
+  "picks": 8,
+  "mode": "bleed",
+  "strategy": "balanced",
+  "group": "normal",
+  "deck": 26,
+  "win": 100,
+  "turns": 3.31,
+  "hpLost": 6.1
+ },
+ {
+  "picks": 8,
+  "mode": "bleed",
+  "strategy": "balanced",
+  "group": "elite",
+  "deck": 26,
+  "win": 100,
+  "turns": 5.65,
+  "hpLost": 11.9
+ },
+ {
+  "picks": 8,
+  "mode": "bleed",
+  "strategy": "balanced",
+  "group": "boss",
+  "deck": 26,
+  "win": 100,
+  "turns": 8.76,
+  "hpLost": 18
+ },
+ {
+  "picks": 8,
+  "mode": "bleed",
+  "strategy": "planner",
+  "group": "normal",
+  "deck": 26,
+  "win": 100,
+  "turns": 3.16,
+  "hpLost": 6.2
+ },
+ {
+  "picks": 8,
+  "mode": "bleed",
+  "strategy": "planner",
+  "group": "elite",
+  "deck": 26,
+  "win": 100,
+  "turns": 5.51,
+  "hpLost": 12.9
+ },
+ {
+  "picks": 8,
+  "mode": "bleed",
+  "strategy": "planner",
+  "group": "boss",
+  "deck": 26,
+  "win": 100,
+  "turns": 8.4,
+  "hpLost": 17
+ }
+]
