@@ -27,7 +27,7 @@ function sealed(payload: unknown): string {
 describe('independent sector review regressions',()=>{
   it('preserves the prototype encounter health and 18/8, 3-mana opening contract',()=>{
     expect(sectorEncounters.map(e=>[e.id,e.maxHealth])).toEqual([
-      ['old-mines-raider',32],['old-mines-digger',36],['old-mines-watchman',34],['old-mines-overseer',40],['old-mines-johnson',64],['old-mines-rhahk-zor',70],
+      ['old-mines-raider',32],['old-mines-digger',36],['old-mines-watchman',34],['old-mines-overseer',40],['old-mines-johnson',64],['old-mines-rhahk-zor',76],
     ])
     const run=createSectorRun(42),battle=restoreDungeonBattle(enterDungeonNode(run,run.map.startNodeIds[0]!))
     expect(run.deck).toHaveLength(18);expect(battle.hand).toHaveLength(8);expect(battle.mana).toBe(3)

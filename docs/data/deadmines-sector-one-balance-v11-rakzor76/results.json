@@ -1,0 +1,256 @@
+{
+ "difference": [
+  {
+   "id": "old-mines-rhahk-zor",
+   "maxHealth": [
+    70,
+    76
+   ],
+   "restEqual": true
+  }
+ ],
+ "battles": {
+  "70|main|aggressive": {
+   "n": 300,
+   "winPct": 100,
+   "turns": 5.887,
+   "endW": 8.83,
+   "endM": 12.99,
+   "phase2Actions": 1.85,
+   "preparationsKilled": 0.137,
+   "lossW": 16.17,
+   "lossM": 5.01,
+   "noPhase2Action": 0.67
+  },
+  "70|main|balanced": {
+   "n": 300,
+   "winPct": 100,
+   "turns": 5.73,
+   "endW": 19.71,
+   "endM": 17.62,
+   "phase2Actions": 1.623,
+   "preparationsKilled": 0.337,
+   "lossW": 5.29,
+   "lossM": 0.38,
+   "noPhase2Action": 3
+  },
+  "70|main|defensive": {
+   "n": 300,
+   "winPct": 100,
+   "turns": 5.917,
+   "endW": 20.56,
+   "endM": 17.93,
+   "phase2Actions": 1.71,
+   "preparationsKilled": 0.267,
+   "lossW": 4.44,
+   "lossM": 0.07,
+   "noPhase2Action": 2.67
+  },
+  "70|holdout|aggressive": {
+   "n": 300,
+   "winPct": 99.33,
+   "turns": 5.867,
+   "endW": 8.86,
+   "endM": 12.96,
+   "phase2Actions": 1.853,
+   "preparationsKilled": 0.14,
+   "lossW": 16.14,
+   "lossM": 5.04,
+   "noPhase2Action": 0
+  },
+  "70|holdout|balanced": {
+   "n": 300,
+   "winPct": 100,
+   "turns": 5.773,
+   "endW": 19.98,
+   "endM": 17.59,
+   "phase2Actions": 1.68,
+   "preparationsKilled": 0.3,
+   "lossW": 5.02,
+   "lossM": 0.41,
+   "noPhase2Action": 3
+  },
+  "70|holdout|defensive": {
+   "n": 300,
+   "winPct": 100,
+   "turns": 5.867,
+   "endW": 20.89,
+   "endM": 17.9,
+   "phase2Actions": 1.707,
+   "preparationsKilled": 0.237,
+   "lossW": 4.11,
+   "lossM": 0.1,
+   "noPhase2Action": 3.33
+  },
+  "76|main|aggressive": {
+   "n": 300,
+   "winPct": 100,
+   "turns": 6.01,
+   "endW": 8.85,
+   "endM": 12.66,
+   "phase2Actions": 1.89,
+   "preparationsKilled": 0.12,
+   "lossW": 16.15,
+   "lossM": 5.34,
+   "noPhase2Action": 0
+  },
+  "76|main|balanced": {
+   "n": 300,
+   "winPct": 100,
+   "turns": 6.083,
+   "endW": 19.63,
+   "endM": 17.67,
+   "phase2Actions": 1.843,
+   "preparationsKilled": 0.207,
+   "lossW": 5.37,
+   "lossM": 0.33,
+   "noPhase2Action": 2
+  },
+  "76|main|defensive": {
+   "n": 300,
+   "winPct": 100,
+   "turns": 6.167,
+   "endW": 20.67,
+   "endM": 17.93,
+   "phase2Actions": 1.84,
+   "preparationsKilled": 0.233,
+   "lossW": 4.33,
+   "lossM": 0.07,
+   "noPhase2Action": 0.33
+  },
+  "76|holdout|aggressive": {
+   "n": 300,
+   "winPct": 99.33,
+   "turns": 6.013,
+   "endW": 8.91,
+   "endM": 12.73,
+   "phase2Actions": 1.943,
+   "preparationsKilled": 0.063,
+   "lossW": 16.09,
+   "lossM": 5.27,
+   "noPhase2Action": 0
+  },
+  "76|holdout|balanced": {
+   "n": 300,
+   "winPct": 100,
+   "turns": 6.093,
+   "endW": 19.99,
+   "endM": 17.6,
+   "phase2Actions": 1.877,
+   "preparationsKilled": 0.2,
+   "lossW": 5.01,
+   "lossM": 0.4,
+   "noPhase2Action": 1
+  },
+  "76|holdout|defensive": {
+   "n": 300,
+   "winPct": 100,
+   "turns": 6.173,
+   "endW": 20.92,
+   "endM": 17.91,
+   "phase2Actions": 1.887,
+   "preparationsKilled": 0.213,
+   "lossW": 4.08,
+   "lossM": 0.09,
+   "noPhase2Action": 0.33
+  }
+ },
+ "routes": {
+  "70|main|mixed|aggressive": {
+   "n": 300,
+   "winPct": 71.67,
+   "turns": 11.667,
+   "endW": 2.96,
+   "endM": 9.6,
+   "bossTurns": 4.9
+  },
+  "70|main|mixed|balanced": {
+   "n": 300,
+   "winPct": 100,
+   "turns": 13.3,
+   "endW": 15.53,
+   "endM": 15.75,
+   "bossTurns": 5.433
+  },
+  "70|main|mixed|defensive": {
+   "n": 300,
+   "winPct": 100,
+   "turns": 14.367,
+   "endW": 18.98,
+   "endM": 17.42,
+   "bossTurns": 5.52
+  },
+  "70|holdout|mixed|aggressive": {
+   "n": 300,
+   "winPct": 70.33,
+   "turns": 11.723,
+   "endW": 2.78,
+   "endM": 9.48,
+   "bossTurns": 4.817
+  },
+  "70|holdout|mixed|balanced": {
+   "n": 300,
+   "winPct": 100,
+   "turns": 13.48,
+   "endW": 15.36,
+   "endM": 15.87,
+   "bossTurns": 5.4
+  },
+  "70|holdout|mixed|defensive": {
+   "n": 300,
+   "winPct": 100,
+   "turns": 14.387,
+   "endW": 18.96,
+   "endM": 17.49,
+   "bossTurns": 5.513
+  },
+  "76|main|mixed|aggressive": {
+   "n": 300,
+   "winPct": 69.67,
+   "turns": 11.93,
+   "endW": 2.91,
+   "endM": 9.15,
+   "bossTurns": 5.163
+  },
+  "76|main|mixed|balanced": {
+   "n": 300,
+   "winPct": 100,
+   "turns": 13.76,
+   "endW": 15.51,
+   "endM": 15.7,
+   "bossTurns": 5.893
+  },
+  "76|main|mixed|defensive": {
+   "n": 300,
+   "winPct": 100,
+   "turns": 14.833,
+   "endW": 19.03,
+   "endM": 17.42,
+   "bossTurns": 5.987
+  },
+  "76|holdout|mixed|aggressive": {
+   "n": 300,
+   "winPct": 69.33,
+   "turns": 12,
+   "endW": 2.76,
+   "endM": 9.02,
+   "bossTurns": 5.093
+  },
+  "76|holdout|mixed|balanced": {
+   "n": 300,
+   "winPct": 100,
+   "turns": 13.927,
+   "endW": 15.26,
+   "endM": 15.82,
+   "bossTurns": 5.847
+  },
+  "76|holdout|mixed|defensive": {
+   "n": 300,
+   "winPct": 100,
+   "turns": 14.807,
+   "endW": 18.92,
+   "endM": 17.43,
+   "bossTurns": 5.933
+  }
+ }
+}

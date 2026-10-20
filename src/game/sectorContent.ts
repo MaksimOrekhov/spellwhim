@@ -1,6 +1,6 @@
 import type { EncounterDefinition } from './types'
 
-/** Sector I v1.1 (PA). See docs/design/deadmines-sector-one-balance-v11.md.
+/** Sector I v1.1 (PA; Rak'Zor 76 HP after the independent review). See docs/design/deadmines-sector-one-balance-v11.md.
  * Combat verbs and phase transitions belong to the existing engine. */
 export const sectorOneEnemies: readonly EncounterDefinition[] = [
   { id: 'old-mines-raider', name: 'Шахтёр-налётчик', title: 'Кирка без выходных', maxHealth: 32, appearance: 'defias', mapLabel: 'Старые штольни', behavior: { phase1: [
@@ -21,7 +21,7 @@ export const sectorOneElite: EncounterDefinition = { id: 'old-mines-johnson', na
   { kind: 'prepare', name: 'Опирается на кирку', prepared: { kind: 'attack', name: 'Удар мастера', damage: 14, target: 'warrior' } }, { kind: 'attack', name: 'Летящий обломок', damage: 7, target: 'mage' }, { kind: 'defend', name: 'Шахтёрская закалка', armor: 6 }, { kind: 'attack_all', name: 'Обвал породы', damage: 4, primaryTarget: 'mage' },
 ] } }
 
-export const rhahkZor: EncounterDefinition = { id: 'old-mines-rhahk-zor', name: "Рак'Зор", title: 'Бригадир Старых штолен', maxHealth: 70, appearance: 'guardian', mapLabel: 'Ворота штолен', behavior: {
+export const rhahkZor: EncounterDefinition = { id: 'old-mines-rhahk-zor', name: "Рак'Зор", title: 'Бригадир Старых штолен', maxHealth: 76, appearance: 'guardian', mapLabel: 'Ворота штолен', behavior: {
   phase1: [{ kind: 'attack', name: 'Проверка каски', damage: 7, target: 'warrior' }, { kind: 'prepare', name: 'Заносит молот', prepared: { kind: 'attack', name: 'Удар бригадира', damage: 13, target: 'warrior' } }, { kind: 'attack', name: 'Обломок породы', damage: 6, target: 'mage' }, { kind: 'recover', name: 'Переводит дух', armor: 4 }],
   phase2: [{ kind: 'attack_all', name: 'Дрожь штолен', damage: 5, primaryTarget: 'warrior' }, { kind: 'prepare', name: 'Замах через плечо', prepared: { kind: 'attack', name: 'Летящий молот', damage: 11, target: 'mage' } }, { kind: 'attack', name: 'Гнев бригадира', damage: 8, target: 'warrior' }, { kind: 'recover', name: 'Вытаскивает молот', armor: 2 }],
 } }

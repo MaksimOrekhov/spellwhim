@@ -42,13 +42,14 @@ describe('sector I v1.1 behavior and unchanged combat contracts', () => {
     }
   })
 
-  it('crosses the exact 70/2 threshold, preserves the old blow, then executes both targets in phase II', () => {
+  it('crosses the exact 76/2 threshold, preserves the old blow, then executes both targets in phase II', () => {
     const state = createCampaignBattle({ encounter: rhahkZor, deck: ['fireball'], seed: 42 })
     endTurn(state)
     const declared = structuredClone(state.enemy.nextAction)
-    state.enemy.health = 43
+    expect(rhahkZor.maxHealth).toBe(76)
+    state.enemy.health = 46
     expect(playCard(state, state.hand[0]!.instanceId).ok).toBe(true)
-    expect(state.enemy.health).toBe(35)
+    expect(state.enemy.health).toBe(38)
     expect(state.enemy.phase).toBe(2)
     expect(state.enemy.nextAction).toEqual(declared)
     const expected = ['prepare:warrior:13', 'warrior:13', 'all:5:warrior', 'prepare:mage:11', 'mage:11', 'warrior:8', 'recover:2', 'all:5:warrior']
@@ -61,9 +62,9 @@ describe('sector I v1.1 behavior and unchanged combat contracts', () => {
 
   it('does not change phase above half health', () => {
     const state = createCampaignBattle({ encounter: rhahkZor, deck: ['fireball'] })
-    state.enemy.health = 44
+    state.enemy.health = 47
     playCard(state, state.hand[0]!.instanceId)
-    expect(state.enemy.health).toBe(36)
+    expect(state.enemy.health).toBe(39)
     expect(state.enemy.phase).toBe(1)
   })
 
@@ -93,8 +94,8 @@ describe('sector I v1.1 behavior and unchanged combat contracts', () => {
     const state = createCampaignBattle({ encounter, deck: ['guard'] })
     // Reach the actual declared group action through the normal scheduler.
     if (encounter === rhahkZor) {
-      // A nonlethal hit moves phase; tick at 36->35 preserves current action.
-      state.enemy.health = 36
+      // A nonlethal hit moves phase; tick at 39->38 preserves current action.
+      state.enemy.health = 39
       applyStatus(state, 'enemy', 'bleeding', 1)
     }
     for (let i = 0; i < 6 && state.enemy.nextAction.kind !== 'attack_all'; i++) {
@@ -113,11 +114,11 @@ describe('sector I v1.1 behavior and unchanged combat contracts', () => {
 
   it('bleeding crosses the phase threshold without consuming vulnerability or cancelling the declared blow', () => {
     const state = createCampaignBattle({ encounter: rhahkZor, deck: ['guard'] })
-    state.enemy.health = 36; state.enemy.armor = 8
+    state.enemy.health = 39; state.enemy.armor = 8
     applyStatus(state, 'enemy', 'bleeding', 1); applyStatus(state, 'enemy', 'vulnerability')
     const w = state.heroes.warrior.health
     endTurn(state)
-    expect(state.enemy.health).toBe(35); expect(state.enemy.armor).toBe(8); expect(state.enemy.phase).toBe(2)
+    expect(state.enemy.health).toBe(38); expect(state.enemy.armor).toBe(8); expect(state.enemy.phase).toBe(2)
     expect(state.heroes.warrior.health).toBe(w - 7)
     expect(signature(state.enemy.nextAction)).toBe('all:5:warrior')
     expect(statusValue(state, 'enemy', 'vulnerability')).toBe(1)
@@ -152,7 +153,9 @@ describe('sector I v1.1 behavior and unchanged combat contracts', () => {
 describe('sector v1.1 saves and legacy isolation', () => {
   it('fingerprints behavior data without changing shared rules, rooms or the legacy catalogue', () => {
     expect(CATALOG_VERSION).toBe('e77d6518')
+    // b29a110 = prototype sector, d4691ce = v1.1 PA with Rak'Zor 70 HP.
     expect(SECTOR_CATALOG_VERSION).not.toBe('b29a110')
+    expect(SECTOR_CATALOG_VERSION).not.toBe('d4691ce')
     expect(RULES_VERSION).toBe('combat-upgrades-1')
     expect(ROOM_RULES_VERSION).toBe('sector-rooms-2:a7984ea9')
     const old = decodeSnapshot(legacyRaw)
