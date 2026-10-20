@@ -1,0 +1,1 @@
+event nodes per map { '1': 1823, '2': 2527, '3': 650 } by id { 'powder-store': 2889, 'forgotten-forge': 2975, 'goblin-trade': 2963 } events per path { '0': 29405, '1': 64995, '2': 1562 }

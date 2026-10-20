@@ -1,0 +1,20 @@
+
+== C1b deck size 14/16 (balanced & aggressive) ==
+old-mines-overseer deck14 aggressive         win   100%  turns 3.09  lossW 0.63  lossM 0  hits 0.09  rawThreat 1.08  freeTurns 2  mana% 85.14  def% 9  handLeft 5.76
+old-mines-overseer deck14 balanced           win   100%  turns 3.58  lossW 0.05  lossM 0  hits 0.58  rawThreat 6.92  freeTurns 2  mana% 83.3  def% 25  handLeft 5.12
+old-mines-overseer deck14 defensive          win   100%  turns 3.7  lossW 0  lossM 0  hits 0.7  rawThreat 8.36  freeTurns 2  mana% 82.82  def% 29  handLeft 5.09
+old-mines-johnson deck14 aggressive          win   100%  turns 4.93  lossW 7.56  lossM 4.16  hits 1.93  rawThreat 18.56  freeTurns 2  mana% 70.71  def% 9  handLeft 5.88
+old-mines-johnson deck14 balanced            win   100%  turns 4.84  lossW 0.05  lossM 0.05  hits 1.78  rawThreat 17.7  freeTurns 2.05  mana% 84.09  def% 28  handLeft 4.41
+old-mines-johnson deck14 defensive           win   100%  turns 4.9  lossW 0  lossM 0.01  hits 1.84  rawThreat 18.02  freeTurns 2.06  mana% 85.01  def% 30  handLeft 4.38
+old-mines-rhahk-zor deck14 aggressive        win   100%  turns 4.9  lossW 14.95  lossM 3.6  hits 2.9  rawThreat 25.2  freeTurns 1  mana% 70.69  def% 9  handLeft 5.88
+old-mines-rhahk-zor deck14 balanced          win   100%  turns 4.87  lossW 3.25  lossM 0.01  hits 2.84  rawThreat 24.69  freeTurns 1.03  mana% 86.48  def% 34  handLeft 3.95
+old-mines-rhahk-zor deck14 defensive         win   100%  turns 4.93  lossW 1.51  lossM 0  hits 2.86  rawThreat 24.88  freeTurns 1.07  mana% 87.5  def% 38  handLeft 3.54
+old-mines-overseer deck16 aggressive         win   100%  turns 3.43  lossW 3.28  lossM 0  hits 0.43  rawThreat 5.16  freeTurns 2  mana% 81.74  def% 12  handLeft 6.02
+old-mines-overseer deck16 balanced           win   100%  turns 3.79  lossW 0.05  lossM 0  hits 0.79  rawThreat 9.46  freeTurns 2  mana% 82.57  def% 29  handLeft 5.01
+old-mines-overseer deck16 defensive          win   100%  turns 3.87  lossW 0  lossM 0  hits 0.87  rawThreat 10.38  freeTurns 2  mana% 85.37  def% 32  handLeft 5.1
+old-mines-johnson deck16 aggressive          win   100%  turns 5.03  lossW 7.9  lossM 3.54  hits 2  rawThreat 18.98  freeTurns 2.03  mana% 75.75  def% 10  handLeft 6.18
+old-mines-johnson deck16 balanced            win   100%  turns 5.24  lossW 0.06  lossM 0.19  hits 1.98  rawThreat 18.9  freeTurns 2.25  mana% 83.53  def% 29  handLeft 4.52
+old-mines-johnson deck16 defensive           win   100%  turns 5.23  lossW 0.02  lossM 0  hits 2  rawThreat 18.98  freeTurns 2.24  mana% 84.76  def% 30  handLeft 4.64
+old-mines-rhahk-zor deck16 aggressive        win   100%  turns 5.02  lossW 14.79  lossM 4  hits 3  rawThreat 26  freeTurns 1.02  mana% 74.62  def% 10  handLeft 6.17
+old-mines-rhahk-zor deck16 balanced          win   100%  turns 5.23  lossW 2.63  lossM 0.04  hits 2.99  rawThreat 25.92  freeTurns 1.24  mana% 87.84  def% 37  handLeft 3.83
+old-mines-rhahk-zor deck16 defensive         win   100%  turns 5.25  lossW 1.7  lossM 0  hits 3  rawThreat 25.98  freeTurns 1.24  mana% 90.47  def% 40  handLeft 3.48

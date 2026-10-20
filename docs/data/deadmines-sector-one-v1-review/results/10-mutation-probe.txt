@@ -1,0 +1,20 @@
+paid upgrade threshold <=3 -> <=4                SURVIVED
+risk guard <=2 -> <=1 (risk may kill)            SURVIVED
+risk failure spares the warrior                  SURVIVED
+risk success 70% -> 30%                          SURVIVED
+event may remove/replace upgraded copies         killed (1 failing)
+replacement offers 4 instead of 3                SURVIVED
+room card offer 3 -> 2                           SURVIVED
+treasure artifacts 2 -> 1                        SURVIVED
+paid upgrade costs 2 instead of 3                killed (1 failing)
+save: drop room-offer integrity check            killed (1 failing)
+save: drop journal ledger checks                 SURVIVED
+validator: drop forced-elite check               SURVIVED
+validator: drop development guarantee            SURVIVED
+validator: drop battle budget                    SURVIVED
+validator: drop elite budget                     killed (1 failing)
+validator: drop reachability                     SURVIVED
+generator: row-2 required list ignored           killed (2 failing)
+artifact slot: silent replacement                killed (3 failing)
+Johnson HP 60 -> 30                              SURVIVED
+boss phase II removed                            killed (1 failing)
