@@ -1,0 +1,2309 @@
+{
+  "method": "Paired seed-cluster mean difference; 95% normal CI; all nine fixed enemies per seed; no adjustment for multiple contrasts",
+  "rows": [
+    {
+      "before": "A",
+      "after": "B",
+      "strategy": "aggressive",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.1414814814814815,
+      "ci95": [
+        -0.18266339669787598,
+        -0.10029956626508704
+      ]
+    },
+    {
+      "before": "A",
+      "after": "B",
+      "strategy": "aggressive",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": -0.28222222222222215,
+      "ci95": [
+        -0.46948061940134,
+        -0.09496382504310433
+      ]
+    },
+    {
+      "before": "A",
+      "after": "B",
+      "strategy": "aggressive",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": -0.02407407407407404,
+      "ci95": [
+        -0.1665207699273371,
+        0.11837262177918904
+      ]
+    },
+    {
+      "before": "A",
+      "after": "B",
+      "strategy": "aggressive",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": -0.001111111111111109,
+      "ci95": [
+        -0.009174487393930047,
+        0.0069522651717078285
+      ]
+    },
+    {
+      "before": "A",
+      "after": "B",
+      "strategy": "balanced",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.1911111111111112,
+      "ci95": [
+        -0.24135466832628039,
+        -0.14086755389594202
+      ]
+    },
+    {
+      "before": "A",
+      "after": "B",
+      "strategy": "balanced",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": -0.8151851851851851,
+      "ci95": [
+        -0.972742927224169,
+        -0.6576274431462013
+      ]
+    },
+    {
+      "before": "A",
+      "after": "B",
+      "strategy": "balanced",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": -0.37851851851851853,
+      "ci95": [
+        -0.5533986384958267,
+        -0.2036383985412104
+      ]
+    },
+    {
+      "before": "A",
+      "after": "B",
+      "strategy": "balanced",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "A",
+      "after": "B",
+      "strategy": "defensive",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.24407407407407414,
+      "ci95": [
+        -0.2910035303997076,
+        -0.19714461774844066
+      ]
+    },
+    {
+      "before": "A",
+      "after": "B",
+      "strategy": "defensive",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": -0.9177777777777777,
+      "ci95": [
+        -1.070077731598424,
+        -0.7654778239571314
+      ]
+    },
+    {
+      "before": "A",
+      "after": "B",
+      "strategy": "defensive",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": -0.17,
+      "ci95": [
+        -0.2959750562314551,
+        -0.04402494376854493
+      ]
+    },
+    {
+      "before": "A",
+      "after": "B",
+      "strategy": "defensive",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "A",
+      "after": "B",
+      "strategy": "planner",
+      "metric": "turns",
+      "nSeeds": 60,
+      "mean": -0.2870370370370371,
+      "ci95": [
+        -0.3711898550245742,
+        -0.2028842190495
+      ]
+    },
+    {
+      "before": "A",
+      "after": "B",
+      "strategy": "planner",
+      "metric": "lostW",
+      "nSeeds": 60,
+      "mean": -0.9333333333333333,
+      "ci95": [
+        -1.3065793578594893,
+        -0.5600873088071774
+      ]
+    },
+    {
+      "before": "A",
+      "after": "B",
+      "strategy": "planner",
+      "metric": "lostM",
+      "nSeeds": 60,
+      "mean": 0.1944444444444444,
+      "ci95": [
+        -0.18277992958272118,
+        0.57166881847161
+      ]
+    },
+    {
+      "before": "A",
+      "after": "B",
+      "strategy": "planner",
+      "metric": "winRate",
+      "nSeeds": 60,
+      "mean": 0.0018518518518518526,
+      "ci95": [
+        -0.0017777777777777785,
+        0.005481481481481484
+      ]
+    },
+    {
+      "before": "A",
+      "after": "C",
+      "strategy": "aggressive",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": 0.11259259259259259,
+      "ci95": [
+        0.05958648228079784,
+        0.16559870290438733
+      ]
+    },
+    {
+      "before": "A",
+      "after": "C",
+      "strategy": "aggressive",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": 0.89,
+      "ci95": [
+        0.6840964540141947,
+        1.0959035459858053
+      ]
+    },
+    {
+      "before": "A",
+      "after": "C",
+      "strategy": "aggressive",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": 1.0470370370370372,
+      "ci95": [
+        0.8657310717185018,
+        1.2283430023555726
+      ]
+    },
+    {
+      "before": "A",
+      "after": "C",
+      "strategy": "aggressive",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": -0.05888888888888889,
+      "ci95": [
+        -0.07094120137948146,
+        -0.04683657639829633
+      ]
+    },
+    {
+      "before": "A",
+      "after": "C",
+      "strategy": "balanced",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": 0.012962962962962898,
+      "ci95": [
+        -0.04004798495674313,
+        0.06597391088266893
+      ]
+    },
+    {
+      "before": "A",
+      "after": "C",
+      "strategy": "balanced",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": 0.019629629629629643,
+      "ci95": [
+        -0.17166957960342838,
+        0.21092883886268765
+      ]
+    },
+    {
+      "before": "A",
+      "after": "C",
+      "strategy": "balanced",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": -0.0037037037037036956,
+      "ci95": [
+        -0.1774148227912599,
+        0.17000741538385247
+      ]
+    },
+    {
+      "before": "A",
+      "after": "C",
+      "strategy": "balanced",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "A",
+      "after": "C",
+      "strategy": "defensive",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.04851851851851858,
+      "ci95": [
+        -0.09825075732915384,
+        0.0012137202921166865
+      ]
+    },
+    {
+      "before": "A",
+      "after": "C",
+      "strategy": "defensive",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": -0.10481481481481479,
+      "ci95": [
+        -0.3022407575302475,
+        0.09261112790061791
+      ]
+    },
+    {
+      "before": "A",
+      "after": "C",
+      "strategy": "defensive",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": 0.2840740740740741,
+      "ci95": [
+        0.15161492899498144,
+        0.41653321915316677
+      ]
+    },
+    {
+      "before": "A",
+      "after": "C",
+      "strategy": "defensive",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "A",
+      "after": "C",
+      "strategy": "planner",
+      "metric": "turns",
+      "nSeeds": 60,
+      "mean": -0.1314814814814816,
+      "ci95": [
+        -0.2265766507027704,
+        -0.03638631226019279
+      ]
+    },
+    {
+      "before": "A",
+      "after": "C",
+      "strategy": "planner",
+      "metric": "lostW",
+      "nSeeds": 60,
+      "mean": -0.6722222222222223,
+      "ci95": [
+        -1.0524816598025022,
+        -0.2919627846419425
+      ]
+    },
+    {
+      "before": "A",
+      "after": "C",
+      "strategy": "planner",
+      "metric": "lostM",
+      "nSeeds": 60,
+      "mean": 0.31111111111111106,
+      "ci95": [
+        -0.01210455855061432,
+        0.6343267807728364
+      ]
+    },
+    {
+      "before": "A",
+      "after": "C",
+      "strategy": "planner",
+      "metric": "winRate",
+      "nSeeds": 60,
+      "mean": 0.0018518518518518526,
+      "ci95": [
+        -0.0017777777777777785,
+        0.005481481481481484
+      ]
+    },
+    {
+      "before": "B",
+      "after": "D",
+      "strategy": "aggressive",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.11000000000000003,
+      "ci95": [
+        -0.12373830646235295,
+        -0.0962616935376471
+      ]
+    },
+    {
+      "before": "B",
+      "after": "D",
+      "strategy": "aggressive",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": -0.20962962962962964,
+      "ci95": [
+        -0.2906335051243988,
+        -0.1286257541348605
+      ]
+    },
+    {
+      "before": "B",
+      "after": "D",
+      "strategy": "aggressive",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": -0.27888888888888885,
+      "ci95": [
+        -0.35633845985106916,
+        -0.20143931792670855
+      ]
+    },
+    {
+      "before": "B",
+      "after": "D",
+      "strategy": "aggressive",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.007777777777777778,
+      "ci95": [
+        0.0029803143358008866,
+        0.01257524121975467
+      ]
+    },
+    {
+      "before": "B",
+      "after": "D",
+      "strategy": "balanced",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.11629629629629629,
+      "ci95": [
+        -0.12916781760344473,
+        -0.10342477498914784
+      ]
+    },
+    {
+      "before": "B",
+      "after": "D",
+      "strategy": "balanced",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": -0.11740740740740743,
+      "ci95": [
+        -0.17519567320728377,
+        -0.05961914160753109
+      ]
+    },
+    {
+      "before": "B",
+      "after": "D",
+      "strategy": "balanced",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": -0.05444444444444444,
+      "ci95": [
+        -0.0882463908853265,
+        -0.020642498003562382
+      ]
+    },
+    {
+      "before": "B",
+      "after": "D",
+      "strategy": "balanced",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "B",
+      "after": "D",
+      "strategy": "defensive",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.11222222222222221,
+      "ci95": [
+        -0.12699889282428212,
+        -0.0974455516201623
+      ]
+    },
+    {
+      "before": "B",
+      "after": "D",
+      "strategy": "defensive",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": -0.05,
+      "ci95": [
+        -0.08664844653893708,
+        -0.013351553461062919
+      ]
+    },
+    {
+      "before": "B",
+      "after": "D",
+      "strategy": "defensive",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": -0.017777777777777778,
+      "ci95": [
+        -0.03331066154092256,
+        -0.002244894014632997
+      ]
+    },
+    {
+      "before": "B",
+      "after": "D",
+      "strategy": "defensive",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "B",
+      "after": "D",
+      "strategy": "planner",
+      "metric": "turns",
+      "nSeeds": 60,
+      "mean": -0.1611111111111111,
+      "ci95": [
+        -0.2051636740829434,
+        -0.1170585481392788
+      ]
+    },
+    {
+      "before": "B",
+      "after": "D",
+      "strategy": "planner",
+      "metric": "lostW",
+      "nSeeds": 60,
+      "mean": -0.23148148148148148,
+      "ci95": [
+        -0.40879013091643235,
+        -0.05417283204653059
+      ]
+    },
+    {
+      "before": "B",
+      "after": "D",
+      "strategy": "planner",
+      "metric": "lostM",
+      "nSeeds": 60,
+      "mean": -0.12592592592592589,
+      "ci95": [
+        -0.25053255804808294,
+        -0.0013192938037688562
+      ]
+    },
+    {
+      "before": "B",
+      "after": "D",
+      "strategy": "planner",
+      "metric": "winRate",
+      "nSeeds": 60,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "C",
+      "after": "E",
+      "strategy": "aggressive",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.10814814814814819,
+      "ci95": [
+        -0.1298137944814545,
+        -0.08648250181484188
+      ]
+    },
+    {
+      "before": "C",
+      "after": "E",
+      "strategy": "aggressive",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": -0.24444444444444438,
+      "ci95": [
+        -0.3351183948420226,
+        -0.15377049404686616
+      ]
+    },
+    {
+      "before": "C",
+      "after": "E",
+      "strategy": "aggressive",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": -0.6674074074074074,
+      "ci95": [
+        -0.7573612313002664,
+        -0.5774535835145485
+      ]
+    },
+    {
+      "before": "C",
+      "after": "E",
+      "strategy": "aggressive",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.0262962962962963,
+      "ci95": [
+        0.017504328761728027,
+        0.03508826383086457
+      ]
+    },
+    {
+      "before": "C",
+      "after": "E",
+      "strategy": "balanced",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.16703703703703704,
+      "ci95": [
+        -0.18483332986472392,
+        -0.14924074420935016
+      ]
+    },
+    {
+      "before": "C",
+      "after": "E",
+      "strategy": "balanced",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": -0.4411111111111111,
+      "ci95": [
+        -0.506838710443162,
+        -0.37538351177906026
+      ]
+    },
+    {
+      "before": "C",
+      "after": "E",
+      "strategy": "balanced",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": -0.3466666666666667,
+      "ci95": [
+        -0.3986338502821185,
+        -0.29469948305121485
+      ]
+    },
+    {
+      "before": "C",
+      "after": "E",
+      "strategy": "balanced",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "C",
+      "after": "E",
+      "strategy": "defensive",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.15592592592592594,
+      "ci95": [
+        -0.17458092275982898,
+        -0.1372709290920229
+      ]
+    },
+    {
+      "before": "C",
+      "after": "E",
+      "strategy": "defensive",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": -0.39740740740740743,
+      "ci95": [
+        -0.4652819780845092,
+        -0.32953283673030564
+      ]
+    },
+    {
+      "before": "C",
+      "after": "E",
+      "strategy": "defensive",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": -0.4048148148148148,
+      "ci95": [
+        -0.45705171503292874,
+        -0.35257791459670085
+      ]
+    },
+    {
+      "before": "C",
+      "after": "E",
+      "strategy": "defensive",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "C",
+      "after": "E",
+      "strategy": "planner",
+      "metric": "turns",
+      "nSeeds": 60,
+      "mean": -0.16111111111111107,
+      "ci95": [
+        -0.2086733690004485,
+        -0.11354885322177363
+      ]
+    },
+    {
+      "before": "C",
+      "after": "E",
+      "strategy": "planner",
+      "metric": "lostW",
+      "nSeeds": 60,
+      "mean": -0.36481481481481476,
+      "ci95": [
+        -0.5886654732806221,
+        -0.14096415634900736
+      ]
+    },
+    {
+      "before": "C",
+      "after": "E",
+      "strategy": "planner",
+      "metric": "lostM",
+      "nSeeds": 60,
+      "mean": -0.1444444444444444,
+      "ci95": [
+        -0.2514468090600935,
+        -0.03744207982879534
+      ]
+    },
+    {
+      "before": "C",
+      "after": "E",
+      "strategy": "planner",
+      "metric": "winRate",
+      "nSeeds": 60,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "E",
+      "after": "F",
+      "strategy": "aggressive",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.16074074074074074,
+      "ci95": [
+        -0.21828194646932125,
+        -0.10319953501216023
+      ]
+    },
+    {
+      "before": "E",
+      "after": "F",
+      "strategy": "aggressive",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": 0.752962962962963,
+      "ci95": [
+        0.559475654551253,
+        0.9464502713746729
+      ]
+    },
+    {
+      "before": "E",
+      "after": "F",
+      "strategy": "aggressive",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": -0.018518518518518472,
+      "ci95": [
+        -0.21679378190324977,
+        0.17975674486621285
+      ]
+    },
+    {
+      "before": "E",
+      "after": "F",
+      "strategy": "aggressive",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.022222222222222227,
+      "ci95": [
+        0.010957435819785909,
+        0.033487008624658546
+      ]
+    },
+    {
+      "before": "E",
+      "after": "F",
+      "strategy": "balanced",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.02888888888888888,
+      "ci95": [
+        -0.083106927240792,
+        0.025329149463014233
+      ]
+    },
+    {
+      "before": "E",
+      "after": "F",
+      "strategy": "balanced",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": 0.42962962962962964,
+      "ci95": [
+        0.22707392915179905,
+        0.6321853301074603
+      ]
+    },
+    {
+      "before": "E",
+      "after": "F",
+      "strategy": "balanced",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": -0.29555555555555557,
+      "ci95": [
+        -0.47536233154996876,
+        -0.11574877956114235
+      ]
+    },
+    {
+      "before": "E",
+      "after": "F",
+      "strategy": "balanced",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "E",
+      "after": "F",
+      "strategy": "defensive",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.08111111111111108,
+      "ci95": [
+        -0.13341018958698012,
+        -0.028812032635242048
+      ]
+    },
+    {
+      "before": "E",
+      "after": "F",
+      "strategy": "defensive",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": 0.44037037037037036,
+      "ci95": [
+        0.2614490029680966,
+        0.6192917377726441
+      ]
+    },
+    {
+      "before": "E",
+      "after": "F",
+      "strategy": "defensive",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": -0.15925925925925927,
+      "ci95": [
+        -0.2875444934868114,
+        -0.030974025031707153
+      ]
+    },
+    {
+      "before": "E",
+      "after": "F",
+      "strategy": "defensive",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "E",
+      "after": "F",
+      "strategy": "planner",
+      "metric": "turns",
+      "nSeeds": 60,
+      "mean": -0.13333333333333333,
+      "ci95": [
+        -0.2507814880744912,
+        -0.01588517859217549
+      ]
+    },
+    {
+      "before": "E",
+      "after": "F",
+      "strategy": "planner",
+      "metric": "lostW",
+      "nSeeds": 60,
+      "mean": 0.13888888888888884,
+      "ci95": [
+        -0.25630478696038606,
+        0.5340825647381637
+      ]
+    },
+    {
+      "before": "E",
+      "after": "F",
+      "strategy": "planner",
+      "metric": "lostM",
+      "nSeeds": 60,
+      "mean": -0.30185185185185187,
+      "ci95": [
+        -0.6064282244320165,
+        0.002724520728312807
+      ]
+    },
+    {
+      "before": "E",
+      "after": "F",
+      "strategy": "planner",
+      "metric": "winRate",
+      "nSeeds": 60,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "A",
+      "after": "F",
+      "strategy": "aggressive",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.15629629629629632,
+      "ci95": [
+        -0.19593961397344892,
+        -0.11665297861914373
+      ]
+    },
+    {
+      "before": "A",
+      "after": "F",
+      "strategy": "aggressive",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": 1.3985185185185185,
+      "ci95": [
+        1.2260980510726056,
+        1.5709389859644314
+      ]
+    },
+    {
+      "before": "A",
+      "after": "F",
+      "strategy": "aggressive",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": 0.36111111111111116,
+      "ci95": [
+        0.18949363685905812,
+        0.5327285853631643
+      ]
+    },
+    {
+      "before": "A",
+      "after": "F",
+      "strategy": "aggressive",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": -0.010370370370370372,
+      "ci95": [
+        -0.019833982914231024,
+        -0.0009067578265097194
+      ]
+    },
+    {
+      "before": "A",
+      "after": "F",
+      "strategy": "balanced",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.18296296296296302,
+      "ci95": [
+        -0.23480213158395,
+        -0.13112379434197605
+      ]
+    },
+    {
+      "before": "A",
+      "after": "F",
+      "strategy": "balanced",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": 0.008148148148148156,
+      "ci95": [
+        -0.21133987068101232,
+        0.22763616697730862
+      ]
+    },
+    {
+      "before": "A",
+      "after": "F",
+      "strategy": "balanced",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": -0.6459259259259259,
+      "ci95": [
+        -0.8337862184360728,
+        -0.458065633415779
+      ]
+    },
+    {
+      "before": "A",
+      "after": "F",
+      "strategy": "balanced",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "A",
+      "after": "F",
+      "strategy": "defensive",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.28555555555555556,
+      "ci95": [
+        -0.3310324367521752,
+        -0.2400786743589359
+      ]
+    },
+    {
+      "before": "A",
+      "after": "F",
+      "strategy": "defensive",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": -0.061851851851851825,
+      "ci95": [
+        -0.2673197708266304,
+        0.14361606712292674
+      ]
+    },
+    {
+      "before": "A",
+      "after": "F",
+      "strategy": "defensive",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": -0.28,
+      "ci95": [
+        -0.4072698206630577,
+        -0.15273017933694236
+      ]
+    },
+    {
+      "before": "A",
+      "after": "F",
+      "strategy": "defensive",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "A",
+      "after": "F",
+      "strategy": "planner",
+      "metric": "turns",
+      "nSeeds": 60,
+      "mean": -0.42592592592592593,
+      "ci95": [
+        -0.5179676974636125,
+        -0.3338841543882394
+      ]
+    },
+    {
+      "before": "A",
+      "after": "F",
+      "strategy": "planner",
+      "metric": "lostW",
+      "nSeeds": 60,
+      "mean": -0.8981481481481483,
+      "ci95": [
+        -1.3749183763538948,
+        -0.42137791994240176
+      ]
+    },
+    {
+      "before": "A",
+      "after": "F",
+      "strategy": "planner",
+      "metric": "lostM",
+      "nSeeds": 60,
+      "mean": -0.13518518518518519,
+      "ci95": [
+        -0.43083322855491235,
+        0.16046285818454198
+      ]
+    },
+    {
+      "before": "A",
+      "after": "F",
+      "strategy": "planner",
+      "metric": "winRate",
+      "nSeeds": 60,
+      "mean": 0.0018518518518518526,
+      "ci95": [
+        -0.0017777777777777785,
+        0.005481481481481484
+      ]
+    },
+    {
+      "before": "A",
+      "after": "16-8",
+      "strategy": "aggressive",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.15851851851851856,
+      "ci95": [
+        -0.19112959416461406,
+        -0.12590744287242306
+      ]
+    },
+    {
+      "before": "A",
+      "after": "16-8",
+      "strategy": "aggressive",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": -0.27259259259259255,
+      "ci95": [
+        -0.45359079425076176,
+        -0.09159439093442334
+      ]
+    },
+    {
+      "before": "A",
+      "after": "16-8",
+      "strategy": "aggressive",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": -0.14629629629629626,
+      "ci95": [
+        -0.26387920271907717,
+        -0.028713389873515363
+      ]
+    },
+    {
+      "before": "A",
+      "after": "16-8",
+      "strategy": "aggressive",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.00962962962962963,
+      "ci95": [
+        0.002896360657059509,
+        0.016362898602199753
+      ]
+    },
+    {
+      "before": "A",
+      "after": "16-8",
+      "strategy": "balanced",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.1581481481481482,
+      "ci95": [
+        -0.20282570659142496,
+        -0.11347058970487145
+      ]
+    },
+    {
+      "before": "A",
+      "after": "16-8",
+      "strategy": "balanced",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": -0.8122222222222222,
+      "ci95": [
+        -0.954314472205823,
+        -0.6701299722386214
+      ]
+    },
+    {
+      "before": "A",
+      "after": "16-8",
+      "strategy": "balanced",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": -0.008518518518518516,
+      "ci95": [
+        -0.185614128601935,
+        0.16857709156489797
+      ]
+    },
+    {
+      "before": "A",
+      "after": "16-8",
+      "strategy": "balanced",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "A",
+      "after": "16-8",
+      "strategy": "defensive",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.13444444444444448,
+      "ci95": [
+        -0.1745741425658939,
+        -0.09431474632299505
+      ]
+    },
+    {
+      "before": "A",
+      "after": "16-8",
+      "strategy": "defensive",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": -0.62,
+      "ci95": [
+        -0.7565339047778517,
+        -0.4834660952221484
+      ]
+    },
+    {
+      "before": "A",
+      "after": "16-8",
+      "strategy": "defensive",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": 0.06333333333333334,
+      "ci95": [
+        -0.05768129215867919,
+        0.18434795882534588
+      ]
+    },
+    {
+      "before": "A",
+      "after": "16-8",
+      "strategy": "defensive",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "A",
+      "after": "16-8",
+      "strategy": "planner",
+      "metric": "turns",
+      "nSeeds": 16,
+      "mean": -0.2361111111111112,
+      "ci95": [
+        -0.38865274679554973,
+        -0.08356947542667265
+      ]
+    },
+    {
+      "before": "A",
+      "after": "16-8",
+      "strategy": "planner",
+      "metric": "lostW",
+      "nSeeds": 16,
+      "mean": -1.3124999999999998,
+      "ci95": [
+        -1.9109659702019086,
+        -0.714034029798091
+      ]
+    },
+    {
+      "before": "A",
+      "after": "16-8",
+      "strategy": "planner",
+      "metric": "lostM",
+      "nSeeds": 16,
+      "mean": 0.22916666666666657,
+      "ci95": [
+        -0.27434633679025083,
+        0.732679670123584
+      ]
+    },
+    {
+      "before": "A",
+      "after": "16-8",
+      "strategy": "planner",
+      "metric": "winRate",
+      "nSeeds": 16,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "A",
+      "after": "14-8",
+      "strategy": "aggressive",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.345925925925926,
+      "ci95": [
+        -0.37780535990002906,
+        -0.314046491951823
+      ]
+    },
+    {
+      "before": "A",
+      "after": "14-8",
+      "strategy": "aggressive",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": -1.0762962962962963,
+      "ci95": [
+        -1.2470803694615815,
+        -0.9055122231310111
+      ]
+    },
+    {
+      "before": "A",
+      "after": "14-8",
+      "strategy": "aggressive",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": -0.1222222222222221,
+      "ci95": [
+        -0.22843677357584183,
+        -0.01600767086860236
+      ]
+    },
+    {
+      "before": "A",
+      "after": "14-8",
+      "strategy": "aggressive",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.02111111111111112,
+      "ci95": [
+        0.015377770095941747,
+        0.02684445212628049
+      ]
+    },
+    {
+      "before": "A",
+      "after": "14-8",
+      "strategy": "balanced",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.49296296296296305,
+      "ci95": [
+        -0.5344786850506227,
+        -0.45144724087530347
+      ]
+    },
+    {
+      "before": "A",
+      "after": "14-8",
+      "strategy": "balanced",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": -0.8051851851851851,
+      "ci95": [
+        -0.9561041540770245,
+        -0.6542662162933457
+      ]
+    },
+    {
+      "before": "A",
+      "after": "14-8",
+      "strategy": "balanced",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": 0.27185185185185184,
+      "ci95": [
+        0.1267914873240705,
+        0.41691221637963316
+      ]
+    },
+    {
+      "before": "A",
+      "after": "14-8",
+      "strategy": "balanced",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "A",
+      "after": "14-8",
+      "strategy": "defensive",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.3222222222222223,
+      "ci95": [
+        -0.35795575115820094,
+        -0.28648869328624366
+      ]
+    },
+    {
+      "before": "A",
+      "after": "14-8",
+      "strategy": "defensive",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": -0.8144444444444444,
+      "ci95": [
+        -0.9467244294373288,
+        -0.68216445945156
+      ]
+    },
+    {
+      "before": "A",
+      "after": "14-8",
+      "strategy": "defensive",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": -0.22740740740740742,
+      "ci95": [
+        -0.31949702667818825,
+        -0.1353177881366266
+      ]
+    },
+    {
+      "before": "A",
+      "after": "14-8",
+      "strategy": "defensive",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "A",
+      "after": "14-8",
+      "strategy": "planner",
+      "metric": "turns",
+      "nSeeds": 16,
+      "mean": -0.5347222222222223,
+      "ci95": [
+        -0.6122776915525363,
+        -0.45716675289190833
+      ]
+    },
+    {
+      "before": "A",
+      "after": "14-8",
+      "strategy": "planner",
+      "metric": "lostW",
+      "nSeeds": 16,
+      "mean": -0.7777777777777777,
+      "ci95": [
+        -1.286185119081341,
+        -0.26937043647421444
+      ]
+    },
+    {
+      "before": "A",
+      "after": "14-8",
+      "strategy": "planner",
+      "metric": "lostM",
+      "nSeeds": 16,
+      "mean": 0.4861111111111111,
+      "ci95": [
+        -0.14939806551834317,
+        1.1216202877405654
+      ]
+    },
+    {
+      "before": "A",
+      "after": "14-8",
+      "strategy": "planner",
+      "metric": "winRate",
+      "nSeeds": 16,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-7",
+      "strategy": "aggressive",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": 0.23370370370370377,
+      "ci95": [
+        0.2081419379831414,
+        0.25926546942426615
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-7",
+      "strategy": "aggressive",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": 1.0603703703703702,
+      "ci95": [
+        0.9386263147387325,
+        1.182114426002008
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-7",
+      "strategy": "aggressive",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": 0.24148148148148146,
+      "ci95": [
+        0.1750407776976135,
+        0.3079221852653494
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-7",
+      "strategy": "aggressive",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": -0.011481481481481487,
+      "ci95": [
+        -0.015450665021333621,
+        -0.007512297941629352
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-7",
+      "strategy": "balanced",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": 0.31888888888888894,
+      "ci95": [
+        0.2944033050933146,
+        0.3433744726844633
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-7",
+      "strategy": "balanced",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": 0.49925925925925924,
+      "ci95": [
+        0.3991330424933708,
+        0.5993854760251477
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-7",
+      "strategy": "balanced",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": -0.12,
+      "ci95": [
+        -0.19411139416116718,
+        -0.04588860583883282
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-7",
+      "strategy": "balanced",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-7",
+      "strategy": "defensive",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": 0.1214814814814815,
+      "ci95": [
+        0.09759204723034376,
+        0.14537091573261923
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-7",
+      "strategy": "defensive",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": 0.7555555555555555,
+      "ci95": [
+        0.6539172554175511,
+        0.85719385569356
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-7",
+      "strategy": "defensive",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": 0.4188888888888889,
+      "ci95": [
+        0.3716017695768125,
+        0.46617600820096533
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-7",
+      "strategy": "defensive",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-7",
+      "strategy": "planner",
+      "metric": "turns",
+      "nSeeds": 16,
+      "mean": 0.2777777777777778,
+      "ci95": [
+        0.2033925055508118,
+        0.3521630500047438
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-7",
+      "strategy": "planner",
+      "metric": "lostW",
+      "nSeeds": 16,
+      "mean": -0.02083333333333337,
+      "ci95": [
+        -0.5139364192009651,
+        0.47226975253429837
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-7",
+      "strategy": "planner",
+      "metric": "lostM",
+      "nSeeds": 16,
+      "mean": 0.1736111111111111,
+      "ci95": [
+        -0.1456944545132342,
+        0.4929166767354564
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-7",
+      "strategy": "planner",
+      "metric": "winRate",
+      "nSeeds": 16,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "A",
+      "after": "18-8+2",
+      "strategy": "aggressive",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.12444444444444448,
+      "ci95": [
+        -0.13868745909810656,
+        -0.1102014297907824
+      ]
+    },
+    {
+      "before": "A",
+      "after": "18-8+2",
+      "strategy": "aggressive",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": 0.0648148148148148,
+      "ci95": [
+        -0.013307503114932562,
+        0.14293713274456216
+      ]
+    },
+    {
+      "before": "A",
+      "after": "18-8+2",
+      "strategy": "aggressive",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": -0.23333333333333334,
+      "ci95": [
+        -0.3031424486283918,
+        -0.16352421803827488
+      ]
+    },
+    {
+      "before": "A",
+      "after": "18-8+2",
+      "strategy": "aggressive",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.009629629629629634,
+      "ci95": [
+        0.004605175691074645,
+        0.014654083568184623
+      ]
+    },
+    {
+      "before": "A",
+      "after": "18-8+2",
+      "strategy": "balanced",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.2196296296296297,
+      "ci95": [
+        -0.23721431640704832,
+        -0.20204494285221108
+      ]
+    },
+    {
+      "before": "A",
+      "after": "18-8+2",
+      "strategy": "balanced",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": -0.34703703703703703,
+      "ci95": [
+        -0.41838724272467565,
+        -0.2756868313493984
+      ]
+    },
+    {
+      "before": "A",
+      "after": "18-8+2",
+      "strategy": "balanced",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": -0.08777777777777779,
+      "ci95": [
+        -0.1309906911489103,
+        -0.044564864406645276
+      ]
+    },
+    {
+      "before": "A",
+      "after": "18-8+2",
+      "strategy": "balanced",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "A",
+      "after": "18-8+2",
+      "strategy": "defensive",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.20370370370370375,
+      "ci95": [
+        -0.22133088491534164,
+        -0.18607652249206585
+      ]
+    },
+    {
+      "before": "A",
+      "after": "18-8+2",
+      "strategy": "defensive",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": -0.11185185185185183,
+      "ci95": [
+        -0.17849517405665227,
+        -0.045208529647051396
+      ]
+    },
+    {
+      "before": "A",
+      "after": "18-8+2",
+      "strategy": "defensive",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": -0.050740740740740746,
+      "ci95": [
+        -0.07060689588643716,
+        -0.03087458559504433
+      ]
+    },
+    {
+      "before": "A",
+      "after": "18-8+2",
+      "strategy": "defensive",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "A",
+      "after": "18-8+2",
+      "strategy": "planner",
+      "metric": "turns",
+      "nSeeds": 16,
+      "mean": -0.2847222222222223,
+      "ci95": [
+        -0.36416572778518,
+        -0.20527871665926462
+      ]
+    },
+    {
+      "before": "A",
+      "after": "18-8+2",
+      "strategy": "planner",
+      "metric": "lostW",
+      "nSeeds": 16,
+      "mean": -0.6249999999999999,
+      "ci95": [
+        -0.8642873077241249,
+        -0.3857126922758749
+      ]
+    },
+    {
+      "before": "A",
+      "after": "18-8+2",
+      "strategy": "planner",
+      "metric": "lostM",
+      "nSeeds": 16,
+      "mean": -0.18749999999999997,
+      "ci95": [
+        -0.2976855664481421,
+        -0.07731443355185785
+      ]
+    },
+    {
+      "before": "A",
+      "after": "18-8+2",
+      "strategy": "planner",
+      "metric": "winRate",
+      "nSeeds": 16,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-8+2",
+      "strategy": "aggressive",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.2181481481481481,
+      "ci95": [
+        -0.23851578156224384,
+        -0.19778051473405234
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-8+2",
+      "strategy": "aggressive",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": -0.20888888888888885,
+      "ci95": [
+        -0.3015290019675122,
+        -0.1162487758102655
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-8+2",
+      "strategy": "aggressive",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": -0.21777777777777776,
+      "ci95": [
+        -0.2762278008395402,
+        -0.15932775471601535
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-8+2",
+      "strategy": "aggressive",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.0011111111111111115,
+      "ci95": [
+        -0.00014201726701694906,
+        0.0023642394892391724
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-8+2",
+      "strategy": "balanced",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.21407407407407408,
+      "ci95": [
+        -0.23230172996161896,
+        -0.1958464181865292
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-8+2",
+      "strategy": "balanced",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": -0.0962962962962963,
+      "ci95": [
+        -0.1700163650416142,
+        -0.022576227550978406
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-8+2",
+      "strategy": "balanced",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": -0.13518518518518516,
+      "ci95": [
+        -0.19081447437830268,
+        -0.07955589599206762
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-8+2",
+      "strategy": "balanced",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-8+2",
+      "strategy": "defensive",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.23740740740740748,
+      "ci95": [
+        -0.25491011899844074,
+        -0.2199046958163742
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-8+2",
+      "strategy": "defensive",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": -0.28222222222222226,
+      "ci95": [
+        -0.3438813660045849,
+        -0.22056307843985962
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-8+2",
+      "strategy": "defensive",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": -0.04740740740740741,
+      "ci95": [
+        -0.06638819179911122,
+        -0.028426623015703607
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-8+2",
+      "strategy": "defensive",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-8+2",
+      "strategy": "planner",
+      "metric": "turns",
+      "nSeeds": 16,
+      "mean": -0.18750000000000003,
+      "ci95": [
+        -0.24620161522164136,
+        -0.1287983847783587
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-8+2",
+      "strategy": "planner",
+      "metric": "lostW",
+      "nSeeds": 16,
+      "mean": -0.3472222222222222,
+      "ci95": [
+        -0.6189903620228611,
+        -0.07545408242158336
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-8+2",
+      "strategy": "planner",
+      "metric": "lostM",
+      "nSeeds": 16,
+      "mean": -0.25,
+      "ci95": [
+        -0.47623397335411066,
+        -0.02376602664588931
+      ]
+    },
+    {
+      "before": "14-8",
+      "after": "14-8+2",
+      "strategy": "planner",
+      "metric": "winRate",
+      "nSeeds": 16,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "16-8",
+      "after": "16-8+2",
+      "strategy": "aggressive",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.15222222222222226,
+      "ci95": [
+        -0.16785029498475618,
+        -0.13659414945968834
+      ]
+    },
+    {
+      "before": "16-8",
+      "after": "16-8+2",
+      "strategy": "aggressive",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": -0.6611111111111111,
+      "ci95": [
+        -0.7565582973046896,
+        -0.5656639249175326
+      ]
+    },
+    {
+      "before": "16-8",
+      "after": "16-8+2",
+      "strategy": "aggressive",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": -0.19666666666666666,
+      "ci95": [
+        -0.25527753001791587,
+        -0.13805580331541745
+      ]
+    },
+    {
+      "before": "16-8",
+      "after": "16-8+2",
+      "strategy": "aggressive",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.008888888888888892,
+      "ci95": [
+        0.005175494011881257,
+        0.012602283765896527
+      ]
+    },
+    {
+      "before": "16-8",
+      "after": "16-8+2",
+      "strategy": "balanced",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.22851851851851857,
+      "ci95": [
+        -0.24786692553930656,
+        -0.20917011149773057
+      ]
+    },
+    {
+      "before": "16-8",
+      "after": "16-8+2",
+      "strategy": "balanced",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": -0.27296296296296296,
+      "ci95": [
+        -0.3521458002949018,
+        -0.19378012563102415
+      ]
+    },
+    {
+      "before": "16-8",
+      "after": "16-8+2",
+      "strategy": "balanced",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": -0.07074074074074074,
+      "ci95": [
+        -0.11891552241676448,
+        -0.022565959064717006
+      ]
+    },
+    {
+      "before": "16-8",
+      "after": "16-8+2",
+      "strategy": "balanced",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": -0.0003703703703703705,
+      "ci95": [
+        -0.0010962962962962968,
+        0.0003555555555555558
+      ]
+    },
+    {
+      "before": "16-8",
+      "after": "16-8+2",
+      "strategy": "defensive",
+      "metric": "turns",
+      "nSeeds": 300,
+      "mean": -0.21000000000000005,
+      "ci95": [
+        -0.22716679160623146,
+        -0.19283320839376863
+      ]
+    },
+    {
+      "before": "16-8",
+      "after": "16-8+2",
+      "strategy": "defensive",
+      "metric": "lostW",
+      "nSeeds": 300,
+      "mean": -0.18444444444444444,
+      "ci95": [
+        -0.25104543992028683,
+        -0.11784344896860205
+      ]
+    },
+    {
+      "before": "16-8",
+      "after": "16-8+2",
+      "strategy": "defensive",
+      "metric": "lostM",
+      "nSeeds": 300,
+      "mean": -0.06777777777777778,
+      "ci95": [
+        -0.09314825508815158,
+        -0.04240730046740399
+      ]
+    },
+    {
+      "before": "16-8",
+      "after": "16-8+2",
+      "strategy": "defensive",
+      "metric": "winRate",
+      "nSeeds": 300,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "before": "16-8",
+      "after": "16-8+2",
+      "strategy": "planner",
+      "metric": "turns",
+      "nSeeds": 16,
+      "mean": -0.19444444444444445,
+      "ci95": [
+        -0.3024221132224492,
+        -0.08646677566643968
+      ]
+    },
+    {
+      "before": "16-8",
+      "after": "16-8+2",
+      "strategy": "planner",
+      "metric": "lostW",
+      "nSeeds": 16,
+      "mean": -0.06944444444444459,
+      "ci95": [
+        -0.5201072165439142,
+        0.38121832765502506
+      ]
+    },
+    {
+      "before": "16-8",
+      "after": "16-8+2",
+      "strategy": "planner",
+      "metric": "lostM",
+      "nSeeds": 16,
+      "mean": -0.07638888888888883,
+      "ci95": [
+        -0.3260578775708335,
+        0.17328009979305586
+      ]
+    },
+    {
+      "before": "16-8",
+      "after": "16-8+2",
+      "strategy": "planner",
+      "metric": "winRate",
+      "nSeeds": 16,
+      "mean": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    }
+  ]
+}

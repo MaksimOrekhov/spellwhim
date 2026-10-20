@@ -16,6 +16,7 @@ if (strategies.some(strategy => !allowedStrategies.has(strategy))) throw new Err
 
 const server = await createServer({ optimizeDeps: { noDiscovery: true, include: [] }, server: { middlewareMode: true, ws: false, hmr: false }, appType: 'custom' })
 try {
+  const progression = await server.ssrLoadModule('/src/game/cardProgression.ts')
   const [campaign, routes, balance, battle, plannerModule, economy, types, artifacts] = await Promise.all([
     server.ssrLoadModule('/src/game/campaign.ts'), server.ssrLoadModule('/src/game/dungeonRoutePolicy.ts'),
     server.ssrLoadModule('/src/game/balance.ts'), server.ssrLoadModule('/src/game/battle.ts'),
@@ -50,7 +51,7 @@ try {
         const plannedId = planner?.next(state)
         const card = plannedId ? state.hand.find(value => value.instanceId === plannedId) : strategy === 'planner' ? undefined : balance.chooseCard(state, strategy, information)
         if (!card) break
-        const definition = types.cardDefinition(card.definitionId)
+        const definition = progression.resolveCardDefinition(card)
         const preview = battle.previewCard(state, definition)
         const result = battle.playCard(state, card.instanceId)
         if (!result.ok) break

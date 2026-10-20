@@ -16,6 +16,7 @@ const infoModes = ['omniscient', 'public']
 
 const server = await createServer({ optimizeDeps: { noDiscovery: true, include: [] }, server: { middlewareMode: true, ws: false, hmr: false }, appType: 'custom' })
 try {
+  const progression = await server.ssrLoadModule('/src/game/cardProgression.ts')
   const load = path => server.ssrLoadModule(path)
   const [campaign, routePolicy, balance, rules, plannerModule, types, economy, experiments] = await Promise.all([
     load('/src/game/campaign.ts'), load('/src/game/dungeonRoutePolicy.ts'), load('/src/game/balance.ts'), load('/src/game/battle.ts'),
@@ -58,7 +59,7 @@ try {
         const instanceId = planner?.next(state)
         const card = instanceId ? state.hand.find(item => item.instanceId === instanceId) : strategy === 'planner' ? undefined : balance.chooseCard(state, strategy, information)
         if (!card) break
-        const definition = types.cardDefinition(card.definitionId)
+        const definition = progression.resolveCardDefinition(card)
         if (!rules.playCard(state, card.instanceId).ok) break
         plays += 1
         const defense = definition.kind === 'defense'

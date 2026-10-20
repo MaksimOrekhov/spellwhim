@@ -6,7 +6,8 @@ import { createTurnPlanner } from './balancePlanner'
 import { visibleThreat } from './observableIntent'
 import type { Information } from './observableIntent'
 import type { PlannerStats } from './balancePlanner'
-import { MAX_HAND_SIZE, cardDefinition, startingDeck } from './types'
+import { resolveCardDefinition } from './cardProgression'
+import { MAX_HAND_SIZE, startingDeck } from './types'
 import type { BattleState, CardId, CardInstance, EnemyAction, HeroId } from './types'
 
 /** One-card-at-a-time heuristics: the original controls. */
@@ -159,8 +160,8 @@ function opponentForecast(state: BattleState, information: Information) {
 }
 
 function evaluateCard(state: BattleState, instance: CardInstance, strategy: ClassicStrategy, information: Information): number {
-  const card = cardDefinition(instance.definitionId)
-  const preview = previewCard(state, card)
+  const card = resolveCardDefinition(instance)
+  const preview = previewCard(state, card, information === 'omniscient' ? 'historical' : undefined)
   const forecast = opponentForecast(state, information)
   const remainingEnemyHp = state.enemy.health + state.enemy.armor
   const damage = Math.min(preview.damage + preview.statusDamage, remainingEnemyHp)
@@ -193,7 +194,7 @@ function evaluateCard(state: BattleState, instance: CardInstance, strategy: Clas
 /** `information` defaults to the fair policy; `'omniscient'` reproduces the historical bots (diagnostic only: it reads a prepared strike's hidden size). */
 export function chooseCard(state: BattleState, strategy: ClassicStrategy, information: Information = 'public'): CardInstance | undefined {
   const choice = state.hand
-    .filter(instance => cardDefinition(instance.definitionId).cost <= state.mana)
+    .filter(instance => resolveCardDefinition(instance).cost <= state.mana)
     .map((instance, index) => ({ instance, index, score: evaluateCard(state, instance, strategy, information) }))
     .sort((a, b) => b.score - a.score || a.index - b.index)[0]
   return choice && choice.score > 0.15 ? choice.instance : undefined
@@ -311,7 +312,7 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, options: Ru
       actionLog.push(`Ход ${battle.turn}: мана ${battle.mana}/${battle.maxMana}`)
       handMetrics.handSizeAtTurnStartTotal += battle.hand.length
       manaAvailable += battle.mana
-      handMetrics.playableCardsAtTurnStartTotal += battle.hand.filter(instance => cardDefinition(instance.definitionId).cost <= battle!.mana).length
+      handMetrics.playableCardsAtTurnStartTotal += battle.hand.filter(instance => resolveCardDefinition(instance).cost <= battle!.mana).length
       if (battle.hand.length >= MAX_HAND_SIZE) handMetrics.fullHandAtTurnStart += 1
       const turnNumber = battle.turn
       const turnMaxMana = battle.mana
@@ -323,13 +324,13 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, options: Ru
       let turnDefenseMana = 0
       const turnIntent = battle.enemy.nextAction.kind
       if (battle.maxMana >= topMana) maxManaReached = true
-      const traceTurn: TraceTurn | undefined = wantTrace ? { turn: turnNumber, mana: battle.mana, hand: battle.hand.map(instance => cardDefinition(instance.definitionId).name).sort(), intent: describeAction(battle.enemy.nextAction, battle.heroes), enemy: snapshot(battle).enemy, heroes: snapshot(battle).heroes, plays: [], afterPlays: snapshot(battle) } : undefined
+      const traceTurn: TraceTurn | undefined = wantTrace ? { turn: turnNumber, mana: battle.mana, hand: battle.hand.map(instance => resolveCardDefinition(instance).name).sort(), intent: describeAction(battle.enemy.nextAction, battle.heroes), enemy: snapshot(battle).enemy, heroes: snapshot(battle).heroes, plays: [], afterPlays: snapshot(battle) } : undefined
       let playsThisTurn = 0
       while (!battle.result && playsThisTurn < max.maxPlaysPerTurn && actionCount < max.maxActionsPerRun) {
         const plannedId = planner?.next(battle)
         const chosen = planner ? battle.hand.find(instance => instance.instanceId === plannedId) : chooseCard(battle, strategy as ClassicStrategy, information)
         if (!chosen) break
-        const card = cardDefinition(chosen.definitionId)
+        const card = resolveCardDefinition(chosen)
         const outcome = playCard(battle, chosen.instanceId)
         actionCount += 1
         playsThisTurn += 1
@@ -370,7 +371,7 @@ export function simulateRun(seed: number, strategy: BalanceStrategy, options: Ru
       if (battle.hand.length >= MAX_HAND_SIZE) handMetrics.fullHandAfterActions += 1
       const turnRecord: TurnRecord = {
         turn: turnNumber, maxMana: turnMaxMana, manaSpent: turnSpent, cardsPlayed: playsThisTurn, handStart: turnHandStart, handEnd: battle.hand.length,
-        vulnerabilityTriggers: turnVulnerabilityTriggers, manaLeft: battle.mana, playableLeft: battle.hand.filter(instance => cardDefinition(instance.definitionId).cost <= battle!.mana).length, healthLost: 0, decisive: !!battle.result,
+        vulnerabilityTriggers: turnVulnerabilityTriggers, manaLeft: battle.mana, playableLeft: battle.hand.filter(instance => resolveCardDefinition(instance).cost <= battle!.mana).length, healthLost: 0, decisive: !!battle.result,
         intent: turnIntent, damage: turnDamage, armorGained: turnArmor, defenseMana: turnDefenseMana,
       }
       turnLog.push(turnRecord)

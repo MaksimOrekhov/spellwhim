@@ -2,7 +2,7 @@ import { endTurn, playCard } from './battle'
 import { shuffle } from './deck'
 import { cloneEconomy } from './economy'
 import { cloneStatuses, statusSignature } from './statuses'
-import { cardDefinition } from './types'
+import { resolveCardDefinition } from './cardProgression'
 import type { BattleState, CardId, CardInstance } from './types'
 
 /**
@@ -57,6 +57,7 @@ export interface PlannerOptions {
 export interface TurnPlan {
   /** Card definitions to play this turn, in order. Empty means: end the turn now. */
   sequence: CardId[]
+  upgrades: (0 | 1)[]
   score: number
   nodesEvaluated: number
   /** True when the node cap stopped the search before the frontier was exhausted. */
@@ -87,8 +88,10 @@ export function cloneBattleState(state: BattleState): BattleState {
 
 /** Canonical order of a zone: by card definition. Instance ids are technical labels and must not matter. */
 function byDefinition(a: CardInstance, b: CardInstance): number {
-  return a.definitionId < b.definitionId ? -1 : a.definitionId > b.definitionId ? 1 : a.instanceId < b.instanceId ? -1 : a.instanceId > b.instanceId ? 1 : 0
+  return a.definitionId < b.definitionId ? -1 : a.definitionId > b.definitionId ? 1 : (a.upgrade ?? 0) !== (b.upgrade ?? 0) ? (a.upgrade ?? 0) - (b.upgrade ?? 0) : a.instanceId < b.instanceId ? -1 : a.instanceId > b.instanceId ? 1 : 0
 }
+
+function variantKey(card: CardInstance): string { return card.definitionId + (card.upgrade ? '+1' : '') }
 
 function mix(a: number, b: number): number {
   let value = Math.imul(a ^ b, 0x9e3779b1) >>> 0
@@ -125,7 +128,7 @@ function visibleArtifactState(state: BattleState): string {
  * hidden draw order, RNG state, seed, battle id or instance ids.
  */
 export function observableSeed(state: BattleState, salt = 0): number {
-  const zone = (cards: readonly CardInstance[]) => cards.map(card => card.definitionId).sort().join(',')
+  const zone = (cards: readonly CardInstance[]) => cards.map(card => variantKey(card)).sort().join(',')
   const text = [
     state.turn, state.mana, state.maxMana, zone(state.hand), zone(state.drawPile), zone(state.discardPile), zone(state.exhausted), state.statuses.enemy.some(item => item.id === 'vulnerability'),
     state.heroes.warrior.health, state.heroes.warrior.armor, state.heroes.mage.health, state.heroes.mage.armor,
@@ -151,13 +154,13 @@ export function determinize(state: BattleState, salt = 0): BattleState {
 }
 
 function digest(state: BattleState): string {
-  const ids = (cards: readonly CardInstance[]) => cards.map(card => card.definitionId).join(',')
+  const ids = (cards: readonly CardInstance[]) => cards.map(card => variantKey(card)).join(',')
   return [
-    state.mana, [...state.hand].map(card => card.definitionId).sort().join(','), state.statuses.enemy.some(item => item.id === 'vulnerability'), state.enemy.health, state.enemy.armor,
+    state.mana, [...state.hand].map(card => variantKey(card)).sort().join(','), state.statuses.enemy.some(item => item.id === 'vulnerability'), state.enemy.health, state.enemy.armor,
     state.heroes.warrior.armor, state.heroes.warrior.health, state.heroes.mage.armor, state.heroes.mage.health,
     ...(state.artifacts.length ? [visibleArtifactState(state)] : []),
     ...extraStatusSignature(state),
-    ids(state.drawPile), [...state.exhausted].map(card => card.definitionId).sort().join(','), state.rngState,
+    ids(state.drawPile), [...state.exhausted].map(card => variantKey(card)).sort().join(','), state.rngState,
   ].join('|')
 }
 
@@ -177,13 +180,13 @@ function score(root: BattleState, kept: BattleState, after: BattleState, profile
     - 0.8 * (after.blockedDraws - root.blockedDraws)
 }
 
-interface Node { state: BattleState; sequence: CardId[]; score: number }
+interface Node { state: BattleState; sequence: CardId[]; upgrades: (0 | 1)[]; score: number }
 
 /** Finds the best sequence of plays for the current turn. Never mutates `state`. */
 export function planTurn(state: BattleState, options: PlannerOptions = {}): TurnPlan {
   const profile = { ...defaultPlannerProfile, ...options.profile }
   const limits = { ...defaultPlannerLimits, ...options.limits }
-  if (state.result || state.pending) return { sequence: [], score: 0, nodesEvaluated: 0, truncated: false }
+  if (state.result || state.pending) return { sequence: [], upgrades: [], score: 0, nodesEvaluated: 0, truncated: false }
 
   const root = determinize(state, options.salt ?? 0)
   const reference = cloneBattleState(root)
@@ -195,7 +198,7 @@ export function planTurn(state: BattleState, options: PlannerOptions = {}): Turn
     return score(reference, node, after, profile)
   }
 
-  const first: Node = { state: root, sequence: [], score: evaluate(root) }
+  const first: Node = { state: root, sequence: [], upgrades: [], score: evaluate(root) }
   let best = first
   let frontier = [first]
   const seen = new Set([digest(root)])
@@ -203,18 +206,18 @@ export function planTurn(state: BattleState, options: PlannerOptions = {}): Turn
   for (let depth = 0; depth < limits.maxDepth && frontier.length > 0; depth += 1) {
     const next: Node[] = []
     for (const node of frontier) {
-      const tried = new Set<CardId>()
+      const tried = new Set<string>()
       for (const instance of node.state.hand) {
         // Copies of one card are interchangeable, so each definition is tried once per node.
-        if (tried.has(instance.definitionId) || cardDefinition(instance.definitionId).cost > node.state.mana) continue
-        tried.add(instance.definitionId)
+        if (tried.has(variantKey(instance)) || resolveCardDefinition(instance).cost > node.state.mana) continue
+        tried.add(variantKey(instance))
         if (evaluated >= limits.maxNodes) { truncated = true; continue }
         const child = cloneBattleState(node.state)
         if (!playCard(child, instance.instanceId).ok) continue
         const key = digest(child)
         if (seen.has(key)) continue
         seen.add(key)
-        const entry: Node = { state: child, sequence: [...node.sequence, instance.definitionId], score: evaluate(child) }
+        const entry: Node = { state: child, sequence: [...node.sequence, instance.definitionId], upgrades: [...node.upgrades, instance.upgrade ?? 0], score: evaluate(child) }
         next.push(entry)
         if (entry.score > best.score) best = entry
       }
@@ -223,7 +226,7 @@ export function planTurn(state: BattleState, options: PlannerOptions = {}): Turn
     frontier = next.slice(0, limits.beamWidth)
     if (truncated) break
   }
-  return { sequence: best.sequence, score: best.score, nodesEvaluated: evaluated, truncated }
+  return { sequence: best.sequence, upgrades: best.upgrades, score: best.score, nodesEvaluated: evaluated, truncated }
 }
 
 function handKey(hand: readonly CardInstance[]): string { return hand.map(card => card.instanceId).sort().join('|') }
@@ -240,7 +243,7 @@ export interface TurnPlanner {
  */
 export function createTurnPlanner(options: PlannerOptions = {}): TurnPlanner {
   const stats: PlannerStats = { plans: 0, nodes: 0, truncated: 0, maxNodes: 0 }
-  let plan: CardId[] | null = null
+  let plan: { id: CardId; upgrade: 0 | 1 }[] | null = null
   let planTurnNumber = -1
   let expectedHand = ''
   const replan = (state: BattleState) => {
@@ -249,7 +252,7 @@ export function createTurnPlanner(options: PlannerOptions = {}): TurnPlanner {
     stats.nodes += result.nodesEvaluated
     stats.maxNodes = Math.max(stats.maxNodes, result.nodesEvaluated)
     if (result.truncated) stats.truncated += 1
-    plan = [...result.sequence]
+    plan = result.sequence.map((id, i) => ({ id, upgrade: result.upgrades[i]! }))
     planTurnNumber = state.turn
     expectedHand = handKey(state.hand)
   }
@@ -260,7 +263,7 @@ export function createTurnPlanner(options: PlannerOptions = {}): TurnPlanner {
       if (!plan || planTurnNumber !== state.turn || expectedHand !== handKey(state.hand)) replan(state)
       while (plan!.length) {
         const wanted = plan!.shift()!
-        const card = state.hand.find(instance => instance.definitionId === wanted && cardDefinition(instance.definitionId).cost <= state.mana)
+        const card = state.hand.find(instance => instance.definitionId === wanted.id && (instance.upgrade ?? 0) === wanted.upgrade && resolveCardDefinition(instance).cost <= state.mana)
         if (!card) continue
         expectedHand = handKey(state.hand.filter(instance => instance !== card))
         return card.instanceId

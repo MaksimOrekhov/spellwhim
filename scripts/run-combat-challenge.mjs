@@ -21,6 +21,7 @@ const archetypeRuns = Math.max(1, Math.floor(Number(option('--archetype-runs', 2
 
 const server = await createServer({ optimizeDeps: { noDiscovery: true, include: [] }, server: { middlewareMode: true, ws: false, hmr: false }, appType: 'custom' })
 try {
+  const progression = await server.ssrLoadModule('/src/game/cardProgression.ts')
   const load = path => server.ssrLoadModule(path)
   const [campaign, routePolicy, balance, rules, plannerModule, types, economy, variants, rosterModule, artifactModule, statusModule] = await Promise.all([
     load('/src/game/campaign.ts'), load('/src/game/dungeonRoutePolicy.ts'), load('/src/game/balance.ts'), load('/src/game/battle.ts'),
@@ -74,7 +75,7 @@ try {
         const id = planner?.next(state)
         const card = id ? state.hand.find(item => item.instanceId === id) : strategy === 'planner' ? undefined : balance.chooseCard(state, strategy, information)
         if (!card) break
-        const definition = types.cardDefinition(card.definitionId)
+        const definition = progression.resolveCardDefinition(card)
         const preview = rules.previewCard(state, definition)
         const hadBleed = statusModule.statusValue(state, 'enemy', 'bleeding') > 0
         if (!rules.playCard(state, card.instanceId).ok) break

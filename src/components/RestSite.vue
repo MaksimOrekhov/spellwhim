@@ -1,8 +1,13 @@
 <script setup lang="ts">
-import type { BattleState } from '../game/types'
+import { computed, ref } from 'vue'
+import UpgradePicker from './UpgradePicker.vue'
+import { canUpgradeCard } from '../game/cardProgression'
+import type { PersistentCard, BattleState } from '../game/types'
 
-const props = defineProps<{ heroes: BattleState['heroes']; healAmount: number; sourceId?: string }>()
-const emit = defineEmits<{ choose: [heroId: 'warrior' | 'mage' | null, sourceId?: string] }>()
+const props = defineProps<{ heroes: BattleState['heroes']; healAmount: number; deck: readonly PersistentCard[]; sourceId?: string }>()
+const emit = defineEmits<{ choose: [heroId: 'warrior' | 'mage' | null, sourceId?: string]; upgrade: [instanceId: string, sourceId: string] }>()
+const choosingUpgrade = ref(false)
+const hasUpgrades = computed(() => props.deck.some(canUpgradeCard))
 
 function amount(hero: BattleState['heroes']['warrior']) {
   return Math.min(props.healAmount, Math.max(0, hero.maxHealth - hero.health))
@@ -15,7 +20,7 @@ function amount(hero: BattleState['heroes']['warrior']) {
       <span class="rest-fire" aria-hidden="true">♨</span>
       <small>ПРИВАЛ · МЁРТВЫЕ КОПИ</small>
       <h1>Передышка у фонаря</h1>
-      <p>Распределите до {{ healAmount }} HP одному герою. Здоровье не может превысить максимум.</p>
+      <p>Восстановите до {{ healAmount }} HP одному герою или улучшите одну карту. Одно действие за привал.</p>
       <div class="rest-heroes">
         <button class="rest-hero rest-hero--warrior" :disabled="amount(heroes.warrior) === 0" @click="emit('choose', 'warrior', sourceId)">
           <span class="rest-portrait" aria-hidden="true">⚔</span>
@@ -32,8 +37,10 @@ function amount(hero: BattleState['heroes']['warrior']) {
           <span class="rest-action">ПЕРЕДЫШКА</span>
         </button>
       </div>
+      <button class="game-button rest-upgrade" :disabled="!hasUpgrades" @click="choosingUpgrade = true">{{ hasUpgrades ? '↑ Улучшить карту вместо лечения' : 'Все карты уже улучшены' }}</button>
       <button v-if="amount(heroes.warrior) === 0 && amount(heroes.mage) === 0" class="skip-rest" @click="emit('choose', null, sourceId)">Здоровье полное · продолжить путь</button>
     </section>
+    <UpgradePicker v-if="choosingUpgrade" :deck="deck" @close="choosingUpgrade = false" @confirm="sourceId && emit('upgrade', $event, sourceId)" />
   </main>
 </template>
 
@@ -56,6 +63,6 @@ function amount(hero: BattleState['heroes']['warrior']) {
 .rest-hero em{color:#bfe2a2;font:800 15px var(--display);font-style:normal}
 .rest-hero:disabled em{color:#d2c4a7}
 .rest-action{margin-top:auto;padding:7px 16px;border:1px solid #dbbd7e;border-radius:var(--r-pill);background:#3a4a3d;color:#ffe9b6;font:800 10px var(--display);letter-spacing:.12em}
-.skip-rest{margin-top:18px;padding:10px 22px;border:1px solid #d7bf8d;border-radius:var(--shape-plank);background:#263f3b;color:#fff0d1;font-weight:700;cursor:pointer}
+.rest-upgrade{margin-top:18px}.skip-rest{margin-top:18px;padding:10px 22px;border:1px solid #d7bf8d;border-radius:var(--shape-plank);background:#263f3b;color:#fff0d1;font-weight:700;cursor:pointer}
 @media(max-width:560px){.rest-heroes{grid-template-columns:1fr;gap:10px}.rest-hero{min-height:168px}.rest-card>p{font-size:13px}}
 </style>

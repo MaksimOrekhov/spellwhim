@@ -1,0 +1,2787 @@
+{
+  "baseRevision": "e2839e9cb549940d035a2213ee2ec48aba6f9d0a",
+  "sourceSha256": "b6d6e8140f2f18ed0352c55a3959f317d127dd17732ca1542a11abd720c54347",
+  "sourceFiles": [
+    "research/card-upgrades-v1/config.mjs",
+    "research/card-upgrades-v1/run.mjs",
+    "scripts/lib/dungeonRewardRank.mjs",
+    "src/game/artifacts.ts",
+    "src/game/balance.ts",
+    "src/game/balancePlanner.ts",
+    "src/game/battle.ts",
+    "src/game/campaign.ts",
+    "src/game/cardProgression.ts",
+    "src/game/cardUpgrades.ts",
+    "src/game/classThemes.ts",
+    "src/game/damage.ts",
+    "src/game/deck.ts",
+    "src/game/dungeonRoutePolicy.ts",
+    "src/game/economy.ts",
+    "src/game/encounterExperiments.ts",
+    "src/game/encountersV07.ts",
+    "src/game/encountersV09.ts",
+    "src/game/encountersV10.ts",
+    "src/game/observableIntent.ts",
+    "src/game/party.ts",
+    "src/game/regressionTrace.ts",
+    "src/game/rosters.ts",
+    "src/game/runSave.ts",
+    "src/game/scenarios.ts",
+    "src/game/statuses.ts",
+    "src/game/types.ts"
+  ],
+  "rules": "combat-upgrades-1",
+  "catalogue": "e77d6518",
+  "ranges": [
+    {
+      "id": "main",
+      "seed": 410000
+    },
+    {
+      "id": "holdout",
+      "seed": 510000
+    }
+  ],
+  "samples": {
+    "classic": 300,
+    "planner": 60,
+    "plannerScreening": 16,
+    "routes": 500,
+    "plannerRoutes": 30
+  },
+  "economy": {
+    "id": "B",
+    "label": "3→4→5 · добор 2, с 5-го хода 3 · враги v0.7",
+    "manaCurve": "B",
+    "draw": "late3",
+    "enemies": "v07",
+    "manaByTurn": [
+      3,
+      4,
+      5
+    ],
+    "drawSchedule": {
+      "perTurn": 2,
+      "boost": {
+        "fromTurn": 5,
+        "amount": 3
+      }
+    },
+    "openingHand": 8,
+    "enemyHealthScale": 1
+  },
+  "roster": "v10",
+  "information": "public",
+  "maxTurns": 40,
+  "maxPlaysPerTurn": 24,
+  "plannerLimits": {
+    "beamWidth": 30,
+    "maxNodes": 900,
+    "maxDepth": 12
+  },
+  "plannerProfile": {
+    "health": 1,
+    "keep": 0.35,
+    "armorKeep": 0.4,
+    "lowHealth": 0.25
+  },
+  "isolated": "Full HP, no artifacts; identical enemy/seed/hand size for paired configurations. Raw files retain every defeat and timeout.",
+  "routes": "Real seven-node campaign; seeded ordinary offers, artifact-first elite rewards, unchanged rank, no removal service. Rest develop: upgrade only if both health ratios >=0.65, else heal the lowest ratio. Safe/mixed routes use public categories only.",
+  "note": "Planner main A–F 60+60; start/archetype 16+16 screening; route planner 30+30 screening. Holdout never tunes profiles. Turns count each started player turn including winning turn. Available mana includes all those turns.",
+  "configs": [
+    {
+      "id": "A",
+      "deck": [
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/1"
+        },
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/2"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/3"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/4"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/5"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/6"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/7"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/8"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/9"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/10"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/11"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/12"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/13"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/14"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/15"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/16"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/17"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/18"
+        }
+      ],
+      "family": "power",
+      "hand": 8,
+      "planner": 60
+    },
+    {
+      "id": "B",
+      "deck": [
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/1"
+        },
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/2"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/3"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/4"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/5"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/6"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/7"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/8"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/9"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/10"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/11"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/12"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/13"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/14"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/15"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/16"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/17"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/18"
+        },
+        {
+          "definitionId": "rend",
+          "upgrade": 0,
+          "instanceId": "sample/card/19"
+        },
+        {
+          "definitionId": "thunderbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/20"
+        },
+        {
+          "definitionId": "bastion",
+          "upgrade": 0,
+          "instanceId": "sample/card/21"
+        },
+        {
+          "definitionId": "arcane-mark",
+          "upgrade": 0,
+          "instanceId": "sample/card/22"
+        }
+      ],
+      "family": "power",
+      "hand": 8,
+      "planner": 60
+    },
+    {
+      "id": "C",
+      "deck": [
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/1"
+        },
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/2"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/3"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/4"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/5"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/6"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/7"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/8"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/9"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/10"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/11"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/12"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/13"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/14"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/15"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/16"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/17"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/18"
+        },
+        {
+          "definitionId": "rend",
+          "upgrade": 0,
+          "instanceId": "sample/card/19"
+        },
+        {
+          "definitionId": "thunderbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/20"
+        },
+        {
+          "definitionId": "bastion",
+          "upgrade": 0,
+          "instanceId": "sample/card/21"
+        },
+        {
+          "definitionId": "arcane-mark",
+          "upgrade": 0,
+          "instanceId": "sample/card/22"
+        },
+        {
+          "definitionId": "ice-echo",
+          "upgrade": 0,
+          "instanceId": "sample/card/23"
+        },
+        {
+          "definitionId": "wound-clamp",
+          "upgrade": 0,
+          "instanceId": "sample/card/24"
+        },
+        {
+          "definitionId": "reaping-blow",
+          "upgrade": 0,
+          "instanceId": "sample/card/25"
+        },
+        {
+          "definitionId": "frost-seal",
+          "upgrade": 0,
+          "instanceId": "sample/card/26"
+        }
+      ],
+      "family": "power",
+      "hand": 8,
+      "planner": 60
+    },
+    {
+      "id": "D",
+      "deck": [
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 1,
+          "instanceId": "sample/card/1"
+        },
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/2"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/3"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/4"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/5"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/6"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/7"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/8"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/9"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/10"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/11"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/12"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 1,
+          "instanceId": "sample/card/13"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/14"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/15"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/16"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/17"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/18"
+        },
+        {
+          "definitionId": "rend",
+          "upgrade": 0,
+          "instanceId": "sample/card/19"
+        },
+        {
+          "definitionId": "thunderbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/20"
+        },
+        {
+          "definitionId": "bastion",
+          "upgrade": 0,
+          "instanceId": "sample/card/21"
+        },
+        {
+          "definitionId": "arcane-mark",
+          "upgrade": 0,
+          "instanceId": "sample/card/22"
+        }
+      ],
+      "family": "power",
+      "hand": 8,
+      "planner": 60
+    },
+    {
+      "id": "E",
+      "deck": [
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 1,
+          "instanceId": "sample/card/1"
+        },
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/2"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/3"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/4"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/5"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/6"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/7"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/8"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/9"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/10"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/11"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/12"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 1,
+          "instanceId": "sample/card/13"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/14"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 1,
+          "instanceId": "sample/card/15"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/16"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/17"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/18"
+        },
+        {
+          "definitionId": "rend",
+          "upgrade": 0,
+          "instanceId": "sample/card/19"
+        },
+        {
+          "definitionId": "thunderbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/20"
+        },
+        {
+          "definitionId": "bastion",
+          "upgrade": 1,
+          "instanceId": "sample/card/21"
+        },
+        {
+          "definitionId": "arcane-mark",
+          "upgrade": 0,
+          "instanceId": "sample/card/22"
+        },
+        {
+          "definitionId": "ice-echo",
+          "upgrade": 0,
+          "instanceId": "sample/card/23"
+        },
+        {
+          "definitionId": "wound-clamp",
+          "upgrade": 0,
+          "instanceId": "sample/card/24"
+        },
+        {
+          "definitionId": "reaping-blow",
+          "upgrade": 0,
+          "instanceId": "sample/card/25"
+        },
+        {
+          "definitionId": "frost-seal",
+          "upgrade": 0,
+          "instanceId": "sample/card/26"
+        }
+      ],
+      "family": "power",
+      "hand": 8,
+      "planner": 60
+    },
+    {
+      "id": "F",
+      "deck": [
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 1,
+          "instanceId": "sample/card/1"
+        },
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/2"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/3"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/5"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/7"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/9"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/11"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/12"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 1,
+          "instanceId": "sample/card/13"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/14"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 1,
+          "instanceId": "sample/card/15"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/16"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/17"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/18"
+        },
+        {
+          "definitionId": "rend",
+          "upgrade": 0,
+          "instanceId": "sample/card/19"
+        },
+        {
+          "definitionId": "thunderbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/20"
+        },
+        {
+          "definitionId": "bastion",
+          "upgrade": 1,
+          "instanceId": "sample/card/21"
+        },
+        {
+          "definitionId": "arcane-mark",
+          "upgrade": 0,
+          "instanceId": "sample/card/22"
+        },
+        {
+          "definitionId": "ice-echo",
+          "upgrade": 0,
+          "instanceId": "sample/card/23"
+        },
+        {
+          "definitionId": "wound-clamp",
+          "upgrade": 0,
+          "instanceId": "sample/card/24"
+        },
+        {
+          "definitionId": "reaping-blow",
+          "upgrade": 0,
+          "instanceId": "sample/card/25"
+        },
+        {
+          "definitionId": "frost-seal",
+          "upgrade": 0,
+          "instanceId": "sample/card/26"
+        }
+      ],
+      "family": "power",
+      "hand": 8,
+      "planner": 60
+    },
+    {
+      "id": "18-8+2",
+      "family": "start",
+      "hand": 8,
+      "deck": [
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 1,
+          "instanceId": "sample/card/1"
+        },
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/2"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/3"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/4"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/5"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/6"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/7"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/8"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/9"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/10"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/11"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/12"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 1,
+          "instanceId": "sample/card/13"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/14"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/15"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/16"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/17"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/18"
+        }
+      ],
+      "planner": 16
+    },
+    {
+      "id": "16-8",
+      "family": "start",
+      "hand": 8,
+      "deck": [
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/1"
+        },
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/2"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/3"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/4"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/5"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/6"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/7"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/8"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/9"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/10"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/11"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/12"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/13"
+        },
+        {
+          "definitionId": "thunderbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/14"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/15"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/16"
+        }
+      ],
+      "planner": 16
+    },
+    {
+      "id": "16-8+2",
+      "family": "start",
+      "hand": 8,
+      "deck": [
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 1,
+          "instanceId": "sample/card/1"
+        },
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/2"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/3"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/4"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/5"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/6"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/7"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/8"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 1,
+          "instanceId": "sample/card/9"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/10"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/11"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/12"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/13"
+        },
+        {
+          "definitionId": "thunderbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/14"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/15"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/16"
+        }
+      ],
+      "planner": 16
+    },
+    {
+      "id": "14-8",
+      "family": "start",
+      "hand": 8,
+      "deck": [
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/1"
+        },
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/2"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/3"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/4"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/5"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/6"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/7"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/8"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/9"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/10"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/11"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/12"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/13"
+        },
+        {
+          "definitionId": "thunderbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/14"
+        }
+      ],
+      "planner": 16
+    },
+    {
+      "id": "14-8+2",
+      "family": "start",
+      "hand": 8,
+      "deck": [
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 1,
+          "instanceId": "sample/card/1"
+        },
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/2"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/3"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/4"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/5"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/6"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/7"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/8"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 1,
+          "instanceId": "sample/card/9"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/10"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/11"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/12"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/13"
+        },
+        {
+          "definitionId": "thunderbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/14"
+        }
+      ],
+      "planner": 16
+    },
+    {
+      "id": "14-7",
+      "family": "start",
+      "hand": 7,
+      "deck": [
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/1"
+        },
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/2"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/3"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/4"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/5"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/6"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/7"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/8"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/9"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/10"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/11"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/12"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/13"
+        },
+        {
+          "definitionId": "thunderbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/14"
+        }
+      ],
+      "planner": 16
+    },
+    {
+      "id": "14-7+2",
+      "family": "start",
+      "hand": 7,
+      "deck": [
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 1,
+          "instanceId": "sample/card/1"
+        },
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/2"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/3"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/4"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/5"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/6"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/7"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/8"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 1,
+          "instanceId": "sample/card/9"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/10"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/11"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/12"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/13"
+        },
+        {
+          "definitionId": "thunderbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/14"
+        }
+      ],
+      "planner": 16
+    },
+    {
+      "id": "armor+0",
+      "family": "archetype",
+      "hand": 8,
+      "deck": [
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/1"
+        },
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/2"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/3"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/4"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/5"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/6"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/7"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/8"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/9"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/10"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/11"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/12"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/13"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/14"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/15"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/16"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/17"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/18"
+        },
+        {
+          "definitionId": "bastion",
+          "upgrade": 0,
+          "instanceId": "sample/card/19"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/20"
+        },
+        {
+          "definitionId": "stance-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/21"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/22"
+        },
+        {
+          "definitionId": "thunderbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/23"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/24"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/25"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/26"
+        }
+      ],
+      "planner": 16
+    },
+    {
+      "id": "armor+4",
+      "family": "archetype",
+      "hand": 8,
+      "deck": [
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/1"
+        },
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/2"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/3"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/4"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/5"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/6"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/7"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/8"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/9"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/10"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 1,
+          "instanceId": "sample/card/11"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/12"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/13"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/14"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/15"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/16"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 1,
+          "instanceId": "sample/card/17"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/18"
+        },
+        {
+          "definitionId": "bastion",
+          "upgrade": 1,
+          "instanceId": "sample/card/19"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/20"
+        },
+        {
+          "definitionId": "stance-strike",
+          "upgrade": 1,
+          "instanceId": "sample/card/21"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/22"
+        },
+        {
+          "definitionId": "thunderbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/23"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/24"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/25"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/26"
+        }
+      ],
+      "planner": 16
+    },
+    {
+      "id": "bleeding+0",
+      "family": "archetype",
+      "hand": 8,
+      "deck": [
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/1"
+        },
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/2"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/3"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/4"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/5"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/6"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/7"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/8"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/9"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/10"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/11"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/12"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/13"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/14"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/15"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/16"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/17"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/18"
+        },
+        {
+          "definitionId": "rend",
+          "upgrade": 0,
+          "instanceId": "sample/card/19"
+        },
+        {
+          "definitionId": "rend",
+          "upgrade": 0,
+          "instanceId": "sample/card/20"
+        },
+        {
+          "definitionId": "ice-echo",
+          "upgrade": 0,
+          "instanceId": "sample/card/21"
+        },
+        {
+          "definitionId": "wound-clamp",
+          "upgrade": 0,
+          "instanceId": "sample/card/22"
+        },
+        {
+          "definitionId": "reaping-blow",
+          "upgrade": 0,
+          "instanceId": "sample/card/23"
+        },
+        {
+          "definitionId": "boil-blood",
+          "upgrade": 0,
+          "instanceId": "sample/card/24"
+        },
+        {
+          "definitionId": "blood-resonance",
+          "upgrade": 0,
+          "instanceId": "sample/card/25"
+        },
+        {
+          "definitionId": "frost-seal",
+          "upgrade": 0,
+          "instanceId": "sample/card/26"
+        }
+      ],
+      "planner": 16
+    },
+    {
+      "id": "bleeding+4",
+      "family": "archetype",
+      "hand": 8,
+      "deck": [
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/1"
+        },
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/2"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/3"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/4"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/5"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/6"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/7"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/8"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/9"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/10"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/11"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/12"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/13"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/14"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/15"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/16"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/17"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/18"
+        },
+        {
+          "definitionId": "rend",
+          "upgrade": 1,
+          "instanceId": "sample/card/19"
+        },
+        {
+          "definitionId": "rend",
+          "upgrade": 0,
+          "instanceId": "sample/card/20"
+        },
+        {
+          "definitionId": "ice-echo",
+          "upgrade": 1,
+          "instanceId": "sample/card/21"
+        },
+        {
+          "definitionId": "wound-clamp",
+          "upgrade": 1,
+          "instanceId": "sample/card/22"
+        },
+        {
+          "definitionId": "reaping-blow",
+          "upgrade": 1,
+          "instanceId": "sample/card/23"
+        },
+        {
+          "definitionId": "boil-blood",
+          "upgrade": 0,
+          "instanceId": "sample/card/24"
+        },
+        {
+          "definitionId": "blood-resonance",
+          "upgrade": 0,
+          "instanceId": "sample/card/25"
+        },
+        {
+          "definitionId": "frost-seal",
+          "upgrade": 0,
+          "instanceId": "sample/card/26"
+        }
+      ],
+      "planner": 16
+    },
+    {
+      "id": "vulnerability+0",
+      "family": "archetype",
+      "hand": 8,
+      "deck": [
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/1"
+        },
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/2"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/3"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/4"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/5"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/6"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/7"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/8"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/9"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/10"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/11"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/12"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/13"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/14"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/15"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/16"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/17"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/18"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/19"
+        },
+        {
+          "definitionId": "arcane-mark",
+          "upgrade": 0,
+          "instanceId": "sample/card/20"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/21"
+        },
+        {
+          "definitionId": "quick-cut",
+          "upgrade": 0,
+          "instanceId": "sample/card/22"
+        },
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/23"
+        },
+        {
+          "definitionId": "thunderbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/24"
+        },
+        {
+          "definitionId": "crushing-swing",
+          "upgrade": 0,
+          "instanceId": "sample/card/25"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/26"
+        }
+      ],
+      "planner": 16
+    },
+    {
+      "id": "vulnerability+4",
+      "family": "archetype",
+      "hand": 8,
+      "deck": [
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/1"
+        },
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/2"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/3"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/4"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/5"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/6"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/7"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/8"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 1,
+          "instanceId": "sample/card/9"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/10"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/11"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/12"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 1,
+          "instanceId": "sample/card/13"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/14"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/15"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/16"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/17"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/18"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/19"
+        },
+        {
+          "definitionId": "arcane-mark",
+          "upgrade": 1,
+          "instanceId": "sample/card/20"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/21"
+        },
+        {
+          "definitionId": "quick-cut",
+          "upgrade": 1,
+          "instanceId": "sample/card/22"
+        },
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/23"
+        },
+        {
+          "definitionId": "thunderbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/24"
+        },
+        {
+          "definitionId": "crushing-swing",
+          "upgrade": 0,
+          "instanceId": "sample/card/25"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/26"
+        }
+      ],
+      "planner": 16
+    },
+    {
+      "id": "attack+0",
+      "family": "archetype",
+      "hand": 8,
+      "deck": [
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/1"
+        },
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/2"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/3"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/4"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/5"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/6"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/7"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/8"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/9"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/10"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/11"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/12"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/13"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/14"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/15"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/16"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/17"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/18"
+        },
+        {
+          "definitionId": "quick-cut",
+          "upgrade": 0,
+          "instanceId": "sample/card/19"
+        },
+        {
+          "definitionId": "thunderbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/20"
+        },
+        {
+          "definitionId": "rend",
+          "upgrade": 0,
+          "instanceId": "sample/card/21"
+        },
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/22"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/23"
+        },
+        {
+          "definitionId": "stance-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/24"
+        },
+        {
+          "definitionId": "ice-echo",
+          "upgrade": 0,
+          "instanceId": "sample/card/25"
+        },
+        {
+          "definitionId": "crushing-swing",
+          "upgrade": 0,
+          "instanceId": "sample/card/26"
+        }
+      ],
+      "planner": 16
+    },
+    {
+      "id": "attack+4",
+      "family": "archetype",
+      "hand": 8,
+      "deck": [
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 1,
+          "instanceId": "sample/card/1"
+        },
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/2"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/3"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/4"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/5"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/6"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/7"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/8"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/9"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/10"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/11"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/12"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/13"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/14"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/15"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/16"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/17"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/18"
+        },
+        {
+          "definitionId": "quick-cut",
+          "upgrade": 1,
+          "instanceId": "sample/card/19"
+        },
+        {
+          "definitionId": "thunderbolt",
+          "upgrade": 1,
+          "instanceId": "sample/card/20"
+        },
+        {
+          "definitionId": "rend",
+          "upgrade": 1,
+          "instanceId": "sample/card/21"
+        },
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/22"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/23"
+        },
+        {
+          "definitionId": "stance-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/24"
+        },
+        {
+          "definitionId": "ice-echo",
+          "upgrade": 0,
+          "instanceId": "sample/card/25"
+        },
+        {
+          "definitionId": "crushing-swing",
+          "upgrade": 0,
+          "instanceId": "sample/card/26"
+        }
+      ],
+      "planner": 16
+    },
+    {
+      "id": "defense+0",
+      "family": "archetype",
+      "hand": 8,
+      "deck": [
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/1"
+        },
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/2"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/3"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/4"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/5"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/6"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/7"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/8"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/9"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/10"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/11"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/12"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/13"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/14"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/15"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/16"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/17"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/18"
+        },
+        {
+          "definitionId": "bastion",
+          "upgrade": 0,
+          "instanceId": "sample/card/19"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/20"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/21"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/22"
+        },
+        {
+          "definitionId": "covering-counter",
+          "upgrade": 0,
+          "instanceId": "sample/card/23"
+        },
+        {
+          "definitionId": "wound-clamp",
+          "upgrade": 0,
+          "instanceId": "sample/card/24"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/25"
+        },
+        {
+          "definitionId": "frost-seal",
+          "upgrade": 0,
+          "instanceId": "sample/card/26"
+        }
+      ],
+      "planner": 16
+    },
+    {
+      "id": "defense+4",
+      "family": "archetype",
+      "hand": 8,
+      "deck": [
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/1"
+        },
+        {
+          "definitionId": "sword-strike",
+          "upgrade": 0,
+          "instanceId": "sample/card/2"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/3"
+        },
+        {
+          "definitionId": "fireball",
+          "upgrade": 0,
+          "instanceId": "sample/card/4"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/5"
+        },
+        {
+          "definitionId": "guard",
+          "upgrade": 0,
+          "instanceId": "sample/card/6"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 1,
+          "instanceId": "sample/card/7"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/8"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/9"
+        },
+        {
+          "definitionId": "shield-bash",
+          "upgrade": 0,
+          "instanceId": "sample/card/10"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 1,
+          "instanceId": "sample/card/11"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/12"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/13"
+        },
+        {
+          "definitionId": "frostbolt",
+          "upgrade": 0,
+          "instanceId": "sample/card/14"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/15"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/16"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 1,
+          "instanceId": "sample/card/17"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/18"
+        },
+        {
+          "definitionId": "bastion",
+          "upgrade": 1,
+          "instanceId": "sample/card/19"
+        },
+        {
+          "definitionId": "interpose",
+          "upgrade": 0,
+          "instanceId": "sample/card/20"
+        },
+        {
+          "definitionId": "ice-ward",
+          "upgrade": 0,
+          "instanceId": "sample/card/21"
+        },
+        {
+          "definitionId": "parry",
+          "upgrade": 0,
+          "instanceId": "sample/card/22"
+        },
+        {
+          "definitionId": "covering-counter",
+          "upgrade": 0,
+          "instanceId": "sample/card/23"
+        },
+        {
+          "definitionId": "wound-clamp",
+          "upgrade": 0,
+          "instanceId": "sample/card/24"
+        },
+        {
+          "definitionId": "arcane-insight",
+          "upgrade": 0,
+          "instanceId": "sample/card/25"
+        },
+        {
+          "definitionId": "frost-seal",
+          "upgrade": 0,
+          "instanceId": "sample/card/26"
+        }
+      ],
+      "planner": 16
+    }
+  ]
+}

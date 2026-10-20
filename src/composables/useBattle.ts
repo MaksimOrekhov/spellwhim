@@ -56,7 +56,7 @@ export function useBattle(options: { seed?: number; deck?: readonly CardId[]; ru
       return null
     }
     current.value = next
-    log.value = cardDefinition(result.play.card.definitionId).name + ' разыгрывается…'
+    log.value = resolveCardDefinition(result.play.card).name + ' разыгрывается…'
     return result.play
   }
 

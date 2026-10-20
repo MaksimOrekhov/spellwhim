@@ -3,7 +3,7 @@ import { computed, ref, useTemplateRef } from 'vue'
 import { BookOpen } from '@lucide/vue'
 import SpellCard from './SpellCard.vue'
 import CardNotes from './CardNotes.vue'
-import { cardDefinition } from '../game/types'
+import { resolveCardDefinition } from '../game/cardProgression'
 import type { PersistentCard } from '../game/types'
 import { neutralPreview } from '../ui/cardDisplay'
 import { getClassTheme } from '../game/classThemes'
@@ -12,10 +12,10 @@ const props = defineProps<{ deck: readonly PersistentCard[] }>()
 const dialog = useTemplateRef<HTMLDialogElement>('dialog')
 const selected = ref<string | null>(null)
 const groups = computed(() => {
-  const entries = new Map<string, { card: ReturnType<typeof cardDefinition>; copies: PersistentCard[] }>()
+  const entries = new Map<string, { card: ReturnType<typeof resolveCardDefinition>; copies: PersistentCard[] }>()
   for (const copy of props.deck) {
     const key = copy.definitionId + '/' + copy.upgrade
-    const group = entries.get(key) ?? { card: cardDefinition(copy.definitionId), copies: [] }
+    const group = entries.get(key) ?? { card: resolveCardDefinition(copy), copies: [] }
     group.copies.push(copy)
     entries.set(key, group)
   }
@@ -29,7 +29,7 @@ const groups = computed(() => {
     <header><div><h2 id="deck-title">Колода отряда · {{ deck.length }} карт</h2><p>Нажмите карту, чтобы прочитать её описание.</p></div><button class="game-button" autofocus @click="dialog?.close()">Вернуться к награде</button></header>
     <div class="deck-grid">
       <article v-for="{ card, copies, preview } in groups" :key="copies[0]!.instanceId" class="deck-group">
-        <button class="deck-card" :aria-label="card.name + ' · ' + getClassTheme(card.className).name + ' · ' + card.cost + ' маны · копий: ' + copies.length" :aria-expanded="selected === copies[0]!.instanceId" @click="selected = selected === copies[0]!.instanceId ? null : copies[0]!.instanceId">
+        <button class="deck-card" :aria-label="card.name + (card.upgrade ? ' · Улучшена' : '') + ' · ' + getClassTheme(card.className).name + ' · ' + card.cost + ' маны · копий: ' + copies.length" :aria-expanded="selected === copies[0]!.instanceId" @click="selected = selected === copies[0]!.instanceId ? null : copies[0]!.instanceId">
           <SpellCard :card="card" :preview="preview" />
         </button>
         <strong>Копий: {{ copies.length }}</strong>

@@ -10,7 +10,7 @@ import RunComplete from './components/RunComplete.vue'
 import { useBattle } from './composables/useBattle'
 import { useBattleControls } from './composables/useBattleControls'
 import { useBattleAnimation } from './composables/useBattleAnimation'
-import { availableDungeonNodes, claimDungeonArtifact, claimDungeonReward, createDungeonRun, dungeonArtifactOptions, dungeonEncounter, dungeonNode, dungeonRewardOptions, dungeonRunPhase, enterDungeonNode, resolveDungeonBattle, resolveDungeonRest, skipDungeonReward } from './game/campaign'
+import { availableDungeonNodes, claimDungeonArtifact, claimDungeonReward, createDungeonRun, dungeonArtifactOptions, dungeonEncounter, dungeonNode, dungeonRewardOptions, dungeonRunPhase, enterDungeonNode, resolveDungeonBattle, resolveDungeonRest, upgradeDungeonRest, skipDungeonReward } from './game/campaign'
 import type { DungeonRunState } from './game/campaign'
 import { createRunSaveStore } from './game/runSave'
 import type { RunSnapshot } from './game/runSave'
@@ -150,6 +150,12 @@ function chooseRestTarget(heroId: HeroId | null, sourceId?: string) {
   phase.value = 'map'
 }
 
+function chooseRestUpgrade(instanceId: string, sourceId: string) {
+  if (phase.value !== 'rest' || sourceId !== `${run.value.runId}/${run.value.currentNodeId}`) return
+  publish(upgradeDungeonRest(run.value, instanceId, sourceId))
+  phase.value = 'map'
+}
+
 function restartRun() {
   cancel()
   const nextSeed = ((Date.now() >>> 0) === run.value.seed ? run.value.seed + 1 : Date.now()) >>> 0
@@ -171,15 +177,15 @@ function restartRun() {
           <p v-else-if="saved">Сохранённый поход завершён.</p>
           <p v-if="loadNotice" role="status">{{ loadNotice }}</p>
           <button v-if="saved" class="game-button" @click="continueSavedRun">{{ saved.run.status === 'active' ? 'Продолжить поход' : 'Посмотреть итог' }}</button>
-          <button v-if="saved" class="game-button" @click="downloadSave">Скачать копию</button>
-          <button v-else class="game-button" @click="retryLoad">Повторить загрузку</button>
+          <button v-if="saved || loadNotice" class="game-button" @click="downloadSave">Скачать копию</button>
+          <button v-if="!saved" class="game-button" @click="retryLoad">Повторить загрузку</button>
           <button class="game-button" @click="restartRun">Начать новый поход</button>
         </section>
       </main>
       <CampaignMap v-else-if="phase === 'map'" :map="run.map" :run="run" @enter="enterNode" @restart="restartRun" />
       <EliteReward v-else-if="phase === 'reward' && run.pendingReward?.elite" :key="run.pendingReward.id" :offer-id="run.pendingReward.id" :deck="run.deck" :options="rewardOptions" :artifacts="dungeonArtifactOptions(run)" :heroes="run.heroes" :owned-artifacts="run.artifacts" :encounter-name="encounterName" @choose-card="chooseReward" @choose-artifact="chooseArtifact" />
       <CardReward v-else-if="phase === 'reward'" :key="run.pendingReward!.id" :offer-id="run.pendingReward!.id" :deck="run.deck" :options="rewardOptions" :encounter-name="encounterName" @choose="chooseReward" @skip="skipReward" />
-      <RestSite v-else-if="phase === 'rest'" :key="run.runId + '/' + selectedNodeId" :source-id="run.runId + '/' + selectedNodeId" :heroes="run.heroes" :heal-amount="selectedNodeId ? dungeonNode(run.map, selectedNodeId)?.healAmount ?? 6 : 6" @choose="chooseRestTarget" />
+      <RestSite v-else-if="phase === 'rest'" :key="run.runId + '/' + selectedNodeId" :source-id="run.runId + '/' + selectedNodeId" :heroes="run.heroes" :deck="run.deck" :heal-amount="selectedNodeId ? dungeonNode(run.map, selectedNodeId)?.healAmount ?? 6 : 6" @choose="chooseRestTarget" @upgrade="chooseRestUpgrade" />
       <RunComplete v-else-if="phase === 'complete'" :result="run.status === 'defeat' ? 'defeat' : 'victory'" @restart="restartRun" />
       <template v-else>
         <BattleBoard :state="state" :animation="animation" :phase="battlePhase" :artifact-notices="state.artifactNotices" :continue-label="dungeonNode(run.map, selectedNodeId ?? '')?.type === 'final' ? 'Завершить поход' : 'Выбрать награду'" @impact="impact" @end-turn="onEndTurn" @continue="onBattleContinue" />

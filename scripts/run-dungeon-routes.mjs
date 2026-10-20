@@ -14,6 +14,7 @@ const archetypeRuns = Math.max(1, Math.floor(flag('--archetype-runs') ?? 20))
 
 const server = await createServer({ optimizeDeps: { noDiscovery: true, include: [] }, server: { middlewareMode: true, ws: false, hmr: false }, appType: 'custom' })
 try {
+  const progression = await server.ssrLoadModule('/src/game/cardProgression.ts')
   const campaign = await server.ssrLoadModule('/src/game/campaign.ts')
   const routePolicy = await server.ssrLoadModule('/src/game/dungeonRoutePolicy.ts')
   const balance = await server.ssrLoadModule('/src/game/balance.ts')
@@ -49,7 +50,7 @@ try {
         const instanceId = planner?.next(state)
         const card = instanceId ? state.hand.find(item => item.instanceId === instanceId) : strategy === 'planner' ? undefined : balance.chooseCard(state, strategy, information)
         if (!card) break
-        const definition = types.cardDefinition(card.definitionId)
+        const definition = progression.resolveCardDefinition(card)
         const outcome = battleRules.playCard(state, card.instanceId)
         if (!outcome.ok) break
         cardsPlayed += 1; manaSpent += definition.cost; plays += 1

@@ -59,7 +59,7 @@ function ariaLabel(node: DungeonMapNode) {
     <header class="campaign-header">
       <div class="campaign-topline"><span class="campaign-mark" aria-hidden="true">✦</span><span>МЁРТВЫЕ КОПИ · МАРШРУТ ПОХОДА</span><span class="seed-chip">ЗЕРНО {{ run.seed }}</span><button class="new-run" @click="emit('restart')">Новый поход ↻</button></div>
       <h1>Выберите штрек</h1>
-      <p>Рельсы ведут вниз. Привал лечит одного героя, а элита предлагает больше карт на выбор.</p>
+      <p>Рельсы ведут вниз. Привал лечит одного героя или улучшает карту, а элита предлагает больше карт на выбор.</p>
     </header>
 
     <section class="map-viewport" aria-label="Карта подземелья">

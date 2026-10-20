@@ -53,7 +53,7 @@ function takeArtifact() {
       </div>
 
       <section v-if="section === 'cards'" class="card-offer" aria-label="Карты на выбор">
-        <button v-for="{ card, preview } in cardItems" :key="card.id" class="reward-option" :aria-label="'Взять карту: ' + card.name + '. ' + card.description" @click="emit('chooseCard', card, offerId)">
+        <button v-for="{ card, preview } in cardItems" :key="card.id" class="reward-option" :aria-label="'Взять карту: ' + card.name + '. ' + (card.upgrade ? 'Улучшена. ' : '') + card.description" @click="emit('chooseCard', card, offerId)">
           <SpellCard :card="card" :preview="preview" />
           <CardNotes class="reward-notes" :card="card" :preview="preview" mode="choose" />
         </button>

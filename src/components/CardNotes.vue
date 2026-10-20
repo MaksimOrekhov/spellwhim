@@ -27,6 +27,9 @@ const footer = computed(() => props.block?.text ?? (props.mode === 'choose' ? '�
       <small v-if="!neutral" class="notes-sub">Враг: {{ notes.damage.armorDamage ? `броня −${notes.damage.armorDamage}, ` : '' }}здоровье −{{ notes.damage.healthDamage }}</small>
     </div>
     <p v-for="item in notes.armor" :key="item.hero" class="notes-math notes-math--armor"><CardGlyph kind="armor" /><span>Броня: {{ item.name }} <b>+{{ item.amount }}</b></span></p>
+    <p v-if="notes.statusDamage" class="notes-math"><CardGlyph kind="bleeding" /><span>Кровотечение сейчас: <b>{{ notes.statusDamage }}</b> здоровья</span></p>
+    <p v-if="notes.statusFuture" class="notes-cond">Кровотечение добавит со временем до {{ notes.statusFuture }} урона.</p>
+    <p v-if="notes.stopsAfterDamage" class="notes-cond">Смертельный урон завершит бой; последующие эффекты не выполнятся.</p>
     <p v-if="notes.draw" class="notes-math notes-math--draw"><CardGlyph kind="draw" /><span>Добор: <b>{{ notes.draw }}</b></span></p>
     <p v-for="(line, i) in (neutral ? notes.conditions.filter(item => item.tone === 'on') : notes.conditions)" :key="'c' + i" class="notes-cond" :class="'notes-cond--' + line.tone"><CardGlyph v-if="line.glyph" :kind="line.glyph" /><span>{{ line.text }}</span></p>
     <dl v-if="notes.keywords.length" class="notes-keys">

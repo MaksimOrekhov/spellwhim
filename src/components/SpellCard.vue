@@ -60,6 +60,7 @@ const style = computed(() => ({ ...classThemeStyle(props.card.className), '--vis
         </span>
       </span>
     </span>
+    <span v-if="card.upgrade" class="sc-upgrade" aria-label="Улучшена">↑</span>
     <span class="sc-cost" aria-hidden="true"><b>{{ card.cost }}</b></span>
   </span>
 </template>
@@ -133,4 +134,5 @@ const style = computed(() => ({ ...classThemeStyle(props.card.className), '--vis
 .is-locked .sc-cost b{color:var(--c-health);text-shadow:0 .06em .1em #000}
 .is-dim .sc-rim,.is-dim .sc-body{filter:saturate(.7) brightness(.85)}
 .is-bonus .sc-rim{box-shadow:0 0 0 .14em var(--c-bonus),var(--glow-bonus),0 .35em .8em #0a181ab0,inset 0 .1em .12em #fff7}
+.sc-upgrade{position:absolute;z-index:4;left:2.5em;top:0;display:grid;place-items:center;width:1.5em;height:1.5em;border-radius:var(--r-pill);background:var(--brass-1);border:.1em solid var(--brass-4);color:var(--parch-ink);font:900 1em/1 var(--font-ui);box-shadow:var(--shadow-1)}
 </style>

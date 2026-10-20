@@ -35,6 +35,9 @@ export interface CardNotesModel {
   damage: { total: number; parts: DamagePart[]; formula: string; armorDamage: number; healthDamage: number } | null
   armor: { hero: ArmorTarget | HeroId; name: string; amount: number }[]
   draw: number
+  statusDamage: number
+  statusFuture: number
+  stopsAfterDamage: boolean
   conditions: RuleLine[]
   keywords: Keyword[]
 }
@@ -78,7 +81,7 @@ export function statChips(card: CardDefinition, preview: CardPreview): StatChip[
   if (preview.damage > 0) {
     chips.push({ kind: 'damage', value: preview.damage, caption: 'врагу', base: preview.damage - preview.bonusDamage, boosted: preview.bonusDamage > 0, inactive: false, spoken: `${preview.damage} ${damageWord(preview.damage)} врагу` })
   }
-  for (const effect of card.effects) {
+  for (const effect of preview.resolvedEffects ?? card.effects) {
     if (effect.type === 'armor') chips.push({ kind: 'armor', value: effect.amount, caption: armorCaption(effect.target, preview), base: 0, boosted: false, inactive: false, spoken: `${effect.amount} брони ${armorCaption(effect.target, preview)}` })
   }
   if (preview.draw > 0) chips.push({ kind: 'draw', value: preview.draw, caption: cardsWord(preview.draw), base: 0, boosted: false, inactive: false, spoken: `добор: ${preview.draw} ${cardsWord(preview.draw)}` })
@@ -86,7 +89,7 @@ export function statChips(card: CardDefinition, preview: CardPreview): StatChip[
     chips.push({ kind: 'damage', value: totalBase, caption: 'врагу', base: totalBase, boosted: false, inactive: true, spoken: `${totalBase} ${damageWord(totalBase)} врагу, если враг атакует` })
   }
   // Bleeding: applied strength (a number to wait for), or the damage a tick card takes at once.
-  for (const effect of card.effects) {
+  for (const effect of preview.resolvedEffects ?? card.effects) {
     if (effect.type === 'status' && effect.status === 'bleeding' && chips.length < 2) chips.push({ kind: 'bleeding', value: effect.amount ?? 1, caption: 'Кровь', base: 0, boosted: false, inactive: false, spoken: `Кровотечение ${effect.amount ?? 1}` })
     if (effect.type === 'status-tick' && effect.status === 'bleeding') {
       if (chips.length >= 2) continue
@@ -117,6 +120,10 @@ export function ruleLines(card: CardDefinition, preview: CardPreview): RuleLine[
     const amount = appliedBleeding.amount ?? 1
     lines.push({ tone: 'on', glyph: 'bleeding', text: `Накладывает Кровотечение ${amount}`, short: `Кровь +${amount}` })
   }
+  const tickEffect = card.effects.find(effect => effect.type === 'status-tick')
+  if (tickEffect && !statChips(card, preview).some(chip => chip.kind === 'bleeding')) {
+    lines.push({ tone: preview.statusDamage > 0 ? 'on' : 'off', glyph: 'bleeding', text: preview.statusDamage > 0 ? `Кровотечение: ${preview.statusDamage} сейчас` : 'Тик Кровотечения сейчас', short: 'Тик Крови сейчас' })
+  }
   const burstEffect = card.effects.find((effect): effect is Extract<CardEffect, { type: 'status-burst' }> => effect.type === 'status-burst')
   if (burstEffect) {
     const burst = preview.damageParts.find(part => part.id === 'bleeding-burst')
@@ -137,7 +144,12 @@ export function cardTags(card: CardDefinition): CardTag[] {
 }
 
 export function cardFace(card: CardDefinition, preview: CardPreview): CardFace {
-  return { chips: statChips(card, preview), lines: ruleLines(card, preview), tags: cardTags(card) }
+  // Keep the card's conditional/burst rules; hide only status steps skipped by a lethal stop.
+  const rulesCard = preview.resolvedEffects ? { ...card, effects: card.effects.filter(effect => {
+    if (effect.type !== 'status' && effect.type !== 'status-tick') return true
+    return preview.resolvedEffects!.some(step => (step.type === 'status' || step.type === 'status-tick') && step.type === effect.type && step.status === effect.status)
+  }) } : card
+  return { chips: statChips(card, preview), lines: ruleLines(rulesCard, preview), tags: cardTags(rulesCard) }
 }
 
 /** Where the final damage number comes from, e.g. 4 + 2 + 3 = 9. Empty when the card deals no damage now. */
@@ -196,12 +208,14 @@ export function cardNotes(card: CardDefinition, preview: CardPreview, context: '
   const shownConditions = parts.length > 1 ? conditions.filter(line => line.tone !== 'on' || line.glyph === 'damage') : conditions
   return {
     title: card.name,
-    subtitle: `${getClassTheme(card.className).name} · ${kindLabel[card.kind]} · ${card.cost} ${plural(card.cost, 'мана', 'маны', 'маны')}`,
+    subtitle: `${getClassTheme(card.className).name}${card.upgrade ? ' · Улучшена' : ''} · ${kindLabel[card.kind]} · ${card.cost} ${plural(card.cost, 'мана', 'маны', 'маны')}`,
     description: card.description,
     damage: preview.damage > 0
       ? { total: preview.damage, parts, formula: parts.length > 1 ? `${parts.map(part => part.amount).join(' + ')} = ${preview.damage}` : String(preview.damage), armorDamage: preview.armorDamage, healthDamage: preview.healthDamage }
       : null,
-    armor, draw: preview.draw, conditions: shownConditions, keywords,
+    armor, draw: preview.draw, statusDamage: preview.statusDamage, statusFuture: preview.statusFuture,
+    stopsAfterDamage: context === 'board' && !!preview.resolvedEffects && preview.resolvedEffects.length < card.effects.filter(effect => effect.type !== 'status-burst' && !(effect.type === 'damage' && effect.when && preview.damage === 0)).length,
+    conditions: shownConditions, keywords,
   }
 }
 
@@ -209,7 +223,7 @@ export function cardNotes(card: CardDefinition, preview: CardPreview, context: '
 export function spokenSummary(card: CardDefinition, preview: CardPreview): string {
   const chips = statChips(card, preview).map(chip => chip.spoken).join(', ')
   const bonus = preview.bonusDamage > 0 ? ` Итоговый урон ${preview.damage}: ${damageParts(preview).map(part => part.amount).join(' плюс ')}.` : ''
-  return `${card.description}${bonus}${chips ? ' Сейчас: ' + chips + '.' : ''}`
+  return `${card.upgrade ? 'Улучшена. ' : ''}${card.description}${bonus}${chips ? ' Сейчас: ' + chips + '.' : ''}`
 }
 
 let neutralState: BattleState | null = null

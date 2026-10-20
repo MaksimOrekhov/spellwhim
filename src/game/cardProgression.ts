@@ -1,10 +1,12 @@
+import { cardUpgrades, upgradedDefinition } from './cardUpgrades'
 import { cardDefinition } from './types'
 import type { CardDefinition, CardInstance, PersistentCard } from './types'
 
-/** All combat/UI resolution of a copy goes through this boundary. Stage 2 supplies the real catalogue. */
+/** The canonical combat, presentation and laboratory boundary for one copy. */
 export function resolveCardDefinition(card: Pick<CardInstance, 'definitionId' | 'upgrade'>): CardDefinition {
-  if (card.upgrade) throw new Error('Улучшенная версия этой карты пока недоступна в бою.')
-  return cardDefinition(card.definitionId)
+  if (card.upgrade !== undefined && card.upgrade !== 0 && card.upgrade !== 1) throw new Error('Invalid card upgrade')
+  const base = cardDefinition(card.definitionId)
+  return card.upgrade === 1 ? upgradedDefinition(base) : base
 }
 
 export interface CardAcquisition {
@@ -16,4 +18,8 @@ export interface CardAcquisition {
 export function validateAcquisition(card: CardAcquisition): void {
   cardDefinition(card.definitionId)
   if (card.upgrade !== 0 && card.upgrade !== 1) throw new Error('Invalid card upgrade')
+}
+
+export function canUpgradeCard(card: Pick<PersistentCard, 'definitionId' | 'upgrade'>): boolean {
+  return card.upgrade === 0 && Object.prototype.hasOwnProperty.call(cardUpgrades, card.definitionId)
 }

@@ -132,12 +132,12 @@ describe('reward decisions', () => {
 })
 
 describe('future acquisitions', () => {
-  it('preserves and acquires an upgraded reward without pretending its effects are available', () => {
+  it('preserves and resolves an upgraded reward through the canonical catalogue', () => {
     const run = rewardRun(700)
     run.pendingReward!.cards[0]!.upgrade = 1 // Isolated future-catalogue fixture; live offers always have level 0.
     const restored = roundTrip(run)
     const choice = restored.pendingReward!.cards[0]!
-    expect(() => dungeonRewardOptions(restored)).toThrow(/пока недоступна/)
+    expect(dungeonRewardOptions(restored)[0]).toEqual(resolveCardDefinition(choice))
     const next = roundTrip(claimDungeonReward(restored, cardDefinition(choice.definitionId), restored.pendingReward!.id))
     expect(next.deck[next.deck.length - 1]!.upgrade).toBe(1)
   })
@@ -174,19 +174,18 @@ describe('atomic progression services', () => {
     expect(() => confirmDeckOperation(roundTrip(next), 'replace-a', next.deck[1]!.instanceId, options[0])).toThrow()
   })
 
-  it('represents one upgrade without changing a shared definition, rejects repeats and refuses unsupported combat variants', () => {
+  it('upgrades one copy without changing a shared definition, rejects repeats and resolves combat variants', () => {
     let run = offerDeckOperation(createDungeonRun(11), 'upgrade-a', 'upgrade')
     const definition = structuredClone(cardDefinition(run.deck[0]!.definitionId))
-    expect(() => confirmDeckOperation(run, 'upgrade-a', run.deck[0]!.instanceId)).toThrow()
-    run = roundTrip(confirmDeckOperation(run, 'upgrade-a', run.deck[0]!.instanceId, undefined, () => true))
+    run = roundTrip(confirmDeckOperation(run, 'upgrade-a', run.deck[0]!.instanceId))
     expect(run.deck[0]!.upgrade).toBe(1)
     expect(run.deck.slice(1).every(card => card.upgrade === 0)).toBe(true)
     expect(run.deck).toHaveLength(18)
     expect(cardDefinition(run.deck[0]!.definitionId)).toEqual(definition)
     run = offerDeckOperation(run, 'upgrade-b', 'upgrade')
-    expect(() => confirmDeckOperation(run, 'upgrade-b', run.deck[0]!.instanceId, undefined, () => true)).toThrow()
-    expect(() => resolveCardDefinition(run.deck[0]!)).toThrow(/пока недоступна/)
-    expect(() => createBattle(encounters[0], run.heroes, { deck: run.deck })).toThrow(/пока недоступна/)
+    expect(() => confirmDeckOperation(run, 'upgrade-b', run.deck[0]!.instanceId)).toThrow()
+    expect(resolveCardDefinition(run.deck[0]!).effects[0]).toMatchObject({ amount: 8 })
+    expect(zones(createBattle(encounters[0], run.heroes, { deck: run.deck })).find(card => card.instanceId === run.deck[0]!.instanceId)?.upgrade).toBe(1)
     const upgradedReward = { definitionId: 'frostbolt' as const, upgrade: 1 as const }
     run = offerDeckOperation(run, 'future-acquisition', 'replace', [upgradedReward])
     expect(roundTrip(confirmDeckOperation(run, 'future-acquisition', run.deck[1]!.instanceId, upgradedReward)).deck[1]!.upgrade).toBe(1)

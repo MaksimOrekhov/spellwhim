@@ -23,6 +23,7 @@ const specs = [
 
 const server = await createServer({ optimizeDeps: { noDiscovery: true, include: [] }, server: { middlewareMode: true, ws: false, hmr: false }, appType: 'custom' })
 try {
+  const progression = await server.ssrLoadModule('/src/game/cardProgression.ts')
   const load = path => server.ssrLoadModule(path)
   const [battle, balance, plannerModule, types, economy, rosterModule, statusModule] = await Promise.all([
     load('/src/game/battle.ts'), load('/src/game/balance.ts'), load('/src/game/balancePlanner.ts'), load('/src/game/types.ts'),
@@ -66,7 +67,7 @@ try {
         const plannedId = planner?.next(state)
         const instance = plannedId ? state.hand.find(card => card.instanceId === plannedId) : strategy === 'planner' ? undefined : balance.chooseCard(state, strategy)
         if (!instance) break
-        const card = types.cardDefinition(instance.definitionId)
+        const card = progression.resolveCardDefinition(instance)
         const preview = battle.previewCard(state, card)
         const oldBleeding = statusModule.statusValue(state, 'enemy', 'bleeding')
         const beforeEnemyHealth = state.enemy.health

@@ -23,7 +23,7 @@ const items = computed(() => props.options.map(card => ({ card, preview: neutral
         <p class="reward-copy">Выберите одну карту из {{ options.length }}. Она останется с отрядом до конца похода.</p>
       </header>
       <div class="reward-options" :style="{ '--n': options.length }">
-        <button v-for="{ card, preview } in items" :key="card.id" class="reward-option" :data-card-id="card.id" :aria-label="'Взять карту: ' + card.name + ', ' + card.cost + ' маны. ' + card.description" @click="emit('choose', card, offerId)">
+        <button v-for="{ card, preview } in items" :key="card.id" class="reward-option" :data-card-id="card.id" :aria-label="'Взять карту: ' + card.name + ', ' + card.cost + ' маны. ' + (card.upgrade ? 'Улучшена. ' : '') + card.description" @click="emit('choose', card, offerId)">
           <SpellCard :card="card" :preview="preview" />
           <CardNotes class="reward-notes" :card="card" :preview="preview" mode="choose" />
         </button>

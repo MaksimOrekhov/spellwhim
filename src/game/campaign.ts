@@ -6,7 +6,7 @@ import { defaultDungeonRoster } from './encountersV10'
 import type { DungeonRoster } from './rosters'
 import type { EconomyConfig } from './economy'
 import { shuffle } from './deck'
-import { resolveCardDefinition, validateAcquisition } from './cardProgression'
+import { canUpgradeCard, resolveCardDefinition, validateAcquisition } from './cardProgression'
 import type { CardAcquisition } from './cardProgression'
 import type { DeckInput, PersistentCard } from './types'
 import type { ArtifactDefinition, ArtifactId, ArtifactInstance, BattleState, CardDefinition, CardId, EncounterDefinition, Hero, HeroId } from './types'
@@ -401,6 +401,14 @@ export function resolveDungeonRest(run: DungeonRunState, heroId: HeroId | null):
   return { ...run, heroes, completedNodeIds: addCompletedNode(run, current.id), decisions: [...run.decisions, `rest:${current.id}`] }
 }
 
+/** One immutable rest transaction. The existing upgrade service owns copy validation and the 0→1 operation. */
+export function upgradeDungeonRest(run: DungeonRunState, instanceId: string, sourceId: string): DungeonRunState {
+  if (sourceId !== `${run.runId}/${run.currentNodeId}`) throw new Error('Stale rest command')
+  const completed = resolveDungeonRest(run, null)
+  const operation = offerDeckOperation(completed, sourceId, 'upgrade')
+  return confirmDeckOperation(operation, sourceId, instanceId)
+}
+
 export interface DeckOperationOffer {
   sourceId: string
   kind: 'remove' | 'replace' | 'upgrade'
@@ -427,7 +435,7 @@ export function offerDeckOperation(run: DungeonRunState, sourceId: string, kind:
 }
 
 /** Immutable transaction: validate every input before publishing any removal, acquisition or spent source. */
-export function confirmDeckOperation(run: DungeonRunState, sourceId: string, instanceId: string, replacement?: CardAcquisition, canUpgrade: (card: Readonly<PersistentCard>) => boolean = () => false): DungeonRunState {
+export function confirmDeckOperation(run: DungeonRunState, sourceId: string, instanceId: string, replacement?: CardAcquisition, canUpgrade: (card: Readonly<PersistentCard>) => boolean = canUpgradeCard): DungeonRunState {
   betweenRooms(run)
   const offer = run.deckOperations.find(item => item.sourceId === sourceId && !item.resolved)
   const index = run.deck.findIndex(card => card.instanceId === instanceId)

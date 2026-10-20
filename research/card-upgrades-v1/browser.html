@@ -1,0 +1,38 @@
+<!doctype html><html lang="ru"><meta charset="UTF-8"><title>Spellwhim · Upgrade QA fixtures</title><body>
+<h1>Локальные тестовые состояния улучшений</h1><p>Использовать на отдельном локальном origin. Кнопки заменяют тестовый сейв в этом origin и открывают настоящий интерфейс игры.</p>
+<button id="rest">Привал</button><button id="reward">Награда и колода</button><button id="battle">Бой</button>
+<script type="module">
+import * as c from '/src/game/campaign.ts'
+import { createRunSaveStore } from '/src/game/runSave.ts'
+import { gameEconomy } from '/src/game/economy.ts'
+function fixture(mode) {
+  let run = c.createDungeonRun(81, gameEconomy, undefined, undefined, 'browser-upgrade-qa')
+  const path = c.enumerateDungeonPaths(run.map).find(nodes => nodes[1]?.type === 'rest')
+  for (const node of path) {
+    run = c.enterDungeonNode(run, node.id)
+    if (node.type === 'rest') break
+    const battle = c.restoreDungeonBattle(run); battle.result = 'victory'; battle.enemy.health = 0; battle.heroes.warrior.health -= 3
+    run = c.resolveDungeonBattle(run, battle)
+    run = c.skipDungeonReward(run, run.pendingReward.id)
+  }
+  if (mode !== 'rest') {
+    let target = run.deck[0].instanceId
+    if (mode === 'battle') {
+      const completed = c.resolveDungeonRest(run, null)
+      const entry = c.enterDungeonNode(completed, c.availableDungeonNodes(completed).find(node => node.type === 'battle').id)
+      target = c.restoreDungeonBattle(entry).hand.find(card => card.definitionId === 'sword-strike').instanceId
+    }
+    run = c.upgradeDungeonRest(run, target, `${run.runId}/${run.currentNodeId}`)
+    run = c.enterDungeonNode(run, c.availableDungeonNodes(run).find(node => node.type === 'battle').id)
+    if (mode === 'reward') {
+      const battle = c.restoreDungeonBattle(run); battle.result = 'victory'; battle.enemy.health = 0
+      run = c.resolveDungeonBattle(run, battle)
+      run.pendingReward.cards[0].upgrade = 1 // Future reward data contract; generated game rewards remain level zero.
+    }
+  }
+  const saved = createRunSaveStore(() => localStorage).save(run, gameEconomy)
+  if (!saved.ok) throw Error(saved.message)
+  location.href = '/'
+}
+for (const mode of ['rest','reward','battle']) document.getElementById(mode).onclick = () => fixture(mode)
+</script></body></html>

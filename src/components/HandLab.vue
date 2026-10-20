@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { resolveCardDefinition } from '../game/cardProgression'
 // Dev-only lab (card-preview.html): the real board, hand and reward screen driven by the real rules engine
 // in reproducible states. Query: ?view=hand|reward  &hand=8|10  &bonus=1  &mana=N  &elite=1  &ids=a,b,c  &rewardIds=a,b,c
 // &scene=<id of battleSceneIds> (battle scenes of src/ui/battleScenes.ts; replaces &enemy)  &intent=caption (banner variant with the action name)
@@ -10,7 +11,7 @@ import { createBattle, previewCard, resolveCardPlay, startCardPlay, endTurn } fr
 import { applyStatus } from '../game/statuses'
 import { useBattleAnimation } from '../composables/useBattleAnimation'
 import { useBattleControls } from '../composables/useBattleControls'
-import { cardDefinition, cards, encounters } from '../game/types'
+import { cards, encounters } from '../game/types'
 import { battleScene } from '../ui/battleScenes'
 import { defaultDungeonRoster } from '../game/encountersV10'
 import type { BattleSceneId } from '../ui/battleScenes'
@@ -57,12 +58,12 @@ function finishTurn() { const next = structuredClone(state.value); if (endTurn(n
 const { animation, phase, impact, play, enemyTurn } = useBattleAnimation({ state, resolvePlay, finishTurn })
 
 const views = computed<HandCardView[]>(() => state.value.hand.map(instance => {
-  const card = cardDefinition(instance.definitionId)
+  const card = resolveCardDefinition(instance)
   return { instanceId: instance.instanceId, card, preview: previewCard(state.value, card), playable: !state.value.pending && state.value.mana >= card.cost }
 }))
 const pendingView = computed<HandCardView | null>(() => {
   const pending = state.value.pending
-  return pending ? { instanceId: pending.card.instanceId, card: cardDefinition(pending.card.definitionId), preview: pending.preview, playable: false } : null
+  return pending ? { instanceId: pending.card.instanceId, card: resolveCardDefinition(pending.card), preview: pending.preview, playable: false } : null
 })
 function playCard(instanceId: string) {
   if (animation.value.busy) return

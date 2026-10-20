@@ -37,6 +37,7 @@ const style = computed(() => ({ ...classThemeStyle(props.card.className), '--nam
         <span v-if="!face.chips.length" class="tc-class"><i class="tc-emblem"><img :src="theme.emblem" alt="" draggable="false" /></i></span>
       </span>
     </span>
+    <span v-if="card.upgrade" class="tc-upgrade" aria-label="Улучшена">↑</span>
     <span class="tc-cost" aria-hidden="true">{{ card.cost }}</span>
   </span>
 </template>
@@ -71,4 +72,5 @@ const style = computed(() => ({ ...classThemeStyle(props.card.className), '--nam
 .is-locked .tc-cost{background:#4b4249;color:var(--c-health);border-color:var(--c-health)}
 .is-dim{filter:saturate(.7) brightness(.88)}
 .is-bonus{box-shadow:0 0 0 .12em var(--c-bonus),var(--glow-bonus),0 .3em .6em #0a181a99}
+.tc-upgrade{position:absolute;z-index:4;left:2.5em;top:0;display:grid;place-items:center;width:1.5em;height:1.5em;border-radius:var(--r-pill);background:var(--brass-1);border:.1em solid var(--brass-4);color:var(--parch-ink);font:900 1em/1 var(--font-ui);box-shadow:var(--shadow-1)}
 </style>

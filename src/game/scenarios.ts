@@ -1,3 +1,4 @@
+import { resolveCardDefinition } from './cardProgression'
 import { visibleThreat } from './observableIntent'
 import type { Information } from './observableIntent'
 import { createBattle, endTurn, forecastEnemyAction, playCard, previewCard } from './battle'
@@ -65,7 +66,7 @@ export function runStrategyComparison(seed = 42, information: Information = 'pub
         const incoming = visibleThreat(forecast, state.heroes, information)
         const threatened = new Set(incoming.map(hit => hit.target))
         const candidates = state.hand.map((instance, index) => {
-          const card = cardDefinition(instance.definitionId)
+          const card = resolveCardDefinition(instance)
           const preview = previewCard(state, card)
           const armorValue = (['warrior', 'mage'] as const).reduce((sum, hero) => sum + preview.armor[hero] * (threatened.has(hero) ? 1 : 0.12), 0)
           const damage = preview.healthDamage + preview.armorDamage * 0.35

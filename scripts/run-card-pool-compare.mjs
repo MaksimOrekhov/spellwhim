@@ -21,6 +21,7 @@ const expansionIds = ['stance-strike', 'wound-clamp', 'covering-counter', 'crush
 
 const server = await createServer({ optimizeDeps: { noDiscovery: true, include: [] }, server: { middlewareMode: true, ws: false, hmr: false }, appType: 'custom' })
 try {
+  const progression = await server.ssrLoadModule('/src/game/cardProgression.ts')
   const load = path => server.ssrLoadModule(path)
   const [campaign, routePolicy, balance, battleRules, plannerModule, types, economy, rosterModule, statusModule] = await Promise.all([
     load('/src/game/campaign.ts'), load('/src/game/dungeonRoutePolicy.ts'), load('/src/game/balance.ts'), load('/src/game/battle.ts'),
@@ -75,7 +76,7 @@ try {
         const instanceId = planner?.next(state)
         const card = instanceId ? state.hand.find(item => item.instanceId === instanceId) : strategy === 'planner' ? undefined : balance.chooseCard(state, strategy)
         if (!card) break
-        const definition = types.cardDefinition(card.definitionId)
+        const definition = progression.resolveCardDefinition(card)
         const preview = battleRules.previewCard(state, definition)
         const beforeHealth = state.enemy.health
         const beforeArmor = state.enemy.armor

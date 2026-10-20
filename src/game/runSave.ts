@@ -1,4 +1,5 @@
 import { artifactDefinitions } from './artifacts'
+import { cardUpgrades } from './cardUpgrades'
 import { cards } from './types'
 import { defaultDungeonRoster } from './encountersV10'
 import { deriveDungeonSeed, dungeonEncounter, dungeonNode, validateDungeonMap } from './campaign'
@@ -8,7 +9,7 @@ import type { EconomyConfig } from './economy'
 
 export const RUN_SAVE_KEY = 'spellwhim.run.v1'
 export const SAVE_SCHEMA_VERSION = 1
-export const RULES_VERSION = 'combat-progression-1'
+export const RULES_VERSION = 'combat-upgrades-1'
 export const GENERATOR_VERSION = 'dungeon-six-layers-1'
 
 function canonical(value: unknown): string {
@@ -23,8 +24,11 @@ function checksum(text: string): string {
   return (hash >>> 0).toString(16)
 }
 
+const FOUNDATION_CATALOG_VERSION = 'edd7267b'
+const baseCatalogue = { cards, artifacts: artifactDefinitions, normal: defaultDungeonRoster.normal, elite: defaultDungeonRoster.elite, final: defaultDungeonRoster.final }
+const baseCatalogueVersion = checksum(canonical(baseCatalogue))
 /** Conservative automatic catalogue fingerprint plus explicit rule/generator versions. */
-export const CATALOG_VERSION = checksum(canonical({ cards, artifacts: artifactDefinitions, normal: defaultDungeonRoster.normal, elite: defaultDungeonRoster.elite, final: defaultDungeonRoster.final }))
+export const CATALOG_VERSION = checksum(canonical({ ...baseCatalogue, upgrades: cardUpgrades }))
 
 export interface RunSnapshot {
   schemaVersion: 1
@@ -156,10 +160,16 @@ export function decodeSnapshot(raw: string): RunSnapshot {
   const envelope = data as { payload: RunSnapshot; checksum: string }
   const snapshot = envelope.payload
   requireValid(object({ schemaVersion: integer(1), rulesVersion: text, generatorVersion: text, catalogVersion: text, revision: integer(1), economy: () => true, run: () => true })(snapshot))
-  if (snapshot.schemaVersion !== SAVE_SCHEMA_VERSION || snapshot.rulesVersion !== RULES_VERSION || snapshot.generatorVersion !== GENERATOR_VERSION || snapshot.catalogVersion !== CATALOG_VERSION) throw new IncompatibleSave('Сохранение создано для другой версии игры. Оно оставлено в хранилище; начните новый поход или вернитесь к совместимой версии.')
+  const legacy = baseCatalogueVersion === FOUNDATION_CATALOG_VERSION && snapshot.schemaVersion === 1 && snapshot.rulesVersion === 'combat-progression-1' && snapshot.catalogVersion === FOUNDATION_CATALOG_VERSION && snapshot.generatorVersion === GENERATOR_VERSION
+  if (!legacy && (snapshot.schemaVersion !== SAVE_SCHEMA_VERSION || snapshot.rulesVersion !== RULES_VERSION || snapshot.generatorVersion !== GENERATOR_VERSION || snapshot.catalogVersion !== CATALOG_VERSION)) throw new IncompatibleSave('Сохранение создано для другой версии игры. Оно оставлено в хранилище; начните новый поход или вернитесь к совместимой версии.')
   requireValid(object({ schemaVersion: oneOf(1), rulesVersion: text, generatorVersion: text, catalogVersion: text, revision: integer(1), economy: value => Object.values(playableEconomies).some(known => canonical(known) === canonical(value)), run: () => true })(snapshot))
   requireValid(envelope.checksum === checksum(canonical(snapshot)))
   validateRun(snapshot.run)
+  if (legacy) {
+    const acquisitions = [...snapshot.run.deck, ...(snapshot.run.pendingReward?.cards ?? []), ...snapshot.run.deckOperations.flatMap(offer => offer.options)]
+    if (acquisitions.some(card => card.upgrade !== 0)) throw new IncompatibleSave('Старое сохранение содержит неподдержанное улучшение. Исходные данные доступны для скачивания; нужен прежний каталог игры.')
+    return { ...snapshot, rulesVersion: RULES_VERSION, catalogVersion: CATALOG_VERSION }
+  }
   return snapshot
 }
 
@@ -174,12 +184,17 @@ export function createRunSaveStore(storage: () => SaveStorage) {
   function load(): LoadResult {
     const valid: { snapshot: RunSnapshot; key: string; raw: string }[] = []
     const errors: Error[] = []
+    const originals: { key: string; raw: string }[] = []
     for (const key of [RUN_SAVE_KEY, RUN_SAVE_KEY + '.backup']) {
       try {
         const raw = storage().getItem(key)
-        if (raw !== null) valid.push({ snapshot: decodeSnapshot(raw), key, raw })
+        if (raw !== null) {
+          originals.push({ key, raw })
+          valid.push({ snapshot: decodeSnapshot(raw), key, raw })
+        }
       } catch (error) { errors.push(error instanceof Error ? error : new Error(String(error))) }
     }
+    exported = originals.length ? JSON.stringify({ records: originals }) : ''
     // An incompatible generation must never silently roll back to an older compatible campaign.
     const incompatible = errors.find(error => error instanceof IncompatibleSave)
     if (incompatible) return { snapshot: null, message: incompatible.message, blocked: true }

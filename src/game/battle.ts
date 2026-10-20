@@ -1,4 +1,4 @@
-import { cardDefinition, encounters, startingDeck } from './types'
+import { MAX_HAND_SIZE, cardDefinition, encounters, startingDeck } from './types'
 import { drawForTurn, gameEconomy, manaForTurn } from './economy'
 import type { EconomyConfig } from './economy'
 import { drawCards, shuffle } from './deck'
@@ -134,7 +134,7 @@ function runEnemyTurnStart(state: BattleState): void {
   }
 }
 
-function buildPlan(state: BattleState, card: CardDefinition): Omit<PendingPlay, 'actionId' | 'card' | 'handIndex'> {
+function buildPlan(state: BattleState, card: CardDefinition, historical = false): Omit<PendingPlay, 'actionId' | 'card' | 'handIndex'> {
   const enemyAction = state.enemy.nextAction
   const enemyAttacking = enemyAction.kind === 'attack' || enemyAction.kind === 'attack_all'
   const allEffects = card.effects.filter(effect => effect.type !== 'damage' || effect.when !== 'enemy-attacking' || enemyAttacking)
@@ -185,8 +185,36 @@ function buildPlan(state: BattleState, card: CardDefinition): Omit<PendingPlay, 
   const effects: CardEffect[] = allEffects.filter(effect => effect.type !== 'damage' && effect.type !== 'status-burst')
   // Deal the entire hit together, before secondary effects. A lethal hit stops the action.
   if (damage > 0) effects.unshift({ type: 'damage', amount: damage })
-  const armor = zeroArmor(state.heroes)
+  // Probe the already composed plan in order. Reuse the actual status/damage operations; no RNG or live mutation.
+  const probe = { ...state, enemy: { ...state.enemy }, statuses: cloneStatuses(state.statuses) }
+  for (const spent of consumedStatuses) consumeStatus(probe, spent.carrier, spent.id, spent.amount ?? 1)
+  const reachable: CardEffect[] = []
+  let statusDamage = 0
+  let statusFuture = 0
+  let draw = 0
+  let drawRoom = Math.max(0, MAX_HAND_SIZE - Math.max(0, state.hand.length - 1))
+  let drawAvailable = state.drawPile.length + state.discardPile.length
   for (const effect of effects) {
+    if (!historical && (state.result || probe.enemy.health <= 0)) break
+    reachable.push(effect)
+    if (effect.type === 'damage') damageEnemy(probe, effect.amount)
+    else if (effect.type === 'status-tick') {
+      const due = dueTicks(probe, 'enemy', 'enemy-turn-start').find(item => item.id === effect.status)
+      if (due) statusDamage += tickEnemyStatus(probe, due)
+    } else if (effect.type === 'status') {
+      const before = lifetimeTickDamage(effect.status, statusValue(probe, 'enemy', effect.status))
+      applyStatus(probe, 'enemy', effect.status, effect.amount ?? 1)
+      statusFuture += lifetimeTickDamage(effect.status, statusValue(probe, 'enemy', effect.status)) - before
+    } else if (effect.type === 'draw') {
+      const amount = Math.min(effect.amount, drawAvailable, drawRoom)
+      draw += historical ? effect.amount : amount
+      drawRoom -= amount
+      drawAvailable -= amount
+    }
+  }
+  if (!historical && probe.enemy.health <= 0) statusFuture = 0
+  const armor = zeroArmor(state.heroes)
+  for (const effect of reachable) {
     if (effect.type !== 'armor') continue
     const target = resolveArmorTarget(state.heroes, effect.target, state.enemy.focus)
     if (target) armor[target] += effect.amount
@@ -212,29 +240,19 @@ function buildPlan(state: BattleState, card: CardDefinition): Omit<PendingPlay, 
     }
   }
   for (const id of heroIdsInPartyOrder(state.heroes)) armor[id] += artifactArmor[id]
-  // Statuses: what a tick card takes at once, and what applied statuses will take later (the part this card adds to the lifetime total).
-  let statusDamage = 0
-  let statusFuture = 0
-  for (const effect of effects) {
-    if (effect.type === 'status-tick') statusDamage += Math.min(state.enemy.health, statusValue(state, 'enemy', effect.status))
-    else if (effect.type === 'status') {
-      const probe = { statuses: cloneStatuses(state.statuses) }
-      applyStatus(probe, 'enemy', effect.status, effect.amount ?? 1)
-      statusFuture += lifetimeTickDamage(effect.status, statusValue(probe, 'enemy', effect.status)) - lifetimeTickDamage(effect.status, statusValue(state, 'enemy', effect.status))
-    }
-  }
   const usesClassTarget = effects.some(effect => effect.type === 'armor' && effect.target.startsWith('class:'))
   return {
     effects,
     consumedStatuses,
     artifactTriggers,
     preview: {
+      ...(!historical ? { resolvedEffects: reachable } : {}),
       damage, armorDamage, healthDamage, armor, artifactDamage, artifactArmor,
       bonusDamage: damage > 0 && hit.parts.length > 1 ? sumParts(hit.parts) - baseDamage : 0, vulnerabilityBonus, armorBonus,
-      draw: effects.reduce((sum, effect) => sum + (effect.type === 'draw' ? effect.amount : 0), 0),
+      draw,
       bonuses: bonusLabels,
       artifactBonuses: artifactTriggers.map(trigger => trigger.reason),
-      appliedStatuses: effects.flatMap(effect => effect.type === 'status' ? [effect.status] : []), statusDamage, statusFuture,
+      appliedStatuses: reachable.flatMap(effect => effect.type === 'status' ? [effect.status] : []), statusDamage, statusFuture,
       damageParts: hit.parts,
       bonusOwner: card.damageBonus && owner.ok ? { hero: owner.hero, characterId: state.heroes[owner.hero].characterId } : null,
       classHeroes: usesClassTarget ? resolvedClassHeroes(state.heroes) : {},
@@ -242,8 +260,8 @@ function buildPlan(state: BattleState, card: CardDefinition): Omit<PendingPlay, 
   }
 }
 
-export function previewCard(state: BattleState, card: CardDefinition): CardPreview {
-  return buildPlan(state, card).preview
+export function previewCard(state: BattleState, card: CardDefinition, mode?: 'historical'): CardPreview {
+  return buildPlan(state, card, mode === 'historical').preview
 }
 
 export function startCardPlay(state: BattleState, instanceId: string): PlayStartResult {

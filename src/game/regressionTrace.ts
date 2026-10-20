@@ -54,7 +54,7 @@ function snapshot(state: BattleState) {
 }
 
 function stablePreview(state: BattleState, definitionId: BattleState['hand'][number]['definitionId']) {
-  const preview = previewCard(state, cardDefinition(definitionId))
+  const preview = previewCard(state, cardDefinition(definitionId), 'historical')
   const { damage, armorDamage, healthDamage, bonusDamage, vulnerabilityBonus, armorBonus, artifactDamage, artifactArmor, armor, draw, bonuses, artifactBonuses, appliedStatuses } = preview
   return { damage, armorDamage, healthDamage, bonusDamage, vulnerabilityBonus, armorBonus, artifactDamage, artifactArmor, armor, draw, bonuses, artifactBonuses, appliedStatuses }
 }

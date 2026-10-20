@@ -57,6 +57,8 @@ export type CardEffect =
   | { type: 'status-tick'; status: StatusId }
 
 export interface CardDefinition {
+  /** Resolved variant; base catalogue entries omit this marker. Independent of rarity. */
+  upgrade?: 0 | 1
   id: CardId
   name: string
   className: CardClassId
@@ -207,6 +209,8 @@ export interface ConsumedStatus {
 }
 
 export interface CardPreview {
+  /** Reachable effects, respecting lethal stops. Absent only in historical diagnostics. */
+  resolvedEffects?: CardEffect[]
   damage: number
   armorDamage: number
   healthDamage: number

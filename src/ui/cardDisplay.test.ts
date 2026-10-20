@@ -265,3 +265,34 @@ describe('hand layout', () => {
     for (const card of cards) expect(cardNameScale(card.name)).toBeGreaterThanOrEqual(0.72)
   })
 })
+
+describe('upgrade presentation', () => {
+  it('keeps new multi-effect upgrades readable and explicitly shows a tick when armor and draw occupy both chips', async () => {
+    const { resolveCardDefinition } = await import('../game/cardProgression')
+    for (const base of cards) {
+      const variant = resolveCardDefinition({ definitionId: base.id, upgrade: 1 })
+      const p = previewCard(board(), variant)
+      const face = cardFace(variant, p)
+      expect(face.chips.length, base.id).toBeLessThanOrEqual(2)
+      expect(face.lines.length + face.tags.length, base.id).toBeLessThanOrEqual(3)
+      expect(spokenSummary(variant, p)).toContain('Улучшена')
+    }
+    const boil = resolveCardDefinition({ definitionId: 'boil-blood', upgrade: 1 })
+    const face = cardFace(boil, neutralPreview(boil))
+    expect(face.chips.map(chip => chip.kind)).toEqual(['armor', 'draw'])
+    expect(face.lines.map(line => line.text)).toContain('Тик Кровотечения сейчас')
+    const burst = resolveCardDefinition({ definitionId: 'reaping-blow', upgrade: 1 })
+    expect(cardFace(burst, neutralPreview(burst)).lines.some(line => line.glyph === 'bleeding')).toBe(true)
+  })
+  it('shows actual reachable effects on lethal, including the draw and armor stop explanation', async () => {
+    const { resolveCardDefinition } = await import('../game/cardProgression')
+    const state = board()
+    state.enemy.health = 1
+    const card = resolveCardDefinition({ definitionId: 'shield-bash', upgrade: 1 })
+    const p = previewCard(state, card)
+    expect(cardFace(card, p).chips.map(chip => chip.kind)).toEqual(['damage'])
+    expect(cardFace(card, p).tags).toEqual([])
+    expect(cardNotes(card, p).stopsAfterDamage).toBe(true)
+    expect(cardFace(cardDefinition('parry'), previewCard(createBattle(encounters[1]), cardDefinition('parry'))).lines[0]?.tone).toBe('off')
+  })
+})
