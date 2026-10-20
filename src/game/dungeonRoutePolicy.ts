@@ -25,6 +25,9 @@ export function chooseDungeonRouteNode(
   const healthRatio = Math.min(heroes.warrior.health / heroes.warrior.maxHealth, heroes.mage.health / heroes.mage.maxHealth)
   const score = (node: PublicDungeonNodeView): number => {
     if (node.type === 'final') return 200
+    if (node.type === 'forge') return policy === 'safe' ? 110 : policy === 'mixed' ? 75 : 10
+    if (node.type === 'treasure') return policy === 'safe' ? 90 : policy === 'mixed' ? 60 : 15
+    if (node.type === 'event') return policy === 'safe' ? 95 : policy === 'mixed' ? 55 : 5
     if (policy === 'safe') return node.type === 'rest' ? 100 : node.type === 'battle' ? 20 : -30
     if (policy === 'risky') return node.type === 'elite' ? 100 : node.type === 'battle' ? 20 : -10
     if (node.type === 'rest') return healthRatio < 0.7 ? 120 : 35

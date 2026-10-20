@@ -20,6 +20,10 @@ export const enemyPortraitsByEncounterId: Readonly<Partial<Record<string, string
   'defias-veteran': veteran,
   'goblin-foundry-chief': foundryChief,
   'twilight-heart': twilightHeart,
+  'old-mines-raider': cutpurse,
+  'old-mines-digger': overseer,
+  'old-mines-watchman': lookout,
+  'old-mines-overseer': overseer,
 })
 
 export interface ResolvedEnemyPortrait {

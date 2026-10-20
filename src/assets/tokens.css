@@ -46,6 +46,7 @@
   --mat-brass: linear-gradient(180deg, #f5d58b, #c4893a 14%, #a1642a 50%, #7a461b 100%);       /* primary action plank */
   --mat-brass-top: linear-gradient(#f4d89a, #b9843a);
   --mat-wood: linear-gradient(#3d2a1b, #261912);
+  --mat-mine-map: radial-gradient(ellipse at 50% 20%, #5d5232, #302a20 55%, #171e1b);
   --mat-parchment: linear-gradient(160deg, var(--parch-1), var(--parch-2));
   --mat-teal-panel: linear-gradient(145deg, #314342, #182b30);                                  /* legacy tooltip/panel */
   --mat-quiet: linear-gradient(#2c4745, #233b3b);                                               /* secondary plank */

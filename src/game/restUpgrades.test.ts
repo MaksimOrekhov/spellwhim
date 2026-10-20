@@ -105,6 +105,7 @@ function canonical(value: unknown): string {
 }
 function legacySave(run: DungeonRunState, catalogVersion = 'edd7267b') {
   const envelope = JSON.parse(encodeSnapshot(run, gameEconomy, 8))
+  envelope.payload.schemaVersion = 1
   envelope.payload.rulesVersion = 'combat-progression-1'
   envelope.payload.catalogVersion = catalogVersion
   let hash = 0x811c9dc5
@@ -113,6 +114,16 @@ function legacySave(run: DungeonRunState, catalogVersion = 'edd7267b') {
   return JSON.stringify(envelope)
 }
 describe('save catalogue contract and conservative v1 migration', () => {
+  it('loads the previous upgrades schema 1 with a real upgraded copy',()=>{
+    const run=createDungeonRun(99)
+    run.deck[0]!.upgrade=1
+    const envelope=JSON.parse(encodeSnapshot(run,gameEconomy,8))
+    envelope.payload.schemaVersion=1
+    let hash=0x811c9dc5
+    for(const char of canonical(envelope.payload)) hash=Math.imul(hash^char.charCodeAt(0),0x01000193)
+    envelope.checksum=(hash>>>0).toString(16)
+    expect(decodeSnapshot(JSON.stringify(envelope)).run).toEqual(run)
+  })
   it('migrates known foundation saves with all levels zero without touching original records or identities', () => {
     for (const run of [createDungeonRun(99), enterDungeonNode(createDungeonRun(99), availableDungeonNodes(createDungeonRun(99))[0]!.id), restRun()]) {
       const raw = legacySave(run)

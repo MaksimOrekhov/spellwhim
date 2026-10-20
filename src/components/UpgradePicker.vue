@@ -5,10 +5,10 @@ import { canUpgradeCard, resolveCardDefinition } from '../game/cardProgression'
 import { neutralPreview } from '../ui/cardDisplay'
 import SpellCard from './SpellCard.vue'
 
-const props = defineProps<{ deck: readonly PersistentCard[] }>()
-const emit = defineEmits<{ confirm: [instanceId: string]; close: [] }>()
+const props = withDefaults(defineProps<{ deck: readonly PersistentCard[]; explanation?: string; selectedInstanceId?: string }>(), { explanation: 'Вместо лечения. Выберите копию и сравните версии.' })
+const emit = defineEmits<{ confirm: [instanceId: string]; close: []; select: [instanceId: string] }>()
 const dialog = useTemplateRef<HTMLDialogElement>('dialog')
-const selected = ref<string | null>(null)
+const selected = ref<string | null>(props.selectedInstanceId ?? null)
 const entries = computed(() => props.deck.map((copy, index) => ({ copy, index, card: resolveCardDefinition(copy), eligible: canUpgradeCard(copy) })))
 const comparison = computed(() => {
   const copy = props.deck.find(card => card.instanceId === selected.value)
@@ -23,10 +23,10 @@ onMounted(() => dialog.value?.showModal())
 
 <template>
   <dialog ref="dialog" class="upgrade-dialog" aria-labelledby="upgrade-title" @cancel.prevent="emit('close')" @click="($event.target === dialog) && emit('close')">
-    <header><div><h2 id="upgrade-title">Улучшить одну карту</h2><p>Вместо лечения. Выберите копию и сравните версии.</p></div><button class="game-button" @click="emit('close')">Отмена</button></header>
+    <header><div><h2 id="upgrade-title">Улучшить одну карту</h2><p>{{ explanation }}</p></div><button class="game-button" @click="emit('close')">Отмена</button></header>
     <div class="upgrade-body">
       <div class="upgrade-list" aria-label="Экземпляры в колоде">
-        <button v-for="{ copy, index, card, eligible } in entries" :key="copy.instanceId" class="upgrade-option" :class="{ selected: selected === copy.instanceId }" :disabled="!eligible" :aria-pressed="selected === copy.instanceId" @click="selected = copy.instanceId">
+        <button v-for="{ copy, index, card, eligible } in entries" :key="copy.instanceId" class="upgrade-option" :class="{ selected: selected === copy.instanceId }" :disabled="!eligible" :aria-pressed="selected === copy.instanceId" @click="selected = copy.instanceId; emit('select',copy.instanceId)">
           <span>{{ card.name }}</span><small>Копия {{ index + 1 }} · {{ eligible ? `Мана: ${card.cost}` : 'Уже улучшена ↑' }}</small>
         </button>
       </div>

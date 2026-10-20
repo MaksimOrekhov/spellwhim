@@ -6,9 +6,12 @@ import { deriveDungeonSeed, dungeonEncounter, dungeonNode, validateDungeonMap } 
 import type { DungeonRunState } from './campaign'
 import { playableEconomies } from './economy'
 import type { EconomyConfig } from './economy'
+import { CARVED_GENERATOR_VERSION, validateSectorConfig } from './dungeonGenerator'
+import { sectorEncounters, sectorEventIds } from './sectorContent'
+import { createRoomVisit, roomActions } from './dungeonRooms'
 
 export const RUN_SAVE_KEY = 'spellwhim.run.v1'
-export const SAVE_SCHEMA_VERSION = 1
+export const SAVE_SCHEMA_VERSION = 2
 export const RULES_VERSION = 'combat-upgrades-1'
 export const GENERATOR_VERSION = 'dungeon-six-layers-1'
 
@@ -29,9 +32,10 @@ const baseCatalogue = { cards, artifacts: artifactDefinitions, normal: defaultDu
 const baseCatalogueVersion = checksum(canonical(baseCatalogue))
 /** Conservative automatic catalogue fingerprint plus explicit rule/generator versions. */
 export const CATALOG_VERSION = checksum(canonical({ ...baseCatalogue, upgrades: cardUpgrades }))
+export const SECTOR_CATALOG_VERSION = checksum(canonical({ base: CATALOG_VERSION, encounters: sectorEncounters, events: sectorEventIds }))
 
 export interface RunSnapshot {
-  schemaVersion: 1
+  schemaVersion: 1 | 2
   rulesVersion: string
   generatorVersion: string
   catalogVersion: string
@@ -60,19 +64,21 @@ const cardId: Check = value => cards.some(card => card.id === value)
 const artifactId: Check = value => artifactDefinitions.some(item => item.id === value)
 const acquisition = object({ definitionId: cardId, upgrade: oneOf(0, 1) })
 const hero = object({ id: oneOf('warrior', 'mage'), characterId: text, classId: oneOf('warrior', 'mage'), partySlot: oneOf('first', 'second'), instanceId: text, name: text, title: text, health: integer(0, 999), maxHealth: integer(1, 999), armor: oneOf(0), icon: text })
-const node = object({ id: text, layer: integer(0, 6), column: integer(0, 2), type: oneOf('battle', 'elite', 'rest', 'final'), edges: list(text, 3) }, { encounterId: text, encounterHealth: integer(1, 10000), rewardCount: integer(1, 5), healAmount: integer(0, 999) })
+const node = object({ id: text, layer: integer(0, 30), column: value => typeof value === 'number' && value >= 0 && value < 8 && Number.isInteger(value * 2), type: oneOf('battle', 'elite', 'rest', 'final', 'forge', 'treasure', 'event'), edges: list(text, 8) }, { encounterId: text, encounterHealth: integer(1, 10000), rewardCount: integer(1, 5), healAmount: integer(0, 999), eventId: oneOf(...sectorEventIds) })
+const roomSelection = object({ action: oneOf('upgrade', 'remove', 'replace', 'card', 'risk', 'artifact', 'leave') }, { instanceId: text, heroId: oneOf('warrior', 'mage'), cardId: cardId, artifactId })
+const room = object({ id: text, nodeId: text, type: oneOf('forge', 'treasure', 'event'), cards: list(acquisition, 3), riskCard: acquisition, replacements: object({ warrior: list(acquisition, 4), mage: list(acquisition, 4) }), artifactIds: list(artifactId, 2), riskSuccess: oneOf(true, false), selection: nullable(roomSelection) }, { eventId: oneOf(...sectorEventIds) })
 const runShape = object({
   runId: text, nextCardId: integer(1), decisions: list(text),
   deckOperations: list(object({ sourceId: text, kind: oneOf('remove', 'replace', 'upgrade'), options: list(acquisition, 100), resolved: oneOf(true, false) })),
   battleEntry: nullable(object({ nodeId: text, seed: uint })),
   seed: uint, mapSeed: uint,
-  map: object({ seed: uint, layers: list(list(node, 3), 7), startNodeIds: list(text, 3), finalNodeId: text }),
-  currentNodeId: nullable(text), visitedNodeIds: list(text, 7), completedNodeIds: list(text, 7),
+  map: object({ seed: uint, layers: list(list(node, 8), 31), startNodeIds: list(text, 8), finalNodeId: text }, { configuration: value => { try { validateSectorConfig(value as Parameters<typeof validateSectorConfig>[0]); return true } catch { return false } }, generation: object({ attempts: integer(1, 128), fallback: oneOf(false) }) }),
+  currentNodeId: nullable(text), visitedNodeIds: list(text, 31), completedNodeIds: list(text, 31),
   deck: list(object({ instanceId: text, definitionId: cardId, upgrade: oneOf(0, 1) })),
   heroes: object({ warrior: hero, mage: hero }), artifacts: list(object({ instanceId: text, definitionId: artifactId, ownerInstanceId: text }), 2),
-  status: oneOf('active', 'victory', 'defeat'),
+  status: oneOf('active', 'victory', 'defeat', 'sector-complete'),
   pendingReward: nullable(object({ id: text, nodeId: text, seed: uint, artifactSeed: uint, count: oneOf(3, 5), elite: oneOf(true, false), cards: list(acquisition, 5), artifactIds: list(artifactId, 3) })),
-}, { excludedRewards: list(cardId) })
+}, { excludedRewards: list(cardId), campaign: object({ id: text, version: integer(1) }), room: nullable(room), journal: list(object({ nodeId: text, kind: oneOf('upgrade', 'remove', 'replace', 'card', 'risk', 'artifact', 'leave', 'reward', 'skip', 'rest'), text }, { card: object({ instanceId: text, definitionId: cardId, upgrade: oneOf(0, 1) }) })) })
 
 function requireValid(condition: unknown): asserts condition {
   if (!condition) throw new Error('Повреждены данные сохранённого похода.')
@@ -83,16 +89,20 @@ const unique = (values: readonly unknown[]) => new Set(values).size === values.l
 export function validateRun(value: unknown): asserts value is DungeonRunState {
   requireValid(runShape(value))
   const run = value as DungeonRunState
+  const sector = !!run.map.configuration
+  const isCombat = (type: string) => ['battle', 'elite', 'final'].includes(type)
   requireValid(run.mapSeed === deriveDungeonSeed(run.seed, 'map') && run.map.seed === run.mapSeed)
-  requireValid(run.map.layers.length === 7 && run.map.layers.every((layer, i) => layer.length === (i === 6 ? 1 : 3)))
+  if (sector) requireValid(run.campaign?.id === run.map.configuration!.id && run.campaign?.version === run.map.configuration!.version && run.map.generation && run.journal && run.deck.length > 0)
+  else requireValid(!run.campaign && run.room === undefined && run.journal === undefined && !run.map.generation && run.map.layers.length === 7 && run.map.layers.every((layer, i) => layer.length === (i === 6 ? 1 : 3)))
   requireValid(validateDungeonMap(run.map).length === 0)
   run.map.layers.forEach((layer, i) => layer.forEach((entry, j) => {
-    requireValid(entry.layer === i && entry.column === (i === 6 ? 1 : j) && unique(entry.edges))
+    requireValid(entry.layer === i && (sector || entry.column === (i === 6 ? 1 : j)) && unique(entry.edges))
     if (entry.type === 'rest') requireValid(entry.healAmount === 6 && entry.encounterId === undefined && entry.encounterHealth === undefined && entry.rewardCount === undefined)
-    else {
+    else if (isCombat(entry.type)) {
       dungeonEncounter(entry)
       requireValid(entry.healAmount === undefined && (entry.type === 'final' ? entry.rewardCount === undefined : entry.rewardCount === (entry.type === 'elite' ? 5 : 3)))
-    }
+    } else requireValid(sector && entry.encounterId === undefined && entry.encounterHealth === undefined && entry.rewardCount === undefined && entry.healAmount === undefined)
+    requireValid((entry.type === 'event') === (entry.eventId !== undefined))
   }))
   requireValid(unique(run.visitedNodeIds) && unique(run.completedNodeIds) && unique(run.decisions))
   requireValid(run.currentNodeId === (run.visitedNodeIds[run.visitedNodeIds.length - 1] ?? null))
@@ -104,7 +114,13 @@ export function validateRun(value: unknown): asserts value is DungeonRunState {
   requireValid(run.completedNodeIds.every((id, i) => run.visitedNodeIds[i] === id))
   const current = run.currentNodeId ? dungeonNode(run.map, run.currentNodeId) : undefined
   const incomplete = !!current && !run.completedNodeIds.includes(current.id)
-  requireValid(!!run.battleEntry === (incomplete && current?.type !== 'rest'))
+  requireValid(!!run.battleEntry === (incomplete && isCombat(current!.type)))
+  requireValid(!!run.room === (incomplete && ['forge', 'treasure', 'event'].includes(current!.type)))
+  if (run.room) {
+    const expected = createRoomVisit(run, current!)
+    requireValid(canonical({ ...run.room, selection: null }) === canonical(expected))
+    requireValid(!run.room.selection || roomActions(run.room).includes(run.room.selection.action))
+  }
   if (run.battleEntry) requireValid(run.battleEntry.nodeId === current?.id && run.battleEntry.seed === deriveDungeonSeed(run.seed, `battle:${current?.id}`))
   const heroes = Object.values(run.heroes)
   requireValid(unique(heroes.map(entry => entry.instanceId)) && unique(heroes.map(entry => entry.partySlot)))
@@ -120,7 +136,7 @@ export function validateRun(value: unknown): asserts value is DungeonRunState {
   run.artifacts.forEach(item => requireValid(heroes.some(entry => entry.instanceId === item.ownerInstanceId)))
   const offer = run.pendingReward
   if (offer) {
-    requireValid(run.status === 'active' && current && !incomplete && current.type !== 'rest' && current.type !== 'final')
+    requireValid(run.status === 'active' && current && !incomplete && ['battle','elite'].includes(current.type))
     requireValid(offer.id === `${run.runId}/reward/${current.id}` && offer.nodeId === current.id && !run.decisions.includes(offer.id))
     requireValid(offer.seed === deriveDungeonSeed(run.seed, `reward:${current.id}`) && offer.artifactSeed === deriveDungeonSeed(run.seed, `artifact-reward:${current.id}`))
     requireValid(offer.elite === (current.type === 'elite') && offer.count === (offer.elite ? 5 : 3))
@@ -129,7 +145,7 @@ export function validateRun(value: unknown): asserts value is DungeonRunState {
     requireValid(offer.elite ? offer.artifactIds.every(id => !run.artifacts.some(item => item.definitionId === id)) : offer.artifactIds.length === 0)
   }
   requireValid(run.status === 'active' ? heroes.every(entry => entry.health > 0) && !run.completedNodeIds.includes(run.map.finalNodeId) : !incomplete && !offer && !!current)
-  if (run.status === 'victory') requireValid(current?.id === run.map.finalNodeId && heroes.every(entry => entry.health > 0))
+  if (run.status === 'victory' || run.status === 'sector-complete') requireValid((run.status === 'sector-complete') === sector && current?.id === run.map.finalNodeId && heroes.every(entry => entry.health > 0))
   if (run.status === 'defeat') requireValid(heroes.some(entry => entry.health === 0) && current?.type !== 'rest')
   requireValid(unique(run.deckOperations.map(item => item.sourceId)))
   run.deckOperations.forEach(service => {
@@ -139,10 +155,15 @@ export function validateRun(value: unknown): asserts value is DungeonRunState {
   const expectedDecisions = run.deckOperations.filter(item => item.resolved).map(item => `deck:${item.sourceId}`)
   run.completedNodeIds.forEach(id => {
     const entry = dungeonNode(run.map, id)!
-    expectedDecisions.push(`${entry.type === 'rest' ? 'rest' : 'battle'}:${id}`)
-    if (entry.type !== 'rest' && entry.type !== 'final' && !(run.status === 'defeat' && id === current?.id) && offer?.nodeId !== id) expectedDecisions.push(`${run.runId}/reward/${id}`)
+    expectedDecisions.push(`${entry.type === 'rest' ? 'rest' : isCombat(entry.type) ? 'battle' : 'room'}:${id}`)
+    if (['battle','elite'].includes(entry.type) && !(run.status === 'defeat' && id === current?.id) && offer?.nodeId !== id) expectedDecisions.push(`${run.runId}/reward/${id}`)
   })
   requireValid(run.decisions.length === expectedDecisions.length && expectedDecisions.every(id => run.decisions.includes(id)))
+  if (sector) {
+    requireValid(unique(run.journal!.map(entry=>entry.nodeId)))
+    run.journal!.forEach(entry=>requireValid(run.completedNodeIds.includes(entry.nodeId)))
+    run.completedNodeIds.filter(id=>!isCombat(dungeonNode(run.map,id)!.type)).forEach(id=>requireValid(run.journal!.some(entry=>entry.nodeId===id)))
+  }
 }
 
 class IncompatibleSave extends Error {}
@@ -150,7 +171,7 @@ export function encodeSnapshot(run: DungeonRunState, economy: EconomyConfig, rev
   validateRun(run)
   requireValid(integer(1)(revision))
   requireValid(Object.values(playableEconomies).some(known => canonical(known) === canonical(economy)))
-  const payload: RunSnapshot = { schemaVersion: SAVE_SCHEMA_VERSION, rulesVersion: RULES_VERSION, generatorVersion: GENERATOR_VERSION, catalogVersion: CATALOG_VERSION, revision, economy, run }
+  const payload: RunSnapshot = { schemaVersion: SAVE_SCHEMA_VERSION, rulesVersion: RULES_VERSION, generatorVersion: run.map.configuration?.generatorVersion ?? GENERATOR_VERSION, catalogVersion: run.campaign ? SECTOR_CATALOG_VERSION : CATALOG_VERSION, revision, economy, run }
   return JSON.stringify({ payload, checksum: checksum(canonical(payload)) })
 }
 
@@ -161,8 +182,9 @@ export function decodeSnapshot(raw: string): RunSnapshot {
   const snapshot = envelope.payload
   requireValid(object({ schemaVersion: integer(1), rulesVersion: text, generatorVersion: text, catalogVersion: text, revision: integer(1), economy: () => true, run: () => true })(snapshot))
   const legacy = baseCatalogueVersion === FOUNDATION_CATALOG_VERSION && snapshot.schemaVersion === 1 && snapshot.rulesVersion === 'combat-progression-1' && snapshot.catalogVersion === FOUNDATION_CATALOG_VERSION && snapshot.generatorVersion === GENERATOR_VERSION
-  if (!legacy && (snapshot.schemaVersion !== SAVE_SCHEMA_VERSION || snapshot.rulesVersion !== RULES_VERSION || snapshot.generatorVersion !== GENERATOR_VERSION || snapshot.catalogVersion !== CATALOG_VERSION)) throw new IncompatibleSave('Сохранение создано для другой версии игры. Оно оставлено в хранилище; начните новый поход или вернитесь к совместимой версии.')
-  requireValid(object({ schemaVersion: oneOf(1), rulesVersion: text, generatorVersion: text, catalogVersion: text, revision: integer(1), economy: value => Object.values(playableEconomies).some(known => canonical(known) === canonical(value)), run: () => true })(snapshot))
+  const sector = snapshot.run && typeof snapshot.run === 'object' && !!snapshot.run.campaign
+  if (!legacy && (![1,2].includes(snapshot.schemaVersion) || (sector && snapshot.schemaVersion !== 2) || snapshot.rulesVersion !== RULES_VERSION || snapshot.generatorVersion !== (sector ? CARVED_GENERATOR_VERSION : GENERATOR_VERSION) || snapshot.catalogVersion !== (sector ? SECTOR_CATALOG_VERSION : CATALOG_VERSION))) throw new IncompatibleSave('Сохранение создано для другой версии игры. Оно оставлено в хранилище; начните новый поход или вернитесь к совместимой версии.')
+  requireValid(object({ schemaVersion: oneOf(1,2), rulesVersion: text, generatorVersion: text, catalogVersion: text, revision: integer(1), economy: value => Object.values(playableEconomies).some(known => canonical(known) === canonical(value)), run: () => true })(snapshot))
   requireValid(envelope.checksum === checksum(canonical(snapshot)))
   validateRun(snapshot.run)
   if (legacy) {

@@ -1,0 +1,177 @@
+{
+  "phase": "planner",
+  "count": 16,
+  "base": 42,
+  "information": "public",
+  "economy": {
+    "id": "B",
+    "label": "3→4→5 · добор 2, с 5-го хода 3 · враги v0.7",
+    "manaCurve": "B",
+    "draw": "late3",
+    "enemies": "v07",
+    "manaByTurn": [
+      3,
+      4,
+      5
+    ],
+    "drawSchedule": {
+      "perTurn": 2,
+      "boost": {
+        "fromTurn": 5,
+        "amount": 3
+      }
+    },
+    "openingHand": 8,
+    "enemyHealthScale": 1
+  },
+  "config": {
+    "id": "deadmines-old-mines",
+    "version": 1,
+    "name": "Старые штольни",
+    "generatorVersion": "carved-paths-1",
+    "columns": 4,
+    "paths": 6,
+    "maxStep": 1,
+    "rows": [
+      {
+        "types": [
+          "battle"
+        ],
+        "encounters": [
+          "old-mines-raider",
+          "old-mines-digger",
+          "old-mines-watchman"
+        ]
+      },
+      {
+        "types": [
+          "battle",
+          "event"
+        ],
+        "required": [
+          "battle",
+          "event"
+        ],
+        "minNodes": 2
+      },
+      {
+        "types": [
+          "forge",
+          "treasure",
+          "event",
+          "elite"
+        ],
+        "required": [
+          "forge",
+          "treasure",
+          "elite"
+        ],
+        "minNodes": 3
+      },
+      {
+        "types": [
+          "battle"
+        ],
+        "encounters": [
+          "old-mines-digger",
+          "old-mines-watchman",
+          "old-mines-overseer"
+        ]
+      },
+      {
+        "types": [
+          "rest"
+        ]
+      }
+    ],
+    "normalPool": [
+      "old-mines-raider",
+      "old-mines-digger",
+      "old-mines-watchman",
+      "old-mines-overseer"
+    ],
+    "elitePool": [
+      "old-mines-johnson"
+    ],
+    "eventPool": [
+      "forgotten-forge",
+      "powder-store",
+      "goblin-trade"
+    ],
+    "boss": "old-mines-rhahk-zor",
+    "maxElites": 1,
+    "maxConsecutiveServices": 2,
+    "maxBattles": 4,
+    "requireDevelopment": true
+  },
+  "decks": {
+    "14": [
+      "sword-strike",
+      "sword-strike",
+      "fireball",
+      "guard",
+      "guard",
+      "parry",
+      "shield-bash",
+      "interpose",
+      "frostbolt",
+      "frostbolt",
+      "arcane-insight",
+      "ice-ward",
+      "ice-ward",
+      "thunderbolt"
+    ],
+    "16": [
+      "sword-strike",
+      "sword-strike",
+      "fireball",
+      "guard",
+      "guard",
+      "parry",
+      "shield-bash",
+      "interpose",
+      "frostbolt",
+      "frostbolt",
+      "arcane-insight",
+      "ice-ward",
+      "ice-ward",
+      "thunderbolt",
+      "parry",
+      "arcane-insight"
+    ],
+    "18": [
+      "sword-strike",
+      "sword-strike",
+      "fireball",
+      "fireball",
+      "guard",
+      "guard",
+      "parry",
+      "parry",
+      "shield-bash",
+      "shield-bash",
+      "interpose",
+      "interpose",
+      "frostbolt",
+      "frostbolt",
+      "arcane-insight",
+      "arcane-insight",
+      "ice-ward",
+      "ice-ward"
+    ]
+  },
+  "limits": {
+    "turns": 30,
+    "playsPerTurn": 20
+  },
+  "reward": "first seeded offered card; elite artifact in first free slot, otherwise first card",
+  "roomPolicy": {
+    "safe": "remove, safe powder card",
+    "mixed": "upgrade, paid upgrade if safe, trade replacement, powder risk if safe",
+    "risky": "replace, paid upgrade, trade replacement, powder risk if safe"
+  },
+  "rest": "heal lowest health fraction under 65%; otherwise upgrade first eligible copy",
+  "planner": {
+    "runs": 16
+  }
+}

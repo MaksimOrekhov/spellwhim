@@ -7,13 +7,16 @@ import CardReward from './components/CardReward.vue'
 import EliteReward from './components/EliteReward.vue'
 import RestSite from './components/RestSite.vue'
 import RunComplete from './components/RunComplete.vue'
+import DungeonRoom from './components/DungeonRoom.vue'
 import { useBattle } from './composables/useBattle'
 import { useBattleControls } from './composables/useBattleControls'
 import { useBattleAnimation } from './composables/useBattleAnimation'
-import { availableDungeonNodes, claimDungeonArtifact, claimDungeonReward, createDungeonRun, dungeonArtifactOptions, dungeonEncounter, dungeonNode, dungeonRewardOptions, dungeonRunPhase, enterDungeonNode, resolveDungeonBattle, resolveDungeonRest, upgradeDungeonRest, skipDungeonReward } from './game/campaign'
+import { availableDungeonNodes, claimDungeonArtifact, claimDungeonReward, createDungeonRun, createSectorRun, dungeonArtifactOptions, dungeonEncounter, dungeonNode, dungeonRewardOptions, dungeonRunPhase, enterDungeonNode, resolveDungeonBattle, resolveDungeonRest, upgradeDungeonRest, skipDungeonReward } from './game/campaign'
+import { resolveRoom, selectRoom } from './game/dungeonRooms'
+import type { RoomCommand, RoomSelection } from './game/dungeonRooms'
 import type { DungeonRunState } from './game/campaign'
 import { createRunSaveStore } from './game/runSave'
-import type { RunSnapshot } from './game/runSave'
+import type { RunSnapshot, SaveStorage } from './game/runSave'
 import { resolveCardDefinition } from './game/cardProgression'
 import { drawForTurn, economyFromSearch, gameEconomy, manaForTurn } from './game/economy'
 import type { CardDefinition, HeroId } from './game/types'
@@ -22,7 +25,8 @@ import type { CardDefinition, HeroId } from './game/types'
 const configuredEconomy = import.meta.env.DEV
   ? economyFromSearch(window.location.search || (import.meta.env.VITE_SPELLWHIM_ECONOMY ? '?economy=' + import.meta.env.VITE_SPELLWHIM_ECONOMY : ''))
   : gameEconomy
-const saveStore = createRunSaveStore(() => window.localStorage)
+const props = defineProps<{ saveStorage?: SaveStorage }>()
+const saveStore = createRunSaveStore(() => props.saveStorage ?? window.localStorage)
 const loaded = saveStore.load()
 const saved = shallowRef<RunSnapshot | null>(loaded.snapshot)
 const economy = loaded.snapshot?.economy ?? configuredEconomy
@@ -33,12 +37,13 @@ const initialSeed = Date.now() >>> 0
 const run = shallowRef(createDungeonRun(initialSeed, economy))
 const { state, isOver, cards, pendingCard, drawCount, discardCount, beginPlay, resolvePlay, finishTurn, startBattle, restart } = useBattle({ economy, seed: initialSeed, runDeck: () => run.value.deck })
 const { animation, phase: battlePhase, impact, play, enemyTurn, cancel } = useBattleAnimation({ state, resolvePlay, finishTurn })
-const phase = ref<ReturnType<typeof dungeonRunPhase> | 'resume'>(loaded.snapshot || loaded.blocked ? 'resume' : 'map')
+const phase = ref<ReturnType<typeof dungeonRunPhase> | 'resume' | 'start'>(loaded.snapshot || loaded.blocked ? 'resume' : 'start')
+const phaseBeforeStart = ref<Exclude<typeof phase.value, 'start'> | null>(null)
 const rewardOptions = computed(() => dungeonRewardOptions(run.value))
 const selectedNodeId = computed(() => run.value.currentNodeId)
 const encounterName = computed(() => {
   const node = run.value.currentNodeId ? dungeonNode(run.value.map, run.value.currentNodeId) : undefined
-  return node && node.type !== 'rest' ? dungeonEncounter(node, economy).name : ''
+  return node && ['battle','elite','final'].includes(node.type) ? dungeonEncounter(node, economy).name : ''
 })
 
 function persist() {
@@ -49,7 +54,6 @@ function publish(next: DungeonRunState) {
   run.value = next
   persist()
 }
-if (phase.value === 'map') persist()
 
 function startCurrentBattle() {
   const entry = run.value.battleEntry!
@@ -69,6 +73,7 @@ function continueSavedRun() {
     if (run.value.battleEntry) startCurrentBattle()
     phase.value = dungeonRunPhase(run.value)
     persist()
+    saved.value = null
   } catch (error) { loadNotice.value = error instanceof Error ? error.message : 'Не удалось восстановить поход.' }
 }
 function retryLoad() {
@@ -110,9 +115,8 @@ function enterNode(nodeId: string) {
   if (phase.value !== 'map' || !availableDungeonNodes(run.value).some(node => node.id === nodeId)) return
   const nextRun = enterDungeonNode(run.value, nodeId)
   publish(nextRun)
-  const node = dungeonNode(nextRun.map, nodeId)!
-  if (node.type === 'rest') {
-    phase.value = 'rest'
+  if (!nextRun.battleEntry) {
+    phase.value = dungeonRunPhase(nextRun)
     return
   }
   cancel()
@@ -156,21 +160,38 @@ function chooseRestUpgrade(instanceId: string, sourceId: string) {
   phase.value = 'map'
 }
 
-function restartRun() {
+function restartRun(mode: 'sector' | 'legacy') {
   cancel()
   const nextSeed = ((Date.now() >>> 0) === run.value.seed ? run.value.seed + 1 : Date.now()) >>> 0
-  publish(createDungeonRun(nextSeed, economy))
+  publish(mode === 'sector' ? createSectorRun(nextSeed, economy) : createDungeonRun(nextSeed, economy))
   restart(nextSeed)
   saved.value = null
   loadNotice.value = ''
+  phaseBeforeStart.value = null
   phase.value = 'map'
+}
+function showStart() {
+  if (phase.value !== 'start') phaseBeforeStart.value = phase.value
+  phase.value = 'start'
+}
+function chooseRoom(selection: RoomSelection | null) {
+  if (phase.value !== 'room' || !run.value.room) return
+  publish(selectRoom(run.value, run.value.room.id, selection))
+}
+function confirmRoom(command: RoomCommand) {
+  if (phase.value !== 'room' || run.value.room?.id !== command.roomId) return
+  publish(resolveRoom(run.value, command))
+  phase.value = dungeonRunPhase(run.value)
 }
 </script>
 <template>
   <div class="app-shell">
     <div class="game-wrap">
       <p v-if="experimental" class="economy-badge" :title="economy.label">Режим сравнения · модель {{ economy.manaCurve }} · {{ economy.label }}</p>
-      <main v-if="phase === 'resume'" class="resume-screen">
+      <main v-if="phase === 'start'" class="resume-screen">
+        <section class="resume-panel"><h1>Мёртвые копи</h1><h2>Выберите поход</h2><p>Вариан и Джайна спускаются в Старые штольни. Шесть посещений, развилки, кузницы, тайники и встреча с Рак'Зором.</p><button class="game-button" @click="restartRun('sector')">Сектор I — Старые штольни</button><button class="game-button" @click="restartRun('legacy')">Контрольный поход · 7 посещений</button><p>Начало нового похода заменит текущее сохранение.</p><button v-if="phaseBeforeStart" class="game-button" @click="phase = phaseBeforeStart">Назад</button></section>
+      </main>
+      <main v-else-if="phase === 'resume'" class="resume-screen">
         <section class="resume-panel">
           <h1>Spellwhim</h1>
           <p v-if="saved?.run.status === 'active'">Отряд ждёт у последней комнаты. Прерванный бой начнётся заново с тем же здоровьем и колодой.</p>
@@ -179,16 +200,17 @@ function restartRun() {
           <button v-if="saved" class="game-button" @click="continueSavedRun">{{ saved.run.status === 'active' ? 'Продолжить поход' : 'Посмотреть итог' }}</button>
           <button v-if="saved || loadNotice" class="game-button" @click="downloadSave">Скачать копию</button>
           <button v-if="!saved" class="game-button" @click="retryLoad">Повторить загрузку</button>
-          <button class="game-button" @click="restartRun">Начать новый поход</button>
+          <button class="game-button" @click="showStart">Начать новый поход</button>
         </section>
       </main>
-      <CampaignMap v-else-if="phase === 'map'" :map="run.map" :run="run" @enter="enterNode" @restart="restartRun" />
+      <CampaignMap v-else-if="phase === 'map'" :map="run.map" :run="run" @enter="enterNode" @mode="showStart" />
+      <DungeonRoom v-else-if="phase === 'room'" :key="run.room!.id" :run="run" @select="chooseRoom" @confirm="confirmRoom" />
       <EliteReward v-else-if="phase === 'reward' && run.pendingReward?.elite" :key="run.pendingReward.id" :offer-id="run.pendingReward.id" :deck="run.deck" :options="rewardOptions" :artifacts="dungeonArtifactOptions(run)" :heroes="run.heroes" :owned-artifacts="run.artifacts" :encounter-name="encounterName" @choose-card="chooseReward" @choose-artifact="chooseArtifact" />
       <CardReward v-else-if="phase === 'reward'" :key="run.pendingReward!.id" :offer-id="run.pendingReward!.id" :deck="run.deck" :options="rewardOptions" :encounter-name="encounterName" @choose="chooseReward" @skip="skipReward" />
       <RestSite v-else-if="phase === 'rest'" :key="run.runId + '/' + selectedNodeId" :source-id="run.runId + '/' + selectedNodeId" :heroes="run.heroes" :deck="run.deck" :heal-amount="selectedNodeId ? dungeonNode(run.map, selectedNodeId)?.healAmount ?? 6 : 6" @choose="chooseRestTarget" @upgrade="chooseRestUpgrade" />
-      <RunComplete v-else-if="phase === 'complete'" :result="run.status === 'defeat' ? 'defeat' : 'victory'" @restart="restartRun" />
+      <RunComplete v-else-if="phase === 'complete'" :result="run.status === 'defeat' ? 'defeat' : 'victory'" :run="run" @restart="showStart" />
       <template v-else>
-        <BattleBoard :state="state" :animation="animation" :phase="battlePhase" :artifact-notices="state.artifactNotices" :continue-label="dungeonNode(run.map, selectedNodeId ?? '')?.type === 'final' ? 'Завершить поход' : 'Выбрать награду'" @impact="impact" @end-turn="onEndTurn" @continue="onBattleContinue" />
+        <BattleBoard :state="state" :animation="animation" :phase="battlePhase" :artifact-notices="state.artifactNotices" :continue-label="dungeonNode(run.map, selectedNodeId ?? '')?.type === 'final' ? (run.campaign ? 'Завершить сектор I' : 'Завершить поход') : 'Выбрать награду'" @impact="impact" @end-turn="onEndTurn" @continue="onBattleContinue" />
         <BattleHand v-if="!isOver" :cards="cards" :outgoing="pendingCard" :outgoing-index="state.pending?.handIndex ?? 0" :draw-count="drawCount" :discard-count="discardCount" :exhausted-count="state.exhausted.length" :phase="battlePhase" :mana="state.mana" :max-mana="state.maxMana" :next-mana="manaForTurn(state.economy, state.turn + 1)" :next-draw="drawForTurn(state.economy, state.turn + 1)" :draw-boost-from="state.economy.drawSchedule.boost?.fromTurn" :draw-boost-amount="state.economy.drawSchedule.boost?.amount" @play="playCard" @end-turn="onEndTurn" />
       </template>
       <aside v-if="saveError && phase !== 'resume'" class="save-error" role="alert"><p>{{ saveError }}</p><button class="game-button" @click="persist">Повторить сохранение</button><button class="game-button" @click="downloadSave">Скачать копию</button></aside>

@@ -10,6 +10,14 @@ import { canUpgradeCard, resolveCardDefinition, validateAcquisition } from './ca
 import type { CardAcquisition } from './cardProgression'
 import type { DeckInput, PersistentCard } from './types'
 import type { ArtifactDefinition, ArtifactId, ArtifactInstance, BattleState, CardDefinition, CardId, EncounterDefinition, Hero, HeroId } from './types'
+import { generateSectorMap, sectorOneConfig, validateSectorMap } from './dungeonGenerator'
+import type { SectorConfig } from './dungeonGenerator'
+import { sectorEncounters } from './sectorContent'
+import type { SectorEventId } from './sectorContent'
+import { createRoomVisit } from './dungeonRooms'
+import type { RoomVisit, RunJournalEntry } from './dungeonRooms'
+import { deriveDungeonSeed } from './dungeonSeed'
+export { deriveDungeonSeed } from './dungeonSeed'
 
 export interface CampaignBattleOptions {
   encounter?: EncounterDefinition
@@ -95,7 +103,7 @@ export const REST_HEAL_AMOUNT = 6
 export const NORMAL_REWARD_CHOICES = 3
 export const ELITE_REWARD_CHOICES = 5
 
-export type DungeonNodeType = 'battle' | 'elite' | 'rest' | 'final'
+export type DungeonNodeType = 'battle' | 'elite' | 'rest' | 'final' | 'forge' | 'treasure' | 'event'
 
 export interface DungeonMapNode {
   id: string
@@ -107,6 +115,7 @@ export interface DungeonMapNode {
   encounterHealth?: number
   rewardCount?: number
   healAmount?: number
+  eventId?: SectorEventId
 }
 
 export interface DungeonMap {
@@ -114,9 +123,11 @@ export interface DungeonMap {
   layers: DungeonMapNode[][]
   startNodeIds: string[]
   finalNodeId: string
+  configuration?: SectorConfig
+  generation?: { attempts: number; fallback: boolean }
 }
 
-export type DungeonRunStatus = 'active' | 'victory' | 'defeat'
+export type DungeonRunStatus = 'active' | 'victory' | 'defeat' | 'sector-complete'
 
 export interface DungeonRewardOffer {
   id: string
@@ -131,6 +142,9 @@ export interface DungeonRewardOffer {
 }
 
 export interface DungeonRunState {
+  campaign?: { id: string; version: number }
+  room?: RoomVisit | null
+  journal?: RunJournalEntry[]
   runId: string
   nextCardId: number
   decisions: string[]
@@ -160,16 +174,6 @@ const dungeonLayerTypes: DungeonNodeType[][] = [
   ['battle', 'elite', 'battle'],
   ['battle', 'rest', 'battle'],
 ]
-
-/** Derive an independent deterministic seed for a named part of the run. */
-export function deriveDungeonSeed(seed: number, scope: string): number {
-  let hash = 0x811c9dc5 ^ (seed >>> 0)
-  for (const character of scope) {
-    hash ^= character.charCodeAt(0)
-    hash = Math.imul(hash, 0x01000193)
-  }
-  return hash >>> 0
-}
 
 function dungeonRandom(seed: number): () => number {
   let state = seed >>> 0
@@ -215,7 +219,7 @@ export function createDungeonMap(seed: number, economy: EconomyConfig = gameEcon
       const withoutAdjacentRepeat = pool.filter(encounter => !previousIds.has(encounter.id))
       const choices = withoutAdjacentRepeat.length ? withoutAdjacentRepeat : pool
       const baseEncounter = choices[Math.floor(random() * choices.length)]!
-      const healthScale = roster.healthScale(type, layerIndex, column, random)
+      const healthScale = roster.healthScale(type as 'battle' | 'elite', layerIndex, column, random)
       const health = Math.max(1, Math.round(baseEncounter.maxHealth * healthScale))
       const rewardCount = type === 'elite' ? ELITE_REWARD_CHOICES : NORMAL_REWARD_CHOICES
       return {
@@ -252,6 +256,7 @@ export function dungeonEncounter(node: DungeonMapNode, economy: EconomyConfig = 
     throw new Error(`Node ${node.id} does not contain a battle`)
   }
   const base = [...roster.normal, ...roster.elite, ...(roster.final ? [roster.final] : [])].find(encounter => encounter.id === node.encounterId)
+    ?? sectorEncounters.find(encounter => encounter.id === node.encounterId)
     ?? campaignEncounters(economy).find(encounter => encounter.id === node.encounterId)
   if (!base) throw new Error(`Unknown encounter ${node.encounterId}`)
   return {
@@ -274,8 +279,14 @@ export function createDungeonRun(seed: number, economy: EconomyConfig = gameEcon
   }
 }
 
+/** Uses the same run, battle, reward and progression contracts as the legacy control. */
+export function createSectorRun(seed: number, economy: EconomyConfig = gameEconomy, deck: readonly CardId[] = startingDeck, config: SectorConfig = sectorOneConfig, runId: string = crypto.randomUUID()): DungeonRunState {
+  const run = createDungeonRun(seed, economy, deck, defaultDungeonRoster, runId)
+  return { ...run, map: generateSectorMap(run.mapSeed, config), campaign: { id: config.id, version: config.version }, room: null, journal: [] }
+}
+
 export function availableDungeonNodes(run: DungeonRunState): DungeonMapNode[] {
-  if (run.status !== 'active' || run.pendingReward) return []
+  if (run.status !== 'active' || run.pendingReward || run.room) return []
   if (run.currentNodeId && !run.completedNodeIds.includes(run.currentNodeId)) return []
   const sourceIds = run.currentNodeId ? dungeonNode(run.map, run.currentNodeId)?.edges ?? [] : run.map.startNodeIds
   return sourceIds.filter(id => !run.visitedNodeIds.includes(id)).map(id => dungeonNode(run.map, id)).filter((node): node is DungeonMapNode => !!node)
@@ -284,11 +295,13 @@ export function availableDungeonNodes(run: DungeonRunState): DungeonMapNode[] {
 export function enterDungeonNode(run: DungeonRunState, id: string): DungeonRunState {
   if (!availableDungeonNodes(run).some(node => node.id === id)) throw new Error(`Node ${id} is not an available next step`)
   const node = dungeonNode(run.map, id)!
-  return { ...run, currentNodeId: id, visitedNodeIds: [...run.visitedNodeIds, id], battleEntry: node.type === 'rest' ? null : { nodeId: id, seed: deriveDungeonSeed(run.seed, `battle:${id}`) } }
+  const next = { ...run, currentNodeId: id, visitedNodeIds: [...run.visitedNodeIds, id], battleEntry: ['battle', 'elite', 'final'].includes(node.type) ? { nodeId: id, seed: deriveDungeonSeed(run.seed, `battle:${id}`) } : null }
+  return ['forge', 'treasure', 'event'].includes(node.type) ? { ...next, room: createRoomVisit(next, node) } : next
 }
 
-export function dungeonRunPhase(run: DungeonRunState): 'map' | 'battle' | 'reward' | 'rest' | 'complete' {
+export function dungeonRunPhase(run: DungeonRunState): 'map' | 'battle' | 'reward' | 'rest' | 'room' | 'complete' {
   if (run.status !== 'active') return 'complete'
+  if (run.room) return 'room'
   if (run.pendingReward) return 'reward'
   if (run.battleEntry) return 'battle'
   if (run.currentNodeId && !run.completedNodeIds.includes(run.currentNodeId)) return 'rest'
@@ -315,14 +328,14 @@ function addCompletedNode(run: DungeonRunState, id: string): string[] {
 
 export function resolveDungeonBattle(run: DungeonRunState, battle: BattleState): DungeonRunState {
   const current = run.currentNodeId ? dungeonNode(run.map, run.currentNodeId) : undefined
-  if (run.status !== 'active' || !current || current.type === 'rest' || run.completedNodeIds.includes(current.id) || battle.result === null) {
+  if (run.status !== 'active' || !current || !['battle', 'elite', 'final'].includes(current.type) || (run.campaign && !run.battleEntry) || run.completedNodeIds.includes(current.id) || battle.result === null) {
     throw new Error('There is no unresolved dungeon battle to finish')
   }
   if (battle.enemy.encounterId !== `${current.encounterId}/${current.id}` || Object.values(run.heroes).some(hero => battle.heroes[hero.id].instanceId !== hero.instanceId)) throw new Error('Stale battle result from another room or run')
   const heroes = carriedRunHeroes(battle)
   const base = { ...run, heroes, completedNodeIds: addCompletedNode(run, current.id), pendingReward: null, battleEntry: null, decisions: [...run.decisions, `battle:${current.id}`] }
   if (battle.result === 'defeat') return { ...base, status: 'defeat' }
-  if (current.type === 'final') return { ...base, status: 'victory' }
+  if (current.type === 'final') return { ...base, status: run.campaign ? 'sector-complete' : 'victory' }
   return {
     ...base,
     pendingReward: createDungeonRewardOffer(run, current),
@@ -363,28 +376,34 @@ export function claimDungeonReward(run: DungeonRunState, reward: CardDefinition,
   const choice = run.pendingReward?.cards.find(card => card.definitionId === reward.id)
   if (run.status !== 'active' || !run.pendingReward || run.pendingReward.id !== offerId || !choice) throw new Error('This card was not in the current dungeon reward offer')
   const copy = acquiredCopy(run, choice)
-  return { ...run, deck: [...run.deck, copy], nextCardId: run.nextCardId + 1, decisions: [...run.decisions, run.pendingReward.id], pendingReward: null }
+  return { ...run, deck: [...run.deck, copy], nextCardId: run.nextCardId + 1, decisions: [...run.decisions, run.pendingReward.id], pendingReward: null, ...(run.journal ? { journal: [...run.journal, { nodeId: run.currentNodeId!, kind: 'reward' as const, text: `Получено: ${reward.name}`, card: copy }] } : {}) }
 }
 
 export function skipDungeonReward(run: DungeonRunState, offerId: string): DungeonRunState {
   if (run.status !== 'active' || !run.pendingReward || run.pendingReward.id !== offerId || run.pendingReward.elite) throw new Error('There is no ordinary reward to skip')
-  return { ...run, decisions: [...run.decisions, offerId], pendingReward: null }
+  return { ...run, decisions: [...run.decisions, offerId], pendingReward: null, ...(run.journal ? { journal: [...run.journal, { nodeId: run.currentNodeId!, kind: 'skip' as const, text: 'Карточная награда пропущена' }] } : {}) }
 }
 
 export function claimDungeonArtifact(run: DungeonRunState, artifactId: ArtifactId, ownerInstanceId: string, replaceInstanceId?: string, offerId = run.pendingReward?.id): DungeonRunState {
   const offer = run.pendingReward
+  if (run.status !== 'active' || !offer?.elite || offer.id !== offerId || !offer.artifactIds.includes(artifactId)) throw new Error('This artifact was not in the current elite reward offer')
+  return { ...equipDungeonArtifact(run, artifactId, ownerInstanceId, replaceInstanceId, offer.nodeId), pendingReward: null, decisions: [...run.decisions, offer.id], ...(run.journal ? { journal: [...run.journal, { nodeId: offer.nodeId, kind: 'reward' as const, text: `Артефакт: ${artifactDefinitions.find(a => a.id === artifactId)!.name}` }] } : {}) }
+}
+
+/** Shared personal-slot transaction for battle rewards and room services. */
+export function equipDungeonArtifact(run: DungeonRunState, artifactId: ArtifactId, ownerInstanceId: string, replaceInstanceId: string | undefined, sourceId: string): DungeonRunState {
   const definition = artifactDefinitions.find(item => item.id === artifactId)
   const owner = Object.values(run.heroes).find(hero => hero.instanceId === ownerInstanceId)
-  if (run.status !== 'active' || !offer?.elite || offer.id !== offerId || !offer.artifactIds.includes(artifactId) || !definition) throw new Error('This artifact was not in the current elite reward offer')
+  if (run.status !== 'active' || !definition) throw new Error('Invalid artifact')
   if (run.artifacts.some(item => item.definitionId === artifactId)) throw new Error('Duplicate artifacts are not allowed in one run')
   if (!owner) throw new Error('Artifact owner is not a member of this run')
   const occupied = run.artifacts.find(item => item.ownerInstanceId === ownerInstanceId)
   if (occupied && occupied.instanceId !== replaceInstanceId) throw new Error('The chosen hero already has an artifact; confirm its replacement')
   if (!occupied && replaceInstanceId) throw new Error('There is no artifact in this hero slot to replace')
   const artifacts = occupied ? run.artifacts.filter(item => item.instanceId !== occupied.instanceId) : [...run.artifacts]
-  artifacts.push({ instanceId: `${run.runId}/artifact/${offer.nodeId}/${artifactId}`, definitionId: artifactId, ownerInstanceId })
+  artifacts.push({ instanceId: `${run.runId}/artifact/${sourceId}/${artifactId}`, definitionId: artifactId, ownerInstanceId })
   if (artifacts.length > 2) throw new Error('A party can carry at most two artifacts')
-  return { ...run, artifacts, pendingReward: null, decisions: [...run.decisions, offer.id] }
+  return { ...run, artifacts }
 }
 
 export function resolveDungeonRest(run: DungeonRunState, heroId: HeroId | null): DungeonRunState {
@@ -398,7 +417,7 @@ export function resolveDungeonRest(run: DungeonRunState, heroId: HeroId | null):
     if (hero.health >= hero.maxHealth) throw new Error('Choose a hero who can be healed')
     hero.health = Math.min(hero.maxHealth, hero.health + (current.healAmount ?? REST_HEAL_AMOUNT))
   }
-  return { ...run, heroes, completedNodeIds: addCompletedNode(run, current.id), decisions: [...run.decisions, `rest:${current.id}`] }
+  return { ...run, heroes, completedNodeIds: addCompletedNode(run, current.id), decisions: [...run.decisions, `rest:${current.id}`], ...(run.journal ? { journal: [...run.journal, { nodeId: current.id, kind: 'rest' as const, text: heroId ? `Привал: ${heroes[heroId].name}, +${heroes[heroId].health-run.heroes[heroId].health} HP` : 'Привал: отдых без лечения' }] } : {}) }
 }
 
 /** One immutable rest transaction. The existing upgrade service owns copy validation and the 0→1 operation. */
@@ -406,7 +425,9 @@ export function upgradeDungeonRest(run: DungeonRunState, instanceId: string, sou
   if (sourceId !== `${run.runId}/${run.currentNodeId}`) throw new Error('Stale rest command')
   const completed = resolveDungeonRest(run, null)
   const operation = offerDeckOperation(completed, sourceId, 'upgrade')
-  return confirmDeckOperation(operation, sourceId, instanceId)
+  const next = confirmDeckOperation(operation, sourceId, instanceId)
+  const copy = next.deck.find(c => c.instanceId === instanceId)!
+  return run.journal ? { ...next, journal: [...run.journal, { nodeId: run.currentNodeId!, kind: 'upgrade', text: `Привал: улучшено ${resolveCardDefinition(copy).name}`, card: copy }] } : next
 }
 
 export interface DeckOperationOffer {
@@ -420,7 +441,7 @@ function betweenRooms(run: DungeonRunState): void {
   if (run.status !== 'active' || run.pendingReward || run.battleEntry || (run.currentNodeId && !run.completedNodeIds.includes(run.currentNodeId))) throw new Error('Deck operations require an active run between rooms')
 }
 
-function acquiredCopy(run: DungeonRunState, card: CardAcquisition): PersistentCard {
+export function acquiredCopy(run: DungeonRunState, card: CardAcquisition): PersistentCard {
   validateAcquisition(card)
   return { definitionId: card.definitionId, upgrade: card.upgrade, instanceId: `${run.runId}/card/${run.nextCardId}` }
 }
@@ -452,6 +473,7 @@ export function confirmDeckOperation(run: DungeonRunState, sourceId: string, ins
     deck[index] = { ...previous, upgrade: 1 }
   } else {
     if (replacement) throw new Error('Removal cannot acquire a card')
+    if (run.deck.length <= 1) throw new Error('Cannot remove the last card')
     deck.splice(index, 1)
   }
   return { ...run, deck, nextCardId, deckOperations: run.deckOperations.map(item => item === offer ? { ...item, resolved: true } : item), decisions: [...run.decisions, `deck:${sourceId}`] }
@@ -459,6 +481,7 @@ export function confirmDeckOperation(run: DungeonRunState, sourceId: string, ins
 
 /** Structural and route constraints; used in tests and optional dev tools. */
 export function validateDungeonMap(map: DungeonMap, roster: DungeonRoster = defaultDungeonRoster): string[] {
+  if (map.configuration) return validateSectorMap(map)
   const errors: string[] = []
   const nodes = map.layers.flat()
   const byId = new Map(nodes.map(node => [node.id, node]))
