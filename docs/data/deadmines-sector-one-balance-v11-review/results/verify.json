@@ -1,0 +1,261 @@
+{
+ "v0MatchesCheckout": true,
+ "codexV0": true,
+ "codexV1": true,
+ "codexV2": true,
+ "codexV3": true,
+ "battles": {
+  "V0 old-mines-raider aggressive": {
+   "win": 100,
+   "turns": 2.597,
+   "lossW": 1.217,
+   "lossM": 4.417,
+   "mana": 79.8
+  },
+  "V0 old-mines-raider balanced": {
+   "win": 100,
+   "turns": 2.547,
+   "lossW": 0.74,
+   "lossM": 1.233,
+   "mana": 81.5
+  },
+  "V0 old-mines-raider defensive": {
+   "win": 100,
+   "turns": 2.89,
+   "lossW": 0.16,
+   "lossM": 0.097,
+   "mana": 79.6
+  },
+  "V0 old-mines-digger aggressive": {
+   "win": 100,
+   "turns": 3.053,
+   "lossW": 5.41,
+   "lossM": 2.78,
+   "mana": 75.4
+  },
+  "V0 old-mines-digger balanced": {
+   "win": 100,
+   "turns": 3.043,
+   "lossW": 1.27,
+   "lossM": 1.317,
+   "mana": 78.9
+  },
+  "V0 old-mines-digger defensive": {
+   "win": 100,
+   "turns": 3.223,
+   "lossW": 0.117,
+   "lossM": 0.22,
+   "mana": 83.2
+  },
+  "V0 old-mines-watchman aggressive": {
+   "win": 100,
+   "turns": 2.677,
+   "lossW": 0.047,
+   "lossM": 4.663,
+   "mana": 78.5
+  },
+  "V0 old-mines-watchman balanced": {
+   "win": 100,
+   "turns": 2.583,
+   "lossW": 0.01,
+   "lossM": 0.53,
+   "mana": 82.9
+  },
+  "V0 old-mines-watchman defensive": {
+   "win": 100,
+   "turns": 2.937,
+   "lossW": 0,
+   "lossM": 0.017,
+   "mana": 79.6
+  },
+  "V0 old-mines-overseer aggressive": {
+   "win": 100,
+   "turns": 3.407,
+   "lossW": 2.36,
+   "lossM": 0,
+   "mana": 81.8
+  },
+  "V0 old-mines-overseer balanced": {
+   "win": 100,
+   "turns": 3.743,
+   "lossW": 0.07,
+   "lossM": 0,
+   "mana": 83.3
+  },
+  "V0 old-mines-overseer defensive": {
+   "win": 100,
+   "turns": 3.807,
+   "lossW": 0,
+   "lossM": 0,
+   "mana": 84.3
+  },
+  "V0 old-mines-johnson aggressive": {
+   "win": 100,
+   "turns": 5.373,
+   "lossW": 6.46,
+   "lossM": 3.46,
+   "mana": 72.5
+  },
+  "V0 old-mines-johnson balanced": {
+   "win": 100,
+   "turns": 5.4,
+   "lossW": 0.327,
+   "lossM": 0.11,
+   "mana": 82.2
+  },
+  "V0 old-mines-johnson defensive": {
+   "win": 100,
+   "turns": 5.383,
+   "lossW": 0.133,
+   "lossM": 0.013,
+   "mana": 83
+  },
+  "V0 old-mines-rhahk-zor aggressive": {
+   "win": 100,
+   "turns": 5.293,
+   "lossW": 13.35,
+   "lossM": 3.92,
+   "mana": 72.6
+  },
+  "V0 old-mines-rhahk-zor balanced": {
+   "win": 100,
+   "turns": 5.187,
+   "lossW": 3.397,
+   "lossM": 0.067,
+   "mana": 87.4
+  },
+  "V0 old-mines-rhahk-zor defensive": {
+   "win": 100,
+   "turns": 5.217,
+   "lossW": 2.733,
+   "lossM": 0.007,
+   "mana": 88.8
+  },
+  "PA old-mines-raider aggressive": {
+   "win": 100,
+   "turns": 2.597,
+   "lossW": 1.63,
+   "lossM": 5.41,
+   "mana": 79.9
+  },
+  "PA old-mines-raider balanced": {
+   "win": 100,
+   "turns": 2.593,
+   "lossW": 0.883,
+   "lossM": 2.02,
+   "mana": 80.2
+  },
+  "PA old-mines-raider defensive": {
+   "win": 100,
+   "turns": 2.927,
+   "lossW": 0.11,
+   "lossM": 0.3,
+   "mana": 79.5
+  },
+  "PA old-mines-digger aggressive": {
+   "win": 100,
+   "turns": 3.053,
+   "lossW": 6.41,
+   "lossM": 3.72,
+   "mana": 75.4
+  },
+  "PA old-mines-digger balanced": {
+   "win": 100,
+   "turns": 3.057,
+   "lossW": 2.22,
+   "lossM": 1.737,
+   "mana": 79.3
+  },
+  "PA old-mines-digger defensive": {
+   "win": 100,
+   "turns": 3.247,
+   "lossW": 0.423,
+   "lossM": 0.33,
+   "mana": 83.9
+  },
+  "PA old-mines-watchman aggressive": {
+   "win": 100,
+   "turns": 2.677,
+   "lossW": 0.06,
+   "lossM": 5.327,
+   "mana": 78.5
+  },
+  "PA old-mines-watchman balanced": {
+   "win": 100,
+   "turns": 2.687,
+   "lossW": 0,
+   "lossM": 0.58,
+   "mana": 80.2
+  },
+  "PA old-mines-watchman defensive": {
+   "win": 100,
+   "turns": 2.97,
+   "lossW": 0,
+   "lossM": 0.083,
+   "mana": 79.5
+  },
+  "PA old-mines-overseer aggressive": {
+   "win": 100,
+   "turns": 3.087,
+   "lossW": 9.3,
+   "lossM": 0.35,
+   "mana": 79.2
+  },
+  "PA old-mines-overseer balanced": {
+   "win": 100,
+   "turns": 3.2,
+   "lossW": 3.033,
+   "lossM": 0.06,
+   "mana": 86.2
+  },
+  "PA old-mines-overseer defensive": {
+   "win": 100,
+   "turns": 3.367,
+   "lossW": 0.903,
+   "lossM": 0.01,
+   "mana": 87.8
+  },
+  "PA old-mines-johnson aggressive": {
+   "win": 100,
+   "turns": 5.337,
+   "lossW": 11.687,
+   "lossM": 4.057,
+   "mana": 74.5
+  },
+  "PA old-mines-johnson balanced": {
+   "win": 100,
+   "turns": 5.43,
+   "lossW": 4.127,
+   "lossM": 0.537,
+   "mana": 84.7
+  },
+  "PA old-mines-johnson defensive": {
+   "win": 100,
+   "turns": 5.557,
+   "lossW": 2.197,
+   "lossM": 0.08,
+   "mana": 86.2
+  },
+  "PA old-mines-rhahk-zor aggressive": {
+   "win": 100,
+   "turns": 5.887,
+   "lossW": 16.167,
+   "lossM": 5.007,
+   "mana": 67.9
+  },
+  "PA old-mines-rhahk-zor balanced": {
+   "win": 100,
+   "turns": 5.73,
+   "lossW": 5.293,
+   "lossM": 0.38,
+   "mana": 87.2
+  },
+  "PA old-mines-rhahk-zor defensive": {
+   "win": 100,
+   "turns": 5.917,
+   "lossW": 4.44,
+   "lossM": 0.07,
+   "mana": 86.7
+  }
+ }
+}
