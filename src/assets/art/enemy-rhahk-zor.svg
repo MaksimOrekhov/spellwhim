@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 768 768" width="768" height="768">
+  <!-- Рак'Зор, бригадир Старых штолен: оригинальная фанатская иллюстрация Spellwhim, нарисована вручную как векторная живопись. -->
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="42%" r="78%"><stop offset="0" stop-color="#d8571f"/><stop offset=".38" stop-color="#7a2a1a"/><stop offset=".75" stop-color="#2d1420"/><stop offset="1" stop-color="#0f0a14"/></radialGradient>
+    <radialGradient id="ember" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ffd27a" stop-opacity=".95"/><stop offset=".4" stop-color="#ff7a2a" stop-opacity=".55"/><stop offset="1" stop-color="#ff4a1a" stop-opacity="0"/></radialGradient>
+    <linearGradient id="skin" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c2c070"/><stop offset=".5" stop-color="#8f9a4c"/><stop offset="1" stop-color="#55612c"/></linearGradient>
+    <linearGradient id="skinRim" x1="1" y1="0" x2="0" y2="0"><stop offset="0" stop-color="#ff9a4a" stop-opacity=".55"/><stop offset=".3" stop-color="#ff9a4a" stop-opacity="0"/></linearGradient>
+    <linearGradient id="skinShade" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1c2410" stop-opacity=".5"/><stop offset=".4" stop-color="#1c2410" stop-opacity="0"/></linearGradient>
+    <linearGradient id="iron" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a9a6a4"/><stop offset=".5" stop-color="#5f5a5a"/><stop offset="1" stop-color="#2a2527"/></linearGradient>
+    <linearGradient id="rust" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b8683a"/><stop offset="1" stop-color="#5e2a18"/></linearGradient>
+    <linearGradient id="leather" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a3f26"/><stop offset="1" stop-color="#34190e"/></linearGradient>
+    <linearGradient id="tusk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff4d4"/><stop offset="1" stop-color="#d4b57a"/></linearGradient>
+    <linearGradient id="wood" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5a3a20"/><stop offset=".5" stop-color="#8a5c34"/><stop offset="1" stop-color="#3e2614"/></linearGradient>
+    <filter id="grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="9"/><feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .16 0"/><feComposite in2="SourceGraphic" operator="in"/></filter>
+    <filter id="soft3"><feGaussianBlur stdDeviation="3"/></filter>
+    <clipPath id="frame"><rect width="768" height="768"/></clipPath>
+  </defs>
+  <g clip-path="url(#frame)">
+    <rect width="768" height="768" fill="url(#bg)"/>
+    <!-- furnace glow behind the head -->
+    <circle cx="384" cy="330" r="300" fill="url(#ember)" opacity=".7"/>
+    <!-- rock arch and hanging chains -->
+    <path d="M0 0 H768 V120 Q690 40 600 70 Q520 20 384 40 Q250 20 170 70 Q80 40 0 120Z" fill="#1a0f14"/>
+    <g stroke="#6a5a58" stroke-width="7" fill="none" stroke-dasharray="14 8" opacity=".8"><path d="M130 60 V300"/><path d="M640 60 V260"/></g>
+    <!-- lanterns on the chains -->
+    <g><circle cx="130" cy="330" r="96" fill="url(#ember)"/><rect x="112" y="300" width="36" height="52" rx="10" fill="#ffb347" stroke="#2b1a14" stroke-width="6"/><rect x="123" y="312" width="14" height="28" rx="7" fill="#fff0b0"/></g>
+    <g><circle cx="640" cy="290" r="80" fill="url(#ember)" opacity=".8"/><rect x="624" y="262" width="32" height="46" rx="9" fill="#ff9a3a" stroke="#2b1a14" stroke-width="6"/><rect x="634" y="272" width="12" height="24" rx="6" fill="#ffe8a0"/></g>
+
+    <!-- massive shoulders / harness -->
+    <path d="M20 768 C30 640 110 580 220 560 L548 560 C658 580 738 640 748 768Z" fill="url(#leather)"/>
+    <path d="M20 768 C30 640 110 580 220 560 L548 560 C658 580 738 640 748 768Z" fill="#000" filter="url(#grain)"/>
+    <path d="M250 570 L384 700 L518 570" fill="none" stroke="#1c0e08" stroke-width="22" stroke-linecap="round"/>
+    <path d="M250 570 L384 700 L518 570" fill="none" stroke="#7a4a2a" stroke-width="12" stroke-linecap="round"/>
+    <circle cx="384" cy="698" r="26" fill="#d2a24f" stroke="#5a3a10" stroke-width="6"/><circle cx="384" cy="698" r="10" fill="#5a3a10"/>
+    <!-- iron spiked pauldrons -->
+    <g>
+      <path d="M40 640 C40 560 110 520 190 540 L220 640 C150 670 80 670 40 640Z" fill="url(#iron)" stroke="#1d1a1c" stroke-width="6" stroke-linejoin="round"/>
+      <path d="M60 620 C80 580 130 560 180 566" fill="none" stroke="#e8e6e4" stroke-width="5" opacity=".5" stroke-linecap="round"/>
+      <path d="M96 548 L88 484 L132 534Z M146 534 L150 468 L180 536Z" fill="#9a9694" stroke="#1d1a1c" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M728 640 C728 560 658 520 578 540 L548 640 C618 670 688 670 728 640Z" fill="url(#iron)" stroke="#1d1a1c" stroke-width="6" stroke-linejoin="round"/>
+      <path d="M672 548 L680 484 L636 534Z M622 534 L618 468 L588 536Z" fill="#9a9694" stroke="#1d1a1c" stroke-width="5" stroke-linejoin="round"/>
+      <g fill="#d6d3d0" stroke="#1d1a1c" stroke-width="3"><circle cx="90" cy="610" r="8"/><circle cx="130" cy="632" r="8"/><circle cx="678" cy="610" r="8"/><circle cx="638" cy="632" r="8"/></g>
+    </g>
+    <!-- neck -->
+    <path d="M280 480 L270 600 Q384 650 498 600 L488 480Z" fill="#6f7b3a"/>
+    <path d="M280 480 L270 600 Q384 650 498 600 L488 480Z" fill="url(#skinShade)"/>
+    <!-- ears -->
+    <path d="M214 360 Q168 330 150 372 Q160 420 222 424Z" fill="#7e8a42"/><path d="M554 360 Q600 330 618 372 Q608 420 546 424Z" fill="#7e8a42"/>
+    <ellipse cx="193" cy="378" rx="12" ry="22" fill="#4a5424" transform="rotate(-10 193 378)"/>
+    <circle cx="170" cy="396" r="9" fill="none" stroke="#d2a24f" stroke-width="6"/>
+    <!-- head: wide, heavy jaw -->
+    <path d="M214 300 C214 200 290 160 384 160 C478 160 554 200 554 300 L554 400 C560 500 490 570 384 570 C278 570 208 500 214 400Z" fill="url(#skin)"/>
+    <path d="M214 300 C214 200 290 160 384 160 C478 160 554 200 554 300 L554 400 C560 500 490 570 384 570 C278 570 208 500 214 400Z" fill="url(#skinShade)"/>
+    <path d="M554 300 C554 200 478 160 384 160 C478 150 580 220 570 380 C566 480 500 560 400 572 C500 540 556 470 554 400Z" fill="url(#skinRim)"/>
+    <path d="M214 300 C214 200 290 160 384 160 C478 160 554 200 554 300 L554 400 C560 500 490 570 384 570 C278 570 208 500 214 400Z" fill="#000" filter="url(#grain)"/>
+    <!-- warts / scars -->
+    <g fill="#5a6428" opacity=".8"><circle cx="262" cy="400" r="7"/><circle cx="500" cy="420" r="6"/><circle cx="480" cy="248" r="5"/></g>
+    <path d="M276 256 L322 330" stroke="#5a2a20" stroke-width="7" stroke-linecap="round"/><path d="M270 276 L286 270 M286 296 L302 290 M302 314 L318 308" stroke="#e0c890" stroke-width="3" opacity=".7"/>
+    <!-- heavy brow ridge -->
+    <path d="M232 318 Q300 262 384 312 Q468 262 536 318 Q520 350 470 340 Q430 332 384 346 Q338 332 298 340 Q248 350 232 318Z" fill="#6a7434" stroke="#2c3414" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M250 312 Q300 276 372 316" fill="none" stroke="#2c3414" stroke-width="12" stroke-linecap="round"/>
+    <path d="M518 312 Q468 276 396 316" fill="none" stroke="#2c3414" stroke-width="12" stroke-linecap="round"/>
+    <!-- eyes: small, hot -->
+    <ellipse cx="318" cy="356" rx="24" ry="14" fill="#2a1508"/><ellipse cx="450" cy="356" rx="24" ry="14" fill="#2a1508"/>
+    <ellipse cx="322" cy="358" rx="14" ry="10" fill="#ffc83a"/><ellipse cx="446" cy="358" rx="14" ry="10" fill="#ffc83a"/>
+    <circle cx="324" cy="358" r="6" fill="#4a1408"/><circle cx="444" cy="358" r="6" fill="#4a1408"/>
+    <circle cx="328" cy="354" r="3" fill="#fff"/><circle cx="448" cy="354" r="3" fill="#fff"/>
+    <circle cx="322" cy="358" r="30" fill="url(#ember)" opacity=".4"/><circle cx="446" cy="358" r="30" fill="url(#ember)" opacity=".4"/>
+    <!-- nose -->
+    <path d="M384 346 C350 400 330 440 350 462 C370 480 398 480 418 462 C438 440 418 400 384 346Z" fill="#7f8b44" stroke="#3c4818" stroke-width="5"/>
+    <ellipse cx="368" cy="458" rx="10" ry="7" fill="#26300f"/><ellipse cx="402" cy="458" rx="10" ry="7" fill="#26300f"/>
+    <ellipse cx="386" cy="420" rx="14" ry="26" fill="#b6c06a" opacity=".35"/>
+    <!-- mouth and tusks -->
+    <path d="M286 506 Q384 470 482 506 Q470 560 384 570 Q298 560 286 506Z" fill="#2a0f0c"/>
+    <path d="M286 506 Q384 470 482 506" fill="none" stroke="#3c4818" stroke-width="8" stroke-linecap="round"/>
+    <path d="M300 508 Q384 484 468 508 L458 524 Q384 504 310 524Z" fill="#e8d6a8"/>
+    <path d="M300 516 L290 440 Q320 462 330 520Z" fill="url(#tusk)" stroke="#8a6a3a" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M468 516 L478 440 Q448 462 438 520Z" fill="url(#tusk)" stroke="#8a6a3a" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M300 514 L292 486" stroke="#fff" stroke-width="3" opacity=".7" stroke-linecap="round"/>
+    <path d="M356 548 Q384 566 412 548 Q384 540 356 548Z" fill="#c8453a"/>
+    <!-- iron foreman helm with horns and lamp -->
+    <g transform="translate(0 -10)">
+      <path d="M222 252 C222 170 290 120 384 120 C478 120 546 170 546 252 C500 224 268 224 222 252Z" fill="url(#iron)" stroke="#1d1a1c" stroke-width="6" stroke-linejoin="round"/>
+      <path d="M222 252 C222 170 290 120 384 120 C478 120 546 170 546 252 C500 224 268 224 222 252Z" fill="#000" filter="url(#grain)"/>
+      <path d="M262 176 C296 142 338 130 372 130" fill="none" stroke="#f2f0ee" stroke-width="8" stroke-linecap="round" opacity=".55"/>
+      <path d="M210 262 Q384 214 558 262 Q560 282 544 284 Q384 240 224 284 Q208 282 210 262Z" fill="url(#rust)" stroke="#2b1a14" stroke-width="5" stroke-linejoin="round"/>
+      <!-- central ridge with rivets -->
+      <path d="M368 122 L368 240 L400 240 L400 122Z" fill="#7a746f" stroke="#1d1a1c" stroke-width="4"/>
+      <g fill="#d8d4d0" stroke="#1d1a1c" stroke-width="2"><circle cx="384" cy="150" r="5"/><circle cx="384" cy="180" r="5"/><circle cx="384" cy="210" r="5"/><circle cx="262" cy="258" r="5"/><circle cx="506" cy="258" r="5"/></g>
+      <!-- horns -->
+      <path d="M232 214 C186 200 150 150 168 100 C190 150 226 168 262 176Z" fill="#e8d6a8" stroke="#5a4020" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M536 214 C582 200 618 150 600 100 C578 150 542 168 506 176Z" fill="#e8d6a8" stroke="#5a4020" stroke-width="5" stroke-linejoin="round"/>
+      <!-- lamp -->
+      <circle cx="384" cy="200" r="70" fill="url(#ember)"/>
+      <circle cx="384" cy="198" r="16" fill="#fff0a8" stroke="#d2a24f" stroke-width="6"/>
+    </g>
+    <!-- giant hammer in the foreground -->
+    <g transform="translate(36 150) rotate(-18 620 600)">
+      <rect x="606" y="420" width="30" height="400" rx="10" fill="url(#wood)" stroke="#1c0e08" stroke-width="5"/>
+      <g stroke="#1c0e08" stroke-width="3" opacity=".55"><path d="M612 470h18M612 500h18M612 530h18M612 560h18"/></g>
+      <rect x="520" y="352" width="200" height="96" rx="18" fill="url(#iron)" stroke="#1d1a1c" stroke-width="6"/>
+      <rect x="520" y="352" width="200" height="96" rx="18" fill="#000" filter="url(#grain)"/>
+      <path d="M536 366 H704" stroke="#f2f0ee" stroke-width="5" opacity=".5" stroke-linecap="round"/>
+      <path d="M544 372 L560 420 L580 384 L600 430" fill="none" stroke="#ff8a2a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M640 440 L656 392 L676 424" fill="none" stroke="#ff8a2a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="500" y="364" width="28" height="72" rx="8" fill="#6f6a66" stroke="#1d1a1c" stroke-width="5"/><rect x="712" y="364" width="28" height="72" rx="8" fill="#6f6a66" stroke="#1d1a1c" stroke-width="5"/>
+    </g>
+    <rect width="768" height="768" fill="#000" filter="url(#grain)"/>
+  </g>
+</svg>

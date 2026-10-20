@@ -261,7 +261,7 @@ describe('Card Pool Expansion v0.1', () => {
     expect(encounterIds).toHaveLength(9)
     expect(new Set(encounterIds).size).toBe(9)
     expect(encounterIds.every(id => !resolveEnemyPortrait(id).fallback)).toBe(true)
-    expect(Object.keys(enemyPortraitsByEncounterId)).toHaveLength(13)
+    expect(Object.keys(enemyPortraitsByEncounterId)).toHaveLength(15)
 
     const map = createDungeonRun(2026).map
     const hiddenNode = map.layers.flat().find(node => node.encounterId)!
