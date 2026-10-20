@@ -1,0 +1,26 @@
+
+### variant PA
+old-mines-raider aggressive              win 100% turns 2.6 loss 1.63/5.41
+old-mines-raider balanced                win 100% turns 2.59 loss 0.88/2.02
+old-mines-raider defensive               win 100% turns 2.93 loss 0.11/0.3
+old-mines-raider planner                 win 100% turns 2.57 loss 0.89/1.38
+old-mines-digger aggressive              win 100% turns 3.05 loss 6.41/3.72
+old-mines-digger balanced                win 100% turns 3.06 loss 2.22/1.74
+old-mines-digger defensive               win 100% turns 3.25 loss 0.42/0.33
+old-mines-digger planner                 win 100% turns 2.96 loss 3.57/1.27
+old-mines-watchman aggressive            win 100% turns 2.68 loss 0.06/5.33
+old-mines-watchman balanced              win 100% turns 2.69 loss 0/0.58
+old-mines-watchman defensive             win 100% turns 2.97 loss 0/0.08
+old-mines-watchman planner               win 100% turns 2.65 loss 0.01/0.77
+old-mines-overseer aggressive            win 100% turns 3.09 loss 9.3/0.35
+old-mines-overseer balanced              win 100% turns 3.2 loss 3.03/0.06
+old-mines-overseer defensive             win 100% turns 3.37 loss 0.9/0.01
+old-mines-overseer planner               win 100% turns 3.12 loss 5.04/0.01
+old-mines-johnson aggressive             win 100% turns 5.34 loss 11.69/4.06
+old-mines-johnson balanced               win 100% turns 5.43 loss 4.13/0.54
+old-mines-johnson defensive              win 100% turns 5.56 loss 2.2/0.08
+old-mines-johnson planner                win 100% turns 5.49 loss 6.25/0.58
+old-mines-rhahk-zor aggressive           win 100% turns 5.89 loss 16.17/5.01
+old-mines-rhahk-zor balanced             win 100% turns 5.73 loss 5.29/0.38
+old-mines-rhahk-zor defensive            win 100% turns 5.92 loss 4.44/0.07
+old-mines-rhahk-zor planner              win 100% turns 5.64 loss 7.19/0.29

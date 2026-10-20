@@ -1,0 +1,248 @@
+[
+  {
+    "kind": "development",
+    "variant": "V0",
+    "strategy": "aggressive",
+    "natural": {
+      "n": 300,
+      "wins": 291,
+      "winPct": 97,
+      "turns": 12.566666666666666,
+      "endW": 7.17,
+      "endM": 11.003333333333334,
+      "preBossW": 19.86,
+      "preBossM": 13.886666666666667,
+      "bossTurns": 5.253333333333333,
+      "timeouts": 0
+    },
+    "developed": {
+      "n": 300,
+      "wins": 280,
+      "winPct": 93.33333333333333,
+      "turns": 5.183333333333334,
+      "endW": 6.376666666666667,
+      "endM": 9.37,
+      "preBossW": 18.44,
+      "preBossM": 11.826666666666666,
+      "bossTurns": 5.183333333333334,
+      "timeouts": 0
+    },
+    "noDevelopment": {
+      "n": 300,
+      "wins": 290,
+      "winPct": 96.66666666666667,
+      "turns": 5.19,
+      "endW": 6.043333333333333,
+      "endM": 8.416666666666666,
+      "preBossW": 18.44,
+      "preBossM": 11.826666666666666,
+      "bossTurns": 5.19,
+      "timeouts": 0
+    }
+  },
+  {
+    "kind": "development",
+    "variant": "V0",
+    "strategy": "balanced",
+    "natural": {
+      "n": 300,
+      "wins": 300,
+      "winPct": 100,
+      "turns": 13.523333333333333,
+      "endW": 19.373333333333335,
+      "endM": 16.596666666666668,
+      "preBossW": 22.916666666666668,
+      "preBossM": 16.62,
+      "bossTurns": 5.043333333333333,
+      "timeouts": 0
+    },
+    "developed": {
+      "n": 300,
+      "wins": 300,
+      "winPct": 100,
+      "turns": 5.15,
+      "endW": 19.316666666666666,
+      "endM": 16.57,
+      "preBossW": 22.876666666666665,
+      "preBossM": 16.6,
+      "bossTurns": 5.15,
+      "timeouts": 0
+    },
+    "noDevelopment": {
+      "n": 300,
+      "wins": 300,
+      "winPct": 100,
+      "turns": 5.203333333333333,
+      "endW": 19.576666666666668,
+      "endM": 16.536666666666665,
+      "preBossW": 22.876666666666665,
+      "preBossM": 16.6,
+      "bossTurns": 5.203333333333333,
+      "timeouts": 0
+    }
+  },
+  {
+    "kind": "development",
+    "variant": "V0",
+    "strategy": "defensive",
+    "natural": {
+      "n": 300,
+      "wins": 300,
+      "winPct": 100,
+      "turns": 14.19,
+      "endW": 21.676666666666666,
+      "endM": 17.74,
+      "preBossW": 23.94333333333333,
+      "preBossM": 17.756666666666668,
+      "bossTurns": 5.093333333333334,
+      "timeouts": 0
+    },
+    "developed": {
+      "n": 300,
+      "wins": 300,
+      "winPct": 100,
+      "turns": 5.203333333333333,
+      "endW": 21.656666666666666,
+      "endM": 17.75,
+      "preBossW": 23.94333333333333,
+      "preBossM": 17.756666666666668,
+      "bossTurns": 5.203333333333333,
+      "timeouts": 0
+    },
+    "noDevelopment": {
+      "n": 300,
+      "wins": 300,
+      "winPct": 100,
+      "turns": 5.253333333333333,
+      "endW": 21.30666666666667,
+      "endM": 17.736666666666668,
+      "preBossW": 23.94333333333333,
+      "preBossM": 17.756666666666668,
+      "bossTurns": 5.253333333333333,
+      "timeouts": 0
+    }
+  },
+  {
+    "kind": "development",
+    "variant": "V2",
+    "strategy": "aggressive",
+    "natural": {
+      "n": 300,
+      "wins": 211,
+      "winPct": 70.33333333333334,
+      "turns": 11.723333333333333,
+      "endW": 2.776666666666667,
+      "endM": 9.483333333333333,
+      "preBossW": 15.456666666666667,
+      "preBossM": 12.046666666666667,
+      "bossTurns": 4.816666666666666,
+      "timeouts": 0
+    },
+    "developed": {
+      "n": 300,
+      "wins": 185,
+      "winPct": 61.66666666666667,
+      "turns": 4.816666666666666,
+      "endW": 2.1766666666666667,
+      "endM": 8.52,
+      "preBossW": 12.336666666666666,
+      "preBossM": 10.046666666666667,
+      "bossTurns": 4.486666666666666,
+      "timeouts": 0
+    },
+    "noDevelopment": {
+      "n": 300,
+      "wins": 196,
+      "winPct": 65.33333333333333,
+      "turns": 4.943333333333333,
+      "endW": 1.8766666666666667,
+      "endM": 8.523333333333333,
+      "preBossW": 12.336666666666666,
+      "preBossM": 10.046666666666667,
+      "bossTurns": 4.613333333333333,
+      "timeouts": 0
+    }
+  },
+  {
+    "kind": "development",
+    "variant": "V2",
+    "strategy": "balanced",
+    "natural": {
+      "n": 300,
+      "wins": 300,
+      "winPct": 100,
+      "turns": 13.48,
+      "endW": 15.356666666666667,
+      "endM": 15.866666666666667,
+      "preBossW": 20.45,
+      "preBossM": 16.176666666666666,
+      "bossTurns": 5.4,
+      "timeouts": 0
+    },
+    "developed": {
+      "n": 300,
+      "wins": 298,
+      "winPct": 99.33333333333333,
+      "turns": 5.44,
+      "endW": 14.193333333333333,
+      "endM": 15.71,
+      "preBossW": 19.27,
+      "preBossM": 15.996666666666666,
+      "bossTurns": 5.44,
+      "timeouts": 0
+    },
+    "noDevelopment": {
+      "n": 300,
+      "wins": 299,
+      "winPct": 99.66666666666667,
+      "turns": 5.713333333333333,
+      "endW": 14.096666666666666,
+      "endM": 15.52,
+      "preBossW": 19.27,
+      "preBossM": 15.996666666666666,
+      "bossTurns": 5.713333333333333,
+      "timeouts": 0
+    }
+  },
+  {
+    "kind": "development",
+    "variant": "V2",
+    "strategy": "defensive",
+    "natural": {
+      "n": 300,
+      "wins": 300,
+      "winPct": 100,
+      "turns": 14.386666666666667,
+      "endW": 18.956666666666667,
+      "endM": 17.486666666666668,
+      "preBossW": 22.803333333333335,
+      "preBossM": 17.6,
+      "bossTurns": 5.513333333333334,
+      "timeouts": 0
+    },
+    "developed": {
+      "n": 300,
+      "wins": 300,
+      "winPct": 100,
+      "turns": 5.586666666666667,
+      "endW": 18.726666666666667,
+      "endM": 17.48,
+      "preBossW": 22.623333333333335,
+      "preBossM": 17.58,
+      "bossTurns": 5.586666666666667,
+      "timeouts": 0
+    },
+    "noDevelopment": {
+      "n": 300,
+      "wins": 300,
+      "winPct": 100,
+      "turns": 5.88,
+      "endW": 18.26,
+      "endM": 17.473333333333333,
+      "preBossW": 22.623333333333335,
+      "preBossM": 17.58,
+      "bossTurns": 5.88,
+      "timeouts": 0
+    }
+  }
+]

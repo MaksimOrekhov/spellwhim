@@ -1,0 +1,32 @@
+[
+  {
+    "name": "main-classic-V0-V1-V2-300",
+    "numericOutcomesUnchanged": true,
+    "revealedEncounterRecorded": true
+  },
+  {
+    "name": "main-classic-V3-300",
+    "numericOutcomesUnchanged": true,
+    "revealedEncounterRecorded": true
+  },
+  {
+    "name": "holdout-classic-V0-V1-V2-V3-300",
+    "numericOutcomesUnchanged": true,
+    "revealedEncounterRecorded": true
+  },
+  {
+    "name": "main-planner-V0-V1-V2-60",
+    "numericOutcomesUnchanged": true,
+    "revealedEncounterRecorded": true
+  },
+  {
+    "name": "main-planner-V3-60",
+    "numericOutcomesUnchanged": true,
+    "revealedEncounterRecorded": true
+  },
+  {
+    "name": "holdout-planner-V0-V1-V2-V3-60",
+    "numericOutcomesUnchanged": true,
+    "revealedEncounterRecorded": true
+  }
+]

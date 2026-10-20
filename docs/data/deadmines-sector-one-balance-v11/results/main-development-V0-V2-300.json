@@ -1,0 +1,248 @@
+[
+  {
+    "kind": "development",
+    "variant": "V0",
+    "strategy": "aggressive",
+    "natural": {
+      "n": 300,
+      "wins": 292,
+      "winPct": 97.33333333333334,
+      "turns": 12.313333333333333,
+      "endW": 7.553333333333334,
+      "endM": 11.223333333333333,
+      "preBossW": 20.286666666666665,
+      "preBossM": 14.04,
+      "bossTurns": 5.226666666666667,
+      "timeouts": 0
+    },
+    "developed": {
+      "n": 300,
+      "wins": 280,
+      "winPct": 93.33333333333333,
+      "turns": 5.213333333333333,
+      "endW": 6.566666666666666,
+      "endM": 9.54,
+      "preBossW": 18.80666666666667,
+      "preBossM": 12.04,
+      "bossTurns": 5.1866666666666665,
+      "timeouts": 0
+    },
+    "noDevelopment": {
+      "n": 300,
+      "wins": 281,
+      "winPct": 93.66666666666667,
+      "turns": 5.156666666666666,
+      "endW": 6.226666666666667,
+      "endM": 8.683333333333334,
+      "preBossW": 18.80666666666667,
+      "preBossM": 12.04,
+      "bossTurns": 5.13,
+      "timeouts": 0
+    }
+  },
+  {
+    "kind": "development",
+    "variant": "V0",
+    "strategy": "balanced",
+    "natural": {
+      "n": 300,
+      "wins": 300,
+      "winPct": 100,
+      "turns": 13.356666666666667,
+      "endW": 19.69,
+      "endM": 16.623333333333335,
+      "preBossW": 23.12,
+      "preBossM": 16.69333333333333,
+      "bossTurns": 5.013333333333334,
+      "timeouts": 0
+    },
+    "developed": {
+      "n": 300,
+      "wins": 300,
+      "winPct": 100,
+      "turns": 5.13,
+      "endW": 19.663333333333334,
+      "endM": 16.55,
+      "preBossW": 23.1,
+      "preBossM": 16.633333333333333,
+      "bossTurns": 5.13,
+      "timeouts": 0
+    },
+    "noDevelopment": {
+      "n": 300,
+      "wins": 300,
+      "winPct": 100,
+      "turns": 5.243333333333333,
+      "endW": 19.88,
+      "endM": 16.596666666666668,
+      "preBossW": 23.1,
+      "preBossM": 16.633333333333333,
+      "bossTurns": 5.243333333333333,
+      "timeouts": 0
+    }
+  },
+  {
+    "kind": "development",
+    "variant": "V0",
+    "strategy": "defensive",
+    "natural": {
+      "n": 300,
+      "wins": 300,
+      "winPct": 100,
+      "turns": 14.166666666666666,
+      "endW": 21.863333333333333,
+      "endM": 17.656666666666666,
+      "preBossW": 24.053333333333335,
+      "preBossM": 17.686666666666667,
+      "bossTurns": 5.133333333333334,
+      "timeouts": 0
+    },
+    "developed": {
+      "n": 300,
+      "wins": 300,
+      "winPct": 100,
+      "turns": 5.21,
+      "endW": 21.846666666666668,
+      "endM": 17.67,
+      "preBossW": 24.053333333333335,
+      "preBossM": 17.686666666666667,
+      "bossTurns": 5.21,
+      "timeouts": 0
+    },
+    "noDevelopment": {
+      "n": 300,
+      "wins": 300,
+      "winPct": 100,
+      "turns": 5.183333333333334,
+      "endW": 21.52,
+      "endM": 17.673333333333332,
+      "preBossW": 24.053333333333335,
+      "preBossM": 17.686666666666667,
+      "bossTurns": 5.183333333333334,
+      "timeouts": 0
+    }
+  },
+  {
+    "kind": "development",
+    "variant": "V2",
+    "strategy": "aggressive",
+    "natural": {
+      "n": 300,
+      "wins": 215,
+      "winPct": 71.66666666666667,
+      "turns": 11.666666666666666,
+      "endW": 2.9566666666666666,
+      "endM": 9.6,
+      "preBossW": 15.963333333333333,
+      "preBossM": 12.26,
+      "bossTurns": 4.9,
+      "timeouts": 0
+    },
+    "developed": {
+      "n": 300,
+      "wins": 179,
+      "winPct": 59.66666666666667,
+      "turns": 4.75,
+      "endW": 2.12,
+      "endM": 8.67,
+      "preBossW": 12.563333333333333,
+      "preBossM": 10.44,
+      "bossTurns": 4.516666666666667,
+      "timeouts": 0
+    },
+    "noDevelopment": {
+      "n": 300,
+      "wins": 193,
+      "winPct": 64.33333333333333,
+      "turns": 4.85,
+      "endW": 1.8933333333333333,
+      "endM": 8.646666666666667,
+      "preBossW": 12.563333333333333,
+      "preBossM": 10.44,
+      "bossTurns": 4.616666666666666,
+      "timeouts": 0
+    }
+  },
+  {
+    "kind": "development",
+    "variant": "V2",
+    "strategy": "balanced",
+    "natural": {
+      "n": 300,
+      "wins": 300,
+      "winPct": 100,
+      "turns": 13.3,
+      "endW": 15.533333333333333,
+      "endM": 15.75,
+      "preBossW": 20.683333333333334,
+      "preBossM": 16.1,
+      "bossTurns": 5.433333333333334,
+      "timeouts": 0
+    },
+    "developed": {
+      "n": 300,
+      "wins": 300,
+      "winPct": 100,
+      "turns": 5.536666666666667,
+      "endW": 14.386666666666667,
+      "endM": 15.506666666666666,
+      "preBossW": 19.483333333333334,
+      "preBossM": 15.9,
+      "bossTurns": 5.536666666666667,
+      "timeouts": 0
+    },
+    "noDevelopment": {
+      "n": 300,
+      "wins": 300,
+      "winPct": 100,
+      "turns": 5.73,
+      "endW": 14.506666666666666,
+      "endM": 15.486666666666666,
+      "preBossW": 19.483333333333334,
+      "preBossM": 15.9,
+      "bossTurns": 5.73,
+      "timeouts": 0
+    }
+  },
+  {
+    "kind": "development",
+    "variant": "V2",
+    "strategy": "defensive",
+    "natural": {
+      "n": 300,
+      "wins": 300,
+      "winPct": 100,
+      "turns": 14.366666666666667,
+      "endW": 18.976666666666667,
+      "endM": 17.42,
+      "preBossW": 22.783333333333335,
+      "preBossM": 17.543333333333333,
+      "bossTurns": 5.52,
+      "timeouts": 0
+    },
+    "developed": {
+      "n": 300,
+      "wins": 300,
+      "winPct": 100,
+      "turns": 5.62,
+      "endW": 18.753333333333334,
+      "endM": 17.423333333333332,
+      "preBossW": 22.583333333333332,
+      "preBossM": 17.543333333333333,
+      "bossTurns": 5.62,
+      "timeouts": 0
+    },
+    "noDevelopment": {
+      "n": 300,
+      "wins": 300,
+      "winPct": 100,
+      "turns": 5.863333333333333,
+      "endW": 18.36,
+      "endM": 17.426666666666666,
+      "preBossW": 22.583333333333332,
+      "preBossM": 17.543333333333333,
+      "bossTurns": 5.863333333333333,
+      "timeouts": 0
+    }
+  }
+]

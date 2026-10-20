@@ -1,0 +1,16 @@
+{
+  "tests": { "command": "npm test", "exitCode": 0, "files": 28, "tests": 672, "historicalBattlesReplayed": 427, "historicalFixtureRewritten": false },
+  "build": { "command": "npm run build", "exitCode": 0, "warning": "Existing Vite chunk >500 kB" },
+  "scenarios": { "command": "npm run scenarios -- 42", "exitCode": 0 },
+  "structuralSeeds": 10002,
+  "reviewImport": { "commit": "0431cf9", "files": 31, "differentGitBlobs": 0 },
+  "browser": {
+    "surface": "Codex in-app browser",
+    "sizes": [[1280, 720], [1920, 1080]],
+    "viewportReset": true,
+    "elite": "Preparation, revealed 14, mage 7, group 4 to both, damage animation and restart from saved entry; fight not completed manually",
+    "qaBoss": { "turns": 7, "endHP": [18,18], "bothPhases": true, "magePreparedHitBlocked": true },
+    "fullManualSector": { "seed": 1516863682, "initialDeck": 18, "openingHand": 8, "rooms": ["battle", "event", "forge", "battle", "rest", "final"], "endHP": [19,18], "finalDeck": 20, "upgrades": 3, "artifacts": 0, "bossTurns": 4, "reloadTerminal": true, "headlessBattles": 0 },
+    "humanStudy": false
+  }
+}

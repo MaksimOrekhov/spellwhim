@@ -1,0 +1,42 @@
+{
+  "selectedDefinitionsMatch": true,
+  "replayedRows": 567,
+  "protectedSourceHashes": {
+    "src/game/battle.ts": "ab4a339ff005f33a44854ea28029c3089e68a58b0f4ea7c15dfc8cee220179e2",
+    "src/game/types.ts": "c5ca53ae13fc3a0f708bd992b0779349a0517a4f35384bcf0518e369bac80570",
+    "src/game/cardUpgrades.ts": "ea26b93c802b896ee74e48bbce79439170d1d12f661ce69bbdbd7aeaca5d29bc",
+    "src/game/economy.ts": "4a3dd0ad56573514eca9cbbd4e337db625977abeccc0b02c6a3cb99eea0745d3",
+    "src/game/deck.ts": "68c50b8f92e1513c6ed14898946d28043c9cd44ee4206463014190a7a3fee051",
+    "src/game/damage.ts": "dcdbb4436b9f3cfab7701b96f5e620bdeec452ed57e3922e9cb194931e0c1da5",
+    "src/game/statuses.ts": "afd37bd0e82131282d89a96e0bedc308c7fadfbacb45755d848eee0ce4fa657a",
+    "src/game/artifacts.ts": "1aee90a0b369528ae9895e1403a1698c306304868440109ea74ababcfb9c729f",
+    "src/game/balance.ts": "e2ef7c93470a41f2504b285050e37419b93aefbb9cfaa169609ae59f6eaac1f3",
+    "src/game/balancePlanner.ts": "74a46b790075eeff04d72a3beccf811ff3ef8087f741d51b718139d5f2cc129b",
+    "src/game/campaign.ts": "a978da0ef1c708511fd0a6281a5a8faf8536096095d4967b55177fca943b446f",
+    "src/game/dungeonGenerator.ts": "6e84e9d02242bd4c1429761f997ba0fbccb759d274deb8581b68331607cae61d",
+    "src/game/dungeonRooms.ts": "5361433cc058d86b1b6e44a960b0d75c498b6a08840ed131e205e43d51886075",
+    "src/game/roomRules.ts": "44e9b9f0529deab8f4cc851a89c9b933fe9fab9a575ada704f57f5cbca50a018",
+    "src/game/runSave.ts": "3876b51e7076f3e54f0abf985d02b95a09c270fbabc7734d5aaffe48521f3bef",
+    "src/game/encountersV09.ts": "40e72a24503468e56d9703ff816155c495114530ed65375cc186bdcb62849032",
+    "src/game/encountersV10.ts": "57e2b0c06c9afb815ef83d84969d5e621f963621fb88eab38bc2ab6375269dd7",
+    "src/game/fixtures/status-foundation-baseline.json": "1a80f63e3fcf7ab78e76f9dc2e1ddac17c81bc49d49c887ddf4d83ba9dfa8d1c"
+  },
+  "runtime": "v22.17.1",
+  "aggressivePassFixture": {
+    "damage": 3,
+    "armor": {
+      "warrior": 3,
+      "mage": 0
+    },
+    "mana": 3,
+    "aggressivePasses": true,
+    "balancedPlays": true
+  },
+  "versions": {
+    "rules": "combat-upgrades-1",
+    "legacyCatalog": "e77d6518",
+    "sectorCatalog": "d4691ce",
+    "roomRules": "sector-rooms-2:a7984ea9",
+    "generator": "carved-paths-2"
+  }
+}

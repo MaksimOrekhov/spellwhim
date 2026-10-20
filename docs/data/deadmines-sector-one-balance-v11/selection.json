@@ -1,0 +1,22 @@
+{
+  "chosen": "V2",
+  "label": "Claude PA, literal exp-routes.mjs configuration",
+  "baseCommit": "1afabb357dc8b541bfe7bb04b1d4ae6d2b5c0c0f",
+  "holdoutInspectedBeforeSelection": false,
+  "mainSeedRange": [42, 341],
+  "holdoutSeedRange": [1000042, 1000341],
+  "reasons": [
+    "Matched balanced elite cost rises from -0.07 to 1.95 terminal party HP; direct fight cost rises from 0.50 to 4.60 HP.",
+    "Mixed balanced healing increases from 1.33 to 23.33 percent while retaining 100 percent completion.",
+    "Boss remains 5.73 turns balanced, with phase II actions increasing from 1.14 to 1.62.",
+    "V1 increases attrition but leaves balanced elite route cost at 0.07 HP.",
+    "V3 adds only 0.067 mage HP loss on mixed balanced routes while reducing risky aggressive completion from 53.33 to 49.33 percent. Do not implement it."
+  ],
+  "limitations": [
+    "Defensive remains very strong; no claim that all strategies are equally effective.",
+    "Mage attrition increases modestly; do not tune to equal hero losses or to the target win rate.",
+    "Healing changes heuristic lethal-threat decisions; extra HP is not monotonically beneficial to the aggressive bot.",
+    "Human tactical interest and fairness need playtesting."
+  ],
+  "confirmationPolicy": "Confirm frozen V0/V1/V2/V3 on disjoint holdout; no tuning in response."
+}

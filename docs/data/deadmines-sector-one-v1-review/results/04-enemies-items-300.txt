@@ -1,0 +1,14 @@
+
+== C4 items vs Rak'Zor & Johnson at 16/12 entry ==
+old-mines-johnson none aggressive            win   100%  turns 5.37  lossW 6.46  lossM 3.46  hits 1.99  rawThreat 18.94  freeTurns 2.38  mana% 73.13  def% 10  handLeft 6.14
+old-mines-johnson none balanced              win   100%  turns 5.4  lossW 0.33  lossM 0.11  hits 1.98  rawThreat 18.86  freeTurns 2.42  mana% 82.99  def% 27  handLeft 4.66
+old-mines-johnson wedgeWhistle aggressive    win   100%  turns 5.37  lossW 3.47  lossM 1.97  hits 1.99  rawThreat 18.94  freeTurns 2.38  mana% 73.13  def% 10  handLeft 6.14
+old-mines-johnson wedgeWhistle balanced      win   100%  turns 5.31  lossW 0.18  lossM 0.02  hits 1.97  rawThreat 18.84  freeTurns 2.33  mana% 81.08  def% 23  handLeft 4.99
+old-mines-johnson pulleySpool aggressive     win   100%  turns 4.76  lossW 6.69  lossM 0.71  hits 1.69  rawThreat 17.12  freeTurns 2.07  mana% 75.03  def% 12  handLeft 5.96
+old-mines-johnson pulleySpool balanced       win   100%  turns 4.78  lossW 0.43  lossM 0  hits 1.74  rawThreat 17.44  freeTurns 2.04  mana% 81.68  def% 25  handLeft 4.85
+old-mines-rhahk-zor none aggressive          win  99.7%  turns 5.35  lossW 12.49  lossM 3.36  hits 3.01  rawThreat 26.03  freeTurns 1.34  mana% 75.07  def% 16  handLeft 5.85
+old-mines-rhahk-zor none balanced            win   100%  turns 5.19  lossW 3.4  lossM 0.07  hits 2.96  rawThreat 25.53  freeTurns 1.23  mana% 87.81  def% 36  handLeft 3.96
+old-mines-rhahk-zor wedgeWhistle aggressive  win   100%  turns 5.29  lossW 10.24  lossM 1.97  hits 3.01  rawThreat 25.97  freeTurns 1.29  mana% 73.78  def% 12  handLeft 6.02
+old-mines-rhahk-zor wedgeWhistle balanced    win   100%  turns 5.22  lossW 2.01  lossM 0.01  hits 2.94  rawThreat 25.45  freeTurns 1.27  mana% 86.21  def% 33  handLeft 4.21
+old-mines-rhahk-zor pulleySpool aggressive   win  99.7%  turns 4.76  lossW 12.16  lossM 0.01  hits 2.7  rawThreat 23.54  freeTurns 1.06  mana% 76.71  def% 16  handLeft 5.77
+old-mines-rhahk-zor pulleySpool balanced     win   100%  turns 4.48  lossW 3.79  lossM 0  hits 2.48  rawThreat 21.83  freeTurns 1  mana% 86.41  def% 31  handLeft 4.37

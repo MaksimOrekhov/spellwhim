@@ -1,0 +1,19 @@
+
+### variant V0
+-- elite value: same seeds, forced through elite vs forced around it (mixed policy otherwise) --
+aggressive ELITE                               n 300 done    78%  battles 3.91 elites 1  endHP 4.46/9.22  preBoss 13.95/10.97  bossLoss 10.22/1.94 bossTurns 4.64  minHP% 13  turns 16.15
+aggressive no-elite                            n 300 done  95.7%  battles 3.22 elites 0  endHP 7.46/11.07  preBoss 20.02/14.04  bossLoss 12.72/2.96 bossTurns 5.23  minHP% 26  turns 11.68
+aggressive noArt ELITE                         n 300 done  67.7%  battles 3.9 elites 1  endHP 3.53/9.18  preBoss 13.75/10.77  bossLoss 10.8/2 bossTurns 4.39  minHP% 11  turns 15.93
+aggressive noArt no-elite                      n 300 done    96%  battles 3.22 elites 0  endHP 6.64/10.96  preBoss 19.84/14.02  bossLoss 13.37/3.05 bossTurns 5.19  minHP% 24  turns 11.71
+balanced ELITE                                 n 300 done   100%  battles 4 elites 1  endHP 19.61/16.3  preBoss 22.59/16.35  bossLoss 2.99/0.06 bossTurns 5.06  minHP% 76  turns 16.2
+balanced no-elite                              n 300 done   100%  battles 3.23 elites 0  endHP 19.67/16.36  preBoss 23.02/16.4  bossLoss 3.35/0.04 bossTurns 4.99  minHP% 77  turns 11.42
+balanced noArt ELITE                           n 300 done   100%  battles 4 elites 1  endHP 18.94/16.21  preBoss 22.54/16.33  bossLoss 3.6/0.12 bossTurns 5.1  minHP% 74  turns 16.34
+balanced noArt no-elite                        n 300 done   100%  battles 3.23 elites 0  endHP 19.32/16.28  preBoss 23.06/16.36  bossLoss 3.74/0.07 bossTurns 5.03  minHP% 75  turns 11.5
+defensive ELITE                                n 300 done   100%  battles 4 elites 1  endHP 22.06/17.57  preBoss 23.73/17.59  bossLoss 1.67/0.03 bossTurns 5.2  minHP% 88  turns 16.87
+defensive no-elite                             n 300 done   100%  battles 3.23 elites 0  endHP 21.73/17.6  preBoss 23.99/17.63  bossLoss 2.26/0.03 bossTurns 5.12  minHP% 86  turns 12.05
+defensive noArt ELITE                          n 300 done   100%  battles 4 elites 1  endHP 21.29/17.54  preBoss 23.76/17.61  bossLoss 2.47/0.07 bossTurns 5.2  minHP% 85  turns 16.93
+defensive noArt no-elite                       n 300 done   100%  battles 3.23 elites 0  endHP 21.36/17.58  preBoss 24.02/17.62  bossLoss 2.66/0.04 bossTurns 5.14  minHP% 85  turns 12.1
+planner ELITE                                  n 100 done   100%  battles 4 elites 1  endHP 17.04/16.34  preBoss 21.52/16.42  bossLoss 4.48/0.08 bossTurns 4.98  minHP% 66  turns 15.82
+planner no-elite                               n 100 done   100%  battles 3.19 elites 0  endHP 16.8/16.45  preBoss 22.11/16.51  bossLoss 5.31/0.06 bossTurns 4.94  minHP% 66  turns 11.1
+planner noArt ELITE                            n 100 done   100%  battles 4 elites 1  endHP 15.76/16.2  preBoss 21.32/16.34  bossLoss 5.56/0.14 bossTurns 5.01  minHP% 61  turns 15.79
+planner noArt no-elite                         n 100 done   100%  battles 3.19 elites 0  endHP 16.38/16.39  preBoss 21.97/16.47  bossLoss 5.59/0.08 bossTurns 4.98  minHP% 65  turns 11.13

@@ -1,0 +1,12 @@
+[
+  {
+    "name": "main-rest-V0-V1-V2-300",
+    "numericOutcomesUnchanged": true,
+    "revealedEncounterRecorded": true
+  },
+  {
+    "name": "holdout-rest-V0-V1-V2-300",
+    "numericOutcomesUnchanged": true,
+    "revealedEncounterRecorded": true
+  }
+]

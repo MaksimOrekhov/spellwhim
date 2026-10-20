@@ -1,0 +1,32 @@
+[
+  {
+    "name": "main-routes-extra-V0-V2-300",
+    "numericOutcomesUnchanged": true,
+    "revealedEncounterRecorded": true
+  },
+  {
+    "name": "main-development-V0-V2-300",
+    "numericOutcomesUnchanged": true,
+    "revealedEncounterRecorded": true
+  },
+  {
+    "name": "main-elite-noart-V0-V2-300",
+    "numericOutcomesUnchanged": true,
+    "revealedEncounterRecorded": true
+  },
+  {
+    "name": "holdout-routes-extra-V0-V2-300",
+    "numericOutcomesUnchanged": true,
+    "revealedEncounterRecorded": true
+  },
+  {
+    "name": "holdout-development-V0-V2-300",
+    "numericOutcomesUnchanged": true,
+    "revealedEncounterRecorded": true
+  },
+  {
+    "name": "holdout-elite-noart-V0-V2-300",
+    "numericOutcomesUnchanged": true,
+    "revealedEncounterRecorded": true
+  }
+]

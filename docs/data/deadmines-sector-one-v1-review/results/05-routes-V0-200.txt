@@ -1,0 +1,38 @@
+
+### variant V0
+d18 safe aggressive                            n 200 done  97.5%  battles 3.23 elites 0  endHP 7.89/10.56  preBoss 20.39/13.95  bossLoss 12.6/3.39 bossTurns 5.4  minHP% 29  turns 11.95
+d18 safe aggressive noArt                      n 200 done  96.5%  battles 3.23 elites 0  endHP 7.22/10.41  preBoss 20.32/13.96  bossLoss 13.2/3.55 bossTurns 5.35  minHP% 26  turns 11.94
+d18 safe balanced                              n 200 done   100%  battles 3.23 elites 0  endHP 20.79/16.32  preBoss 23.88/16.37  bossLoss 3.08/0.05 bossTurns 5.27  minHP% 80  turns 11.79
+d18 safe balanced noArt                        n 200 done   100%  battles 3.23 elites 0  endHP 20.46/16.27  preBoss 23.93/16.36  bossLoss 3.47/0.09 bossTurns 5.29  minHP% 79  turns 11.89
+d18 safe defensive                             n 200 done   100%  battles 3.23 elites 0  endHP 23.08/17.74  preBoss 24.84/17.74  bossLoss 1.75/0 bossTurns 5.42  minHP% 92  turns 12.52
+d18 safe defensive noArt                       n 200 done   100%  battles 3.23 elites 0  endHP 22.57/17.75  preBoss 24.84/17.77  bossLoss 2.27/0.02 bossTurns 5.4  minHP% 90  turns 12.53
+d18 mixed aggressive                           n 200 done  92.5%  battles 3.34 elites 0.1  endHP 6.75/10.76  preBoss 19.59/13.63  bossLoss 12.84/2.87 bossTurns 5.16  minHP% 24  turns 12.15
+d18 mixed aggressive noArt                     n 200 done    95%  battles 3.34 elites 0.1  endHP 6.17/10.84  preBoss 19.53/13.69  bossLoss 13.37/2.85 bossTurns 5.17  minHP% 22  turns 12.19
+d18 mixed balanced                             n 200 done   100%  battles 3.53 elites 0.29  endHP 19.45/16.2  preBoss 22.91/16.25  bossLoss 3.47/0.06 bossTurns 4.99  minHP% 76  turns 13.02
+d18 mixed balanced noArt                       n 200 done   100%  battles 3.53 elites 0.29  endHP 19.09/16.13  preBoss 22.96/16.21  bossLoss 3.87/0.08 bossTurns 4.98  minHP% 74  turns 12.99
+d18 mixed defensive                            n 200 done   100%  battles 3.56 elites 0.33  endHP 21.7/17.55  preBoss 23.93/17.61  bossLoss 2.23/0.05 bossTurns 5.13  minHP% 86  turns 13.82
+d18 mixed defensive noArt                      n 200 done   100%  battles 3.56 elites 0.33  endHP 21.3/17.55  preBoss 23.96/17.59  bossLoss 2.66/0.05 bossTurns 5.16  minHP% 85  turns 13.84
+d18 risky aggressive                           n 200 done  83.5%  battles 3.87 elites 0.45  endHP 5.79/9.6  preBoss 16.5/11.85  bossLoss 11.28/2.26 bossTurns 4.91  minHP% 18  turns 14.71
+d18 risky aggressive noArt                     n 200 done  79.5%  battles 3.87 elites 0.45  endHP 4.94/9.28  preBoss 16.52/11.73  bossLoss 12.09/2.52 bossTurns 4.81  minHP% 16  turns 14.62
+d18 risky balanced                             n 200 done   100%  battles 3.92 elites 0.45  endHP 19.66/15.98  preBoss 22.91/16.07  bossLoss 3.25/0.09 bossTurns 5.04  minHP% 76  turns 14.68
+d18 risky balanced noArt                       n 200 done   100%  battles 3.92 elites 0.45  endHP 19/15.95  preBoss 22.88/16.07  bossLoss 3.88/0.13 bossTurns 5.08  minHP% 74  turns 14.76
+d18 risky defensive                            n 200 done   100%  battles 3.92 elites 0.45  endHP 22.2/17.55  preBoss 24.14/17.6  bossLoss 1.94/0.05 bossTurns 5.18  minHP% 88  turns 15.39
+d18 risky defensive noArt                      n 200 done   100%  battles 3.92 elites 0.45  endHP 21.48/17.46  preBoss 24.15/17.55  bossLoss 2.67/0.1 bossTurns 5.24  minHP% 85  turns 15.46
+d14 safe aggressive                            n 200 done  95.5%  battles 3.22 elites 0  endHP 7.13/11.71  preBoss 20.13/13.68  bossLoss 13.22/1.97 bossTurns 4.62  minHP% 26  turns 10.9
+d14 safe aggressive noArt                      n 200 done  94.5%  battles 3.22 elites 0  endHP 6.32/11.51  preBoss 20.07/13.69  bossLoss 13.97/2.19 bossTurns 4.71  minHP% 23  turns 11.02
+d14 safe balanced                              n 200 done   100%  battles 3.23 elites 0  endHP 20.4/16.26  preBoss 23.52/16.31  bossLoss 3.12/0.05 bossTurns 4.85  minHP% 80  turns 11.1
+d14 safe balanced noArt                        n 200 done   100%  battles 3.23 elites 0  endHP 19.93/16.07  preBoss 23.46/16.14  bossLoss 3.54/0.08 bossTurns 4.89  minHP% 78  turns 11.24
+d14 safe defensive                             n 200 done   100%  battles 3.23 elites 0  endHP 23.68/17.63  preBoss 24.89/17.64  bossLoss 1.22/0.01 bossTurns 4.95  minHP% 94  turns 11.74
+d14 safe defensive noArt                       n 200 done   100%  battles 3.23 elites 0  endHP 23.26/17.63  preBoss 24.89/17.64  bossLoss 1.63/0.02 bossTurns 5.01  minHP% 92  turns 11.79
+d14 mixed aggressive                           n 200 done    94%  battles 3.29 elites 0.07  endHP 6.13/11.82  preBoss 19.68/13.53  bossLoss 13.68/1.71 bossTurns 4.59  minHP% 22  turns 11.02
+d14 mixed aggressive noArt                     n 200 done    89%  battles 3.29 elites 0.07  endHP 5.36/11.77  preBoss 19.44/13.7  bossLoss 14.29/1.94 bossTurns 4.59  minHP% 19  turns 11.02
+d14 mixed balanced                             n 200 done   100%  battles 3.52 elites 0.29  endHP 19.18/16.04  preBoss 22.63/16.12  bossLoss 3.46/0.09 bossTurns 4.8  minHP% 75  turns 12.38
+d14 mixed balanced noArt                       n 200 done   100%  battles 3.52 elites 0.29  endHP 18.45/16.07  preBoss 22.49/16.14  bossLoss 4.04/0.06 bossTurns 4.82  minHP% 72  turns 12.41
+d14 mixed defensive                            n 200 done   100%  battles 3.58 elites 0.34  endHP 22.11/17.51  preBoss 23.95/17.51  bossLoss 1.84/0 bossTurns 4.73  minHP% 88  turns 13.12
+d14 mixed defensive noArt                      n 200 done   100%  battles 3.58 elites 0.34  endHP 21.65/17.49  preBoss 23.95/17.49  bossLoss 2.31/0 bossTurns 4.75  minHP% 86  turns 13.16
+d14 risky aggressive                           n 200 done    80%  battles 3.85 elites 0.45  endHP 5.36/9.96  preBoss 16.32/11.44  bossLoss 11.99/1.57 bossTurns 4.3  minHP% 16  turns 13.21
+d14 risky aggressive noArt                     n 200 done  73.5%  battles 3.85 elites 0.45  endHP 4.75/9.75  preBoss 16.02/11.3  bossLoss 12.4/1.68 bossTurns 4.25  minHP% 13  turns 13.19
+d14 risky balanced                             n 200 done   100%  battles 3.92 elites 0.45  endHP 19.11/15.88  preBoss 22.55/15.93  bossLoss 3.44/0.05 bossTurns 4.81  minHP% 74  turns 13.86
+d14 risky balanced noArt                       n 200 done   100%  battles 3.92 elites 0.45  endHP 18.22/15.88  preBoss 22.39/15.98  bossLoss 4.17/0.1 bossTurns 4.91  minHP% 71  turns 14.06
+d14 risky defensive                            n 200 done   100%  battles 3.92 elites 0.45  endHP 22.59/17.45  preBoss 24.17/17.45  bossLoss 1.58/0 bossTurns 4.83  minHP% 90  turns 14.51
+d14 risky defensive noArt                      n 200 done   100%  battles 3.92 elites 0.45  endHP 22/17.41  preBoss 24.2/17.43  bossLoss 2.21/0.02 bossTurns 4.91  minHP% 87  turns 14.62

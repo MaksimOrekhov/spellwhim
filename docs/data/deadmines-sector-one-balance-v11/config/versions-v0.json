@@ -1,0 +1,8 @@
+{
+  "baseCommit": "1afabb357dc8b541bfe7bb04b1d4ae6d2b5c0c0f",
+  "claudeCommit": "0431cf9",
+  "rulesVersion": "combat-upgrades-1",
+  "legacyCatalog": "e77d6518",
+  "sectorCatalog": "b29a110",
+  "roomRules": "sector-rooms-2:a7984ea9"
+}

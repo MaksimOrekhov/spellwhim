@@ -1,0 +1,5025 @@
+{
+  "bootstrapSeed": 20261020,
+  "bootstrapResamples": 3000,
+  "pairedRoutes": [
+    {
+      "split": "main",
+      "variant": "V1",
+      "policy": "safe",
+      "strategy": "aggressive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -5.09,
+        "ci95": [
+          -5.593333333333334,
+          -4.57
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": -20.666666666666668,
+        "ci95": [
+          -25.666666666666668,
+          -15.666666666666666
+        ]
+      },
+      "winsLost": 65,
+      "winsGained": 3,
+      "candidateWilson95": [
+        71.91436245386646,
+        81.40289232625582
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "policy": "safe",
+      "strategy": "aggressive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -6.226666666666667,
+        "ci95": [
+          -6.773333333333333,
+          -5.7132499999999995
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": -15.333333333333334,
+        "ci95": [
+          -19.666666666666668,
+          -11.333333333333334
+        ]
+      },
+      "winsLost": 47,
+      "winsGained": 1,
+      "candidateWilson95": [
+        77.61666509606148,
+        86.23239309741828
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V3",
+      "policy": "safe",
+      "strategy": "aggressive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -8.09,
+        "ci95": [
+          -8.72675,
+          -7.44
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": -21.666666666666668,
+        "ci95": [
+          -26.666666666666668,
+          -17.0
+        ]
+      },
+      "winsLost": 67,
+      "winsGained": 2,
+      "candidateWilson95": [
+        70.8577815254188,
+        80.48476011469894
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "policy": "safe",
+      "strategy": "balanced",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -5.58,
+        "ci95": [
+          -5.8533333333333335,
+          -5.303333333333334
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "policy": "safe",
+      "strategy": "balanced",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -4.33,
+        "ci95": [
+          -4.6234166666666665,
+          -4.03
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V3",
+      "policy": "safe",
+      "strategy": "balanced",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -4.39,
+        "ci95": [
+          -4.673416666666666,
+          -4.086666666666667
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "policy": "safe",
+      "strategy": "defensive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -3.9,
+        "ci95": [
+          -4.12,
+          -3.6866666666666665
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "policy": "safe",
+      "strategy": "defensive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -2.11,
+        "ci95": [
+          -2.32675,
+          -1.89
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V3",
+      "policy": "safe",
+      "strategy": "defensive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -2.2,
+        "ci95": [
+          -2.4266666666666667,
+          -1.9766666666666666
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "policy": "safe",
+      "strategy": "planner",
+      "partyHPDelta": {
+        "n": 60,
+        "mean": -5.033333333333333,
+        "ci95": [
+          -5.85,
+          -4.183333333333334
+        ]
+      },
+      "winDeltaPP": {
+        "n": 60,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        93.9826069522067,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "policy": "safe",
+      "strategy": "planner",
+      "partyHPDelta": {
+        "n": 60,
+        "mean": -3.85,
+        "ci95": [
+          -4.717083333333333,
+          -2.9829166666666653
+        ]
+      },
+      "winDeltaPP": {
+        "n": 60,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        93.9826069522067,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V3",
+      "policy": "safe",
+      "strategy": "planner",
+      "partyHPDelta": {
+        "n": 60,
+        "mean": -3.95,
+        "ci95": [
+          -4.85,
+          -3.066666666666667
+        ]
+      },
+      "winDeltaPP": {
+        "n": 60,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        93.9826069522067,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "policy": "mixed",
+      "strategy": "aggressive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -4.553333333333334,
+        "ci95": [
+          -5.053333333333334,
+          -4.056666666666667
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": -27.333333333333332,
+        "ci95": [
+          -32.333333333333336,
+          -22.0
+        ]
+      },
+      "winsLost": 83,
+      "winsGained": 1,
+      "candidateWilson95": [
+        64.58814453011743,
+        74.90611826997313
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "policy": "mixed",
+      "strategy": "aggressive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -6.22,
+        "ci95": [
+          -6.783416666666667,
+          -5.65
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": -25.666666666666668,
+        "ci95": [
+          -31.333333333333332,
+          -20.333333333333332
+        ]
+      },
+      "winsLost": 80,
+      "winsGained": 3,
+      "candidateWilson95": [
+        66.31845423956875,
+        76.46699712719605
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V3",
+      "policy": "mixed",
+      "strategy": "aggressive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -7.3933333333333335,
+        "ci95": [
+          -8.0,
+          -6.776583333333333
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": -28.0,
+        "ci95": [
+          -33.00833333333333,
+          -22.666666666666668
+        ]
+      },
+      "winsLost": 88,
+      "winsGained": 4,
+      "candidateWilson95": [
+        63.898277868993084,
+        74.27950950442782
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "policy": "mixed",
+      "strategy": "balanced",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -5.543333333333333,
+        "ci95": [
+          -5.816666666666666,
+          -5.253333333333333
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "policy": "mixed",
+      "strategy": "balanced",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -5.03,
+        "ci95": [
+          -5.38,
+          -4.7132499999999995
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V3",
+      "policy": "mixed",
+      "strategy": "balanced",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -5.096666666666667,
+        "ci95": [
+          -5.43675,
+          -4.76
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "policy": "mixed",
+      "strategy": "defensive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -4.066666666666666,
+        "ci95": [
+          -4.306666666666667,
+          -3.83325
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "policy": "mixed",
+      "strategy": "defensive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -3.1233333333333335,
+        "ci95": [
+          -3.39,
+          -2.8665833333333333
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V3",
+      "policy": "mixed",
+      "strategy": "defensive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -3.17,
+        "ci95": [
+          -3.43,
+          -2.9066666666666667
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "policy": "mixed",
+      "strategy": "planner",
+      "partyHPDelta": {
+        "n": 60,
+        "mean": -5.216666666666667,
+        "ci95": [
+          -6.233333333333333,
+          -4.216249999999999
+        ]
+      },
+      "winDeltaPP": {
+        "n": 60,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        93.9826069522067,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "policy": "mixed",
+      "strategy": "planner",
+      "partyHPDelta": {
+        "n": 60,
+        "mean": -4.833333333333333,
+        "ci95": [
+          -5.716666666666667,
+          -3.966666666666667
+        ]
+      },
+      "winDeltaPP": {
+        "n": 60,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        93.9826069522067,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V3",
+      "policy": "mixed",
+      "strategy": "planner",
+      "partyHPDelta": {
+        "n": 60,
+        "mean": -4.933333333333334,
+        "ci95": [
+          -5.8,
+          -4.116249999999998
+        ]
+      },
+      "winDeltaPP": {
+        "n": 60,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        93.9826069522067,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "policy": "risky",
+      "strategy": "aggressive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -4.69,
+        "ci95": [
+          -5.21,
+          -4.163333333333333
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": -38.333333333333336,
+        "ci95": [
+          -44.333333333333336,
+          -32.0
+        ]
+      },
+      "winsLost": 123,
+      "winsGained": 8,
+      "candidateWilson95": [
+        46.35700536016793,
+        57.59242091984114
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "policy": "risky",
+      "strategy": "aggressive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -6.22,
+        "ci95": [
+          -6.8267500000000005,
+          -5.616416666666665
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": -37.0,
+        "ci95": [
+          -43.0,
+          -31.333333333333332
+        ]
+      },
+      "winsLost": 118,
+      "winsGained": 7,
+      "candidateWilson95": [
+        47.68138744540749,
+        58.90098968794095
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V3",
+      "policy": "risky",
+      "strategy": "aggressive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -7.086666666666667,
+        "ci95": [
+          -7.76,
+          -6.43
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": -41.0,
+        "ci95": [
+          -47.333333333333336,
+          -35.0
+        ]
+      },
+      "winsLost": 129,
+      "winsGained": 6,
+      "candidateWilson95": [
+        43.72010534770382,
+        54.963419225626495
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "policy": "risky",
+      "strategy": "balanced",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -5.633333333333334,
+        "ci95": [
+          -5.943333333333333,
+          -5.323333333333333
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "policy": "risky",
+      "strategy": "balanced",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -5.463333333333333,
+        "ci95": [
+          -5.79,
+          -5.1299166666666665
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V3",
+      "policy": "risky",
+      "strategy": "balanced",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -5.58,
+        "ci95": [
+          -5.94,
+          -5.243333333333333
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "policy": "risky",
+      "strategy": "defensive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -4.0633333333333335,
+        "ci95": [
+          -4.306666666666667,
+          -3.8133333333333335
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "policy": "risky",
+      "strategy": "defensive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -3.2533333333333334,
+        "ci95": [
+          -3.52,
+          -2.98325
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V3",
+      "policy": "risky",
+      "strategy": "defensive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -3.3233333333333333,
+        "ci95": [
+          -3.5966666666666667,
+          -3.046666666666667
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "policy": "risky",
+      "strategy": "planner",
+      "partyHPDelta": {
+        "n": 60,
+        "mean": -4.383333333333334,
+        "ci95": [
+          -5.35,
+          -3.4
+        ]
+      },
+      "winDeltaPP": {
+        "n": 60,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        93.9826069522067,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "policy": "risky",
+      "strategy": "planner",
+      "partyHPDelta": {
+        "n": 60,
+        "mean": -4.883333333333334,
+        "ci95": [
+          -5.883333333333334,
+          -3.8833333333333333
+        ]
+      },
+      "winDeltaPP": {
+        "n": 60,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        93.9826069522067,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "main",
+      "variant": "V3",
+      "policy": "risky",
+      "strategy": "planner",
+      "partyHPDelta": {
+        "n": 60,
+        "mean": -5.033333333333333,
+        "ci95": [
+          -6.016666666666667,
+          -4.032916666666665
+        ]
+      },
+      "winDeltaPP": {
+        "n": 60,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        93.9826069522067,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "policy": "safe",
+      "strategy": "aggressive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -5.566666666666666,
+        "ci95": [
+          -6.06,
+          -5.08
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": -19.666666666666668,
+        "ci95": [
+          -24.333333333333332,
+          -14.666666666666666
+        ]
+      },
+      "winsLost": 62,
+      "winsGained": 3,
+      "candidateWilson95": [
+        72.97464012422272,
+        82.31732779590409
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "policy": "safe",
+      "strategy": "aggressive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -6.42,
+        "ci95": [
+          -6.88675,
+          -5.9599166666666665
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": -17.0,
+        "ci95": [
+          -21.666666666666668,
+          -12.333333333333334
+        ]
+      },
+      "winsLost": 55,
+      "winsGained": 4,
+      "candidateWilson95": [
+        75.82152889916499,
+        84.73634072764055
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V3",
+      "policy": "safe",
+      "strategy": "aggressive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -8.236666666666666,
+        "ci95": [
+          -8.813416666666665,
+          -7.64325
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": -21.666666666666668,
+        "ci95": [
+          -26.666666666666668,
+          -17.0
+        ]
+      },
+      "winsLost": 67,
+      "winsGained": 2,
+      "candidateWilson95": [
+        70.8577815254188,
+        80.48476011469894
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "policy": "safe",
+      "strategy": "balanced",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -5.286666666666667,
+        "ci95": [
+          -5.573333333333333,
+          -4.976666666666667
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "policy": "safe",
+      "strategy": "balanced",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -4.076666666666667,
+        "ci95": [
+          -4.3933333333333335,
+          -3.776666666666667
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V3",
+      "policy": "safe",
+      "strategy": "balanced",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -4.13,
+        "ci95": [
+          -4.44,
+          -3.8333333333333335
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "policy": "safe",
+      "strategy": "defensive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -4.01,
+        "ci95": [
+          -4.236666666666666,
+          -3.7799166666666664
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "policy": "safe",
+      "strategy": "defensive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -2.263333333333333,
+        "ci95": [
+          -2.49,
+          -2.0366666666666666
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V3",
+      "policy": "safe",
+      "strategy": "defensive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -2.3633333333333333,
+        "ci95": [
+          -2.6233333333333335,
+          -2.1299166666666665
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "policy": "safe",
+      "strategy": "planner",
+      "partyHPDelta": {
+        "n": 60,
+        "mean": -5.5,
+        "ci95": [
+          -6.3,
+          -4.7
+        ]
+      },
+      "winDeltaPP": {
+        "n": 60,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        93.9826069522067,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "policy": "safe",
+      "strategy": "planner",
+      "partyHPDelta": {
+        "n": 60,
+        "mean": -5.1,
+        "ci95": [
+          -6.1,
+          -4.116666666666666
+        ]
+      },
+      "winDeltaPP": {
+        "n": 60,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        93.9826069522067,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V3",
+      "policy": "safe",
+      "strategy": "planner",
+      "partyHPDelta": {
+        "n": 60,
+        "mean": -5.15,
+        "ci95": [
+          -6.167083333333333,
+          -4.183333333333334
+        ]
+      },
+      "winDeltaPP": {
+        "n": 60,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        93.9826069522067,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "policy": "mixed",
+      "strategy": "aggressive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -4.383333333333334,
+        "ci95": [
+          -4.90675,
+          -3.8299166666666666
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": -27.0,
+        "ci95": [
+          -32.333333333333336,
+          -21.666666666666668
+        ]
+      },
+      "winsLost": 84,
+      "winsGained": 3,
+      "candidateWilson95": [
+        64.58814453011743,
+        74.90611826997313
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "policy": "mixed",
+      "strategy": "aggressive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -5.913333333333333,
+        "ci95": [
+          -6.463333333333333,
+          -5.33325
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": -26.666666666666668,
+        "ci95": [
+          -32.333333333333336,
+          -21.658333333333303
+        ]
+      },
+      "winsLost": 83,
+      "winsGained": 3,
+      "candidateWilson95": [
+        64.9335553589633,
+        75.21894515446212
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V3",
+      "policy": "mixed",
+      "strategy": "aggressive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -6.943333333333333,
+        "ci95": [
+          -7.58675,
+          -6.296666666666667
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": -29.666666666666668,
+        "ci95": [
+          -35.0,
+          -24.333333333333332
+        ]
+      },
+      "winsLost": 92,
+      "winsGained": 3,
+      "candidateWilson95": [
+        61.83611701576165,
+        72.39224407765018
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "policy": "mixed",
+      "strategy": "balanced",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -5.183333333333334,
+        "ci95": [
+          -5.48,
+          -4.88
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "policy": "mixed",
+      "strategy": "balanced",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -4.746666666666667,
+        "ci95": [
+          -5.07,
+          -4.413333333333333
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V3",
+      "policy": "mixed",
+      "strategy": "balanced",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -4.783333333333333,
+        "ci95": [
+          -5.1066666666666665,
+          -4.463333333333333
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "policy": "mixed",
+      "strategy": "defensive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -4.136666666666667,
+        "ci95": [
+          -4.35,
+          -3.9266666666666667
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "policy": "mixed",
+      "strategy": "defensive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -2.973333333333333,
+        "ci95": [
+          -3.2400833333333336,
+          -2.716666666666667
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V3",
+      "policy": "mixed",
+      "strategy": "defensive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -3.0866666666666664,
+        "ci95": [
+          -3.36,
+          -2.8165833333333334
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "policy": "mixed",
+      "strategy": "planner",
+      "partyHPDelta": {
+        "n": 60,
+        "mean": -4.766666666666667,
+        "ci95": [
+          -5.816666666666666,
+          -3.6666666666666665
+        ]
+      },
+      "winDeltaPP": {
+        "n": 60,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        93.9826069522067,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "policy": "mixed",
+      "strategy": "planner",
+      "partyHPDelta": {
+        "n": 60,
+        "mean": -4.316666666666666,
+        "ci95": [
+          -5.283333333333333,
+          -3.3491666666666635
+        ]
+      },
+      "winDeltaPP": {
+        "n": 60,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        93.9826069522067,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V3",
+      "policy": "mixed",
+      "strategy": "planner",
+      "partyHPDelta": {
+        "n": 60,
+        "mean": -4.566666666666666,
+        "ci95": [
+          -5.5337499999999995,
+          -3.5833333333333335
+        ]
+      },
+      "winDeltaPP": {
+        "n": 60,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        93.9826069522067,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "policy": "risky",
+      "strategy": "aggressive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -4.963333333333333,
+        "ci95": [
+          -5.516666666666667,
+          -4.429916666666666
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": -31.0,
+        "ci95": [
+          -37.675,
+          -24.333333333333332
+        ]
+      },
+      "winsLost": 112,
+      "winsGained": 19,
+      "candidateWilson95": [
+        49.00974379911472,
+        60.20558418757308
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "policy": "risky",
+      "strategy": "aggressive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -5.98,
+        "ci95": [
+          -6.566666666666666,
+          -5.4366666666666665
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": -32.333333333333336,
+        "ci95": [
+          -38.333333333333336,
+          -26.333333333333332
+        ]
+      },
+      "winsLost": 108,
+      "winsGained": 11,
+      "candidateWilson95": [
+        47.68138744540749,
+        58.90098968794095
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V3",
+      "policy": "risky",
+      "strategy": "aggressive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -6.913333333333333,
+        "ci95": [
+          -7.553416666666667,
+          -6.27325
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": -34.666666666666664,
+        "ci95": [
+          -41.0,
+          -28.333333333333332
+        ]
+      },
+      "winsLost": 116,
+      "winsGained": 12,
+      "candidateWilson95": [
+        45.36631650426145,
+        56.60839663574308
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "policy": "risky",
+      "strategy": "balanced",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -5.34,
+        "ci95": [
+          -5.6433333333333335,
+          -5.02325
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "policy": "risky",
+      "strategy": "balanced",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -5.126666666666667,
+        "ci95": [
+          -5.45675,
+          -4.793333333333333
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V3",
+      "policy": "risky",
+      "strategy": "balanced",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -5.223333333333334,
+        "ci95": [
+          -5.556666666666667,
+          -4.886583333333333
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "policy": "risky",
+      "strategy": "defensive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -4.096666666666667,
+        "ci95": [
+          -4.323333333333333,
+          -3.856583333333333
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "policy": "risky",
+      "strategy": "defensive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -3.1766666666666667,
+        "ci95": [
+          -3.4633333333333334,
+          -2.9
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V3",
+      "policy": "risky",
+      "strategy": "defensive",
+      "partyHPDelta": {
+        "n": 300,
+        "mean": -3.26,
+        "ci95": [
+          -3.5334166666666667,
+          -2.976583333333333
+        ]
+      },
+      "winDeltaPP": {
+        "n": 300,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        98.73565700022642,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "policy": "risky",
+      "strategy": "planner",
+      "partyHPDelta": {
+        "n": 60,
+        "mean": -5.6,
+        "ci95": [
+          -6.500416666666666,
+          -4.666666666666667
+        ]
+      },
+      "winDeltaPP": {
+        "n": 60,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        93.9826069522067,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "policy": "risky",
+      "strategy": "planner",
+      "partyHPDelta": {
+        "n": 60,
+        "mean": -6.266666666666667,
+        "ci95": [
+          -7.2837499999999995,
+          -5.316666666666666
+        ]
+      },
+      "winDeltaPP": {
+        "n": 60,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        93.9826069522067,
+        99.99999999999999
+      ]
+    },
+    {
+      "split": "holdout",
+      "variant": "V3",
+      "policy": "risky",
+      "strategy": "planner",
+      "partyHPDelta": {
+        "n": 60,
+        "mean": -6.616666666666666,
+        "ci95": [
+          -7.533333333333333,
+          -5.716666666666667
+        ]
+      },
+      "winDeltaPP": {
+        "n": 60,
+        "mean": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "winsLost": 0,
+      "winsGained": 0,
+      "candidateWilson95": [
+        93.9826069522067,
+        99.99999999999999
+      ]
+    }
+  ],
+  "pairedElite": [
+    {
+      "split": "main",
+      "variant": "V0",
+      "strategy": "aggressive",
+      "loadout": "none",
+      "routeCost": {
+        "n": 300,
+        "mean": 4.753333333333333,
+        "ci95": [
+          4.123166666666666,
+          5.383333333333334
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 10.426666666666666,
+        "ci95": [
+          9.973333333333333,
+          10.94
+        ]
+      }
+    },
+    {
+      "split": "main",
+      "variant": "V0",
+      "strategy": "aggressive",
+      "loadout": "wedgeWhistle",
+      "routeCost": {
+        "n": 300,
+        "mean": 4.016666666666667,
+        "ci95": [
+          3.34,
+          4.676666666666667
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 6.07,
+        "ci95": [
+          5.59,
+          6.573333333333333
+        ]
+      }
+    },
+    {
+      "split": "main",
+      "variant": "V0",
+      "strategy": "aggressive",
+      "loadout": "pulleySpool",
+      "routeCost": {
+        "n": 300,
+        "mean": 4.486666666666666,
+        "ci95": [
+          3.8599166666666664,
+          5.0800833333333335
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 7.486666666666666,
+        "ci95": [
+          7.093333333333334,
+          7.900083333333334
+        ]
+      }
+    },
+    {
+      "split": "main",
+      "variant": "V0",
+      "strategy": "balanced",
+      "loadout": "none",
+      "routeCost": {
+        "n": 300,
+        "mean": -0.07333333333333333,
+        "ci95": [
+          -0.3233333333333333,
+          0.18333333333333332
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 0.5033333333333333,
+        "ci95": [
+          0.38666666666666666,
+          0.6167500000000004
+        ]
+      }
+    },
+    {
+      "split": "main",
+      "variant": "V0",
+      "strategy": "balanced",
+      "loadout": "wedgeWhistle",
+      "routeCost": {
+        "n": 300,
+        "mean": 0.25333333333333335,
+        "ci95": [
+          0.016666666666666666,
+          0.5033333333333333
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 0.23333333333333334,
+        "ci95": [
+          0.17,
+          0.3
+        ]
+      }
+    },
+    {
+      "split": "main",
+      "variant": "V0",
+      "strategy": "balanced",
+      "loadout": "pulleySpool",
+      "routeCost": {
+        "n": 300,
+        "mean": 0.43,
+        "ci95": [
+          0.13,
+          0.7367500000000003
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 0.5066666666666667,
+        "ci95": [
+          0.39,
+          0.6300833333333337
+        ]
+      }
+    },
+    {
+      "split": "main",
+      "variant": "V0",
+      "strategy": "defensive",
+      "loadout": "none",
+      "routeCost": {
+        "n": 300,
+        "mean": -0.44,
+        "ci95": [
+          -0.6533333333333333,
+          -0.24
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 0.12,
+        "ci95": [
+          0.07,
+          0.17666666666666667
+        ]
+      }
+    },
+    {
+      "split": "main",
+      "variant": "V0",
+      "strategy": "defensive",
+      "loadout": "wedgeWhistle",
+      "routeCost": {
+        "n": 300,
+        "mean": 0.013333333333333334,
+        "ci95": [
+          -0.16333333333333333,
+          0.18666666666666668
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 0.02,
+        "ci95": [
+          0.006666666666666667,
+          0.03666666666666667
+        ]
+      }
+    },
+    {
+      "split": "main",
+      "variant": "V0",
+      "strategy": "defensive",
+      "loadout": "pulleySpool",
+      "routeCost": {
+        "n": 300,
+        "mean": 0.23,
+        "ci95": [
+          0.006666666666666667,
+          0.47
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 0.12333333333333334,
+        "ci95": [
+          0.07,
+          0.18333333333333332
+        ]
+      }
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "strategy": "aggressive",
+      "loadout": "none",
+      "routeCost": {
+        "n": 300,
+        "mean": 5.206666666666667,
+        "ci95": [
+          4.6033333333333335,
+          5.803333333333334
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 13.933333333333334,
+        "ci95": [
+          13.486666666666666,
+          14.403333333333334
+        ]
+      }
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "strategy": "aggressive",
+      "loadout": "wedgeWhistle",
+      "routeCost": {
+        "n": 300,
+        "mean": 4.14,
+        "ci95": [
+          3.5199166666666666,
+          4.780083333333334
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 9.35,
+        "ci95": [
+          8.903250000000002,
+          9.823333333333334
+        ]
+      }
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "strategy": "aggressive",
+      "loadout": "pulleySpool",
+      "routeCost": {
+        "n": 300,
+        "mean": 4.9,
+        "ci95": [
+          4.33,
+          5.480166666666667
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 10.186666666666667,
+        "ci95": [
+          9.783333333333333,
+          10.603333333333333
+        ]
+      }
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "strategy": "balanced",
+      "loadout": "none",
+      "routeCost": {
+        "n": 300,
+        "mean": 0.07333333333333333,
+        "ci95": [
+          -0.29,
+          0.45
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 1.3,
+        "ci95": [
+          1.13,
+          1.4866666666666666
+        ]
+      }
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "strategy": "balanced",
+      "loadout": "wedgeWhistle",
+      "routeCost": {
+        "n": 300,
+        "mean": 0.23666666666666666,
+        "ci95": [
+          -0.09333333333333334,
+          0.563416666666667
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 0.3566666666666667,
+        "ci95": [
+          0.25666666666666665,
+          0.46
+        ]
+      }
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "strategy": "balanced",
+      "loadout": "pulleySpool",
+      "routeCost": {
+        "n": 300,
+        "mean": 0.7833333333333333,
+        "ci95": [
+          0.3765833333333333,
+          1.1833333333333333
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 1.2866666666666666,
+        "ci95": [
+          1.09,
+          1.4866666666666666
+        ]
+      }
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "strategy": "defensive",
+      "loadout": "none",
+      "routeCost": {
+        "n": 300,
+        "mean": -0.23666666666666666,
+        "ci95": [
+          -0.51,
+          0.023333333333333334
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 0.4866666666666667,
+        "ci95": [
+          0.37333333333333335,
+          0.6100833333333336
+        ]
+      }
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "strategy": "defensive",
+      "loadout": "wedgeWhistle",
+      "routeCost": {
+        "n": 300,
+        "mean": -0.01,
+        "ci95": [
+          -0.2633333333333333,
+          0.25
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 0.056666666666666664,
+        "ci95": [
+          0.026583333333333365,
+          0.09333333333333334
+        ]
+      }
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "strategy": "defensive",
+      "loadout": "pulleySpool",
+      "routeCost": {
+        "n": 300,
+        "mean": 0.5666666666666667,
+        "ci95": [
+          0.26658333333333334,
+          0.8600833333333336
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 0.47,
+        "ci95": [
+          0.36333333333333334,
+          0.59
+        ]
+      }
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "strategy": "aggressive",
+      "loadout": "none",
+      "routeCost": {
+        "n": 300,
+        "mean": 4.43,
+        "ci95": [
+          3.933333333333333,
+          4.923416666666666
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 16.53,
+        "ci95": [
+          16.109916666666667,
+          16.983416666666667
+        ]
+      }
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "strategy": "aggressive",
+      "loadout": "wedgeWhistle",
+      "routeCost": {
+        "n": 300,
+        "mean": 4.94,
+        "ci95": [
+          4.39,
+          5.476666666666667
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 12.256666666666666,
+        "ci95": [
+          11.84,
+          12.710083333333335
+        ]
+      }
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "strategy": "aggressive",
+      "loadout": "pulleySpool",
+      "routeCost": {
+        "n": 300,
+        "mean": 5.24,
+        "ci95": [
+          4.769916666666666,
+          5.71675
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 13.88,
+        "ci95": [
+          13.406583333333334,
+          14.376666666666667
+        ]
+      }
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "strategy": "balanced",
+      "loadout": "none",
+      "routeCost": {
+        "n": 300,
+        "mean": 1.95,
+        "ci95": [
+          1.5266666666666666,
+          2.3766666666666665
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 4.6033333333333335,
+        "ci95": [
+          4.28,
+          4.92675
+        ]
+      }
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "strategy": "balanced",
+      "loadout": "wedgeWhistle",
+      "routeCost": {
+        "n": 300,
+        "mean": 1.5666666666666667,
+        "ci95": [
+          1.22,
+          1.943416666666667
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 2.2866666666666666,
+        "ci95": [
+          2.06,
+          2.5366666666666666
+        ]
+      }
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "strategy": "balanced",
+      "loadout": "pulleySpool",
+      "routeCost": {
+        "n": 300,
+        "mean": 2.243333333333333,
+        "ci95": [
+          1.8,
+          2.67
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 4.8,
+        "ci95": [
+          4.466666666666667,
+          5.153333333333333
+        ]
+      }
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "strategy": "defensive",
+      "loadout": "none",
+      "routeCost": {
+        "n": 300,
+        "mean": 1.08,
+        "ci95": [
+          0.73,
+          1.4133333333333333
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 2.01,
+        "ci95": [
+          1.7666666666666666,
+          2.26
+        ]
+      }
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "strategy": "defensive",
+      "loadout": "wedgeWhistle",
+      "routeCost": {
+        "n": 300,
+        "mean": 0.83,
+        "ci95": [
+          0.53,
+          1.1167500000000004
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 0.8633333333333333,
+        "ci95": [
+          0.7166666666666667,
+          1.0233333333333334
+        ]
+      }
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "strategy": "defensive",
+      "loadout": "pulleySpool",
+      "routeCost": {
+        "n": 300,
+        "mean": 1.2933333333333332,
+        "ci95": [
+          0.9433333333333334,
+          1.65
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 1.7366666666666666,
+        "ci95": [
+          1.5199166666666668,
+          1.95
+        ]
+      }
+    },
+    {
+      "split": "holdout",
+      "variant": "V0",
+      "strategy": "aggressive",
+      "loadout": "none",
+      "routeCost": {
+        "n": 300,
+        "mean": 4.403333333333333,
+        "ci95": [
+          3.776666666666667,
+          5.033416666666667
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 10.46,
+        "ci95": [
+          9.95,
+          10.950083333333334
+        ]
+      }
+    },
+    {
+      "split": "holdout",
+      "variant": "V0",
+      "strategy": "aggressive",
+      "loadout": "wedgeWhistle",
+      "routeCost": {
+        "n": 300,
+        "mean": 3.72,
+        "ci95": [
+          2.9266666666666667,
+          4.520083333333333
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 6.29,
+        "ci95": [
+          5.8,
+          6.81675
+        ]
+      }
+    },
+    {
+      "split": "holdout",
+      "variant": "V0",
+      "strategy": "aggressive",
+      "loadout": "pulleySpool",
+      "routeCost": {
+        "n": 300,
+        "mean": 4.22,
+        "ci95": [
+          3.5966666666666667,
+          4.810083333333333
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 7.706666666666667,
+        "ci95": [
+          7.316666666666666,
+          8.103416666666668
+        ]
+      }
+    },
+    {
+      "split": "holdout",
+      "variant": "V0",
+      "strategy": "balanced",
+      "loadout": "none",
+      "routeCost": {
+        "n": 300,
+        "mean": 0.14666666666666667,
+        "ci95": [
+          -0.13666666666666666,
+          0.433416666666667
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 0.53,
+        "ci95": [
+          0.41,
+          0.66
+        ]
+      }
+    },
+    {
+      "split": "holdout",
+      "variant": "V0",
+      "strategy": "balanced",
+      "loadout": "wedgeWhistle",
+      "routeCost": {
+        "n": 300,
+        "mean": 0.3566666666666667,
+        "ci95": [
+          0.10333333333333333,
+          0.6066666666666667
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 0.20666666666666667,
+        "ci95": [
+          0.15333333333333332,
+          0.26
+        ]
+      }
+    },
+    {
+      "split": "holdout",
+      "variant": "V0",
+      "strategy": "balanced",
+      "loadout": "pulleySpool",
+      "routeCost": {
+        "n": 300,
+        "mean": 0.6766666666666666,
+        "ci95": [
+          0.37333333333333335,
+          0.9733333333333334
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 0.59,
+        "ci95": [
+          0.46,
+          0.7333333333333333
+        ]
+      }
+    },
+    {
+      "split": "holdout",
+      "variant": "V0",
+      "strategy": "defensive",
+      "loadout": "none",
+      "routeCost": {
+        "n": 300,
+        "mean": -0.21666666666666667,
+        "ci95": [
+          -0.43333333333333335,
+          -0.01
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 0.15333333333333332,
+        "ci95": [
+          0.08991666666666669,
+          0.23
+        ]
+      }
+    },
+    {
+      "split": "holdout",
+      "variant": "V0",
+      "strategy": "defensive",
+      "loadout": "wedgeWhistle",
+      "routeCost": {
+        "n": 300,
+        "mean": 0.12,
+        "ci95": [
+          -0.043333333333333335,
+          0.2800833333333337
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 0.03,
+        "ci95": [
+          0.013333333333333334,
+          0.05008333333333364
+        ]
+      }
+    },
+    {
+      "split": "holdout",
+      "variant": "V0",
+      "strategy": "defensive",
+      "loadout": "pulleySpool",
+      "routeCost": {
+        "n": 300,
+        "mean": 0.35333333333333333,
+        "ci95": [
+          0.10658333333333336,
+          0.6
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 0.14666666666666667,
+        "ci95": [
+          0.07666666666666666,
+          0.23
+        ]
+      }
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "strategy": "aggressive",
+      "loadout": "none",
+      "routeCost": {
+        "n": 300,
+        "mean": 5.003333333333333,
+        "ci95": [
+          4.449916666666667,
+          5.5633333333333335
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 13.873333333333333,
+        "ci95": [
+          13.413250000000001,
+          14.356833333333334
+        ]
+      }
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "strategy": "aggressive",
+      "loadout": "wedgeWhistle",
+      "routeCost": {
+        "n": 300,
+        "mean": 3.3433333333333333,
+        "ci95": [
+          2.6866666666666665,
+          4.030083333333334
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 9.516666666666667,
+        "ci95": [
+          9.0,
+          10.05
+        ]
+      }
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "strategy": "aggressive",
+      "loadout": "pulleySpool",
+      "routeCost": {
+        "n": 300,
+        "mean": 4.723333333333334,
+        "ci95": [
+          4.1898333333333335,
+          5.303416666666667
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 10.516666666666667,
+        "ci95": [
+          10.06325,
+          10.946666666666667
+        ]
+      }
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "strategy": "balanced",
+      "loadout": "none",
+      "routeCost": {
+        "n": 300,
+        "mean": 0.36,
+        "ci95": [
+          -0.0033333333333333335,
+          0.723416666666667
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 1.33,
+        "ci95": [
+          1.15,
+          1.52
+        ]
+      }
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "strategy": "balanced",
+      "loadout": "wedgeWhistle",
+      "routeCost": {
+        "n": 300,
+        "mean": 0.48333333333333334,
+        "ci95": [
+          0.15658333333333338,
+          0.8033333333333333
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 0.37333333333333335,
+        "ci95": [
+          0.27666666666666667,
+          0.48
+        ]
+      }
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "strategy": "balanced",
+      "loadout": "pulleySpool",
+      "routeCost": {
+        "n": 300,
+        "mean": 1.2,
+        "ci95": [
+          0.7966666666666666,
+          1.6333333333333333
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 1.3533333333333333,
+        "ci95": [
+          1.1499166666666667,
+          1.5633333333333332
+        ]
+      }
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "strategy": "defensive",
+      "loadout": "none",
+      "routeCost": {
+        "n": 300,
+        "mean": -0.15666666666666668,
+        "ci95": [
+          -0.4434166666666667,
+          0.14333333333333334
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 0.47,
+        "ci95": [
+          0.3466666666666667,
+          0.6
+        ]
+      }
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "strategy": "defensive",
+      "loadout": "wedgeWhistle",
+      "routeCost": {
+        "n": 300,
+        "mean": 0.23333333333333334,
+        "ci95": [
+          -0.02666666666666667,
+          0.49
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 0.09666666666666666,
+        "ci95": [
+          0.04666666666666667,
+          0.15333333333333332
+        ]
+      }
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "strategy": "defensive",
+      "loadout": "pulleySpool",
+      "routeCost": {
+        "n": 300,
+        "mean": 0.7233333333333334,
+        "ci95": [
+          0.41333333333333333,
+          1.0267500000000003
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 0.5033333333333333,
+        "ci95": [
+          0.37666666666666665,
+          0.6433333333333333
+        ]
+      }
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "strategy": "aggressive",
+      "loadout": "none",
+      "routeCost": {
+        "n": 300,
+        "mean": 4.19,
+        "ci95": [
+          3.6433333333333335,
+          4.72675
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 17.086666666666666,
+        "ci95": [
+          16.65,
+          17.516666666666666
+        ]
+      }
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "strategy": "aggressive",
+      "loadout": "wedgeWhistle",
+      "routeCost": {
+        "n": 300,
+        "mean": 4.033333333333333,
+        "ci95": [
+          3.3799166666666665,
+          4.696666666666666
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 12.77,
+        "ci95": [
+          12.333250000000001,
+          13.226750000000001
+        ]
+      }
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "strategy": "aggressive",
+      "loadout": "pulleySpool",
+      "routeCost": {
+        "n": 300,
+        "mean": 5.0633333333333335,
+        "ci95": [
+          4.586666666666667,
+          5.5633333333333335
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 14.306666666666667,
+        "ci95": [
+          13.856583333333335,
+          14.766666666666667
+        ]
+      }
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "strategy": "balanced",
+      "loadout": "none",
+      "routeCost": {
+        "n": 300,
+        "mean": 2.13,
+        "ci95": [
+          1.68,
+          2.5533333333333332
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 4.726666666666667,
+        "ci95": [
+          4.40325,
+          5.046666666666667
+        ]
+      }
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "strategy": "balanced",
+      "loadout": "wedgeWhistle",
+      "routeCost": {
+        "n": 300,
+        "mean": 1.6266666666666667,
+        "ci95": [
+          1.2133333333333334,
+          2.0166666666666666
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 2.25,
+        "ci95": [
+          2.03,
+          2.47
+        ]
+      }
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "strategy": "balanced",
+      "loadout": "pulleySpool",
+      "routeCost": {
+        "n": 300,
+        "mean": 2.46,
+        "ci95": [
+          1.9832500000000002,
+          2.933333333333333
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 4.826666666666667,
+        "ci95": [
+          4.483333333333333,
+          5.173333333333333
+        ]
+      }
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "strategy": "defensive",
+      "loadout": "none",
+      "routeCost": {
+        "n": 300,
+        "mean": 1.2466666666666666,
+        "ci95": [
+          0.9166666666666666,
+          1.583416666666667
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 2.05,
+        "ci95": [
+          1.79,
+          2.3066666666666666
+        ]
+      }
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "strategy": "defensive",
+      "loadout": "wedgeWhistle",
+      "routeCost": {
+        "n": 300,
+        "mean": 0.9433333333333334,
+        "ci95": [
+          0.6733333333333333,
+          1.2166666666666666
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 0.91,
+        "ci95": [
+          0.7533333333333333,
+          1.0700833333333337
+        ]
+      }
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "strategy": "defensive",
+      "loadout": "pulleySpool",
+      "routeCost": {
+        "n": 300,
+        "mean": 1.65,
+        "ci95": [
+          1.27,
+          2.0166666666666666
+        ]
+      },
+      "directLoss": {
+        "n": 300,
+        "mean": 1.83,
+        "ci95": [
+          1.59,
+          2.0733333333333333
+        ]
+      }
+    }
+  ],
+  "usage": [
+    {
+      "split": "main",
+      "variant": "V0",
+      "policy": "safe",
+      "strategy": "aggressive",
+      "playsPerRun": 28.073333333333334,
+      "manaAvailablePerRun": 52.39666666666667,
+      "manaSpentPerRun": 39.17666666666667,
+      "upgradedPlaysPerRun": 0.5033333333333333,
+      "acquiredPlaysPerRun": 2.566666666666667,
+      "runsPlayingUpgradePct": 47.0,
+      "runsPlayingAcquisitionPct": 96.0,
+      "deathsByEncounter": {
+        "old-mines-rhahk-zor": 7,
+        "none": 293
+      },
+      "warriorDeaths": 3,
+      "mageDeaths": 4
+    },
+    {
+      "split": "main",
+      "variant": "V0",
+      "policy": "safe",
+      "strategy": "balanced",
+      "playsPerRun": 32.696666666666665,
+      "manaAvailablePerRun": 51.663333333333334,
+      "manaSpentPerRun": 43.45333333333333,
+      "upgradedPlaysPerRun": 1.0166666666666666,
+      "acquiredPlaysPerRun": 2.85,
+      "runsPlayingUpgradePct": 96.66666666666667,
+      "runsPlayingAcquisitionPct": 99.66666666666667,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V0",
+      "policy": "safe",
+      "strategy": "defensive",
+      "playsPerRun": 35.60666666666667,
+      "manaAvailablePerRun": 54.08,
+      "manaSpentPerRun": 46.2,
+      "upgradedPlaysPerRun": 1.0366666666666666,
+      "acquiredPlaysPerRun": 2.8533333333333335,
+      "runsPlayingUpgradePct": 98.0,
+      "runsPlayingAcquisitionPct": 99.33333333333333,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V0",
+      "policy": "mixed",
+      "strategy": "aggressive",
+      "playsPerRun": 27.9,
+      "manaAvailablePerRun": 51.696666666666665,
+      "manaSpentPerRun": 38.553333333333335,
+      "upgradedPlaysPerRun": 1.7766666666666666,
+      "acquiredPlaysPerRun": 2.69,
+      "runsPlayingUpgradePct": 82.0,
+      "runsPlayingAcquisitionPct": 97.0,
+      "deathsByEncounter": {
+        "none": 292,
+        "old-mines-rhahk-zor": 7,
+        "old-mines-digger": 1
+      },
+      "warriorDeaths": 4,
+      "mageDeaths": 4
+    },
+    {
+      "split": "main",
+      "variant": "V0",
+      "policy": "mixed",
+      "strategy": "balanced",
+      "playsPerRun": 35.333333333333336,
+      "manaAvailablePerRun": 56.24333333333333,
+      "manaSpentPerRun": 46.77,
+      "upgradedPlaysPerRun": 2.46,
+      "acquiredPlaysPerRun": 3.283333333333333,
+      "runsPlayingUpgradePct": 95.33333333333334,
+      "runsPlayingAcquisitionPct": 99.33333333333333,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V0",
+      "policy": "mixed",
+      "strategy": "defensive",
+      "playsPerRun": 39.406666666666666,
+      "manaAvailablePerRun": 60.11333333333334,
+      "manaSpentPerRun": 51.03333333333333,
+      "upgradedPlaysPerRun": 2.493333333333333,
+      "acquiredPlaysPerRun": 3.4133333333333336,
+      "runsPlayingUpgradePct": 96.0,
+      "runsPlayingAcquisitionPct": 98.66666666666667,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V0",
+      "policy": "risky",
+      "strategy": "aggressive",
+      "playsPerRun": 34.43,
+      "manaAvailablePerRun": 64.35333333333334,
+      "manaSpentPerRun": 47.47666666666667,
+      "upgradedPlaysPerRun": 0.7433333333333333,
+      "acquiredPlaysPerRun": 3.566666666666667,
+      "runsPlayingUpgradePct": 36.666666666666664,
+      "runsPlayingAcquisitionPct": 98.33333333333333,
+      "deathsByEncounter": {
+        "none": 271,
+        "old-mines-rhahk-zor": 25,
+        "old-mines-johnson": 2,
+        "old-mines-overseer": 1,
+        "old-mines-watchman": 1
+      },
+      "warriorDeaths": 26,
+      "mageDeaths": 3
+    },
+    {
+      "split": "main",
+      "variant": "V0",
+      "policy": "risky",
+      "strategy": "balanced",
+      "playsPerRun": 39.93666666666667,
+      "manaAvailablePerRun": 63.593333333333334,
+      "manaSpentPerRun": 52.9,
+      "upgradedPlaysPerRun": 1.5033333333333334,
+      "acquiredPlaysPerRun": 3.9766666666666666,
+      "runsPlayingUpgradePct": 88.0,
+      "runsPlayingAcquisitionPct": 99.33333333333333,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V0",
+      "policy": "risky",
+      "strategy": "defensive",
+      "playsPerRun": 43.266666666666666,
+      "manaAvailablePerRun": 66.41,
+      "manaSpentPerRun": 56.09,
+      "upgradedPlaysPerRun": 1.5333333333333334,
+      "acquiredPlaysPerRun": 4.073333333333333,
+      "runsPlayingUpgradePct": 90.0,
+      "runsPlayingAcquisitionPct": 99.33333333333333,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "policy": "safe",
+      "strategy": "aggressive",
+      "playsPerRun": 27.363333333333333,
+      "manaAvailablePerRun": 49.336666666666666,
+      "manaSpentPerRun": 38.04666666666667,
+      "upgradedPlaysPerRun": 0.24,
+      "acquiredPlaysPerRun": 2.4433333333333334,
+      "runsPlayingUpgradePct": 21.333333333333336,
+      "runsPlayingAcquisitionPct": 95.0,
+      "deathsByEncounter": {
+        "old-mines-rhahk-zor": 61,
+        "none": 231,
+        "old-mines-watchman": 7,
+        "old-mines-digger": 1
+      },
+      "warriorDeaths": 57,
+      "mageDeaths": 12
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "policy": "safe",
+      "strategy": "balanced",
+      "playsPerRun": 33.45666666666666,
+      "manaAvailablePerRun": 52.196666666666665,
+      "manaSpentPerRun": 44.17666666666667,
+      "upgradedPlaysPerRun": 0.9666666666666667,
+      "acquiredPlaysPerRun": 2.8533333333333335,
+      "runsPlayingUpgradePct": 93.0,
+      "runsPlayingAcquisitionPct": 99.0,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "policy": "safe",
+      "strategy": "defensive",
+      "playsPerRun": 37.20666666666666,
+      "manaAvailablePerRun": 55.53,
+      "manaSpentPerRun": 47.833333333333336,
+      "upgradedPlaysPerRun": 1.0066666666666666,
+      "acquiredPlaysPerRun": 2.8833333333333333,
+      "runsPlayingUpgradePct": 96.33333333333334,
+      "runsPlayingAcquisitionPct": 99.33333333333333,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "policy": "mixed",
+      "strategy": "aggressive",
+      "playsPerRun": 26.466666666666665,
+      "manaAvailablePerRun": 47.31666666666667,
+      "manaSpentPerRun": 36.486666666666665,
+      "upgradedPlaysPerRun": 1.5166666666666666,
+      "acquiredPlaysPerRun": 2.4833333333333334,
+      "runsPlayingUpgradePct": 75.66666666666667,
+      "runsPlayingAcquisitionPct": 94.66666666666667,
+      "deathsByEncounter": {
+        "none": 210,
+        "old-mines-rhahk-zor": 80,
+        "old-mines-digger": 2,
+        "old-mines-watchman": 8
+      },
+      "warriorDeaths": 79,
+      "mageDeaths": 11
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "policy": "mixed",
+      "strategy": "balanced",
+      "playsPerRun": 34.53333333333333,
+      "manaAvailablePerRun": 54.18333333333333,
+      "manaSpentPerRun": 45.42666666666667,
+      "upgradedPlaysPerRun": 2.34,
+      "acquiredPlaysPerRun": 3.1766666666666667,
+      "runsPlayingUpgradePct": 93.66666666666667,
+      "runsPlayingAcquisitionPct": 99.33333333333333,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "policy": "mixed",
+      "strategy": "defensive",
+      "playsPerRun": 40.84,
+      "manaAvailablePerRun": 60.93666666666667,
+      "manaSpentPerRun": 52.47666666666667,
+      "upgradedPlaysPerRun": 2.4633333333333334,
+      "acquiredPlaysPerRun": 3.433333333333333,
+      "runsPlayingUpgradePct": 95.66666666666667,
+      "runsPlayingAcquisitionPct": 99.0,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "policy": "risky",
+      "strategy": "aggressive",
+      "playsPerRun": 31.683333333333334,
+      "manaAvailablePerRun": 56.87,
+      "manaSpentPerRun": 43.54333333333334,
+      "upgradedPlaysPerRun": 0.5766666666666667,
+      "acquiredPlaysPerRun": 3.17,
+      "runsPlayingUpgradePct": 29.333333333333332,
+      "runsPlayingAcquisitionPct": 94.66666666666667,
+      "deathsByEncounter": {
+        "none": 156,
+        "old-mines-rhahk-zor": 110,
+        "old-mines-watchman": 16,
+        "old-mines-digger": 1,
+        "old-mines-overseer": 11,
+        "old-mines-johnson": 5,
+        "old-mines-raider": 1
+      },
+      "warriorDeaths": 122,
+      "mageDeaths": 22
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "policy": "risky",
+      "strategy": "balanced",
+      "playsPerRun": 41.03,
+      "manaAvailablePerRun": 64.36,
+      "manaSpentPerRun": 53.95666666666666,
+      "upgradedPlaysPerRun": 1.4033333333333333,
+      "acquiredPlaysPerRun": 4.033333333333333,
+      "runsPlayingUpgradePct": 81.66666666666667,
+      "runsPlayingAcquisitionPct": 99.33333333333333,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "policy": "risky",
+      "strategy": "defensive",
+      "playsPerRun": 45.053333333333335,
+      "manaAvailablePerRun": 67.41,
+      "manaSpentPerRun": 57.93666666666667,
+      "upgradedPlaysPerRun": 1.5333333333333334,
+      "acquiredPlaysPerRun": 4.116666666666666,
+      "runsPlayingUpgradePct": 90.33333333333333,
+      "runsPlayingAcquisitionPct": 99.66666666666667,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "policy": "safe",
+      "strategy": "aggressive",
+      "playsPerRun": 27.553333333333335,
+      "manaAvailablePerRun": 50.04666666666667,
+      "manaSpentPerRun": 38.346666666666664,
+      "upgradedPlaysPerRun": 0.22,
+      "acquiredPlaysPerRun": 2.5766666666666667,
+      "runsPlayingUpgradePct": 19.333333333333332,
+      "runsPlayingAcquisitionPct": 96.66666666666667,
+      "deathsByEncounter": {
+        "old-mines-rhahk-zor": 49,
+        "none": 247,
+        "old-mines-watchman": 3,
+        "old-mines-overseer": 1
+      },
+      "warriorDeaths": 45,
+      "mageDeaths": 8
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "policy": "safe",
+      "strategy": "balanced",
+      "playsPerRun": 33.553333333333335,
+      "manaAvailablePerRun": 52.03,
+      "manaSpentPerRun": 44.23,
+      "upgradedPlaysPerRun": 1,
+      "acquiredPlaysPerRun": 2.8833333333333333,
+      "runsPlayingUpgradePct": 91.33333333333333,
+      "runsPlayingAcquisitionPct": 100,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "policy": "safe",
+      "strategy": "defensive",
+      "playsPerRun": 36.81,
+      "manaAvailablePerRun": 54.63,
+      "manaSpentPerRun": 47.263333333333335,
+      "upgradedPlaysPerRun": 1.0866666666666667,
+      "acquiredPlaysPerRun": 2.8933333333333335,
+      "runsPlayingUpgradePct": 98.33333333333333,
+      "runsPlayingAcquisitionPct": 99.66666666666667,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "policy": "mixed",
+      "strategy": "aggressive",
+      "playsPerRun": 26.876666666666665,
+      "manaAvailablePerRun": 48.556666666666665,
+      "manaSpentPerRun": 36.89,
+      "upgradedPlaysPerRun": 1.4633333333333334,
+      "acquiredPlaysPerRun": 2.61,
+      "runsPlayingUpgradePct": 74.66666666666667,
+      "runsPlayingAcquisitionPct": 96.66666666666667,
+      "deathsByEncounter": {
+        "none": 215,
+        "old-mines-rhahk-zor": 77,
+        "old-mines-digger": 2,
+        "old-mines-overseer": 3,
+        "old-mines-watchman": 3
+      },
+      "warriorDeaths": 78,
+      "mageDeaths": 7
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "policy": "mixed",
+      "strategy": "balanced",
+      "playsPerRun": 35.986666666666665,
+      "manaAvailablePerRun": 56.06,
+      "manaSpentPerRun": 47.26,
+      "upgradedPlaysPerRun": 2.3,
+      "acquiredPlaysPerRun": 3.32,
+      "runsPlayingUpgradePct": 92.66666666666666,
+      "runsPlayingAcquisitionPct": 100,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "policy": "mixed",
+      "strategy": "defensive",
+      "playsPerRun": 41.21,
+      "manaAvailablePerRun": 61.10333333333333,
+      "manaSpentPerRun": 52.63333333333333,
+      "upgradedPlaysPerRun": 2.5366666666666666,
+      "acquiredPlaysPerRun": 3.533333333333333,
+      "runsPlayingUpgradePct": 96.33333333333334,
+      "runsPlayingAcquisitionPct": 99.66666666666667,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "policy": "risky",
+      "strategy": "aggressive",
+      "playsPerRun": 31.26,
+      "manaAvailablePerRun": 55.60666666666667,
+      "manaSpentPerRun": 42.916666666666664,
+      "upgradedPlaysPerRun": 0.5233333333333333,
+      "acquiredPlaysPerRun": 3.14,
+      "runsPlayingUpgradePct": 28.666666666666668,
+      "runsPlayingAcquisitionPct": 94.66666666666667,
+      "deathsByEncounter": {
+        "none": 160,
+        "old-mines-rhahk-zor": 85,
+        "old-mines-digger": 3,
+        "old-mines-overseer": 39,
+        "old-mines-johnson": 6,
+        "old-mines-watchman": 7
+      },
+      "warriorDeaths": 128,
+      "mageDeaths": 12
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "policy": "risky",
+      "strategy": "balanced",
+      "playsPerRun": 41.11333333333334,
+      "manaAvailablePerRun": 64.12666666666667,
+      "manaSpentPerRun": 54.053333333333335,
+      "upgradedPlaysPerRun": 1.2933333333333332,
+      "acquiredPlaysPerRun": 4.136666666666667,
+      "runsPlayingUpgradePct": 74.66666666666667,
+      "runsPlayingAcquisitionPct": 100,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "policy": "risky",
+      "strategy": "defensive",
+      "playsPerRun": 45.233333333333334,
+      "manaAvailablePerRun": 67.21,
+      "manaSpentPerRun": 57.96333333333333,
+      "upgradedPlaysPerRun": 1.5366666666666666,
+      "acquiredPlaysPerRun": 4.236666666666666,
+      "runsPlayingUpgradePct": 90.33333333333333,
+      "runsPlayingAcquisitionPct": 100,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V3",
+      "policy": "safe",
+      "strategy": "aggressive",
+      "playsPerRun": 27.566666666666666,
+      "manaAvailablePerRun": 49.04666666666667,
+      "manaSpentPerRun": 38.35,
+      "upgradedPlaysPerRun": 0.22666666666666666,
+      "acquiredPlaysPerRun": 2.57,
+      "runsPlayingUpgradePct": 19.333333333333332,
+      "runsPlayingAcquisitionPct": 96.66666666666667,
+      "deathsByEncounter": {
+        "old-mines-rhahk-zor": 68,
+        "none": 228,
+        "old-mines-watchman": 3,
+        "old-mines-overseer": 1
+      },
+      "warriorDeaths": 45,
+      "mageDeaths": 27
+    },
+    {
+      "split": "main",
+      "variant": "V3",
+      "policy": "safe",
+      "strategy": "balanced",
+      "playsPerRun": 33.516666666666666,
+      "manaAvailablePerRun": 51.596666666666664,
+      "manaSpentPerRun": 44.196666666666665,
+      "upgradedPlaysPerRun": 0.9833333333333333,
+      "acquiredPlaysPerRun": 2.8633333333333333,
+      "runsPlayingUpgradePct": 91.0,
+      "runsPlayingAcquisitionPct": 100,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V3",
+      "policy": "safe",
+      "strategy": "defensive",
+      "playsPerRun": 36.92,
+      "manaAvailablePerRun": 54.49666666666667,
+      "manaSpentPerRun": 47.38,
+      "upgradedPlaysPerRun": 1.0833333333333333,
+      "acquiredPlaysPerRun": 2.9233333333333333,
+      "runsPlayingUpgradePct": 98.33333333333333,
+      "runsPlayingAcquisitionPct": 99.66666666666667,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V3",
+      "policy": "mixed",
+      "strategy": "aggressive",
+      "playsPerRun": 26.963333333333335,
+      "manaAvailablePerRun": 47.79,
+      "manaSpentPerRun": 36.95666666666666,
+      "upgradedPlaysPerRun": 1.47,
+      "acquiredPlaysPerRun": 2.6,
+      "runsPlayingUpgradePct": 74.33333333333333,
+      "runsPlayingAcquisitionPct": 96.33333333333334,
+      "deathsByEncounter": {
+        "none": 208,
+        "old-mines-rhahk-zor": 84,
+        "old-mines-digger": 2,
+        "old-mines-overseer": 3,
+        "old-mines-watchman": 3
+      },
+      "warriorDeaths": 78,
+      "mageDeaths": 14
+    },
+    {
+      "split": "main",
+      "variant": "V3",
+      "policy": "mixed",
+      "strategy": "balanced",
+      "playsPerRun": 35.82666666666667,
+      "manaAvailablePerRun": 55.57666666666667,
+      "manaSpentPerRun": 47.126666666666665,
+      "upgradedPlaysPerRun": 2.2866666666666666,
+      "acquiredPlaysPerRun": 3.3233333333333333,
+      "runsPlayingUpgradePct": 92.66666666666666,
+      "runsPlayingAcquisitionPct": 100,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V3",
+      "policy": "mixed",
+      "strategy": "defensive",
+      "playsPerRun": 41.2,
+      "manaAvailablePerRun": 60.82,
+      "manaSpentPerRun": 52.62,
+      "upgradedPlaysPerRun": 2.55,
+      "acquiredPlaysPerRun": 3.5166666666666666,
+      "runsPlayingUpgradePct": 96.33333333333334,
+      "runsPlayingAcquisitionPct": 99.33333333333333,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V3",
+      "policy": "risky",
+      "strategy": "aggressive",
+      "playsPerRun": 31.293333333333333,
+      "manaAvailablePerRun": 55.04,
+      "manaSpentPerRun": 42.88,
+      "upgradedPlaysPerRun": 0.53,
+      "acquiredPlaysPerRun": 3.12,
+      "runsPlayingUpgradePct": 29.333333333333332,
+      "runsPlayingAcquisitionPct": 94.66666666666667,
+      "deathsByEncounter": {
+        "none": 148,
+        "old-mines-rhahk-zor": 97,
+        "old-mines-digger": 3,
+        "old-mines-overseer": 39,
+        "old-mines-johnson": 6,
+        "old-mines-watchman": 7
+      },
+      "warriorDeaths": 128,
+      "mageDeaths": 24
+    },
+    {
+      "split": "main",
+      "variant": "V3",
+      "policy": "risky",
+      "strategy": "balanced",
+      "playsPerRun": 41.07333333333333,
+      "manaAvailablePerRun": 63.92666666666667,
+      "manaSpentPerRun": 54.04,
+      "upgradedPlaysPerRun": 1.2933333333333332,
+      "acquiredPlaysPerRun": 4.1466666666666665,
+      "runsPlayingUpgradePct": 75.0,
+      "runsPlayingAcquisitionPct": 100,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V3",
+      "policy": "risky",
+      "strategy": "defensive",
+      "playsPerRun": 45.28333333333333,
+      "manaAvailablePerRun": 67.06,
+      "manaSpentPerRun": 58.03,
+      "upgradedPlaysPerRun": 1.5566666666666666,
+      "acquiredPlaysPerRun": 4.243333333333333,
+      "runsPlayingUpgradePct": 91.33333333333333,
+      "runsPlayingAcquisitionPct": 100,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V0",
+      "policy": "safe",
+      "strategy": "planner",
+      "playsPerRun": 31.416666666666668,
+      "manaAvailablePerRun": 48.666666666666664,
+      "manaSpentPerRun": 41.3,
+      "upgradedPlaysPerRun": 0.9333333333333333,
+      "acquiredPlaysPerRun": 2.716666666666667,
+      "runsPlayingUpgradePct": 93.33333333333333,
+      "runsPlayingAcquisitionPct": 98.33333333333333,
+      "deathsByEncounter": {
+        "none": 60
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V0",
+      "policy": "mixed",
+      "strategy": "planner",
+      "playsPerRun": 35.2,
+      "manaAvailablePerRun": 54,
+      "manaSpentPerRun": 45.86666666666667,
+      "upgradedPlaysPerRun": 2.316666666666667,
+      "acquiredPlaysPerRun": 3.25,
+      "runsPlayingUpgradePct": 95.0,
+      "runsPlayingAcquisitionPct": 100,
+      "deathsByEncounter": {
+        "none": 60
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V0",
+      "policy": "risky",
+      "strategy": "planner",
+      "playsPerRun": 39.65,
+      "manaAvailablePerRun": 60.9,
+      "manaSpentPerRun": 51.916666666666664,
+      "upgradedPlaysPerRun": 1.5166666666666666,
+      "acquiredPlaysPerRun": 3.933333333333333,
+      "runsPlayingUpgradePct": 90.0,
+      "runsPlayingAcquisitionPct": 100,
+      "deathsByEncounter": {
+        "none": 60
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "policy": "safe",
+      "strategy": "planner",
+      "playsPerRun": 31.8,
+      "manaAvailablePerRun": 48.25,
+      "manaSpentPerRun": 41.666666666666664,
+      "upgradedPlaysPerRun": 0.9,
+      "acquiredPlaysPerRun": 2.85,
+      "runsPlayingUpgradePct": 90.0,
+      "runsPlayingAcquisitionPct": 100,
+      "deathsByEncounter": {
+        "none": 60
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "policy": "mixed",
+      "strategy": "planner",
+      "playsPerRun": 34.61666666666667,
+      "manaAvailablePerRun": 52.56666666666667,
+      "manaSpentPerRun": 44.983333333333334,
+      "upgradedPlaysPerRun": 2.216666666666667,
+      "acquiredPlaysPerRun": 3.2666666666666666,
+      "runsPlayingUpgradePct": 95.0,
+      "runsPlayingAcquisitionPct": 100,
+      "deathsByEncounter": {
+        "none": 60
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V1",
+      "policy": "risky",
+      "strategy": "planner",
+      "playsPerRun": 40.36666666666667,
+      "manaAvailablePerRun": 61.15,
+      "manaSpentPerRun": 52.61666666666667,
+      "upgradedPlaysPerRun": 1.4666666666666666,
+      "acquiredPlaysPerRun": 4.05,
+      "runsPlayingUpgradePct": 83.33333333333334,
+      "runsPlayingAcquisitionPct": 100,
+      "deathsByEncounter": {
+        "none": 60
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "policy": "safe",
+      "strategy": "planner",
+      "playsPerRun": 32.21666666666667,
+      "manaAvailablePerRun": 49.083333333333336,
+      "manaSpentPerRun": 42.3,
+      "upgradedPlaysPerRun": 0.85,
+      "acquiredPlaysPerRun": 2.9,
+      "runsPlayingUpgradePct": 81.66666666666667,
+      "runsPlayingAcquisitionPct": 100,
+      "deathsByEncounter": {
+        "none": 60
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "policy": "mixed",
+      "strategy": "planner",
+      "playsPerRun": 36.53333333333333,
+      "manaAvailablePerRun": 55.9,
+      "manaSpentPerRun": 47.45,
+      "upgradedPlaysPerRun": 2.1,
+      "acquiredPlaysPerRun": 3.3666666666666667,
+      "runsPlayingUpgradePct": 90.0,
+      "runsPlayingAcquisitionPct": 98.33333333333333,
+      "deathsByEncounter": {
+        "none": 60
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V2",
+      "policy": "risky",
+      "strategy": "planner",
+      "playsPerRun": 41.36666666666667,
+      "manaAvailablePerRun": 62.56666666666667,
+      "manaSpentPerRun": 53.7,
+      "upgradedPlaysPerRun": 1.2833333333333334,
+      "acquiredPlaysPerRun": 4.183333333333334,
+      "runsPlayingUpgradePct": 73.33333333333333,
+      "runsPlayingAcquisitionPct": 100,
+      "deathsByEncounter": {
+        "none": 60
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V3",
+      "policy": "safe",
+      "strategy": "planner",
+      "playsPerRun": 31.833333333333332,
+      "manaAvailablePerRun": 48.75,
+      "manaSpentPerRun": 41.88333333333333,
+      "upgradedPlaysPerRun": 0.85,
+      "acquiredPlaysPerRun": 2.816666666666667,
+      "runsPlayingUpgradePct": 81.66666666666667,
+      "runsPlayingAcquisitionPct": 100,
+      "deathsByEncounter": {
+        "none": 60
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V3",
+      "policy": "mixed",
+      "strategy": "planner",
+      "playsPerRun": 36.416666666666664,
+      "manaAvailablePerRun": 55.65,
+      "manaSpentPerRun": 47.333333333333336,
+      "upgradedPlaysPerRun": 2.0833333333333335,
+      "acquiredPlaysPerRun": 3.3666666666666667,
+      "runsPlayingUpgradePct": 90.0,
+      "runsPlayingAcquisitionPct": 98.33333333333333,
+      "deathsByEncounter": {
+        "none": 60
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "main",
+      "variant": "V3",
+      "policy": "risky",
+      "strategy": "planner",
+      "playsPerRun": 41.13333333333333,
+      "manaAvailablePerRun": 62.233333333333334,
+      "manaSpentPerRun": 53.53333333333333,
+      "upgradedPlaysPerRun": 1.2666666666666666,
+      "acquiredPlaysPerRun": 4.183333333333334,
+      "runsPlayingUpgradePct": 73.33333333333333,
+      "runsPlayingAcquisitionPct": 100,
+      "deathsByEncounter": {
+        "none": 60
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V0",
+      "policy": "safe",
+      "strategy": "aggressive",
+      "playsPerRun": 28.003333333333334,
+      "manaAvailablePerRun": 52.836666666666666,
+      "manaSpentPerRun": 39.03666666666667,
+      "upgradedPlaysPerRun": 0.4633333333333333,
+      "acquiredPlaysPerRun": 2.6466666666666665,
+      "runsPlayingUpgradePct": 42.333333333333336,
+      "runsPlayingAcquisitionPct": 95.33333333333334,
+      "deathsByEncounter": {
+        "none": 293,
+        "old-mines-rhahk-zor": 7
+      },
+      "warriorDeaths": 4,
+      "mageDeaths": 3
+    },
+    {
+      "split": "holdout",
+      "variant": "V0",
+      "policy": "safe",
+      "strategy": "balanced",
+      "playsPerRun": 32.92666666666667,
+      "manaAvailablePerRun": 52.38666666666666,
+      "manaSpentPerRun": 43.586666666666666,
+      "upgradedPlaysPerRun": 0.99,
+      "acquiredPlaysPerRun": 2.92,
+      "runsPlayingUpgradePct": 94.66666666666667,
+      "runsPlayingAcquisitionPct": 99.0,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V0",
+      "policy": "safe",
+      "strategy": "defensive",
+      "playsPerRun": 35.75,
+      "manaAvailablePerRun": 54.32,
+      "manaSpentPerRun": 46.27333333333333,
+      "upgradedPlaysPerRun": 1,
+      "acquiredPlaysPerRun": 2.9366666666666665,
+      "runsPlayingUpgradePct": 95.0,
+      "runsPlayingAcquisitionPct": 99.33333333333333,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V0",
+      "policy": "mixed",
+      "strategy": "aggressive",
+      "playsPerRun": 28.276666666666667,
+      "manaAvailablePerRun": 52.873333333333335,
+      "manaSpentPerRun": 38.93,
+      "upgradedPlaysPerRun": 1.9133333333333333,
+      "acquiredPlaysPerRun": 2.683333333333333,
+      "runsPlayingUpgradePct": 83.0,
+      "runsPlayingAcquisitionPct": 96.33333333333334,
+      "deathsByEncounter": {
+        "none": 291,
+        "old-mines-rhahk-zor": 9
+      },
+      "warriorDeaths": 5,
+      "mageDeaths": 4
+    },
+    {
+      "split": "holdout",
+      "variant": "V0",
+      "policy": "mixed",
+      "strategy": "balanced",
+      "playsPerRun": 35.73,
+      "manaAvailablePerRun": 57.016666666666666,
+      "manaSpentPerRun": 47.093333333333334,
+      "upgradedPlaysPerRun": 2.57,
+      "acquiredPlaysPerRun": 3.3033333333333332,
+      "runsPlayingUpgradePct": 98.0,
+      "runsPlayingAcquisitionPct": 98.33333333333333,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V0",
+      "policy": "mixed",
+      "strategy": "defensive",
+      "playsPerRun": 39.59,
+      "manaAvailablePerRun": 60.18,
+      "manaSpentPerRun": 50.99666666666667,
+      "upgradedPlaysPerRun": 2.64,
+      "acquiredPlaysPerRun": 3.3733333333333335,
+      "runsPlayingUpgradePct": 98.0,
+      "runsPlayingAcquisitionPct": 98.0,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V0",
+      "policy": "risky",
+      "strategy": "aggressive",
+      "playsPerRun": 33.776666666666664,
+      "manaAvailablePerRun": 63.31666666666667,
+      "manaSpentPerRun": 46.53666666666667,
+      "upgradedPlaysPerRun": 0.9566666666666667,
+      "acquiredPlaysPerRun": 3.5033333333333334,
+      "runsPlayingUpgradePct": 44.333333333333336,
+      "runsPlayingAcquisitionPct": 97.66666666666667,
+      "deathsByEncounter": {
+        "none": 257,
+        "old-mines-rhahk-zor": 31,
+        "old-mines-watchman": 7,
+        "old-mines-overseer": 2,
+        "old-mines-johnson": 3
+      },
+      "warriorDeaths": 30,
+      "mageDeaths": 13
+    },
+    {
+      "split": "holdout",
+      "variant": "V0",
+      "policy": "risky",
+      "strategy": "balanced",
+      "playsPerRun": 39.9,
+      "manaAvailablePerRun": 63.78333333333333,
+      "manaSpentPerRun": 52.763333333333335,
+      "upgradedPlaysPerRun": 1.7233333333333334,
+      "acquiredPlaysPerRun": 4.07,
+      "runsPlayingUpgradePct": 91.0,
+      "runsPlayingAcquisitionPct": 99.66666666666667,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V0",
+      "policy": "risky",
+      "strategy": "defensive",
+      "playsPerRun": 43.36,
+      "manaAvailablePerRun": 66.26666666666667,
+      "manaSpentPerRun": 56.05,
+      "upgradedPlaysPerRun": 1.7433333333333334,
+      "acquiredPlaysPerRun": 4.12,
+      "runsPlayingUpgradePct": 91.0,
+      "runsPlayingAcquisitionPct": 99.33333333333333,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "policy": "safe",
+      "strategy": "aggressive",
+      "playsPerRun": 27.39666666666667,
+      "manaAvailablePerRun": 49.89,
+      "manaSpentPerRun": 38.02333333333333,
+      "upgradedPlaysPerRun": 0.24666666666666667,
+      "acquiredPlaysPerRun": 2.5566666666666666,
+      "runsPlayingUpgradePct": 22.0,
+      "runsPlayingAcquisitionPct": 96.0,
+      "deathsByEncounter": {
+        "none": 234,
+        "old-mines-rhahk-zor": 60,
+        "old-mines-watchman": 6
+      },
+      "warriorDeaths": 58,
+      "mageDeaths": 8
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "policy": "safe",
+      "strategy": "balanced",
+      "playsPerRun": 33.776666666666664,
+      "manaAvailablePerRun": 52.803333333333335,
+      "manaSpentPerRun": 44.406666666666666,
+      "upgradedPlaysPerRun": 0.96,
+      "acquiredPlaysPerRun": 2.973333333333333,
+      "runsPlayingUpgradePct": 91.66666666666666,
+      "runsPlayingAcquisitionPct": 99.66666666666667,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "policy": "safe",
+      "strategy": "defensive",
+      "playsPerRun": 37.25333333333333,
+      "manaAvailablePerRun": 55.35333333333333,
+      "manaSpentPerRun": 47.833333333333336,
+      "upgradedPlaysPerRun": 0.9966666666666667,
+      "acquiredPlaysPerRun": 2.97,
+      "runsPlayingUpgradePct": 96.0,
+      "runsPlayingAcquisitionPct": 99.33333333333333,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "policy": "mixed",
+      "strategy": "aggressive",
+      "playsPerRun": 26.783333333333335,
+      "manaAvailablePerRun": 48.166666666666664,
+      "manaSpentPerRun": 36.74,
+      "upgradedPlaysPerRun": 1.6,
+      "acquiredPlaysPerRun": 2.486666666666667,
+      "runsPlayingUpgradePct": 77.66666666666666,
+      "runsPlayingAcquisitionPct": 93.33333333333333,
+      "deathsByEncounter": {
+        "none": 210,
+        "old-mines-watchman": 7,
+        "old-mines-rhahk-zor": 80,
+        "old-mines-digger": 2,
+        "old-mines-overseer": 1
+      },
+      "warriorDeaths": 80,
+      "mageDeaths": 10
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "policy": "mixed",
+      "strategy": "balanced",
+      "playsPerRun": 34.57666666666667,
+      "manaAvailablePerRun": 54.223333333333336,
+      "manaSpentPerRun": 45.34,
+      "upgradedPlaysPerRun": 2.4466666666666668,
+      "acquiredPlaysPerRun": 3.18,
+      "runsPlayingUpgradePct": 97.33333333333334,
+      "runsPlayingAcquisitionPct": 98.66666666666667,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "policy": "mixed",
+      "strategy": "defensive",
+      "playsPerRun": 41.06666666666667,
+      "manaAvailablePerRun": 61.14333333333333,
+      "manaSpentPerRun": 52.52333333333333,
+      "upgradedPlaysPerRun": 2.6566666666666667,
+      "acquiredPlaysPerRun": 3.493333333333333,
+      "runsPlayingUpgradePct": 98.33333333333333,
+      "runsPlayingAcquisitionPct": 98.33333333333333,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "policy": "risky",
+      "strategy": "aggressive",
+      "playsPerRun": 32.11,
+      "manaAvailablePerRun": 57.81333333333333,
+      "manaSpentPerRun": 44.126666666666665,
+      "upgradedPlaysPerRun": 0.8,
+      "acquiredPlaysPerRun": 3.18,
+      "runsPlayingUpgradePct": 37.0,
+      "runsPlayingAcquisitionPct": 92.66666666666666,
+      "deathsByEncounter": {
+        "old-mines-rhahk-zor": 108,
+        "old-mines-watchman": 12,
+        "none": 164,
+        "old-mines-overseer": 11,
+        "old-mines-johnson": 3,
+        "old-mines-raider": 1,
+        "old-mines-digger": 1
+      },
+      "warriorDeaths": 119,
+      "mageDeaths": 17
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "policy": "risky",
+      "strategy": "balanced",
+      "playsPerRun": 41.06,
+      "manaAvailablePerRun": 64.66666666666667,
+      "manaSpentPerRun": 53.97,
+      "upgradedPlaysPerRun": 1.6333333333333333,
+      "acquiredPlaysPerRun": 4.116666666666666,
+      "runsPlayingUpgradePct": 87.33333333333333,
+      "runsPlayingAcquisitionPct": 99.66666666666667,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "policy": "risky",
+      "strategy": "defensive",
+      "playsPerRun": 45.10333333333333,
+      "manaAvailablePerRun": 67.36666666666666,
+      "manaSpentPerRun": 57.86666666666667,
+      "upgradedPlaysPerRun": 1.7333333333333334,
+      "acquiredPlaysPerRun": 4.19,
+      "runsPlayingUpgradePct": 90.66666666666666,
+      "runsPlayingAcquisitionPct": 99.33333333333333,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "policy": "safe",
+      "strategy": "aggressive",
+      "playsPerRun": 27.596666666666668,
+      "manaAvailablePerRun": 50.60333333333333,
+      "manaSpentPerRun": 38.47,
+      "upgradedPlaysPerRun": 0.18333333333333332,
+      "acquiredPlaysPerRun": 2.5866666666666664,
+      "runsPlayingUpgradePct": 17.0,
+      "runsPlayingAcquisitionPct": 96.66666666666667,
+      "deathsByEncounter": {
+        "none": 242,
+        "old-mines-rhahk-zor": 57,
+        "old-mines-watchman": 1
+      },
+      "warriorDeaths": 49,
+      "mageDeaths": 9
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "policy": "safe",
+      "strategy": "balanced",
+      "playsPerRun": 33.57,
+      "manaAvailablePerRun": 52.10333333333333,
+      "manaSpentPerRun": 44.086666666666666,
+      "upgradedPlaysPerRun": 0.9833333333333333,
+      "acquiredPlaysPerRun": 2.9966666666666666,
+      "runsPlayingUpgradePct": 90.66666666666666,
+      "runsPlayingAcquisitionPct": 99.66666666666667,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "policy": "safe",
+      "strategy": "defensive",
+      "playsPerRun": 36.74666666666667,
+      "manaAvailablePerRun": 54.95333333333333,
+      "manaSpentPerRun": 47.10333333333333,
+      "upgradedPlaysPerRun": 1.0733333333333333,
+      "acquiredPlaysPerRun": 3.0233333333333334,
+      "runsPlayingUpgradePct": 97.33333333333334,
+      "runsPlayingAcquisitionPct": 99.66666666666667,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "policy": "mixed",
+      "strategy": "aggressive",
+      "playsPerRun": 26.893333333333334,
+      "manaAvailablePerRun": 48.79333333333334,
+      "manaSpentPerRun": 36.973333333333336,
+      "upgradedPlaysPerRun": 1.5766666666666667,
+      "acquiredPlaysPerRun": 2.5966666666666667,
+      "runsPlayingUpgradePct": 79.33333333333333,
+      "runsPlayingAcquisitionPct": 94.66666666666667,
+      "deathsByEncounter": {
+        "none": 211,
+        "old-mines-rhahk-zor": 78,
+        "old-mines-overseer": 7,
+        "old-mines-digger": 3,
+        "old-mines-watchman": 1
+      },
+      "warriorDeaths": 81,
+      "mageDeaths": 8
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "policy": "mixed",
+      "strategy": "balanced",
+      "playsPerRun": 36.556666666666665,
+      "manaAvailablePerRun": 56.85,
+      "manaSpentPerRun": 47.72666666666667,
+      "upgradedPlaysPerRun": 2.44,
+      "acquiredPlaysPerRun": 3.37,
+      "runsPlayingUpgradePct": 95.66666666666667,
+      "runsPlayingAcquisitionPct": 99.66666666666667,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "policy": "mixed",
+      "strategy": "defensive",
+      "playsPerRun": 41.29,
+      "manaAvailablePerRun": 61.17333333333333,
+      "manaSpentPerRun": 52.63,
+      "upgradedPlaysPerRun": 2.6733333333333333,
+      "acquiredPlaysPerRun": 3.546666666666667,
+      "runsPlayingUpgradePct": 99.0,
+      "runsPlayingAcquisitionPct": 99.0,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "policy": "risky",
+      "strategy": "aggressive",
+      "playsPerRun": 30.97,
+      "manaAvailablePerRun": 55.76,
+      "manaSpentPerRun": 42.60666666666667,
+      "upgradedPlaysPerRun": 0.69,
+      "acquiredPlaysPerRun": 3.2066666666666666,
+      "runsPlayingUpgradePct": 34.0,
+      "runsPlayingAcquisitionPct": 94.0,
+      "deathsByEncounter": {
+        "old-mines-overseer": 40,
+        "old-mines-rhahk-zor": 83,
+        "none": 160,
+        "old-mines-watchman": 9,
+        "old-mines-johnson": 6,
+        "old-mines-digger": 2
+      },
+      "warriorDeaths": 126,
+      "mageDeaths": 14
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "policy": "risky",
+      "strategy": "balanced",
+      "playsPerRun": 41.163333333333334,
+      "manaAvailablePerRun": 64.2,
+      "manaSpentPerRun": 54.00333333333333,
+      "upgradedPlaysPerRun": 1.5066666666666666,
+      "acquiredPlaysPerRun": 4.15,
+      "runsPlayingUpgradePct": 85.66666666666667,
+      "runsPlayingAcquisitionPct": 99.66666666666667,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "policy": "risky",
+      "strategy": "defensive",
+      "playsPerRun": 45.126666666666665,
+      "manaAvailablePerRun": 67.38333333333334,
+      "manaSpentPerRun": 57.78333333333333,
+      "upgradedPlaysPerRun": 1.7733333333333334,
+      "acquiredPlaysPerRun": 4.223333333333334,
+      "runsPlayingUpgradePct": 94.0,
+      "runsPlayingAcquisitionPct": 99.66666666666667,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V3",
+      "policy": "safe",
+      "strategy": "aggressive",
+      "playsPerRun": 27.563333333333333,
+      "manaAvailablePerRun": 49.62,
+      "manaSpentPerRun": 38.39333333333333,
+      "upgradedPlaysPerRun": 0.19,
+      "acquiredPlaysPerRun": 2.6,
+      "runsPlayingUpgradePct": 16.666666666666664,
+      "runsPlayingAcquisitionPct": 96.33333333333334,
+      "deathsByEncounter": {
+        "none": 228,
+        "old-mines-rhahk-zor": 71,
+        "old-mines-watchman": 1
+      },
+      "warriorDeaths": 49,
+      "mageDeaths": 23
+    },
+    {
+      "split": "holdout",
+      "variant": "V3",
+      "policy": "safe",
+      "strategy": "balanced",
+      "playsPerRun": 33.53666666666667,
+      "manaAvailablePerRun": 51.903333333333336,
+      "manaSpentPerRun": 44.1,
+      "upgradedPlaysPerRun": 0.9866666666666667,
+      "acquiredPlaysPerRun": 2.986666666666667,
+      "runsPlayingUpgradePct": 89.66666666666666,
+      "runsPlayingAcquisitionPct": 99.66666666666667,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V3",
+      "policy": "safe",
+      "strategy": "defensive",
+      "playsPerRun": 36.843333333333334,
+      "manaAvailablePerRun": 54.67,
+      "manaSpentPerRun": 47.233333333333334,
+      "upgradedPlaysPerRun": 1.0733333333333333,
+      "acquiredPlaysPerRun": 3.0366666666666666,
+      "runsPlayingUpgradePct": 97.66666666666667,
+      "runsPlayingAcquisitionPct": 99.66666666666667,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V3",
+      "policy": "mixed",
+      "strategy": "aggressive",
+      "playsPerRun": 26.953333333333333,
+      "manaAvailablePerRun": 47.943333333333335,
+      "manaSpentPerRun": 37.016666666666666,
+      "upgradedPlaysPerRun": 1.56,
+      "acquiredPlaysPerRun": 2.5933333333333333,
+      "runsPlayingUpgradePct": 79.0,
+      "runsPlayingAcquisitionPct": 94.66666666666667,
+      "deathsByEncounter": {
+        "none": 202,
+        "old-mines-rhahk-zor": 87,
+        "old-mines-overseer": 7,
+        "old-mines-digger": 3,
+        "old-mines-watchman": 1
+      },
+      "warriorDeaths": 80,
+      "mageDeaths": 18
+    },
+    {
+      "split": "holdout",
+      "variant": "V3",
+      "policy": "mixed",
+      "strategy": "balanced",
+      "playsPerRun": 36.50333333333333,
+      "manaAvailablePerRun": 56.55,
+      "manaSpentPerRun": 47.663333333333334,
+      "upgradedPlaysPerRun": 2.4266666666666667,
+      "acquiredPlaysPerRun": 3.37,
+      "runsPlayingUpgradePct": 96.0,
+      "runsPlayingAcquisitionPct": 99.66666666666667,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V3",
+      "policy": "mixed",
+      "strategy": "defensive",
+      "playsPerRun": 41.276666666666664,
+      "manaAvailablePerRun": 60.99,
+      "manaSpentPerRun": 52.63333333333333,
+      "upgradedPlaysPerRun": 2.6666666666666665,
+      "acquiredPlaysPerRun": 3.5366666666666666,
+      "runsPlayingUpgradePct": 98.66666666666667,
+      "runsPlayingAcquisitionPct": 99.33333333333333,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V3",
+      "policy": "risky",
+      "strategy": "aggressive",
+      "playsPerRun": 31.05666666666667,
+      "manaAvailablePerRun": 55.32666666666667,
+      "manaSpentPerRun": 42.68333333333333,
+      "upgradedPlaysPerRun": 0.6933333333333334,
+      "acquiredPlaysPerRun": 3.22,
+      "runsPlayingUpgradePct": 34.66666666666667,
+      "runsPlayingAcquisitionPct": 94.0,
+      "deathsByEncounter": {
+        "old-mines-overseer": 40,
+        "none": 153,
+        "old-mines-rhahk-zor": 90,
+        "old-mines-watchman": 9,
+        "old-mines-johnson": 6,
+        "old-mines-digger": 2
+      },
+      "warriorDeaths": 124,
+      "mageDeaths": 23
+    },
+    {
+      "split": "holdout",
+      "variant": "V3",
+      "policy": "risky",
+      "strategy": "balanced",
+      "playsPerRun": 41.10333333333333,
+      "manaAvailablePerRun": 63.9,
+      "manaSpentPerRun": 53.94,
+      "upgradedPlaysPerRun": 1.5066666666666666,
+      "acquiredPlaysPerRun": 4.1466666666666665,
+      "runsPlayingUpgradePct": 85.33333333333334,
+      "runsPlayingAcquisitionPct": 99.66666666666667,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V3",
+      "policy": "risky",
+      "strategy": "defensive",
+      "playsPerRun": 45.096666666666664,
+      "manaAvailablePerRun": 67.06666666666666,
+      "manaSpentPerRun": 57.78333333333333,
+      "upgradedPlaysPerRun": 1.7766666666666666,
+      "acquiredPlaysPerRun": 4.233333333333333,
+      "runsPlayingUpgradePct": 94.33333333333334,
+      "runsPlayingAcquisitionPct": 100,
+      "deathsByEncounter": {
+        "none": 300
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V0",
+      "policy": "safe",
+      "strategy": "planner",
+      "playsPerRun": 31.083333333333332,
+      "manaAvailablePerRun": 49.71666666666667,
+      "manaSpentPerRun": 41.766666666666666,
+      "upgradedPlaysPerRun": 1.05,
+      "acquiredPlaysPerRun": 2.8666666666666667,
+      "runsPlayingUpgradePct": 96.66666666666667,
+      "runsPlayingAcquisitionPct": 100,
+      "deathsByEncounter": {
+        "none": 60
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V0",
+      "policy": "mixed",
+      "strategy": "planner",
+      "playsPerRun": 33.583333333333336,
+      "manaAvailablePerRun": 53.35,
+      "manaSpentPerRun": 44.53333333333333,
+      "upgradedPlaysPerRun": 2.55,
+      "acquiredPlaysPerRun": 3.3,
+      "runsPlayingUpgradePct": 96.66666666666667,
+      "runsPlayingAcquisitionPct": 100,
+      "deathsByEncounter": {
+        "none": 60
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V0",
+      "policy": "risky",
+      "strategy": "planner",
+      "playsPerRun": 39.25,
+      "manaAvailablePerRun": 61.833333333333336,
+      "manaSpentPerRun": 51.63333333333333,
+      "upgradedPlaysPerRun": 1.5166666666666666,
+      "acquiredPlaysPerRun": 4,
+      "runsPlayingUpgradePct": 83.33333333333334,
+      "runsPlayingAcquisitionPct": 100,
+      "deathsByEncounter": {
+        "none": 60
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "policy": "safe",
+      "strategy": "planner",
+      "playsPerRun": 31.566666666666666,
+      "manaAvailablePerRun": 49.63333333333333,
+      "manaSpentPerRun": 42.11666666666667,
+      "upgradedPlaysPerRun": 0.9666666666666667,
+      "acquiredPlaysPerRun": 2.9833333333333334,
+      "runsPlayingUpgradePct": 93.33333333333333,
+      "runsPlayingAcquisitionPct": 98.33333333333333,
+      "deathsByEncounter": {
+        "none": 60
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "policy": "mixed",
+      "strategy": "planner",
+      "playsPerRun": 33.11666666666667,
+      "manaAvailablePerRun": 51.516666666666666,
+      "manaSpentPerRun": 43.583333333333336,
+      "upgradedPlaysPerRun": 2.5166666666666666,
+      "acquiredPlaysPerRun": 3.1666666666666665,
+      "runsPlayingUpgradePct": 96.66666666666667,
+      "runsPlayingAcquisitionPct": 100,
+      "deathsByEncounter": {
+        "none": 60
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V1",
+      "policy": "risky",
+      "strategy": "planner",
+      "playsPerRun": 39.61666666666667,
+      "manaAvailablePerRun": 61.166666666666664,
+      "manaSpentPerRun": 51.85,
+      "upgradedPlaysPerRun": 1.5166666666666666,
+      "acquiredPlaysPerRun": 4.033333333333333,
+      "runsPlayingUpgradePct": 85.0,
+      "runsPlayingAcquisitionPct": 100,
+      "deathsByEncounter": {
+        "none": 60
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "policy": "safe",
+      "strategy": "planner",
+      "playsPerRun": 32.38333333333333,
+      "manaAvailablePerRun": 50.38333333333333,
+      "manaSpentPerRun": 43.03333333333333,
+      "upgradedPlaysPerRun": 0.9666666666666667,
+      "acquiredPlaysPerRun": 3.05,
+      "runsPlayingUpgradePct": 88.33333333333333,
+      "runsPlayingAcquisitionPct": 100,
+      "deathsByEncounter": {
+        "none": 60
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "policy": "mixed",
+      "strategy": "planner",
+      "playsPerRun": 34.8,
+      "manaAvailablePerRun": 53.266666666666666,
+      "manaSpentPerRun": 45.516666666666666,
+      "upgradedPlaysPerRun": 2.35,
+      "acquiredPlaysPerRun": 3.2333333333333334,
+      "runsPlayingUpgradePct": 91.66666666666666,
+      "runsPlayingAcquisitionPct": 98.33333333333333,
+      "deathsByEncounter": {
+        "none": 60
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V2",
+      "policy": "risky",
+      "strategy": "planner",
+      "playsPerRun": 40.56666666666667,
+      "manaAvailablePerRun": 61.666666666666664,
+      "manaSpentPerRun": 52.86666666666667,
+      "upgradedPlaysPerRun": 1.3833333333333333,
+      "acquiredPlaysPerRun": 3.933333333333333,
+      "runsPlayingUpgradePct": 78.33333333333333,
+      "runsPlayingAcquisitionPct": 100,
+      "deathsByEncounter": {
+        "none": 60
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V3",
+      "policy": "safe",
+      "strategy": "planner",
+      "playsPerRun": 32.05,
+      "manaAvailablePerRun": 49.71666666666667,
+      "manaSpentPerRun": 42.666666666666664,
+      "upgradedPlaysPerRun": 0.9333333333333333,
+      "acquiredPlaysPerRun": 3.033333333333333,
+      "runsPlayingUpgradePct": 86.66666666666667,
+      "runsPlayingAcquisitionPct": 100,
+      "deathsByEncounter": {
+        "none": 60
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V3",
+      "policy": "mixed",
+      "strategy": "planner",
+      "playsPerRun": 34.53333333333333,
+      "manaAvailablePerRun": 52.93333333333333,
+      "manaSpentPerRun": 45.28333333333333,
+      "upgradedPlaysPerRun": 2.3666666666666667,
+      "acquiredPlaysPerRun": 3.2333333333333334,
+      "runsPlayingUpgradePct": 91.66666666666666,
+      "runsPlayingAcquisitionPct": 98.33333333333333,
+      "deathsByEncounter": {
+        "none": 60
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    },
+    {
+      "split": "holdout",
+      "variant": "V3",
+      "policy": "risky",
+      "strategy": "planner",
+      "playsPerRun": 40.416666666666664,
+      "manaAvailablePerRun": 61.583333333333336,
+      "manaSpentPerRun": 52.63333333333333,
+      "upgradedPlaysPerRun": 1.3833333333333333,
+      "acquiredPlaysPerRun": 3.8833333333333333,
+      "runsPlayingUpgradePct": 76.66666666666667,
+      "runsPlayingAcquisitionPct": 100,
+      "deathsByEncounter": {
+        "none": 60
+      },
+      "warriorDeaths": 0,
+      "mageDeaths": 0
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+
+### variant PA
+d18 safe defensive                             n 300 done   100%  battles 3.23 elites 0  endHP 21.22/17.49  preBoss 24.43/17.6  bossLoss 3.21/0.12 bossTurns 5.81  minHP% 84  turns 12.83
+d18 mixed balanced                             n 300 done   100%  battles 3.53 elites 0.3  endHP 16.13/15.46  preBoss 21.16/15.77  bossLoss 5.04/0.3 bossTurns 5.39  minHP% 62  turns 13.3
+d18 risky balanced                             n 300 done   100%  battles 3.91 elites 0.44  endHP 15.79/15.11  preBoss 20.71/15.43  bossLoss 4.91/0.32 bossTurns 5.52  minHP% 60  turns 14.97
+d18 mixed aggressive                           n 300 done    74%  battles 3.25 elites 0.09  endHP 4.13/8.72  preBoss 16.31/11.7  bossLoss 13.06/3.14 bossTurns 4.85  minHP% 11  turns 11.54
+d18 risky aggressive                           n 300 done  52.7%  battles 3.69 elites 0.44  endHP 3.23/7.68  preBoss 11.06/8.46  bossLoss 9.1/1.87 bossTurns 3.76  minHP% 6  turns 13
+d18 mixed planner                              n 100 done   100%  battles 3.53 elites 0.34  endHP 13.03/16.05  preBoss 20/16.3  bossLoss 6.97/0.25 bossTurns 5.4  minHP% 51  turns 13.3

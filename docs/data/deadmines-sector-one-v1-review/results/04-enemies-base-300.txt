@@ -1,0 +1,26 @@
+
+== C1 baseline, deck 18, full HP ==
+old-mines-raider aggressive                  win   100%  turns 2.6  lossW 1.22  lossM 4.42  hits 1.57  rawThreat 7.87  freeTurns 0.02  mana% 83.63  def% 8  handLeft 5.9
+old-mines-raider balanced                    win   100%  turns 2.55  lossW 0.74  lossM 1.23  hits 1.52  rawThreat 7.62  freeTurns 0.02  mana% 85.11  def% 20  handLeft 5.57
+old-mines-raider defensive                   win   100%  turns 2.89  lossW 0.16  lossM 0.1  hits 1.86  rawThreat 9.3  freeTurns 0.03  mana% 80.57  def% 32  handLeft 5.1
+old-mines-raider planner                     win   100%  turns 2.54  lossW 0.62  lossM 1.15  hits 1.53  rawThreat 7.63  freeTurns 0.02  mana% 85.11  def% 24  handLeft 5.13
+old-mines-digger aggressive                  win   100%  turns 3.05  lossW 5.41  lossM 2.78  hits 1.94  rawThreat 11.64  freeTurns 0.11  mana% 76.76  def% 7  handLeft 5.93
+old-mines-digger balanced                    win   100%  turns 3.04  lossW 1.27  lossM 1.32  hits 1.93  rawThreat 11.6  freeTurns 0.11  mana% 79.58  def% 27  handLeft 5.31
+old-mines-digger defensive                   win   100%  turns 3.22  lossW 0.12  lossM 0.22  hits 2  rawThreat 11.98  freeTurns 0.23  mana% 83.47  def% 42  handLeft 4.71
+old-mines-digger planner                     win   100%  turns 2.94  lossW 2.62  lossM 1.13  hits 1.88  rawThreat 11.32  freeTurns 0.05  mana% 81.08  def% 23  handLeft 5.04
+old-mines-watchman aggressive                win   100%  turns 2.68  lossW 0.05  lossM 4.66  hits 0.68  rawThreat 6.7  freeTurns 1  mana% 81.39  def% 11  handLeft 5.89
+old-mines-watchman balanced                  win   100%  turns 2.58  lossW 0.01  lossM 0.53  hits 0.58  rawThreat 5.67  freeTurns 1  mana% 85.49  def% 23  handLeft 5.45
+old-mines-watchman defensive                 win   100%  turns 2.94  lossW 0  lossM 0.02  hits 0.94  rawThreat 9.15  freeTurns 1  mana% 80.49  def% 34  handLeft 5.19
+old-mines-watchman planner                   win   100%  turns 2.65  lossW 0.01  lossM 0.81  hits 0.65  rawThreat 6.48  freeTurns 1  mana% 83.63  def% 23  handLeft 5.2
+old-mines-overseer aggressive                win   100%  turns 3.41  lossW 2.36  lossM 0  hits 0.41  rawThreat 4.88  freeTurns 2  mana% 83.55  def% 13  handLeft 5.8
+old-mines-overseer balanced                  win   100%  turns 3.74  lossW 0.07  lossM 0  hits 0.74  rawThreat 8.76  freeTurns 2  mana% 84.23  def% 27  handLeft 5.08
+old-mines-overseer defensive                 win   100%  turns 3.81  lossW 0  lossM 0  hits 0.81  rawThreat 9.52  freeTurns 2  mana% 85.07  def% 29  handLeft 5.06
+old-mines-overseer planner                   win   100%  turns 3.46  lossW 0.28  lossM 0  hits 0.46  rawThreat 5.56  freeTurns 2  mana% 86.61  def% 26  handLeft 4.77
+old-mines-johnson aggressive                 win   100%  turns 5.37  lossW 6.46  lossM 3.46  hits 1.99  rawThreat 18.94  freeTurns 2.38  mana% 73.13  def% 10  handLeft 6.14
+old-mines-johnson balanced                   win   100%  turns 5.4  lossW 0.33  lossM 0.11  hits 1.98  rawThreat 18.86  freeTurns 2.42  mana% 82.99  def% 27  handLeft 4.66
+old-mines-johnson defensive                  win   100%  turns 5.38  lossW 0.13  lossM 0.01  hits 1.98  rawThreat 18.9  freeTurns 2.4  mana% 83.73  def% 29  handLeft 4.59
+old-mines-johnson planner                    win   100%  turns 5.31  lossW 1.45  lossM 0.03  hits 1.98  rawThreat 18.86  freeTurns 2.33  mana% 86.13  def% 34  handLeft 3.9
+old-mines-rhahk-zor aggressive               win   100%  turns 5.29  lossW 13.35  lossM 3.92  hits 3  rawThreat 25.95  freeTurns 1.29  mana% 73.24  def% 11  handLeft 6.08
+old-mines-rhahk-zor balanced                 win   100%  turns 5.19  lossW 3.4  lossM 0.07  hits 2.96  rawThreat 25.53  freeTurns 1.23  mana% 87.81  def% 36  handLeft 3.96
+old-mines-rhahk-zor defensive                win   100%  turns 5.22  lossW 2.73  lossM 0.01  hits 2.98  rawThreat 25.55  freeTurns 1.24  mana% 89.35  def% 39  handLeft 3.67
+old-mines-rhahk-zor planner                  win   100%  turns 5.18  lossW 5.29  lossM 0.11  hits 2.95  rawThreat 25.56  freeTurns 1.23  mana% 85.78  def% 35  handLeft 3.84

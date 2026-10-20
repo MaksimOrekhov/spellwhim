@@ -1,0 +1,16 @@
+{
+  "count": 10002,
+  "range": [
+    0,
+    9999
+  ],
+  "boundarySeeds": [
+    4294967295,
+    2147483648
+  ],
+  "oracle": "research/sector-review/oracle.ts (independent DFS)",
+  "violations": 0,
+  "changedGraphsOrAssignments": 0,
+  "paths": 192223,
+  "fallbacks": 0
+}
