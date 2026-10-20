@@ -9,6 +9,7 @@ import type { EconomyConfig } from './economy'
 import { CARVED_GENERATOR_VERSION, validateSectorConfig } from './dungeonGenerator'
 import { sectorEncounters, sectorEventIds } from './sectorContent'
 import { createRoomVisit, roomActions } from './dungeonRooms'
+import { roomRules } from './roomRules'
 
 export const RUN_SAVE_KEY = 'spellwhim.run.v1'
 export const SAVE_SCHEMA_VERSION = 2
@@ -33,12 +34,14 @@ const baseCatalogueVersion = checksum(canonical(baseCatalogue))
 /** Conservative automatic catalogue fingerprint plus explicit rule/generator versions. */
 export const CATALOG_VERSION = checksum(canonical({ ...baseCatalogue, upgrades: cardUpgrades }))
 export const SECTOR_CATALOG_VERSION = checksum(canonical({ base: CATALOG_VERSION, encounters: sectorEncounters, events: sectorEventIds }))
+export const ROOM_RULES_VERSION = roomRules.version + ':' + checksum(canonical(roomRules))
 
 export interface RunSnapshot {
   schemaVersion: 1 | 2
   rulesVersion: string
   generatorVersion: string
   catalogVersion: string
+  roomRulesVersion?: string
   revision: number
   economy: EconomyConfig
   run: DungeonRunState
@@ -66,7 +69,7 @@ const acquisition = object({ definitionId: cardId, upgrade: oneOf(0, 1) })
 const hero = object({ id: oneOf('warrior', 'mage'), characterId: text, classId: oneOf('warrior', 'mage'), partySlot: oneOf('first', 'second'), instanceId: text, name: text, title: text, health: integer(0, 999), maxHealth: integer(1, 999), armor: oneOf(0), icon: text })
 const node = object({ id: text, layer: integer(0, 30), column: value => typeof value === 'number' && value >= 0 && value < 8 && Number.isInteger(value * 2), type: oneOf('battle', 'elite', 'rest', 'final', 'forge', 'treasure', 'event'), edges: list(text, 8) }, { encounterId: text, encounterHealth: integer(1, 10000), rewardCount: integer(1, 5), healAmount: integer(0, 999), eventId: oneOf(...sectorEventIds) })
 const roomSelection = object({ action: oneOf('upgrade', 'remove', 'replace', 'card', 'risk', 'artifact', 'leave') }, { instanceId: text, heroId: oneOf('warrior', 'mage'), cardId: cardId, artifactId })
-const room = object({ id: text, nodeId: text, type: oneOf('forge', 'treasure', 'event'), cards: list(acquisition, 3), riskCard: acquisition, replacements: object({ warrior: list(acquisition, 4), mage: list(acquisition, 4) }), artifactIds: list(artifactId, 2), riskSuccess: oneOf(true, false), selection: nullable(roomSelection) }, { eventId: oneOf(...sectorEventIds) })
+const room = object({ id: text, nodeId: text, type: oneOf('forge', 'treasure', 'event'), cards: list(acquisition, roomRules.cards), riskCard: nullable(acquisition), replacements: object({ warrior: list(acquisition, roomRules.replacementCandidates), mage: list(acquisition, roomRules.replacementCandidates) }), artifactIds: list(artifactId, roomRules.artifacts), riskSuccess: oneOf(true, false), selection: nullable(roomSelection) }, { eventId: oneOf(...sectorEventIds) })
 const runShape = object({
   runId: text, nextCardId: integer(1), decisions: list(text),
   deckOperations: list(object({ sourceId: text, kind: oneOf('remove', 'replace', 'upgrade'), options: list(acquisition, 100), resolved: oneOf(true, false) })),
@@ -166,12 +169,12 @@ export function validateRun(value: unknown): asserts value is DungeonRunState {
   }
 }
 
-class IncompatibleSave extends Error {}
+export class IncompatibleSave extends Error {}
 export function encodeSnapshot(run: DungeonRunState, economy: EconomyConfig, revision: number): string {
   validateRun(run)
   requireValid(integer(1)(revision))
   requireValid(Object.values(playableEconomies).some(known => canonical(known) === canonical(economy)))
-  const payload: RunSnapshot = { schemaVersion: SAVE_SCHEMA_VERSION, rulesVersion: RULES_VERSION, generatorVersion: run.map.configuration?.generatorVersion ?? GENERATOR_VERSION, catalogVersion: run.campaign ? SECTOR_CATALOG_VERSION : CATALOG_VERSION, revision, economy, run }
+  const payload: RunSnapshot = { schemaVersion: SAVE_SCHEMA_VERSION, rulesVersion: RULES_VERSION, generatorVersion: run.map.configuration?.generatorVersion ?? GENERATOR_VERSION, catalogVersion: run.campaign ? SECTOR_CATALOG_VERSION : CATALOG_VERSION, ...(run.campaign ? {roomRulesVersion:ROOM_RULES_VERSION} : {}), revision, economy, run }
   return JSON.stringify({ payload, checksum: checksum(canonical(payload)) })
 }
 
@@ -180,11 +183,12 @@ export function decodeSnapshot(raw: string): RunSnapshot {
   requireValid(object({ payload: value => !!value && typeof value === 'object', checksum: text })(data))
   const envelope = data as { payload: RunSnapshot; checksum: string }
   const snapshot = envelope.payload
-  requireValid(object({ schemaVersion: integer(1), rulesVersion: text, generatorVersion: text, catalogVersion: text, revision: integer(1), economy: () => true, run: () => true })(snapshot))
+  requireValid(object({ schemaVersion: integer(1), rulesVersion: text, generatorVersion: text, catalogVersion: text, revision: integer(1), economy: () => true, run: () => true }, {roomRulesVersion:text})(snapshot))
   const legacy = baseCatalogueVersion === FOUNDATION_CATALOG_VERSION && snapshot.schemaVersion === 1 && snapshot.rulesVersion === 'combat-progression-1' && snapshot.catalogVersion === FOUNDATION_CATALOG_VERSION && snapshot.generatorVersion === GENERATOR_VERSION
   const sector = snapshot.run && typeof snapshot.run === 'object' && !!snapshot.run.campaign
+  if (sector && snapshot.roomRulesVersion !== ROOM_RULES_VERSION) throw new IncompatibleSave('Сохранение использует другую версию правил комнат. Исходные данные оставлены в хранилище и доступны для скачивания; нужен новый поход или совместимая версия игры.')
   if (!legacy && (![1,2].includes(snapshot.schemaVersion) || (sector && snapshot.schemaVersion !== 2) || snapshot.rulesVersion !== RULES_VERSION || snapshot.generatorVersion !== (sector ? CARVED_GENERATOR_VERSION : GENERATOR_VERSION) || snapshot.catalogVersion !== (sector ? SECTOR_CATALOG_VERSION : CATALOG_VERSION))) throw new IncompatibleSave('Сохранение создано для другой версии игры. Оно оставлено в хранилище; начните новый поход или вернитесь к совместимой версии.')
-  requireValid(object({ schemaVersion: oneOf(1,2), rulesVersion: text, generatorVersion: text, catalogVersion: text, revision: integer(1), economy: value => Object.values(playableEconomies).some(known => canonical(known) === canonical(value)), run: () => true })(snapshot))
+  requireValid(object({ schemaVersion: oneOf(1,2), rulesVersion: text, generatorVersion: text, catalogVersion: text, revision: integer(1), economy: value => Object.values(playableEconomies).some(known => canonical(known) === canonical(value)), run: () => true }, {roomRulesVersion:text})(snapshot))
   requireValid(envelope.checksum === checksum(canonical(snapshot)))
   validateRun(snapshot.run)
   if (legacy) {

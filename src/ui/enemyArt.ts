@@ -38,7 +38,7 @@ export function resolveEnemyPortrait(
 ): ResolvedEnemyPortrait {
   // Campaign battles append a map-node suffix (for example `defias-lookout/layer-3-column-2`)
   // to keep encounter instances distinct. Art remains keyed by the stable catalog ID.
-  const stableEncounterId = encounterId.replace(/\/layer-\d+-column-\d+$/, '')
+  const stableEncounterId = encounterId.split('/')[0]!
   const src = portraits[stableEncounterId]
   return src ? { src, fallback: false } : { src: fallbackPortrait, fallback: true }
 }

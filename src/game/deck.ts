@@ -2,7 +2,7 @@ import { MAX_HAND_SIZE } from './types'
 import type { BattleState, CardInstance } from './types'
 
 // Mulberry32: the RNG state is part of the battle, so a seed replays every shuffle.
-function nextRandom(state: Pick<BattleState, 'rngState'>): number {
+export function nextRandom(state: Pick<BattleState, 'rngState'>): number {
   state.rngState = (state.rngState + 0x6d2b79f5) >>> 0
   let value = state.rngState
   value = Math.imul(value ^ value >>> 15, value | 1)

@@ -3,7 +3,8 @@ import type { DeckOperationOffer, DungeonMapNode, DungeonRunState } from './camp
 import { artifactDefinitions } from './artifacts'
 import { canUpgradeCard } from './cardProgression'
 import type { CardAcquisition } from './cardProgression'
-import { shuffle } from './deck'
+import { nextRandom, shuffle } from './deck'
+import { roomRules } from './roomRules'
 import { cardDefinition, cards } from './types'
 import type { ArtifactId, HeroId, PersistentCard } from './types'
 import type { SectorEventId } from './sectorContent'
@@ -16,7 +17,7 @@ export interface RoomVisit {
   type: 'forge' | 'treasure' | 'event'
   eventId?: SectorEventId
   cards: CardAcquisition[]
-  riskCard: CardAcquisition
+  riskCard: CardAcquisition | null
   replacements: Record<HeroId, CardAcquisition[]>
   artifactIds: ArtifactId[]
   riskSuccess: boolean
@@ -28,13 +29,14 @@ const offer = <T>(seed: number, pool: readonly T[], count: number) => shuffle({ 
 export function createRoomVisit(run: DungeonRunState, node: DungeonMapNode): RoomVisit {
   if (!['forge', 'treasure', 'event'].includes(node.type)) throw new Error('Not a service room')
   const seed = (scope: string) => deriveDungeonSeed(run.seed, `${scope}:${node.id}`)
-  const cardOffers = offer(seed('room-cards'), cards.filter(c => c.reward && !run.excludedRewards?.includes(c.id)), 3).map(c => ({ definitionId: c.id, upgrade: 0 as const }))
-  const replacement = (className: HeroId) => offer(seed(`room-replace:${className}`), cards.filter(c => c.className === className), 4).map(c => ({ definitionId: c.id, upgrade: 0 as const }))
+  const rewards = cards.filter(c => c.reward && !run.excludedRewards?.includes(c.id))
+  const cardOffers = offer(seed('room-cards'), rewards, roomRules.cards).map(c => ({ definitionId: c.id, upgrade: 0 as const }))
+  const replacement = (className: HeroId) => offer(seed(`room-replace:${className}`), rewards.filter(c => c.className === className), roomRules.replacementCandidates).map(c => ({ definitionId: c.id, upgrade: 0 as const }))
   return {
     id: `${run.runId}/room/${node.id}`, nodeId: node.id, type: node.type as RoomVisit['type'], ...(node.eventId ? { eventId: node.eventId } : {}),
-    cards: cardOffers, riskCard: { ...cardOffers[0]!, upgrade: 1 }, replacements: { warrior: replacement('warrior'), mage: replacement('mage') },
-    artifactIds: offer(seed('room-artifacts'), artifactDefinitions.filter(a => !run.artifacts.some(item => item.definitionId === a.id)), 2).map(a => a.id),
-    riskSuccess: seed('event-outcome') / 4294967296 < 0.7, selection: null,
+    cards: cardOffers, riskCard: cardOffers[0] ? { ...cardOffers[0], upgrade: 1 } : null, replacements: { warrior: replacement('warrior'), mage: replacement('mage') },
+    artifactIds: offer(seed('room-artifacts'), artifactDefinitions.filter(a => !run.artifacts.some(item => item.definitionId === a.id)), roomRules.artifacts).map(a => a.id),
+    riskSuccess: nextRandom({ rngState: seed('event-outcome') }) < roomRules.riskChance, selection: null,
   }
 }
 
@@ -48,7 +50,25 @@ export function roomActions(room: RoomVisit): RoomAction[] {
 }
 
 export function roomEligibleCards(run: DungeonRunState, action: RoomAction): PersistentCard[] {
-  return run.deck.filter(c => action === 'upgrade' ? canUpgradeCard(c) : ['remove','replace'].includes(action) && (run.room?.type !== 'event' || c.upgrade === 0) && (action !== 'remove' || run.deck.length > 1))
+  return run.deck.filter(c => action === 'upgrade' ? canUpgradeCard(c) : ['remove','replace'].includes(action) && (run.room?.type !== 'event' || c.upgrade === 0) && (action !== 'remove' || run.deck.length > 1) && (action !== 'replace' || roomReplacementOptions(run,c).length > 0))
+}
+
+/** One shared boundary for rules, UI and saved candidate truncation. All current cards are ordinary. */
+export function roomReplacementOptions(run: DungeonRunState, previous: PersistentCard): CardAcquisition[] {
+  const className = cardDefinition(previous.definitionId).className
+  return (run.room?.replacements[className] ?? []).filter(c => {
+    const definition = cardDefinition(c.definitionId)
+    return c.upgrade === 0 && definition.reward && definition.className === className && c.definitionId !== previous.definitionId && !run.excludedRewards?.includes(c.definitionId)
+  }).slice(0,roomRules.replacements)
+}
+
+export function roomActionAvailable(run: DungeonRunState, action: RoomAction): boolean {
+  if (!run.room || !roomActions(run.room).includes(action)) return false
+  if (action === 'risk') return !!run.room.riskCard && Object.values(run.heroes).every(h => h.health > roomRules.riskHealth)
+  if (action === 'card') return run.room.cards.length > 0
+  if (action === 'artifact') return run.room.artifactIds.length > 0
+  if (action === 'upgrade' && run.room.eventId === 'forgotten-forge' && !Object.values(run.heroes).some(h => h.health > roomRules.upgradeHealth)) return false
+  return !['upgrade','remove','replace'].includes(action) || roomEligibleCards(run,action).length > 0
 }
 
 function requireRoom(run: DungeonRunState, id: string): RoomVisit {
@@ -69,28 +89,27 @@ export function resolveRoom(run: DungeonRunState, command: RoomCommand): Dungeon
   if (!roomActions(room).includes(action)) throw new Error('Unavailable room action')
   const paidUpgrade = room.eventId === 'forgotten-forge' && action === 'upgrade'
   const hero = command.heroId ? run.heroes[command.heroId] : undefined
-  if (paidUpgrade && (!hero || hero.health <= 3)) throw new Error('Not enough health for this service')
+  if (paidUpgrade && (!hero || hero.health <= roomRules.upgradeHealth)) throw new Error('Not enough health for this service')
   // Mark completion only in a local immutable value. Errors publish neither payment nor a spent source.
   let next: DungeonRunState = { ...run, room: null, completedNodeIds: [...run.completedNodeIds, room.nodeId], decisions: [...run.decisions, `room:${room.nodeId}`] }
   let text = 'Уйти без награды', changed: PersistentCard | undefined
   if (action === 'upgrade' || action === 'remove' || action === 'replace') {
     const previous = roomEligibleCards(run, action).find(c => c.instanceId === command.instanceId)
     if (!previous) throw new Error('Unavailable card instance')
-    const className = cardDefinition(previous.definitionId).className
-    const options = action === 'replace' ? room.replacements[className].filter(c => c.definitionId !== previous.definitionId).slice(0, 3) : []
+    const options = action === 'replace' ? roomReplacementOptions(run,previous) : []
     const replacement = options.find(c => c.definitionId === command.cardId)
     const source = room.id
     next = confirmDeckOperation(offerDeckOperation(next, source, action as DeckOperationOffer['kind'], options), source, previous.instanceId, replacement)
     changed = next.deck.find(c => c.instanceId === previous.instanceId) ?? (action === 'replace' ? next.deck.find(c => c.instanceId === `${run.runId}/card/${run.nextCardId}`) : undefined)
-    text = action === 'upgrade' ? `Улучшено: ${cardDefinition(previous.definitionId).name}${paidUpgrade ? ` (−3 HP: ${hero!.name})` : ''}` : action === 'remove' ? `Удалено: ${cardDefinition(previous.definitionId).name}` : `Замена: ${cardDefinition(previous.definitionId).name} → ${cardDefinition(replacement!.definitionId).name}`
-    if (paidUpgrade) next = { ...next, heroes: { ...next.heroes, [hero!.id]: { ...hero!, health: hero!.health - 3 } } }
+    text = action === 'upgrade' ? `Улучшено: ${cardDefinition(previous.definitionId).name}${paidUpgrade ? ` (−${roomRules.upgradeHealth} HP: ${hero!.name})` : ''}` : action === 'remove' ? `Удалено: ${cardDefinition(previous.definitionId).name}${previous.upgrade ? ' ↑' : ''}` : `Замена: ${cardDefinition(previous.definitionId).name}${previous.upgrade ? ' ↑' : ''} → ${cardDefinition(replacement!.definitionId).name}`
+    if (paidUpgrade) next = { ...next, heroes: { ...next.heroes, [hero!.id]: { ...hero!, health: hero!.health - roomRules.upgradeHealth } } }
   } else if (action === 'card' || action === 'risk') {
-    if (action === 'risk' && Object.values(run.heroes).some(h => h.health <= 2)) throw new Error('Risk could kill a hero')
+    if (action === 'risk' && Object.values(run.heroes).some(h => h.health <= roomRules.riskHealth)) throw new Error('Risk could kill a hero')
     const acquisition = action === 'risk' ? room.riskCard : room.cards.find(c => c.definitionId === command.cardId)
     if (!acquisition) throw new Error('Card not in this room offer')
     if (action === 'risk' && !room.riskSuccess) {
-      next = { ...next, heroes: { warrior: { ...run.heroes.warrior, health: run.heroes.warrior.health-2 }, mage: { ...run.heroes.mage, health: run.heroes.mage.health-2 } } }
-      text = 'Порох отсырел и хлопнул: оба героя потеряли по 2 HP. Карты нет.'
+      next = { ...next, heroes: { warrior: { ...run.heroes.warrior, health: run.heroes.warrior.health-roomRules.riskHealth }, mage: { ...run.heroes.mage, health: run.heroes.mage.health-roomRules.riskHealth } } }
+      text = `Порох отсырел и хлопнул: оба героя потеряли по ${roomRules.riskHealth} HP. Карты нет.`
     } else {
       changed = acquiredCopy(next, acquisition)
       next = { ...next, deck: [...next.deck, changed], nextCardId: next.nextCardId+1 }

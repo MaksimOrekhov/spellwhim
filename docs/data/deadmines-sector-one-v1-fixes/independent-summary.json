@@ -1,0 +1,92 @@
+{
+  "baselineCommit": "e115e81ea5453d20e81e524e130b73d796a248ef",
+  "seedRange": [
+    0,
+    9999
+  ],
+  "oracle": "research/sector-review/oracle.ts, independent DFS; no production validation/path calls",
+  "summaries": [
+    {
+      "version": "before",
+      "seeds": 10000,
+      "invalid": 0,
+      "exhausted": 0,
+      "ms": 30558.948,
+      "totalPaths": 191418,
+      "duplicatePathFraction": 0.3467855687552895,
+      "sameFamilyPairFraction": 0.15360580671103488,
+      "meanAttempts": 7.8356,
+      "maxAttempts": 66,
+      "p99Attempts": 34,
+      "topologies": 9980,
+      "profileSets": 31,
+      "avgPaths": 19.1418,
+      "avgSequences": 4.0033,
+      "elitePathFraction": 0.22666624873313898,
+      "forgePathFraction": 0.39001034385480987,
+      "eventPathFraction": 0.6951645090848301,
+      "variants": {
+        "old-mines-raider": 16470,
+        "old-mines-digger": 26760,
+        "old-mines-watchman": 26265,
+        "old-mines-overseer": 13334
+      }
+    },
+    {
+      "version": "after",
+      "seeds": 10000,
+      "invalid": 0,
+      "exhausted": 0,
+      "ms": 28556.8877,
+      "totalPaths": 192193,
+      "duplicatePathFraction": 0,
+      "sameFamilyPairFraction": 0,
+      "meanAttempts": 7.8533,
+      "maxAttempts": 74,
+      "p99Attempts": 34,
+      "topologies": 9984,
+      "profileSets": 31,
+      "avgPaths": 19.2193,
+      "avgSequences": 4.0037,
+      "elitePathFraction": 0.22818729090029294,
+      "forgePathFraction": 0.3897124244899658,
+      "eventPathFraction": 0.6996352624705374,
+      "variants": {
+        "old-mines-digger": 17941,
+        "old-mines-watchman": 24472,
+        "old-mines-overseer": 25153,
+        "old-mines-raider": 15093
+      }
+    }
+  ],
+  "outcomes": [
+    {
+      "prefix": "",
+      "rawHash": {
+        "a": 0.7163,
+        "b": 0.7178,
+        "agreement": 0.9855
+      },
+      "mulberry": {
+        "a": 0.7018,
+        "b": 0.6985,
+        "agreement": 0.5877,
+        "independentExpected": 0.5801146
+      }
+    },
+    {
+      "prefix": "deadmines-old-mines/",
+      "rawHash": {
+        "a": 0.7003,
+        "b": 0.7016,
+        "agreement": 0.9845
+      },
+      "mulberry": {
+        "a": 0.6968,
+        "b": 0.7032,
+        "agreement": 0.5728,
+        "independentExpected": 0.57997952
+      }
+    }
+  ]
+}

@@ -5,7 +5,7 @@ import { gzipSync } from 'node:zlib'
 const args=process.argv.slice(2), flag=(name, fallback)=>args.includes(name)?args[args.indexOf(name)+1]:fallback
 const phase=flag('--phase','structure'), count=Number(flag('--runs',phase==='structure'?10000:300)), base=Number(flag('--seed',42))>>>0
 if (!Number.isSafeInteger(count)||count<1) throw Error('Invalid run count')
-const output='docs/data/deadmines-sector-one-v1'
+const output=flag('--output','docs/data/deadmines-sector-one-v1')
 await mkdir(output,{recursive:true})
 const server=await createServer({optimizeDeps:{noDiscovery:true,include:[]},server:{middlewareMode:true,ws:false,hmr:false},appType:'custom'})
 try {

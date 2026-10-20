@@ -5,7 +5,7 @@ import { canUpgradeCard, resolveCardDefinition } from '../game/cardProgression'
 import { neutralPreview } from '../ui/cardDisplay'
 import SpellCard from './SpellCard.vue'
 
-const props = withDefaults(defineProps<{ deck: readonly PersistentCard[]; explanation?: string; selectedInstanceId?: string }>(), { explanation: 'Вместо лечения. Выберите копию и сравните версии.' })
+const props = withDefaults(defineProps<{ deck: readonly PersistentCard[]; explanation?: string; selectedInstanceId?: string; confirmLabel?: string }>(), { explanation: 'Вместо лечения. Выберите копию и сравните версии.', confirmLabel: 'Подтвердить улучшение' })
 const emit = defineEmits<{ confirm: [instanceId: string]; close: []; select: [instanceId: string] }>()
 const dialog = useTemplateRef<HTMLDialogElement>('dialog')
 const selected = ref<string | null>(props.selectedInstanceId ?? null)
@@ -36,7 +36,7 @@ onMounted(() => dialog.value?.showModal())
       </section>
       <p v-else class="upgrade-empty">Выберите ещё не улучшенную копию слева.</p>
     </div>
-    <footer><span>Цена маны и класс сохраняются. Улучшение — один раз на копию.</span><button class="game-button" :disabled="!comparison" @click="comparison && emit('confirm', comparison.copy.instanceId)">Подтвердить улучшение</button></footer>
+    <footer><span>Цена маны и класс сохраняются. Улучшение — один раз на копию.</span><button class="game-button" :disabled="!comparison" @click="comparison && emit('confirm', comparison.copy.instanceId)">{{ confirmLabel }}</button></footer>
   </dialog>
 </template>
 
