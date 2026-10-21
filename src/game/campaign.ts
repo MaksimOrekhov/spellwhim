@@ -1,7 +1,7 @@
 import { createBattle } from './battle'
 import { artifactDefinitions } from './artifacts'
 import { cards, startingDeck } from './types'
-import { economyEncounters, gameEconomy } from './economy'
+import { economyEncounters, gameEconomy, scaleEnemyDamage } from './economy'
 import { defaultDungeonRoster } from './encountersV10'
 import type { DungeonRoster } from './rosters'
 import type { EconomyConfig } from './economy'
@@ -164,6 +164,8 @@ export interface DungeonRunState {
   pendingReward: DungeonRewardOffer | null
   /** Cards that never appear in this run's reward offers (Balance Lab controls); empty in the game. */
   excludedRewards?: CardId[]
+  /** Artifacts that are never offered or equipped in this run (EXPERIMENT economies whose rules void them); absent in the standard game. */
+  excludedArtifacts?: ArtifactId[]
 }
 
 const dungeonLayerTypes: DungeonNodeType[][] = [
@@ -259,10 +261,12 @@ export function dungeonEncounter(node: DungeonMapNode, economy: EconomyConfig = 
     ?? sectorEncounters.find(encounter => encounter.id === node.encounterId)
     ?? campaignEncounters(economy).find(encounter => encounter.id === node.encounterId)
   if (!base) throw new Error(`Unknown encounter ${node.encounterId}`)
+  // The economy may scale health and damage (EXPERIMENT "Honest Turn"); the map keeps the catalogue numbers, so one seed is one map.
   return {
     ...base,
     id: `${base.id}/${node.id}`,
-    maxHealth: node.encounterHealth,
+    maxHealth: Math.max(1, Math.round(node.encounterHealth * (economy.enemyHealthScale ?? 1))),
+    behavior: scaleEnemyDamage(base.behavior, economy.enemyDamageScale ?? 1),
   }
 }
 
@@ -276,6 +280,7 @@ export function createDungeonRun(seed: number, economy: EconomyConfig = gameEcon
     visitedNodeIds: [], completedNodeIds: [], deck: deck.map((definitionId, index) => ({ instanceId: `${runId}/card/${index + 1}`, definitionId, upgrade: 0 })), artifacts: [],
     heroes: { warrior: { ...preview.heroes.warrior }, mage: { ...preview.heroes.mage } },
     status: 'active', pendingReward: null,
+    ...(economy.excludedArtifacts?.length ? { excludedArtifacts: [...economy.excludedArtifacts] } : {}),
   }
 }
 
@@ -351,7 +356,7 @@ function createDungeonRewardOffer(run: DungeonRunState, node: DungeonMapNode): D
   const seed = deriveDungeonSeed(run.seed, `reward:${node.id}`)
   const artifactSeed = deriveDungeonSeed(run.seed, `artifact-reward:${node.id}`)
   const count = elite ? ELITE_REWARD_CHOICES : NORMAL_REWARD_CHOICES
-  const artifactPool = elite ? artifactDefinitions.filter(definition => !run.artifacts.some(owned => owned.definitionId === definition.id)) : []
+  const artifactPool = elite ? artifactDefinitions.filter(definition => !run.artifacts.some(owned => owned.definitionId === definition.id) && !run.excludedArtifacts?.includes(definition.id)) : []
   return {
     id: `${run.runId}/reward/${node.id}`,
     nodeId: node.id, seed, artifactSeed, count, elite,
@@ -395,6 +400,7 @@ export function equipDungeonArtifact(run: DungeonRunState, artifactId: ArtifactI
   const definition = artifactDefinitions.find(item => item.id === artifactId)
   const owner = Object.values(run.heroes).find(hero => hero.instanceId === ownerInstanceId)
   if (run.status !== 'active' || !definition) throw new Error('Invalid artifact')
+  if (run.excludedArtifacts?.includes(artifactId)) throw new Error('This artifact is not available under the rules of this run')
   if (run.artifacts.some(item => item.definitionId === artifactId)) throw new Error('Duplicate artifacts are not allowed in one run')
   if (!owner) throw new Error('Artifact owner is not a member of this run')
   const occupied = run.artifacts.find(item => item.ownerInstanceId === ownerInstanceId)

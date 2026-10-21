@@ -4,7 +4,7 @@ import { cards } from './types'
 import { defaultDungeonRoster } from './encountersV10'
 import { deriveDungeonSeed, dungeonEncounter, dungeonNode, validateDungeonMap } from './campaign'
 import type { DungeonRunState } from './campaign'
-import { playableEconomies } from './economy'
+import { honestEconomies, knownEconomies } from './economy'
 import type { EconomyConfig } from './economy'
 import { CARVED_GENERATOR_VERSION, validateSectorConfig } from './dungeonGenerator'
 import { sectorEncounters, sectorEventIds } from './sectorContent'
@@ -14,6 +14,8 @@ import { roomRules } from './roomRules'
 export const RUN_SAVE_KEY = 'spellwhim.run.v1'
 export const SAVE_SCHEMA_VERSION = 2
 export const RULES_VERSION = 'combat-upgrades-1'
+/** EXPERIMENT "Honest Turn" A: a run saved under these rules carries this version instead, so no other build reads it as its own. */
+export const HONEST_RULES_VERSION = 'honest-turn-a-1'
 export const GENERATOR_VERSION = 'dungeon-six-layers-1'
 
 function canonical(value: unknown): string {
@@ -21,6 +23,11 @@ function canonical(value: unknown): string {
   if (value && typeof value === 'object') return '{' + Object.entries(value).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([key, entry]) => JSON.stringify(key) + ':' + canonical(entry)).join(',') + '}'
   return JSON.stringify(value)
 }
+
+const sameEconomy = (a: unknown, b: unknown) => canonical(a) === canonical(b)
+const honestEconomyOf = (value: unknown) => Object.values(honestEconomies).find(known => sameEconomy(known, value))
+/** The rules generation a snapshot written under this economy must declare. */
+export const rulesVersionFor = (economy: unknown): string => honestEconomyOf(economy) ? HONEST_RULES_VERSION : RULES_VERSION
 
 function checksum(text: string): string {
   let hash = 0x811c9dc5
@@ -81,7 +88,7 @@ const runShape = object({
   heroes: object({ warrior: hero, mage: hero }), artifacts: list(object({ instanceId: text, definitionId: artifactId, ownerInstanceId: text }), 2),
   status: oneOf('active', 'victory', 'defeat', 'sector-complete'),
   pendingReward: nullable(object({ id: text, nodeId: text, seed: uint, artifactSeed: uint, count: oneOf(3, 5), elite: oneOf(true, false), cards: list(acquisition, 5), artifactIds: list(artifactId, 3) })),
-}, { excludedRewards: list(cardId), campaign: object({ id: text, version: integer(1) }), room: nullable(room), journal: list(object({ nodeId: text, kind: oneOf('upgrade', 'remove', 'replace', 'card', 'risk', 'artifact', 'leave', 'reward', 'skip', 'rest'), text }, { card: object({ instanceId: text, definitionId: cardId, upgrade: oneOf(0, 1) }) })) })
+}, { excludedRewards: list(cardId), excludedArtifacts: list(artifactId, 5), campaign: object({ id: text, version: integer(1) }), room: nullable(room), journal: list(object({ nodeId: text, kind: oneOf('upgrade', 'remove', 'replace', 'card', 'risk', 'artifact', 'leave', 'reward', 'skip', 'rest'), text }, { card: object({ instanceId: text, definitionId: cardId, upgrade: oneOf(0, 1) }) })) })
 
 function requireValid(condition: unknown): asserts condition {
   if (!condition) throw new Error('Повреждены данные сохранённого похода.')
@@ -136,7 +143,7 @@ export function validateRun(value: unknown): asserts value is DungeonRunState {
     requireValid(card.instanceId === prefix + number && integer(1, run.nextCardId - 1)(number))
   })
   requireValid(unique(run.artifacts.map(item => item.instanceId)) && unique(run.artifacts.map(item => item.definitionId)) && unique(run.artifacts.map(item => item.ownerInstanceId)))
-  run.artifacts.forEach(item => requireValid(heroes.some(entry => entry.instanceId === item.ownerInstanceId)))
+  run.artifacts.forEach(item => requireValid(heroes.some(entry => entry.instanceId === item.ownerInstanceId) && !run.excludedArtifacts?.includes(item.definitionId)))
   const offer = run.pendingReward
   if (offer) {
     requireValid(run.status === 'active' && current && !incomplete && ['battle','elite'].includes(current.type))
@@ -145,7 +152,7 @@ export function validateRun(value: unknown): asserts value is DungeonRunState {
     requireValid(offer.elite === (current.type === 'elite') && offer.count === (offer.elite ? 5 : 3))
     requireValid(offer.cards.length === offer.count && unique(offer.cards.map(card => card.definitionId)) && unique(offer.artifactIds))
     requireValid(offer.cards.every(choice => cards.some(card => card.id === choice.definitionId && card.reward) && !run.excludedRewards?.includes(choice.definitionId)))
-    requireValid(offer.elite ? offer.artifactIds.every(id => !run.artifacts.some(item => item.definitionId === id)) : offer.artifactIds.length === 0)
+    requireValid(offer.elite ? offer.artifactIds.every(id => !run.artifacts.some(item => item.definitionId === id) && !run.excludedArtifacts?.includes(id)) : offer.artifactIds.length === 0)
   }
   requireValid(run.status === 'active' ? heroes.every(entry => entry.health > 0) && !run.completedNodeIds.includes(run.map.finalNodeId) : !incomplete && !offer && !!current)
   if (run.status === 'victory' || run.status === 'sector-complete') requireValid((run.status === 'sector-complete') === sector && current?.id === run.map.finalNodeId && heroes.every(entry => entry.health > 0))
@@ -170,11 +177,19 @@ export function validateRun(value: unknown): asserts value is DungeonRunState {
 }
 
 export class IncompatibleSave extends Error {}
+
+/** Experimental economies exist only for the sector run, and a run keeps exactly the exclusions its economy declares. */
+function requireRunMatchesEconomy(run: DungeonRunState, economy: unknown): void {
+  const honest = honestEconomyOf(economy)
+  if (honest) requireValid(!!run.campaign && canonical(run.excludedArtifacts) === canonical(honest.excludedArtifacts))
+  else requireValid(run.excludedArtifacts === undefined)
+}
 export function encodeSnapshot(run: DungeonRunState, economy: EconomyConfig, revision: number): string {
   validateRun(run)
   requireValid(integer(1)(revision))
-  requireValid(Object.values(playableEconomies).some(known => canonical(known) === canonical(economy)))
-  const payload: RunSnapshot = { schemaVersion: SAVE_SCHEMA_VERSION, rulesVersion: RULES_VERSION, generatorVersion: run.map.configuration?.generatorVersion ?? GENERATOR_VERSION, catalogVersion: run.campaign ? SECTOR_CATALOG_VERSION : CATALOG_VERSION, ...(run.campaign ? {roomRulesVersion:ROOM_RULES_VERSION} : {}), revision, economy, run }
+  requireValid(knownEconomies().some(known => sameEconomy(known, economy)))
+  requireRunMatchesEconomy(run, economy)
+  const payload: RunSnapshot = { schemaVersion: SAVE_SCHEMA_VERSION, rulesVersion: rulesVersionFor(economy), generatorVersion: run.map.configuration?.generatorVersion ?? GENERATOR_VERSION, catalogVersion: run.campaign ? SECTOR_CATALOG_VERSION : CATALOG_VERSION, ...(run.campaign ? {roomRulesVersion:ROOM_RULES_VERSION} : {}), revision, economy, run }
   return JSON.stringify({ payload, checksum: checksum(canonical(payload)) })
 }
 
@@ -184,13 +199,14 @@ export function decodeSnapshot(raw: string): RunSnapshot {
   const envelope = data as { payload: RunSnapshot; checksum: string }
   const snapshot = envelope.payload
   requireValid(object({ schemaVersion: integer(1), rulesVersion: text, generatorVersion: text, catalogVersion: text, revision: integer(1), economy: () => true, run: () => true }, {roomRulesVersion:text})(snapshot))
-  const legacy = baseCatalogueVersion === FOUNDATION_CATALOG_VERSION && snapshot.schemaVersion === 1 && snapshot.rulesVersion === 'combat-progression-1' && snapshot.catalogVersion === FOUNDATION_CATALOG_VERSION && snapshot.generatorVersion === GENERATOR_VERSION
+  const legacy = baseCatalogueVersion === FOUNDATION_CATALOG_VERSION && snapshot.schemaVersion === 1 && !honestEconomyOf(snapshot.economy) && snapshot.rulesVersion === 'combat-progression-1' && snapshot.catalogVersion === FOUNDATION_CATALOG_VERSION && snapshot.generatorVersion === GENERATOR_VERSION
   const sector = snapshot.run && typeof snapshot.run === 'object' && !!snapshot.run.campaign
   if (sector && snapshot.roomRulesVersion !== ROOM_RULES_VERSION) throw new IncompatibleSave('Сохранение использует другую версию правил комнат. Исходные данные оставлены в хранилище и доступны для скачивания; нужен новый поход или совместимая версия игры.')
-  if (!legacy && (![1,2].includes(snapshot.schemaVersion) || (sector && snapshot.schemaVersion !== 2) || snapshot.rulesVersion !== RULES_VERSION || snapshot.generatorVersion !== (sector ? CARVED_GENERATOR_VERSION : GENERATOR_VERSION) || snapshot.catalogVersion !== (sector ? SECTOR_CATALOG_VERSION : CATALOG_VERSION))) throw new IncompatibleSave('Сохранение создано для другой версии игры. Оно оставлено в хранилище; начните новый поход или вернитесь к совместимой версии.')
-  requireValid(object({ schemaVersion: oneOf(1,2), rulesVersion: text, generatorVersion: text, catalogVersion: text, revision: integer(1), economy: value => Object.values(playableEconomies).some(known => canonical(known) === canonical(value)), run: () => true }, {roomRulesVersion:text})(snapshot))
+  if (!legacy && (![1,2].includes(snapshot.schemaVersion) || (sector && snapshot.schemaVersion !== 2) || snapshot.rulesVersion !== rulesVersionFor(snapshot.economy) || snapshot.generatorVersion !== (sector ? CARVED_GENERATOR_VERSION : GENERATOR_VERSION) || snapshot.catalogVersion !== (sector ? SECTOR_CATALOG_VERSION : CATALOG_VERSION))) throw new IncompatibleSave('Сохранение создано для другой версии игры. Оно оставлено в хранилище; начните новый поход или вернитесь к совместимой версии.')
+  requireValid(object({ schemaVersion: oneOf(1,2), rulesVersion: text, generatorVersion: text, catalogVersion: text, revision: integer(1), economy: value => knownEconomies().some(known => sameEconomy(known, value)), run: () => true }, {roomRulesVersion:text})(snapshot))
   requireValid(envelope.checksum === checksum(canonical(snapshot)))
   validateRun(snapshot.run)
+  requireRunMatchesEconomy(snapshot.run, snapshot.economy)
   if (legacy) {
     const acquisitions = [...snapshot.run.deck, ...(snapshot.run.pendingReward?.cards ?? []), ...snapshot.run.deckOperations.flatMap(offer => offer.options)]
     if (acquisitions.some(card => card.upgrade !== 0)) throw new IncompatibleSave('Старое сохранение содержит неподдержанное улучшение. Исходные данные доступны для скачивания; нужен прежний каталог игры.')
@@ -204,19 +220,20 @@ export interface SaveResult { ok: boolean; message: string }
 export interface LoadResult { snapshot: RunSnapshot | null; message: string; blocked: boolean }
 
 /** Small synchronous snapshots work in browser and Tauri webviews. Each setItem is atomic. */
-export function createRunSaveStore(storage: () => SaveStorage) {
+/** `key` is the slot: the standard game keeps `RUN_SAVE_KEY`, every experimental ruleset has its own, so none touches the others' saves. */
+export function createRunSaveStore(storage: () => SaveStorage, key: string = RUN_SAVE_KEY) {
   let revision = 0
   let exported = ''
   function load(): LoadResult {
     const valid: { snapshot: RunSnapshot; key: string; raw: string }[] = []
     const errors: Error[] = []
     const originals: { key: string; raw: string }[] = []
-    for (const key of [RUN_SAVE_KEY, RUN_SAVE_KEY + '.backup']) {
+    for (const slot of [key, key + '.backup']) {
       try {
-        const raw = storage().getItem(key)
+        const raw = storage().getItem(slot)
         if (raw !== null) {
-          originals.push({ key, raw })
-          valid.push({ snapshot: decodeSnapshot(raw), key, raw })
+          originals.push({ key: slot, raw })
+          valid.push({ snapshot: decodeSnapshot(raw), key: slot, raw })
         }
       } catch (error) { errors.push(error instanceof Error ? error : new Error(String(error))) }
     }
@@ -236,10 +253,10 @@ export function createRunSaveStore(storage: () => SaveStorage) {
       const raw = encodeSnapshot(run, economy, revision + 1)
       exported = raw
       // The previous mirrored generation survives failure of the primary atomic write.
-      storage().setItem(RUN_SAVE_KEY, raw)
+      storage().setItem(key, raw)
       revision += 1
       // Mirror the committed snapshot too: corruption of one record cannot resurrect a spent reward.
-      storage().setItem(RUN_SAVE_KEY + '.backup', raw)
+      storage().setItem(key + '.backup', raw)
       return { ok: true, message: '' }
     } catch {
       return { ok: false, message: 'Прогресс не удалось надёжно сохранить. Не закрывайте игру: повторите сохранение или скачайте копию. Хранилище может быть недоступно или переполнено.' }

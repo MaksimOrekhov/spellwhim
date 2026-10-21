@@ -35,7 +35,7 @@ export function createRoomVisit(run: DungeonRunState, node: DungeonMapNode): Roo
   return {
     id: `${run.runId}/room/${node.id}`, nodeId: node.id, type: node.type as RoomVisit['type'], ...(node.eventId ? { eventId: node.eventId } : {}),
     cards: cardOffers, riskCard: cardOffers[0] ? { ...cardOffers[0], upgrade: 1 } : null, replacements: { warrior: replacement('warrior'), mage: replacement('mage') },
-    artifactIds: offer(seed('room-artifacts'), artifactDefinitions.filter(a => !run.artifacts.some(item => item.definitionId === a.id)), roomRules.artifacts).map(a => a.id),
+    artifactIds: offer(seed('room-artifacts'), artifactDefinitions.filter(a => !run.artifacts.some(item => item.definitionId === a.id) && !run.excludedArtifacts?.includes(a.id)), roomRules.artifacts).map(a => a.id),
     riskSuccess: nextRandom({ rngState: seed('event-outcome') }) < roomRules.riskChance, selection: null,
   }
 }

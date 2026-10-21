@@ -165,7 +165,7 @@ export function damageParts(preview: CardPreview): DamagePart[] {
 }
 
 /** `neutral`: no board context (reward screen), so armor is described by its target rule instead of a concrete hero. */
-export function cardNotes(card: CardDefinition, preview: CardPreview, context: 'board' | 'neutral' = 'board'): CardNotesModel {
+export function cardNotes(card: CardDefinition, preview: CardPreview, context: 'board' | 'neutral' = 'board', armorExpires = false): CardNotesModel {
   const parts = damageParts(preview)
   const totalBase = damageEffects(card).reduce((sum, effect) => sum + effect.amount, 0)
   const activeBase = preview.damage > 0 ? preview.damage - preview.bonusDamage : 0
@@ -201,7 +201,7 @@ export function cardNotes(card: CardDefinition, preview: CardPreview, context: '
   const armor = context === 'neutral'
     ? card.effects.flatMap(effect => effect.type === 'armor' ? [{ hero: effect.target, name: armorRecipient(effect.target, preview, 'цели врага'), amount: effect.amount }] : [])
     : (['warrior', 'mage'] as const).map(hero => ({ hero, name: heroName[hero], amount: preview.armor[hero] })).filter(item => item.amount > 0)
-  if (context === 'board' && card.effects.some(effect => effect.type === 'armor' && effect.target === 'threatened')) keywords.push({ glyph: 'armor', name: 'Броня', text: 'Поглощает урон и исчезает после следующей атаки по герою. «Цель» — герой, которого атакует противник.' })
+  if (context === 'board' && card.effects.some(effect => effect.type === 'armor' && effect.target === 'threatened')) keywords.push({ glyph: 'armor', name: 'Броня', text: (armorExpires ? 'Поглощает урон и исчезает, когда враг закончит свой ход.' : 'Поглощает урон и исчезает после следующей атаки по герою.') + ' «Цель» — герой, которого атакует противник.' })
   if (card.exhaust) keywords.push({ glyph: 'exhaust', name: 'Выбывает', text: 'Эта копия не вернётся в колоду до конца боя.' })
 
   // The sum above already names every active bonus, so repeating them as sentences only makes the notes taller.

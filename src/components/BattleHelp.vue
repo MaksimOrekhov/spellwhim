@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import { useTemplateRef } from 'vue'
+import { useRules } from '../ui/rulesInfo'
 const dialog = useTemplateRef<HTMLDialogElement>('dialog')
+const rules = useRules()
 </script>
 <template>
   <button class="help-button" @click="dialog?.showModal()" aria-label="Как играть">? <span>Как играть</span></button>
   <dialog ref="dialog" class="help-dialog" @click="($event.target === dialog) && dialog?.close()">
     <h2>Один отряд. Общий ход.</h2><p>Вариан и Джайна действуют вместе: разыгрывайте карты обоих героев в любом порядке, пока хватает маны.</p>
     <dl><dt>Розыгрыш</dt><dd>Нажмите карту, чтобы сыграть её. Точно целиться не нужно.</dd><dt>Клавиатура</dt><dd>1–9 — карты слева направо. Enter — завершить ход. Escape — закрыть подсказку.</dd><dt>Уязвимость</dt><dd>Следующая наносящая урон карта получает +3 урона и снимает Уязвимость. Эффект сохраняется между ходами.</dd><dt>Заклинания Джайны</dt><dd>Ледяная стрела и Грозовой разряд наносят на 2 урона больше, если у Джайны есть броня.</dd></dl>
-    <p>Защита всегда прикрывает героя под прицелом.</p><button class="game-button" @click="dialog?.close()">Понятно</button>
+    <p>Защита всегда прикрывает героя под прицелом.</p>
+    <p v-if="rules.discardsHand" class="experiment-rules"><b>Эксперимент «Честный ход».</b> Каждый ход — новая рука из {{ rules.openingHand }} карт: несыгранные сгорают. Броня держится ровно до конца хода врага, потом исчезает у обоих героев. Мана — 4 каждый ход.</p><button class="game-button" @click="dialog?.close()">Понятно</button>
   </dialog>
 </template>
 <style scoped>

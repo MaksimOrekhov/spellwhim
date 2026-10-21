@@ -1,7 +1,7 @@
 import { MAX_HAND_SIZE, cardDefinition, encounters, startingDeck } from './types'
 import { drawForTurn, gameEconomy, manaForTurn } from './economy'
 import type { EconomyConfig } from './economy'
-import { drawCards, shuffle } from './deck'
+import { discardHand, drawCards, shuffle } from './deck'
 import { resolveCardDefinition } from './cardProgression'
 import type { DeckInput } from './types'
 import { artifactDefinition } from './artifacts'
@@ -405,6 +405,8 @@ export function endTurn(state: BattleState): boolean {
   state.artifactNotices = []
   updateResult(state)
   if (state.result || state.pending) return false
+  // EXPERIMENT "Honest Turn": whatever was not played is gone before the enemy acts (and before the next hand is drawn).
+  if (state.economy.discardHand) discardHand(state)
   // Enemy turn, step 1: statuses that act at its start (none yet). They may end the battle or move the phase threshold.
   runEnemyTurnStart(state)
   updateResult(state)
@@ -426,6 +428,9 @@ export function endTurn(state: BattleState): boolean {
   }
   updateResult(state)
   if (state.result) return true
+  // EXPERIMENT "Honest Turn": armor lives exactly one enemy action. It is cleared HERE, after the hits and before the triggers below,
+  // so the Shift Whistle's armor (granted right after a windup) is not cleared and is still on the hero when the announced strike lands.
+  if (state.economy.armorExpiry === 'turn') for (const id of heroIdsInPartyOrder(state.heroes)) state.heroes[id].armor = 0
   if (action.kind === 'prepare' && action.prepared.kind === 'attack') {
     for (const artifact of state.artifacts) {
       const owner = heroForArtifact(state, artifact)

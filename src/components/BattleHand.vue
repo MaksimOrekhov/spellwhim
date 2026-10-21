@@ -7,6 +7,7 @@ import type { HandCardView } from '../composables/useBattle'
 import type { BattlePhase } from '../composables/useBattleAnimation'
 import type { CardBlock } from '../ui/cardDisplay'
 import { handMode, handOrder, TILE_EM_HEIGHT, TILE_EM_WIDTH, zoomFactor, zoomShift } from '../ui/handLayout'
+import { useRules } from '../ui/rulesInfo'
 
 const props = defineProps<{ cards: HandCardView[]; outgoing: HandCardView | null; outgoingIndex: number; drawCount: number; discardCount: number; exhaustedCount: number; phase: BattlePhase; mana: number; maxMana: number; nextMana?: number; nextDraw?: number; drawBoostFrom?: number; drawBoostAmount?: number }>()
 const emit = defineEmits<{ play: [instanceId: string]; endTurn: [] }>()
@@ -15,7 +16,10 @@ const manaHint = computed(() => {
   if (props.nextMana === undefined || props.nextMana === props.maxMana) return props.maxMana >= 5 ? 'Максимум маны: 5' : ''
   return 'Следующий ход: максимум ' + props.nextMana
 })
-const drawHint = computed(() => props.drawBoostFrom !== undefined && props.drawBoostAmount !== undefined
+const rules = useRules()
+const drawHint = computed(() => rules.discardsHand
+  ? 'В начале каждого хода берётся новая рука из ' + (props.nextDraw ?? rules.openingHand) + ' карт. Несыгранные карты в конце хода уходят в сброс.'
+  : props.drawBoostFrom !== undefined && props.drawBoostAmount !== undefined
   ? 'В начале каждого хода после первого добираются 2 карты; с ' + props.drawBoostFrom + '-го хода — ' + props.drawBoostAmount + '. Несыгранные карты остаются в руке.'
   : 'В начале каждого следующего хода добираются ' + (props.nextDraw ?? 2) + ' карты. Несыгранные карты остаются в руке.')
 function block(item: HandCardView): CardBlock | null {
@@ -109,11 +113,11 @@ watch(() => displayed.value.length, () => { if (activeIndex.value < 0) active.va
   <footer class="battle-dock">
     <aside class="hand-resources">
       <div class="mana-pool" aria-label="Мана отряда"><span>Мана</span><strong>{{ mana }}<small>/{{ maxMana }}</small></strong><div class="mana-pips" aria-hidden="true"><i v-for="pip in maxMana" :key="pip" :class="{ 'is-spent': pip > mana }"></i></div><em v-if="manaHint" class="mana-next">{{ manaHint }}</em></div>
-      <GameTooltip label="Общая колода"><button class="deck-counts" aria-label="Колода и сброс"><span>▤ Колода <b>{{ drawCount }}</b></span><span>↻ Сброс <b>{{ discardCount }}</b></span></button><template #content><p>В начале боя в руке 8 карт. {{ drawHint }}</p><p>Максимум руки — 10. Карты сверх лимита остаются в колоде. Выбывших до конца боя: {{ exhaustedCount }}.</p></template></GameTooltip>
+      <GameTooltip label="Общая колода"><button class="deck-counts" aria-label="Колода и сброс"><span>▤ Колода <b>{{ drawCount }}</b></span><span>↻ Сброс <b>{{ discardCount }}</b></span></button><template #content><p>В начале боя в руке {{ rules.openingHand }} карт. {{ drawHint }}</p><p>Максимум руки — 10. Карты сверх лимита остаются в колоде. Выбывших до конца боя: {{ exhaustedCount }}.</p></template></GameTooltip>
     </aside>
     <section class="hand-area" aria-label="Карты в руке">
       <p class="hand-hint">{{ displayed.length }} / 10 карт · наведите для полного описания · клавиши 1–9, 0</p>
-      <div ref="track" class="hand-track" :class="{ 'is-overlapped': overlapped, 'is-compact': compact }">
+      <div ref="track" class="hand-track" :class="{ 'is-overlapped': overlapped, 'is-compact': compact, 'is-burning': rules.discardsHand && phase === 'enemy' }">
         <TransitionGroup name="deal">
           <div v-for="(item, index) in displayed" :key="item.instanceId" class="slot" :class="{ 'is-active': index === activeIndex }" :style="slotStyle(index)" @mouseenter="enter(item)" @mouseleave="leave(item)" @focusin="enter(item)" @focusout="focusOut(item, $event)">
             <div class="holder" :style="holderStyle(index)">
@@ -124,7 +128,7 @@ watch(() => displayed.value.length, () => { if (activeIndex.value < 0) active.va
         <p v-if="!displayed.length" class="empty-hand">Рука пуста.<br />Завершите ход, чтобы добрать карты.</p>
       </div>
     </section>
-    <aside class="turn-controls"><button class="game-button end-turn" :disabled="phase !== 'player'" @click="emit('endTurn')"><span>{{ phase === 'enemy' ? 'Ход врага' : phase === 'card' ? 'Действие…' : 'Завершить ход' }}</span><kbd>Enter</kbd></button><small>{{ phase === 'player' ? 'После этого враг атакует' : 'Дождитесь окончания действия' }}</small></aside>
+    <aside class="turn-controls"><button class="game-button end-turn" :disabled="phase !== 'player'" @click="emit('endTurn')"><span>{{ phase === 'enemy' ? 'Ход врага' : phase === 'card' ? 'Действие…' : 'Завершить ход' }}</span><kbd>Enter</kbd></button><small>{{ phase === 'player' ? (rules.discardsHand && displayed.length ? 'Враг атакует. Несыгранные карты сгорят: ' + displayed.length : 'После этого враг атакует') : 'Дождитесь окончания действия' }}</small></aside>
     <Teleport to="body">
       <Transition name="notes">
         <div v-if="activeItem" class="card-notes-pop" :style="notesStyle" aria-hidden="true">
@@ -144,6 +148,7 @@ watch(() => displayed.value.length, () => { if (activeIndex.value < 0) active.va
 .hand-track:not(.is-compact) .slot.is-active .holder{transform:translate(var(--shift,0),calc(-1 * var(--lift))) scale(var(--zoom));transition-duration:var(--dur-fast)}
 .hand-track:not(.is-compact) .slot.is-active .holder :deep(.sc-rim){box-shadow:0 .9em 1.6em #04101299,inset 0 .1em .12em #fff7,inset 0 -.18em .3em #0006}
 .deal-enter-from,.deal-leave-to{opacity:0}
+.hand-track.is-burning .slot{opacity:.5;filter:grayscale(.65)}
 .deal-enter-from .holder{transform:translateY(5em) scale(.9)}
 .deal-leave-active{transition:opacity .12s}
 .empty-hand{position:absolute;inset:0;display:grid;place-content:center;margin:0;text-align:center;font-size:16px;line-height:1.5;color:#d1cfba}

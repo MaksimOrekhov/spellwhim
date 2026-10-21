@@ -1,5 +1,5 @@
 import { CARDS_DRAWN_PER_TURN, OPENING_HAND_SIZE, encounters } from './types'
-import type { EncounterDefinition } from './types'
+import type { ArtifactId, EncounterDefinition, EnemyAction, EnemyBehavior } from './types'
 import { reinforcedEncounters } from './encountersV07'
 
 /**
@@ -15,7 +15,10 @@ import { reinforcedEncounters } from './encountersV07'
  * remains the explicit v0.6 control for Balance Lab and regression comparisons.
  */
 
-export type ManaCurveId = 'A' | 'B' | 'U'
+/** `H` is the flat 4 of the experimental "Honest Turn" rules; A, B and U are the historical models. */
+export type ManaCurveId = 'A' | 'B' | 'U' | 'H'
+/** The models the standard game and the Balance Lab can play. */
+export type PlayableCurveId = 'A' | 'B' | 'U'
 /** `late3` is the proposal (3 cards from turn 5); `from4`, `from6` and `all3` exist for the sensitivity runs of the report. */
 export type DrawScheduleId = 'base' | 'late3' | 'from4' | 'from6' | 'all3'
 export type EnemyPackageId = 'v06' | 'v07'
@@ -38,14 +41,27 @@ export interface EconomyConfig {
   manaByTurn: readonly number[]
   drawSchedule: DrawSchedule
   openingHand: number
-  /** Multiplier of every enemy's maximum health (1 for the presets); only for calibration runs of the Balance Lab. */
+  /** Multiplier of every enemy's maximum health (1 for the presets); calibration runs of the Balance Lab and the Honest Turn experiment. */
   enemyHealthScale: number
+  /**
+   * EXPERIMENT "Honest Turn" (docs/design/honest-turn-a-experiment-v1.md). The four fields below are ABSENT from every historical
+   * economy on purpose: a saved copy of A, B or U stays byte-identical, and the engine reads an absent field as the current rules.
+   * Cards left in hand when the player ends the turn go to the discard pile; the next hand comes from `drawSchedule`.
+   */
+  discardHand?: boolean
+  /** `turn`: hero armor is cleared once the enemy action has resolved (a partner's armor too). Absent: armor stays until that hero is hit. */
+  armorExpiry?: 'turn'
+  /** Multiplier of every damaging number of an enemy action (a prepared strike included); absent means 1. */
+  enemyDamageScale?: number
+  /** Artifacts never offered in this economy, because their rule needs armor to survive a turn. */
+  excludedArtifacts?: readonly ArtifactId[]
 }
 
 export const manaCurves: Record<ManaCurveId, { label: string; manaByTurn: readonly number[] }> = {
   A: { label: 'плоские 3', manaByTurn: [3] },
   B: { label: '3→4→5', manaByTurn: [3, 4, 5] },
   U: { label: '3→4→4→5→5→6', manaByTurn: [3, 4, 4, 5, 5, 6] },
+  H: { label: 'плоские 4', manaByTurn: [4] },
 }
 
 export const drawSchedules: Record<DrawScheduleId, { label: string; schedule: DrawSchedule }> = {
@@ -85,7 +101,7 @@ export function buildEconomy(parts: EconomyParts = {}, id?: string): EconomyConf
 export const baselineEconomy: EconomyConfig = buildEconomy()
 
 /** The complete experimental packages offered for play: the curve plus v0.7 enemies plus the late draw. */
-export const playableEconomies: Record<ManaCurveId, EconomyConfig> = {
+export const playableEconomies: Record<PlayableCurveId, EconomyConfig> = {
   A: baselineEconomy,
   B: buildEconomy({ mana: 'B', enemies: 'v07', draw: 'late3' }, 'B'),
   U: buildEconomy({ mana: 'U', enemies: 'v07', draw: 'late3' }, 'U'),
@@ -93,6 +109,41 @@ export const playableEconomies: Record<ManaCurveId, EconomyConfig> = {
 
 /** Model B is the standard economy used by the actual game. */
 export const gameEconomy: EconomyConfig = playableEconomies.B
+
+/**
+ * EXPERIMENT A "Честный ход" (docs/design/honest-turn-a-experiment-v1.md, Decision Log X01). 7 cards every turn, unplayed cards are
+ * discarded, 4 mana every turn, hero armor does not outlive the enemy action, enemies have 1.75x health and a fraction of their damage.
+ * The two presets differ only in that fraction (0.8 and 0.9), so close settings can be compared by switching the rules, nothing else.
+ * Hero health is the standard 25/18. These are NOT approved rules and never replace `gameEconomy`.
+ */
+function honestEconomy(id: string, damage: number): EconomyConfig {
+  return {
+    ...buildEconomy({ mana: 'H', enemies: 'v07', draw: 'base' }, id),
+    label: `Честный ход A · 7 карт, мана 4 · враги: здоровье ×1,75, урон ×${String(damage).replace('.', ',')}`,
+    drawSchedule: { perTurn: 7 }, openingHand: 7, enemyHealthScale: 1.75,
+    discardHand: true, armorExpiry: 'turn', enemyDamageScale: damage,
+    // The spool needs armor at the start of the turn, which these rules take away; offering it would hand out a dead item.
+    excludedArtifacts: ['tension-spool'],
+  }
+}
+export const honestEconomies = {
+  'honest-a08': honestEconomy('honest-a08', 0.8),
+  'honest-a09': honestEconomy('honest-a09', 0.9),
+} as const
+export type HonestEconomyId = keyof typeof honestEconomies
+export const isHonestEconomy = (economy: Pick<EconomyConfig, 'discardHand'>): boolean => economy.discardHand === true
+/** Every economy a saved run may carry: the three historical models and the experimental presets. */
+export function knownEconomies(): EconomyConfig[] { return [...Object.values(playableEconomies), ...Object.values(honestEconomies)] }
+
+/** A copy of the behaviour with every damaging number scaled (at least 1). Armor values and the order of actions are untouched. */
+export function scaleEnemyDamage(behavior: EnemyBehavior, scale: number): EnemyBehavior {
+  if (scale === 1) return behavior
+  const scaled = (amount: number) => Math.max(1, Math.round(amount * scale))
+  const action = (item: EnemyAction): EnemyAction => item.kind === 'attack' || item.kind === 'attack_all'
+    ? { ...item, damage: scaled(item.damage) }
+    : item.kind === 'prepare' ? { ...item, prepared: action(item.prepared) as typeof item.prepared } : item
+  return { phase1: behavior.phase1.map(action), ...(behavior.phase2 ? { phase2: behavior.phase2.map(action) } : {}) }
+}
 
 export type EconomyStage = 'A' | 'B' | 'C' | 'D'
 /**
@@ -139,10 +190,14 @@ export function economyEncounters(economy: EconomyConfig): readonly EncounterDef
  * or `U/v06/base` style (curve/enemies/draw[/enemy health multiplier]) for any single combination.
  */
 export function economyFromSpec(spec: string): EconomyConfig {
+  if (spec.toLowerCase() in honestEconomies) return honestEconomies[spec.toLowerCase() as HonestEconomyId]
   const parts = spec.split('/')
   const curve = parts[0]!.toUpperCase()
   if (!(curve in manaCurves)) throw new Error('Unknown mana curve: ' + parts[0])
-  if (parts.length === 1) return playableEconomies[curve as ManaCurveId]
+  if (parts.length === 1) {
+    if (!(curve in playableEconomies)) throw new Error('Unknown economy: ' + spec)
+    return playableEconomies[curve as PlayableCurveId]
+  }
   if (parts.length === 2 && ['A', 'B', 'C', 'D'].includes(parts[1]!.toUpperCase())) return economyStage(parts[1]!.toUpperCase() as EconomyStage, curve as ManaCurveId)
   const [, enemies = 'v06', draw = 'base', scale = '1'] = parts
   const healthScale = Number(scale)
@@ -157,7 +212,7 @@ export function economyFromSpec(spec: string): EconomyConfig {
 export function economyFromSearch(search: string): EconomyConfig {
   const params = new URLSearchParams(search)
   const name = (params.get('economy') ?? 'B').toUpperCase()
-  const curve: ManaCurveId = name in manaCurves ? name as ManaCurveId : 'B'
+  const curve: PlayableCurveId = name in playableEconomies ? name as PlayableCurveId : 'B'
   const enemies = params.get('enemies')
   const draw = params.get('draw')
   const enemiesPart = enemies && enemies in enemyPackages ? enemies as EnemyPackageId : undefined

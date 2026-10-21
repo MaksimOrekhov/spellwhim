@@ -8,6 +8,7 @@ import EliteReward from './components/EliteReward.vue'
 import RestSite from './components/RestSite.vue'
 import RunComplete from './components/RunComplete.vue'
 import DungeonRoom from './components/DungeonRoom.vue'
+import RulesSwitch from './components/RulesSwitch.vue'
 import { useBattle } from './composables/useBattle'
 import { useBattleControls } from './composables/useBattleControls'
 import { useBattleAnimation } from './composables/useBattleAnimation'
@@ -18,18 +19,28 @@ import type { DungeonRunState } from './game/campaign'
 import { createRunSaveStore } from './game/runSave'
 import type { RunSnapshot, SaveStorage } from './game/runSave'
 import { resolveCardDefinition } from './game/cardProgression'
-import { drawForTurn, economyFromSearch, gameEconomy, manaForTurn } from './game/economy'
+import { drawForTurn, economyFromSearch, gameEconomy, isHonestEconomy, manaForTurn } from './game/economy'
+import { requestedSeed, resolveRulesMode } from './game/rulesMode'
+import { provideRules, rulesInfoOf } from './ui/rulesInfo'
 import type { CardDefinition, HeroId } from './game/types'
 
 // Model B is the standard economy in development, production and Tauri. A and U remain dev-only comparisons.
-const configuredEconomy = import.meta.env.DEV
+// EXPERIMENT "Honest Turn": `?rules=honest-a08|honest-a09` plays other battle rules in every build, in a save slot of its own.
+const rulesMode = resolveRulesMode(window.location.search)
+// `?seed=N` makes the next run start from that seed, so the same map can be played under two sets of rules.
+let seedOnce = requestedSeed(window.location.search)
+const configuredEconomy = rulesMode.economy ?? (import.meta.env.DEV
   ? economyFromSearch(window.location.search || (import.meta.env.VITE_SPELLWHIM_ECONOMY ? '?economy=' + import.meta.env.VITE_SPELLWHIM_ECONOMY : ''))
-  : gameEconomy
+  : gameEconomy)
 const props = defineProps<{ saveStorage?: SaveStorage }>()
-const saveStore = createRunSaveStore(() => props.saveStorage ?? window.localStorage)
-const loaded = saveStore.load()
+const saveStore = createRunSaveStore(() => props.saveStorage ?? window.localStorage, rulesMode.saveKey)
+const slot = saveStore.load()
+// A slot holds only runs of its own rules; a foreign record is left in storage untouched and never played.
+const foreign = !!slot.snapshot && !!rulesMode.economy && slot.snapshot.economy.id !== rulesMode.economy.id
+const loaded = foreign ? { snapshot: null, blocked: true, message: 'В этом слоте лежит поход по другим правилам боя. Он оставлен в хранилище и не тронут; откройте его через нужный набор правил.' } : slot
 const saved = shallowRef<RunSnapshot | null>(loaded.snapshot)
 const economy = loaded.snapshot?.economy ?? configuredEconomy
+provideRules(rulesInfoOf(economy))
 const experimental = economy.id !== gameEconomy.id
 const saveError = ref('')
 const loadNotice = ref(loaded.message)
@@ -162,7 +173,8 @@ function chooseRestUpgrade(instanceId: string, sourceId: string) {
 
 function restartRun(mode: 'sector' | 'legacy') {
   cancel()
-  const nextSeed = ((Date.now() >>> 0) === run.value.seed ? run.value.seed + 1 : Date.now()) >>> 0
+  const nextSeed = seedOnce ?? (((Date.now() >>> 0) === run.value.seed ? run.value.seed + 1 : Date.now()) >>> 0)
+  seedOnce = null
   publish(mode === 'sector' ? createSectorRun(nextSeed, economy) : createDungeonRun(nextSeed, economy))
   restart(nextSeed)
   saved.value = null
@@ -170,6 +182,8 @@ function restartRun(mode: 'sector' | 'legacy') {
   phaseBeforeStart.value = null
   phase.value = 'map'
 }
+// The seed a rules switch carries: the run being played, else the saved one, else the one the address asked for.
+const switchSeed = computed(() => phaseBeforeStart.value && phaseBeforeStart.value !== 'resume' ? run.value.seed : (saved.value?.run.seed ?? seedOnce))
 function showStart() {
   if (phase.value !== 'start') phaseBeforeStart.value = phase.value
   phase.value = 'start'
@@ -187,9 +201,9 @@ function confirmRoom(command: RoomCommand) {
 <template>
   <div class="app-shell">
     <div class="game-wrap">
-      <p v-if="experimental" class="economy-badge" :title="economy.label">Режим сравнения · модель {{ economy.manaCurve }} · {{ economy.label }}</p>
+      <p v-if="experimental" class="economy-badge" :title="economy.label">{{ isHonestEconomy(economy) ? 'Эксперимент · ' + economy.label : 'Режим сравнения · модель ' + economy.manaCurve + ' · ' + economy.label }}</p>
       <main v-if="phase === 'start'" class="resume-screen">
-        <section class="resume-panel"><h1>Мёртвые копи</h1><h2>Выберите поход</h2><p>Вариан и Джайна спускаются в Старые штольни. Шесть посещений, развилки, кузницы, тайники и встреча с Рак'Зором.</p><button class="game-button" @click="restartRun('sector')">Сектор I — Старые штольни</button><button class="game-button" @click="restartRun('legacy')">Контрольный поход · 7 посещений</button><p>Начало нового похода заменит текущее сохранение.</p><button v-if="phaseBeforeStart" class="game-button" @click="phase = phaseBeforeStart">Назад</button></section>
+        <section class="resume-panel"><h1>Мёртвые копи</h1><h2>Выберите поход</h2><p>Вариан и Джайна спускаются в Старые штольни. Шесть посещений, развилки, кузницы, тайники и встреча с Рак'Зором.</p><RulesSwitch :current="rulesMode.id" :seed="switchSeed" /><button class="game-button" @click="restartRun('sector')">Сектор I — Старые штольни</button><button v-if="!isHonestEconomy(economy)" class="game-button" @click="restartRun('legacy')">Контрольный поход · 7 посещений</button><p>Начало нового похода заменит текущее сохранение.</p><button v-if="phaseBeforeStart" class="game-button" @click="phase = phaseBeforeStart">Назад</button></section>
       </main>
       <main v-else-if="phase === 'resume'" class="resume-screen">
         <section class="resume-panel">
@@ -197,6 +211,7 @@ function confirmRoom(command: RoomCommand) {
           <p v-if="saved?.run.status === 'active'">Отряд ждёт у последней комнаты. Прерванный бой начнётся заново с тем же здоровьем и колодой.</p>
           <p v-else-if="saved">Сохранённый поход завершён.</p>
           <p v-if="loadNotice" role="status">{{ loadNotice }}</p>
+          <RulesSwitch :current="rulesMode.id" :seed="switchSeed" />
           <button v-if="saved" class="game-button" @click="continueSavedRun">{{ saved.run.status === 'active' ? 'Продолжить поход' : 'Посмотреть итог' }}</button>
           <button v-if="saved || loadNotice" class="game-button" @click="downloadSave">Скачать копию</button>
           <button v-if="!saved" class="game-button" @click="retryLoad">Повторить загрузку</button>

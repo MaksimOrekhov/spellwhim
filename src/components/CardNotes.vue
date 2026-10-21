@@ -7,10 +7,12 @@ import { cardNotes } from '../ui/cardDisplay'
 import type { CardBlock } from '../ui/cardDisplay'
 import { classThemeStyle } from '../game/classThemes'
 import CardGlyph from './CardGlyph.vue'
+import { useRules } from '../ui/rulesInfo'
 
 const props = defineProps<{ card: CardDefinition; preview: CardPreview; block?: CardBlock | null; hotkey?: string; mode?: 'play' | 'choose' | 'inspect'; brief?: boolean }>()
 const neutral = computed(() => props.mode === 'choose' || props.mode === 'inspect')
-const notes = computed(() => cardNotes(props.card, props.preview, neutral.value ? 'neutral' : 'board'))
+const rules = useRules()
+const notes = computed(() => cardNotes(props.card, props.preview, neutral.value ? 'neutral' : 'board', rules.armorExpires))
 const footer = computed(() => props.block?.text ?? (props.mode === 'choose' ? 'Нажмите, чтобы взять карту.' : `Нажмите или клавиша ${props.hotkey ?? ''} — разыграть.`))
 </script>
 
