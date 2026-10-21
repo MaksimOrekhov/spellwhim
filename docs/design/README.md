@@ -7,5 +7,6 @@
 - [Implementation Roadmap](spellwhim-gdd-v2-roadmap.md) — самостоятельные этапы с gates.
 - [Card Progression Foundation v1](tasks/card-progression-foundation-v1.md) — черновик первой задачи, ещё не реализован.
 - [Method Audit](../research/gdd-v2-method-audit.md) — проверка обоих исследований и новые данные.
+- [Combat Foundations — независимое ревью](combat-foundations-independent-review-v1.md) — критика исследования боевых основ, измерения на движке, три концепции прототипов и минимальный первый тест (21.10.2026; данные и стенд — [docs/data/combat-foundations-review-v1](../data/combat-foundations-review-v1/README.md)).
 
 Другие файлы в этом каталоге сохраняются как материалы прежних исследований. При расхождениях сначала проверять статус решения GDD и дату/версию реализации, не смешивать исторические числа наград/предметов с текущим кодом.

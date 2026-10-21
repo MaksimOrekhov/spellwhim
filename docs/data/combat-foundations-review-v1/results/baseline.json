@@ -1,0 +1,499 @@
+{
+ "experiment": "baseline",
+ "runs": 200,
+ "seed0": 1000,
+ "table": [
+  {
+   "key": "R0|tempo|S3|dmg1|hp1",
+   "group": "",
+   "rules": "R0",
+   "policy": "tempo",
+   "scale": {},
+   "shape": {
+    "name": "S3",
+    "normals": 2,
+    "elite": false
+   },
+   "heroHp": [
+    25,
+    18
+   ],
+   "n": 200,
+   "win": 1,
+   "hpLost": 18.025,
+   "hpW": 14.525,
+   "hpM": 3.5,
+   "hpLostWins": 18.025,
+   "turns": 11.84,
+   "fights": 3,
+   "enemyHits": 5.835,
+   "manaUse": 0.9059760956175298,
+   "plays": 36.035,
+   "armorGiven": 61.655,
+   "extraUses": 0,
+   "variantShare": 0,
+   "windupBroken": 0,
+   "kept": 0,
+   "bothClass": 0.6934121621621623,
+   "hand": 6.592483108108109,
+   "playable": 6.592483108108109,
+   "lowestMean": 0.4036111111111111,
+   "p10Hp": 24,
+   "perFight": {
+    "old-mines-digger": {
+     "n": 96,
+     "turns": 3.0520833333333335,
+     "hp": 6.291666666666667,
+     "win": 1
+    },
+    "old-mines-watchman": {
+     "n": 100,
+     "turns": 2.75,
+     "hp": 1.87,
+     "win": 1
+    },
+    "old-mines-rhahk-zor": {
+     "n": 200,
+     "turns": 6.085,
+     "hp": 8.58,
+     "win": 1
+    },
+    "old-mines-raider": {
+     "n": 99,
+     "turns": 2.5353535353535355,
+     "hp": 3.6464646464646466,
+     "win": 1
+    },
+    "old-mines-overseer": {
+     "n": 105,
+     "turns": 3.1619047619047618,
+     "hp": 7.019047619047619,
+     "win": 1
+    }
+   },
+   "tension": {
+    "n": 1197,
+    "pctFree": 0.3717627401837928,
+    "pctUnsafe": 0.19298245614035087,
+    "pctContested": 0.4352548036758563,
+    "meanTrade": 3.5572263993316624,
+    "meanDHp": 2.335839598997494,
+    "pctAllDead": 0.000835421888053467,
+    "pctDiverge": 0.5388471177944862
+   }
+  },
+  {
+   "key": "R0|tempo|S4|dmg1|hp1",
+   "group": "",
+   "rules": "R0",
+   "policy": "tempo",
+   "scale": {},
+   "shape": {
+    "name": "S4",
+    "normals": 2,
+    "elite": true
+   },
+   "heroHp": [
+    25,
+    18
+   ],
+   "n": 200,
+   "win": 0.91,
+   "hpLost": 24.415,
+   "hpW": 20.34,
+   "hpM": 4.075,
+   "hpLostWins": 24.21978021978022,
+   "turns": 17.175,
+   "fights": 3.995,
+   "enemyHits": 8.415,
+   "manaUse": 0.9008051965626903,
+   "plays": 52.845,
+   "armorGiven": 93.04,
+   "extraUses": 0,
+   "variantShare": 0,
+   "windupBroken": 0,
+   "kept": 0,
+   "bothClass": 0.6719068413391557,
+   "hand": 6.473653566229985,
+   "playable": 6.473653566229985,
+   "lowestMean": 0.18396666666666625,
+   "p10Hp": 29,
+   "perFight": {
+    "old-mines-digger": {
+     "n": 96,
+     "turns": 3.0520833333333335,
+     "hp": 6.291666666666667,
+     "win": 1
+    },
+    "old-mines-watchman": {
+     "n": 100,
+     "turns": 2.75,
+     "hp": 1.87,
+     "win": 1
+    },
+    "old-mines-johnson": {
+     "n": 200,
+     "turns": 5.605,
+     "hp": 8.03,
+     "win": 0.995
+    },
+    "old-mines-rhahk-zor": {
+     "n": 199,
+     "turns": 5.844221105527638,
+     "hp": 6.974874371859296,
+     "win": 0.914572864321608
+    },
+    "old-mines-raider": {
+     "n": 99,
+     "turns": 2.5353535353535355,
+     "hp": 3.6464646464646466,
+     "win": 1
+    },
+    "old-mines-overseer": {
+     "n": 105,
+     "turns": 3.1619047619047618,
+     "hp": 7.019047619047619,
+     "win": 1
+    }
+   },
+   "tension": {
+    "n": 1773,
+    "pctFree": 0.4083474337281444,
+    "pctUnsafe": 0.25944726452340666,
+    "pctContested": 0.332205301748449,
+    "meanTrade": 3.2594472645234065,
+    "meanDHp": 2.1511562323745066,
+    "pctAllDead": 0.015228426395939087,
+    "pctDiverge": 0.46362098138747887
+   }
+  },
+  {
+   "key": "R0|balanced|S3|dmg1|hp1",
+   "group": "",
+   "rules": "R0",
+   "policy": "balanced",
+   "scale": {},
+   "shape": {
+    "name": "S3",
+    "normals": 2,
+    "elite": false
+   },
+   "heroHp": [
+    25,
+    18
+   ],
+   "n": 200,
+   "win": 1,
+   "hpLost": 13.67,
+   "hpW": 11.055,
+   "hpM": 2.615,
+   "hpLostWins": 13.67,
+   "turns": 11.87,
+   "fights": 3,
+   "enemyHits": 5.9,
+   "manaUse": 0.909235352532274,
+   "plays": 36.41,
+   "armorGiven": 63.41,
+   "extraUses": 0,
+   "variantShare": 0,
+   "windupBroken": 0,
+   "kept": 0,
+   "bothClass": 0.6823925863521483,
+   "hand": 6.524431339511373,
+   "playable": 6.524431339511373,
+   "lowestMean": 0.5443666666666668,
+   "p10Hp": 19,
+   "perFight": {
+    "old-mines-digger": {
+     "n": 96,
+     "turns": 3.0520833333333335,
+     "hp": 4.552083333333333,
+     "win": 1
+    },
+    "old-mines-watchman": {
+     "n": 100,
+     "turns": 2.76,
+     "hp": 0.97,
+     "win": 1
+    },
+    "old-mines-rhahk-zor": {
+     "n": 200,
+     "turns": 6.085,
+     "hp": 7.545,
+     "win": 1
+    },
+    "old-mines-raider": {
+     "n": 99,
+     "turns": 2.5757575757575757,
+     "hp": 2.595959595959596,
+     "win": 1
+    },
+    "old-mines-overseer": {
+     "n": 105,
+     "turns": 3.1714285714285713,
+     "hp": 4.133333333333334,
+     "win": 1
+    }
+   },
+   "tension": {
+    "n": 1210,
+    "pctFree": 0.3330578512396694,
+    "pctUnsafe": 0.21818181818181817,
+    "pctContested": 0.4487603305785124,
+    "meanTrade": 3.603305785123967,
+    "meanDHp": 2.37603305785124,
+    "pctAllDead": 0,
+    "pctDiverge": 0.5710743801652892
+   }
+  },
+  {
+   "key": "R0|balanced|S4|dmg1|hp1",
+   "group": "",
+   "rules": "R0",
+   "policy": "balanced",
+   "scale": {},
+   "shape": {
+    "name": "S4",
+    "normals": 2,
+    "elite": true
+   },
+   "heroHp": [
+    25,
+    18
+   ],
+   "n": 200,
+   "win": 0.975,
+   "hpLost": 18.875,
+   "hpW": 15.685,
+   "hpM": 3.19,
+   "hpLostWins": 18.68717948717949,
+   "turns": 17.395,
+   "fights": 4,
+   "enemyHits": 8.55,
+   "manaUse": 0.9033677892630878,
+   "plays": 53.93,
+   "armorGiven": 96.685,
+   "extraUses": 0,
+   "variantShare": 0,
+   "windupBroken": 0,
+   "kept": 0,
+   "bothClass": 0.67519402127048,
+   "hand": 6.3912043690715725,
+   "playable": 6.3912043690715725,
+   "lowestMean": 0.3681666666666664,
+   "p10Hp": 25,
+   "perFight": {
+    "old-mines-digger": {
+     "n": 96,
+     "turns": 3.0520833333333335,
+     "hp": 4.552083333333333,
+     "win": 1
+    },
+    "old-mines-watchman": {
+     "n": 100,
+     "turns": 2.76,
+     "hp": 0.97,
+     "win": 1
+    },
+    "old-mines-johnson": {
+     "n": 200,
+     "turns": 5.58,
+     "hp": 6.19,
+     "win": 1
+    },
+    "old-mines-rhahk-zor": {
+     "n": 200,
+     "turns": 6.03,
+     "hp": 6.56,
+     "win": 0.975
+    },
+    "old-mines-raider": {
+     "n": 99,
+     "turns": 2.5757575757575757,
+     "hp": 2.595959595959596,
+     "win": 1
+    },
+    "old-mines-overseer": {
+     "n": 105,
+     "turns": 3.1714285714285713,
+     "hp": 4.133333333333334,
+     "win": 1
+    }
+   },
+   "tension": {
+    "n": 1796,
+    "pctFree": 0.3457683741648107,
+    "pctUnsafe": 0.3056792873051225,
+    "pctContested": 0.34855233853006684,
+    "meanTrade": 3.348552338530067,
+    "meanDHp": 2.2366369710467704,
+    "pctAllDead": 0.0038975501113585748,
+    "pctDiverge": 0.5100222717149221
+   }
+  },
+  {
+   "key": "R0|careful|S3|dmg1|hp1",
+   "group": "",
+   "rules": "R0",
+   "policy": "careful",
+   "scale": {},
+   "shape": {
+    "name": "S3",
+    "normals": 2,
+    "elite": false
+   },
+   "heroHp": [
+    25,
+    18
+   ],
+   "n": 200,
+   "win": 1,
+   "hpLost": 6.65,
+   "hpW": 5.805,
+   "hpM": 0.845,
+   "hpLostWins": 6.65,
+   "turns": 11.99,
+   "fights": 3,
+   "enemyHits": 6.055,
+   "manaUse": 0.9139352306182531,
+   "plays": 37.33,
+   "armorGiven": 68.825,
+   "extraUses": 0,
+   "variantShare": 0,
+   "windupBroken": 0,
+   "kept": 0,
+   "bothClass": 0.6872393661384487,
+   "hand": 6.407422852376981,
+   "playable": 6.407422852376981,
+   "lowestMean": 0.7568777777777776,
+   "p10Hp": 11,
+   "perFight": {
+    "old-mines-digger": {
+     "n": 96,
+     "turns": 3.0625,
+     "hp": 1.4166666666666667,
+     "win": 1
+    },
+    "old-mines-watchman": {
+     "n": 100,
+     "turns": 2.77,
+     "hp": 0.09,
+     "win": 1
+    },
+    "old-mines-rhahk-zor": {
+     "n": 200,
+     "turns": 6.07,
+     "hp": 4.855,
+     "win": 1
+    },
+    "old-mines-raider": {
+     "n": 99,
+     "turns": 2.7373737373737375,
+     "hp": 0.7070707070707071,
+     "win": 1
+    },
+    "old-mines-overseer": {
+     "n": 105,
+     "turns": 3.257142857142857,
+     "hp": 1.3714285714285714,
+     "win": 1
+    }
+   },
+   "tension": {
+    "n": 1227,
+    "pctFree": 0.23634881825590873,
+    "pctUnsafe": 0.3056234718826406,
+    "pctContested": 0.4580277098614507,
+    "meanTrade": 3.7400162999185005,
+    "meanDHp": 2.439282803585982,
+    "pctAllDead": 0,
+    "pctDiverge": 0.5925020374898126
+   }
+  },
+  {
+   "key": "R0|careful|S4|dmg1|hp1",
+   "group": "",
+   "rules": "R0",
+   "policy": "careful",
+   "scale": {},
+   "shape": {
+    "name": "S4",
+    "normals": 2,
+    "elite": true
+   },
+   "heroHp": [
+    25,
+    18
+   ],
+   "n": 200,
+   "win": 1,
+   "hpLost": 10.325,
+   "hpW": 9.105,
+   "hpM": 1.22,
+   "hpLostWins": 10.325,
+   "turns": 17.64,
+   "fights": 4,
+   "enemyHits": 8.765,
+   "manaUse": 0.9072834645669292,
+   "plays": 55.385,
+   "armorGiven": 103.735,
+   "extraUses": 0,
+   "variantShare": 0,
+   "windupBroken": 0,
+   "kept": 0,
+   "bothClass": 0.6760204081632654,
+   "hand": 6.262471655328798,
+   "playable": 6.262471655328798,
+   "lowestMean": 0.630555555555556,
+   "p10Hp": 15,
+   "perFight": {
+    "old-mines-digger": {
+     "n": 96,
+     "turns": 3.0625,
+     "hp": 1.4166666666666667,
+     "win": 1
+    },
+    "old-mines-watchman": {
+     "n": 100,
+     "turns": 2.77,
+     "hp": 0.09,
+     "win": 1
+    },
+    "old-mines-johnson": {
+     "n": 200,
+     "turns": 5.69,
+     "hp": 3.635,
+     "win": 1
+    },
+    "old-mines-rhahk-zor": {
+     "n": 200,
+     "turns": 6.03,
+     "hp": 4.895,
+     "win": 1
+    },
+    "old-mines-raider": {
+     "n": 99,
+     "turns": 2.7373737373737375,
+     "hp": 0.7070707070707071,
+     "win": 1
+    },
+    "old-mines-overseer": {
+     "n": 105,
+     "turns": 3.257142857142857,
+     "hp": 1.3714285714285714,
+     "win": 1
+    }
+   },
+   "tension": {
+    "n": 1819,
+    "pctFree": 0.2847718526663002,
+    "pctUnsafe": 0.35294117647058826,
+    "pctContested": 0.3622869708631116,
+    "meanTrade": 3.472787245739417,
+    "meanDHp": 2.2886201209455743,
+    "pctAllDead": 0,
+    "pctDiverge": 0.5189664650907092
+   }
+  }
+ ]
+}

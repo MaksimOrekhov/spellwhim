@@ -1,0 +1,587 @@
+{
+ "experiment": "phase2",
+ "runs": 200,
+ "seed0": 1000,
+ "table": [
+  {
+   "key": "R0|balanced|boss|dmg1|hp1|w1",
+   "group": "",
+   "rules": "R0",
+   "policy": "balanced",
+   "scale": {},
+   "shape": {
+    "name": "boss",
+    "normals": 0,
+    "elite": false
+   },
+   "heroHp": [
+    25,
+    18
+   ],
+   "n": 200,
+   "win": 1,
+   "hpLost": 7.585,
+   "hpW": 6.785,
+   "hpM": 0.8,
+   "hpLostWins": 7.585,
+   "turns": 6.13,
+   "fights": 1,
+   "enemyHits": 3.325,
+   "manaUse": 0.9050632911392406,
+   "plays": 20.13,
+   "armorGiven": 40.445,
+   "xs": {},
+   "extraUses": 0,
+   "paid": 0,
+   "variantShare": 0,
+   "windupBroken": 0,
+   "kept": 0,
+   "bothClass": 0.7398042414355629,
+   "hand": 5.876835236541599,
+   "playable": 5.876835236541599,
+   "lowestMean": 0.718322222222223,
+   "p10Hp": 11,
+   "perFight": {
+    "old-mines-rhahk-zor": {
+     "n": 200,
+     "turns": 6.13,
+     "hp": 7.585,
+     "p2": 1.89,
+     "win": 1
+    }
+   },
+   "tension": {
+    "n": 672,
+    "pctFree": 0.4166666666666667,
+    "pctUnsafe": 0.3005952380952381,
+    "pctContested": 0.28273809523809523,
+    "meanTrade": 2.6026785714285716,
+    "meanDHp": 1.6473214285714286,
+    "pctAllDead": 0,
+    "pctDiverge": 0.4494047619047619
+   }
+  },
+  {
+   "key": "H6M4|balanced|boss|dmg1|hp1|w1",
+   "group": "",
+   "rules": "H6M4",
+   "policy": "balanced",
+   "scale": {},
+   "shape": {
+    "name": "boss",
+    "normals": 0,
+    "elite": false
+   },
+   "heroHp": [
+    25,
+    18
+   ],
+   "n": 200,
+   "win": 1,
+   "hpLost": 13.14,
+   "hpW": 10.665,
+   "hpM": 2.475,
+   "hpLostWins": 13.14,
+   "turns": 5.065,
+   "fights": 1,
+   "enemyHits": 2.925,
+   "manaUse": 0.9782823297137215,
+   "plays": 15.865,
+   "armorGiven": 25.285,
+   "xs": {},
+   "extraUses": 0,
+   "paid": 0,
+   "variantShare": 0,
+   "windupBroken": 0,
+   "kept": 0,
+   "bothClass": 0.749259624876604,
+   "hand": 6,
+   "playable": 6,
+   "lowestMean": 0.5709777777777783,
+   "p10Hp": 19,
+   "perFight": {
+    "old-mines-rhahk-zor": {
+     "n": 200,
+     "turns": 5.065,
+     "hp": 13.14,
+     "p2": 1.05,
+     "win": 1
+    }
+   },
+   "tension": {
+    "n": 585,
+    "pctFree": 0.07008547008547009,
+    "pctUnsafe": 0.5811965811965812,
+    "pctContested": 0.3487179487179487,
+    "meanTrade": 5.041025641025641,
+    "meanDHp": 3.388034188034188,
+    "pctAllDead": 0,
+    "pctDiverge": 0.6256410256410256
+   }
+  },
+  {
+   "key": "H6M4|careful|boss|dmg1|hp1|w1",
+   "group": "",
+   "rules": "H6M4",
+   "policy": "careful",
+   "scale": {},
+   "shape": {
+    "name": "boss",
+    "normals": 0,
+    "elite": false
+   },
+   "heroHp": [
+    25,
+    18
+   ],
+   "n": 200,
+   "win": 1,
+   "hpLost": 8.315,
+   "hpW": 6.655,
+   "hpM": 1.66,
+   "hpLostWins": 8.315,
+   "turns": 5.445,
+   "fights": 1,
+   "enemyHits": 3.065,
+   "manaUse": 0.9784205693296602,
+   "plays": 17.47,
+   "armorGiven": 34.035,
+   "xs": {},
+   "extraUses": 0,
+   "paid": 0,
+   "variantShare": 0,
+   "windupBroken": 0,
+   "kept": 0,
+   "bothClass": 0.7520661157024793,
+   "hand": 6,
+   "playable": 6,
+   "lowestMean": 0.7194222222222225,
+   "p10Hp": 13,
+   "perFight": {
+    "old-mines-rhahk-zor": {
+     "n": 200,
+     "turns": 5.445,
+     "hp": 8.315,
+     "p2": 1.35,
+     "win": 1
+    }
+   },
+   "tension": {
+    "n": 613,
+    "pctFree": 0.0799347471451876,
+    "pctUnsafe": 0.5758564437194127,
+    "pctContested": 0.3442088091353997,
+    "meanTrade": 4.846655791190865,
+    "meanDHp": 3.300163132137031,
+    "pctAllDead": 0,
+    "pctDiverge": 0.632952691680261
+   }
+  },
+  {
+   "key": "H6M4|tempo|boss|dmg1|hp1|w1",
+   "group": "",
+   "rules": "H6M4",
+   "policy": "tempo",
+   "scale": {},
+   "shape": {
+    "name": "boss",
+    "normals": 0,
+    "elite": false
+   },
+   "heroHp": [
+    25,
+    18
+   ],
+   "n": 200,
+   "win": 1,
+   "hpLost": 15.705,
+   "hpW": 12.665,
+   "hpM": 3.04,
+   "hpLostWins": 15.705,
+   "turns": 4.955,
+   "fights": 1,
+   "enemyHits": 2.835,
+   "manaUse": 0.9747729566094854,
+   "plays": 15.085,
+   "armorGiven": 21.865,
+   "xs": {},
+   "extraUses": 0,
+   "paid": 0,
+   "variantShare": 0,
+   "windupBroken": 0,
+   "kept": 0,
+   "bothClass": 0.756811301715439,
+   "hand": 6,
+   "playable": 6,
+   "lowestMean": 0.49181111111111087,
+   "p10Hp": 21,
+   "perFight": {
+    "old-mines-rhahk-zor": {
+     "n": 200,
+     "turns": 4.955,
+     "hp": 15.705,
+     "p2": 0.95,
+     "win": 1
+    }
+   },
+   "tension": {
+    "n": 567,
+    "pctFree": 0.07054673721340388,
+    "pctUnsafe": 0.5890652557319224,
+    "pctContested": 0.3403880070546737,
+    "meanTrade": 4.936507936507937,
+    "meanDHp": 3.3333333333333335,
+    "pctAllDead": 0,
+    "pctDiverge": 0.6225749559082893
+   }
+  },
+  {
+   "key": "H6M4+обвал6|balanced|boss|dmg1|hp1|w1",
+   "group": "",
+   "rules": "H6M4+обвал6",
+   "policy": "balanced",
+   "scale": {},
+   "shape": {
+    "name": "boss",
+    "normals": 0,
+    "elite": false
+   },
+   "heroHp": [
+    25,
+    18
+   ],
+   "n": 200,
+   "win": 1,
+   "hpLost": 12.825,
+   "hpW": 10.01,
+   "hpM": 2.815,
+   "hpLostWins": 12.825,
+   "turns": 5.47,
+   "fights": 1,
+   "enemyHits": 3.015,
+   "manaUse": 0.9776051188299818,
+   "plays": 17.075,
+   "armorGiven": 27.825,
+   "xs": {},
+   "extraUses": 0,
+   "paid": 0,
+   "variantShare": 0,
+   "windupBroken": 0,
+   "kept": 0,
+   "bothClass": 0.7586837294332724,
+   "hand": 6,
+   "playable": 6,
+   "lowestMean": 0.5946,
+   "p10Hp": 18,
+   "perFight": {
+    "old-mines-rhahk-zor": {
+     "n": 200,
+     "turns": 5.47,
+     "hp": 12.825,
+     "p2": 1.455,
+     "win": 1
+    }
+   },
+   "tension": {
+    "n": 603,
+    "pctFree": 0.06799336650082918,
+    "pctUnsafe": 0.593698175787728,
+    "pctContested": 0.3383084577114428,
+    "meanTrade": 4.532006633499172,
+    "meanDHp": 3.316749585406302,
+    "pctAllDead": 0,
+    "pctDiverge": 0.6202321724709784
+   }
+  },
+  {
+   "key": "H6M4+обвал6|careful|boss|dmg1|hp1|w1",
+   "group": "",
+   "rules": "H6M4+обвал6",
+   "policy": "careful",
+   "scale": {},
+   "shape": {
+    "name": "boss",
+    "normals": 0,
+    "elite": false
+   },
+   "heroHp": [
+    25,
+    18
+   ],
+   "n": 200,
+   "win": 1,
+   "hpLost": 8.29,
+   "hpW": 6.5,
+   "hpM": 1.79,
+   "hpLostWins": 8.29,
+   "turns": 5.855,
+   "fights": 1,
+   "enemyHits": 3.135,
+   "manaUse": 0.9814261315115285,
+   "plays": 18.86,
+   "armorGiven": 36.28,
+   "xs": {},
+   "extraUses": 0,
+   "paid": 0,
+   "variantShare": 0,
+   "windupBroken": 0,
+   "kept": 0,
+   "bothClass": 0.7591801878736123,
+   "hand": 6,
+   "playable": 6,
+   "lowestMean": 0.7233888888888894,
+   "p10Hp": 13,
+   "perFight": {
+    "old-mines-rhahk-zor": {
+     "n": 200,
+     "turns": 5.855,
+     "hp": 8.29,
+     "p2": 1.75,
+     "win": 1
+    }
+   },
+   "tension": {
+    "n": 627,
+    "pctFree": 0.07814992025518341,
+    "pctUnsafe": 0.5741626794258373,
+    "pctContested": 0.34768740031897927,
+    "meanTrade": 4.429186602870814,
+    "meanDHp": 3.2169059011164274,
+    "pctAllDead": 0,
+    "pctDiverge": 0.6299840510366826
+   }
+  },
+  {
+   "key": "H6M4+обвал6|tempo|boss|dmg1|hp1|w1",
+   "group": "",
+   "rules": "H6M4+обвал6",
+   "policy": "tempo",
+   "scale": {},
+   "shape": {
+    "name": "boss",
+    "normals": 0,
+    "elite": false
+   },
+   "heroHp": [
+    25,
+    18
+   ],
+   "n": 200,
+   "win": 1,
+   "hpLost": 16.465,
+   "hpW": 12.745,
+   "hpM": 3.72,
+   "hpLostWins": 16.465,
+   "turns": 5.345,
+   "fights": 1,
+   "enemyHits": 3.005,
+   "manaUse": 0.9817586529466791,
+   "plays": 16.31,
+   "armorGiven": 23.8,
+   "xs": {},
+   "extraUses": 0,
+   "paid": 0,
+   "variantShare": 0,
+   "windupBroken": 0,
+   "kept": 0,
+   "bothClass": 0.7595884003741814,
+   "hand": 6,
+   "playable": 6,
+   "lowestMean": 0.4876222222222221,
+   "p10Hp": 21,
+   "perFight": {
+    "old-mines-rhahk-zor": {
+     "n": 200,
+     "turns": 5.345,
+     "hp": 16.465,
+     "p2": 1.34,
+     "win": 1
+    }
+   },
+   "tension": {
+    "n": 601,
+    "pctFree": 0.06821963394342762,
+    "pctUnsafe": 0.6006655574043261,
+    "pctContested": 0.33111480865224624,
+    "meanTrade": 4.517138103161399,
+    "meanDHp": 3.3311148086522464,
+    "pctAllDead": 0,
+    "pctDiverge": 0.6239600665557404
+   }
+  },
+  {
+   "key": "H6M4+фаза60|balanced|boss|dmg1|hp1|w1",
+   "group": "",
+   "rules": "H6M4+фаза60",
+   "policy": "balanced",
+   "scale": {},
+   "shape": {
+    "name": "boss",
+    "normals": 0,
+    "elite": false
+   },
+   "heroHp": [
+    25,
+    18
+   ],
+   "n": 200,
+   "win": 1,
+   "hpLost": 13.13,
+   "hpW": 10.675,
+   "hpM": 2.455,
+   "hpLostWins": 13.13,
+   "turns": 5.07,
+   "fights": 1,
+   "enemyHits": 2.92,
+   "manaUse": 0.9783037475345167,
+   "plays": 15.89,
+   "armorGiven": 25.385,
+   "xs": {},
+   "extraUses": 0,
+   "paid": 0,
+   "variantShare": 0,
+   "windupBroken": 0,
+   "kept": 0,
+   "bothClass": 0.7485207100591715,
+   "hand": 6,
+   "playable": 6,
+   "lowestMean": 0.5704222222222226,
+   "p10Hp": 19,
+   "perFight": {
+    "old-mines-rhahk-zor": {
+     "n": 200,
+     "turns": 5.07,
+     "hp": 13.13,
+     "p2": 1.07,
+     "win": 1
+    }
+   },
+   "tension": {
+    "n": 584,
+    "pctFree": 0.0684931506849315,
+    "pctUnsafe": 0.583904109589041,
+    "pctContested": 0.3476027397260274,
+    "meanTrade": 5.039383561643835,
+    "meanDHp": 3.3989726027397262,
+    "pctAllDead": 0,
+    "pctDiverge": 0.6267123287671232
+   }
+  },
+  {
+   "key": "H6M4+фаза60|careful|boss|dmg1|hp1|w1",
+   "group": "",
+   "rules": "H6M4+фаза60",
+   "policy": "careful",
+   "scale": {},
+   "shape": {
+    "name": "boss",
+    "normals": 0,
+    "elite": false
+   },
+   "heroHp": [
+    25,
+    18
+   ],
+   "n": 200,
+   "win": 1,
+   "hpLost": 8.37,
+   "hpW": 6.68,
+   "hpM": 1.69,
+   "hpLostWins": 8.37,
+   "turns": 5.45,
+   "fights": 1,
+   "enemyHits": 3,
+   "manaUse": 0.9782110091743118,
+   "plays": 17.48,
+   "armorGiven": 33.895,
+   "xs": {},
+   "extraUses": 0,
+   "paid": 0,
+   "variantShare": 0,
+   "windupBroken": 0,
+   "kept": 0,
+   "bothClass": 0.7477064220183486,
+   "hand": 6,
+   "playable": 6,
+   "lowestMean": 0.7182000000000002,
+   "p10Hp": 13,
+   "perFight": {
+    "old-mines-rhahk-zor": {
+     "n": 200,
+     "turns": 5.45,
+     "hp": 8.37,
+     "p2": 1.44,
+     "win": 1
+    }
+   },
+   "tension": {
+    "n": 600,
+    "pctFree": 0.07,
+    "pctUnsafe": 0.59,
+    "pctContested": 0.34,
+    "meanTrade": 4.931666666666667,
+    "meanDHp": 3.3766666666666665,
+    "pctAllDead": 0,
+    "pctDiverge": 0.6433333333333333
+   }
+  },
+  {
+   "key": "H6M4+фаза60|tempo|boss|dmg1|hp1|w1",
+   "group": "",
+   "rules": "H6M4+фаза60",
+   "policy": "tempo",
+   "scale": {},
+   "shape": {
+    "name": "boss",
+    "normals": 0,
+    "elite": false
+   },
+   "heroHp": [
+    25,
+    18
+   ],
+   "n": 200,
+   "win": 1,
+   "hpLost": 15.725,
+   "hpW": 12.675,
+   "hpM": 3.05,
+   "hpLostWins": 15.725,
+   "turns": 4.955,
+   "fights": 1,
+   "enemyHits": 2.835,
+   "manaUse": 0.9747729566094854,
+   "plays": 15.09,
+   "armorGiven": 21.865,
+   "xs": {},
+   "extraUses": 0,
+   "paid": 0,
+   "variantShare": 0,
+   "windupBroken": 0,
+   "kept": 0,
+   "bothClass": 0.756811301715439,
+   "hand": 6,
+   "playable": 6,
+   "lowestMean": 0.4912555555555553,
+   "p10Hp": 21,
+   "perFight": {
+    "old-mines-rhahk-zor": {
+     "n": 200,
+     "turns": 4.955,
+     "hp": 15.725,
+     "p2": 0.955,
+     "win": 1
+    }
+   },
+   "tension": {
+    "n": 567,
+    "pctFree": 0.07054673721340388,
+    "pctUnsafe": 0.5908289241622575,
+    "pctContested": 0.3386243386243386,
+    "meanTrade": 4.932980599647267,
+    "meanDHp": 3.3315696649029984,
+    "pctAllDead": 0,
+    "pctDiverge": 0.6225749559082893
+   }
+  }
+ ]
+}
