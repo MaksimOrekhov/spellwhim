@@ -13,6 +13,7 @@ import type { ArtifactDefinition, ArtifactId, ArtifactInstance, BattleState, Car
 import { generateSectorMap, sectorOneConfig, validateSectorMap } from './dungeonGenerator'
 import type { SectorConfig } from './dungeonGenerator'
 import { sectorEncounters } from './sectorContent'
+import { sectorFoeSets } from './sectorFoesB'
 import type { SectorEventId } from './sectorContent'
 import { createRoomVisit } from './dungeonRooms'
 import type { RoomVisit, RunJournalEntry } from './dungeonRooms'
@@ -257,7 +258,9 @@ export function dungeonEncounter(node: DungeonMapNode, economy: EconomyConfig = 
   if (!node.encounterId || node.encounterHealth === undefined || (node.type !== 'battle' && node.type !== 'elite' && node.type !== 'final')) {
     throw new Error(`Node ${node.id} does not contain a battle`)
   }
-  const base = [...roster.normal, ...roster.elite, ...(roster.final ? [roster.final] : [])].find(encounter => encounter.id === node.encounterId)
+  // EXPERIMENT B1: an economy may bring its own cycles for the Sector I enemies; the map and the health stay the standard ones.
+  const base = (economy.sectorFoes ? sectorFoeSets[economy.sectorFoes].find(encounter => encounter.id === node.encounterId) : undefined)
+    ?? [...roster.normal, ...roster.elite, ...(roster.final ? [roster.final] : [])].find(encounter => encounter.id === node.encounterId)
     ?? sectorEncounters.find(encounter => encounter.id === node.encounterId)
     ?? campaignEncounters(economy).find(encounter => encounter.id === node.encounterId)
   if (!base) throw new Error(`Unknown encounter ${node.encounterId}`)

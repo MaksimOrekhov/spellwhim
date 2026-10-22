@@ -135,6 +135,7 @@ export function observableSeed(state: BattleState, salt = 0): number {
     ...(state.artifacts.length ? [visibleArtifactState(state)] : []),
     ...extraStatusSignature(state),
     state.enemy.health, state.enemy.armor, state.enemy.nextAction.name,
+    ...(state.enemy.hurt || state.enemy.power ? [(state.enemy.hurt ?? 0) + '/' + (state.enemy.power ?? 0)] : []),
   ].join('|')
   return mix(hashText(text), salt >>> 0)
 }
@@ -160,6 +161,7 @@ function digest(state: BattleState): string {
     state.heroes.warrior.armor, state.heroes.warrior.health, state.heroes.mage.armor, state.heroes.mage.health,
     ...(state.artifacts.length ? [visibleArtifactState(state)] : []),
     ...extraStatusSignature(state),
+    ...(state.enemy.hurt ? ['h' + state.enemy.hurt] : []),
     ids(state.drawPile), [...state.exhausted].map(card => variantKey(card)).sort().join(','), state.rngState,
   ].join('|')
 }

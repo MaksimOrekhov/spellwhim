@@ -20,7 +20,9 @@
     "challenge:lab": "node scripts/run-combat-challenge.mjs",
     "card-pool:compare": "node scripts/run-card-pool-compare.mjs",
     "card-pool:synergy": "node scripts/run-card-synergy-lab.mjs",
-    "information:lab": "node scripts/run-information-comparison.mjs"
+    "information:lab": "node scripts/run-information-comparison.mjs",
+    "honest-b:lab": "node scripts/run-honest-b.mjs",
+    "honest-b:report": "node scripts/honest-b-report.mjs"
   },
   "dependencies": {
     "@lucide/vue": "^1.59.0",

@@ -7,7 +7,7 @@ import type { DeckInput } from './types'
 import { artifactDefinition } from './artifacts'
 import { composeHit, splitDamage, sumParts } from './damage'
 import { cardOwner, characterGenitive, heroForClass, heroIdsInPartyOrder, partnerOf as partnerOfHero, resolveArmorTarget } from './party'
-import { applyStatus, carrierHasStatus, clearStatuses, cloneStatuses, consumeStatus, createStatuses, decayStatus, dueTicks, hitBonuses, lifetimeTickDamage, statusDefinition, statusValue } from './statuses'
+import { applyStatus, carrierHasStatus, clearStatuses, cloneStatuses, consumeStatus, createStatuses, decayStatus, dueTicks, hitBonuses, lifetimeTickDamage, outgoingReductions, statusDefinition, statusValue } from './statuses'
 import type { ArtifactInstance, BattleArtifactState, BattleState, CardClassId, CardEffect, CardDefinition, CardPreview, ConsumedStatus, EncounterDefinition, EnemyAction, EnemyHit, HeroId, HitPart, PendingArtifactTrigger, PendingPlay, StatusCarrierId, StatusId } from './types'
 
 export interface BattleOptions {
@@ -20,6 +20,8 @@ export interface BattleOptions {
   artifacts?: readonly ArtifactInstance[]
 }
 const ENEMY_ARMOR_CAP = 8
+/** B1: the most a raging enemy can add to its announced hits. */
+const ENEMY_POWER_CAP = 6
 
 type Failure = { ok: false; reason: 'mana' | 'finished' | 'busy' | 'not-in-hand' | 'stale-action' }
 export type PlayStartResult = { ok: true; play: PendingPlay } | Failure
@@ -45,7 +47,7 @@ export function createBattle(encounter: EncounterDefinition = encounters[1]!, pr
   const artifacts: BattleArtifactState[] = (options.artifacts ?? []).map(item => ({ ...item, usedThisBattle: false, lastTriggeredTurn: null, armedThisTurn: false }))
   const state: BattleState = {
     battleId, seed, rngState: seed, nextActionId: 1, heroes, statuses: createStatuses(), artifacts, artifactNotices: [],
-    enemy: { encounterId: encounter.id, name: encounter.name, title: encounter.title, health: encounter.maxHealth, maxHealth: encounter.maxHealth, armor: 0, appearance: encounter.appearance, phase: 1, nextActionPhase: 1, behavior: encounter.behavior, behaviorIndex: 1, nextAction: encounter.behavior.phase1[0]!, focus: initialFocus(heroes, encounter.behavior.phase1[0]!) },
+    enemy: { encounterId: encounter.id, name: encounter.name, title: encounter.title, health: encounter.maxHealth, maxHealth: encounter.maxHealth, armor: 0, appearance: encounter.appearance, phase: 1, nextActionPhase: 1, behavior: encounter.behavior, behaviorIndex: 1, nextAction: encounter.behavior.phase1[0]!, focus: initialFocus(heroes, encounter.behavior.phase1[0]!), ...(encounter.phaseNote ? { phaseNote: encounter.phaseNote } : {}) },
     hand: [], blockedDraws: 0, drawPile: [], discardPile: [], exhausted: [], pending: null,
     economy, mana: manaForTurn(economy, 1), maxMana: manaForTurn(economy, 1), turn: 1, result: null,
   }
@@ -64,6 +66,14 @@ export function createBattle(encounter: EncounterDefinition = encounters[1]!, pr
 function hitFocus(action: EnemyAction, fallback: HeroId): HeroId {
   const hit = action.kind === 'prepare' ? action.prepared : action
   return hit.kind === 'attack' ? hit.target : hit.kind === 'attack_all' ? hit.primaryTarget : fallback
+}
+function hitOf(action: EnemyAction): EnemyHit | null { return action.kind === 'attack' || action.kind === 'attack_all' ? action : null }
+/** B1: a hit announced after the enemy has raged is that much harder. The action it replaces is never edited once announced. */
+function withPower(action: EnemyAction, power: number): EnemyAction {
+  if (power <= 0) return action
+  if (action.kind === 'attack' || action.kind === 'attack_all') return { ...action, damage: action.damage + power }
+  if (action.kind === 'prepare') return { ...action, prepared: withPower(action.prepared, power) as EnemyHit }
+  return action
 }
 function schedule(state: BattleState): EnemyAction[] { return state.enemy.phase === 2 ? state.enemy.behavior.phase2 ?? state.enemy.behavior.phase1 : state.enemy.behavior.phase1 }
 /** Without a named target the focus starts on the first party slot. */
@@ -111,6 +121,7 @@ function damageEnemy(state: BattleState, amount: number, ignoresArmor = false): 
   if (enemy.phase === 1 && enemy.behavior.phase2 && enemy.health * 2 <= enemy.maxHealth) {
     enemy.phase = 2
     enemy.behaviorIndex = 0
+    enemy.phaseShiftTurn = state.turn
   }
   return split.healthLoss
 }
@@ -287,6 +298,7 @@ export function resolveCardPlay(state: BattleState, actionId: string): PlayResul
   // Clear the transaction before applying anything; duplicate animation events are harmless.
   state.pending = null
   updateResult(state)
+  const healthBefore = state.enemy.health
   let drawn = 0
   let damageDealt = 0
   if (!state.result) {
@@ -327,6 +339,8 @@ export function resolveCardPlay(state: BattleState, actionId: string): PlayResul
       if (state.result) break
     }
   }
+  // B1: damage dealt this turn counts toward breaking an announced hit that can be interrupted (and toward nothing else).
+  if (hitOf(state.enemy.nextAction)?.interrupt !== undefined && state.enemy.health < healthBefore) state.enemy.hurt = (state.enemy.hurt ?? 0) + healthBefore - state.enemy.health
   // The resolving copy cannot draw itself. Free cards exhaust, so they cannot form recycle loops.
   const destination = resolveCardDefinition(pending.card).exhaust ? state.exhausted : state.discardPile
   destination.push(pending.card)
@@ -349,6 +363,12 @@ export interface EnemyTargetForecast {
   artifactReduction: number
   /** The same `attack`, itemised in the order fixed by damage.ts. */
   parts: HitPart[]
+  /** B1/B2, each present only when it applies: armor this hit ignores; damage a status of the enemy took off it; the hit leaves its target Vulnerable. */
+  /** Nominal armor the hit ignores (its trait), and how much of it mattered because the hero had that much armor. */
+  pierce?: number
+  pierced?: number
+  chill?: number
+  exposes?: true
   /** Statuses this hit spends when it lands. */
   consumedStatuses: ConsumedStatus[]
 }
@@ -360,10 +380,15 @@ export interface EnemyActionForecast {
   futureTargets: EnemyTargetForecast[]
   threatened: HeroId[]
   armorGain: number
+  /** B1: an announced hit that the party can stop outright, with this turn's progress. Present only for such a hit. */
+  interrupt?: { need: number; dealt: number; broken: boolean }
+  /** B1: damage the enemy adds to its later hits when this action resolves. */
+  powerGain?: number
 }
 
 function forecastHit(state: BattleState, hit: EnemyHit): EnemyTargetForecast[] {
   const targets = hit.kind === 'attack' ? [hit.target] : heroIdsInPartyOrder(state.heroes)
+  const weakened = outgoingReductions(state, 'enemy', hit.damage)
   // Every AoE hit reads the same pre-hit armor/health snapshot; the same numbers are executed by endTurn.
   return targets.map(target => {
     const hero = state.heroes[target]
@@ -375,10 +400,18 @@ function forecastHit(state: BattleState, hit: EnemyHit): EnemyTargetForecast[] {
     }
     const wedge = state.artifacts.find(artifact => artifact.definitionId === 'reliable-wedge' && !artifact.usedThisBattle && heroForArtifact(state, artifact) === target)
     if (wedge) parts.push({ kind: 'artifact', id: 'reliable-wedge', label: 'Верный расклин', amount: -2 })
+    // B2: statuses on the enemy that weaken the hit come last, like every reduction, and are spent when it lands.
+    for (const reduction of weakened) {
+      parts.push({ kind: 'status', id: reduction.id, label: reduction.label, amount: -reduction.amount })
+      consumedStatuses.push({ carrier: 'enemy', id: reduction.id })
+    }
     const composed = composeHit(parts)
-    const split = splitDamage(hero, composed.total)
+    // B1: a piercing hit ignores part of the armor; the hero's armor is spent either way once the hit lands.
+    const pierced = Math.min(hit.pierce ?? 0, hero.armor)
+    const split = splitDamage(pierced ? { armor: hero.armor - pierced, health: hero.health } : hero, composed.total)
     const artifactReduction = -composed.parts.filter(part => part.kind === 'artifact' && part.amount < 0).reduce((sum, part) => sum + part.amount, 0)
-    return { target, attack: composed.total, absorbed: split.absorbed, healthLoss: split.healthLoss, lethal: split.lethal, artifactReduction, parts: composed.parts, consumedStatuses }
+    const chill = weakened.length ? -composed.parts.filter(part => part.kind === 'status' && part.amount < 0).reduce((sum, part) => sum + part.amount, 0) : 0
+    return { target, attack: composed.total, absorbed: split.absorbed, healthLoss: split.healthLoss, lethal: split.lethal, artifactReduction, parts: composed.parts, consumedStatuses, ...(hit.pierce ? { pierce: hit.pierce } : {}), ...(pierced ? { pierced } : {}), ...(chill ? { chill } : {}), ...(hit.exposes ? { exposes: true as const } : {}) }
   })
 }
 
@@ -390,7 +423,13 @@ export function forecastEnemyAction(state: BattleState): EnemyActionForecast {
   const futureTargets = futureHit ? forecastHit(state, futureHit) : []
   const announcedHit = hit ?? futureHit
   const threatened: HeroId[] = announcedHit?.kind === 'attack' ? [announcedHit.target] : announcedHit?.kind === 'attack_all' ? heroIdsInPartyOrder(state.heroes) : []
-  return { action, phase: state.enemy.nextActionPhase, targets, futureTargets, threatened, armorGain: action.kind === 'defend' || action.kind === 'recover' ? Math.min(action.armor, Math.max(0, ENEMY_ARMOR_CAP - state.enemy.armor)) : 0 }
+  const dealt = state.enemy.hurt ?? 0
+  const powerGain = (action.kind === 'defend' || action.kind === 'recover') && action.power ? Math.min(action.power, ENEMY_POWER_CAP - (state.enemy.power ?? 0)) : 0
+  return {
+    action, phase: state.enemy.nextActionPhase, targets, futureTargets, threatened, armorGain: action.kind === 'defend' || action.kind === 'recover' ? Math.min(action.armor, Math.max(0, ENEMY_ARMOR_CAP - state.enemy.armor)) : 0,
+    ...(hit?.interrupt !== undefined ? { interrupt: { need: hit.interrupt, dealt, broken: dealt >= hit.interrupt } } : {}),
+    ...(powerGain > 0 ? { powerGain } : {}),
+  }
 }
 
 /** Compatibility helper for the previous single-target UI and tests. */
@@ -414,8 +453,14 @@ export function endTurn(state: BattleState): boolean {
   // Step 2: the announced action, executed from the very forecast the player saw (recomputed only after step 1).
   const forecast = forecastEnemyAction(state)
   const action = state.enemy.nextAction
-  if (action.kind === 'defend' || action.kind === 'recover') state.enemy.armor = Math.min(ENEMY_ARMOR_CAP, state.enemy.armor + action.armor)
-  for (const incoming of forecast.targets) {
+  if (action.kind === 'defend' || action.kind === 'recover') {
+    state.enemy.armor = Math.min(ENEMY_ARMOR_CAP, state.enemy.armor + action.armor)
+    if (forecast.powerGain) state.enemy.power = (state.enemy.power ?? 0) + forecast.powerGain
+  }
+  // B1: a hit the party stopped does nothing at all: no damage, no armor spent, no status gained or lost.
+  const stopped = forecast.interrupt?.broken === true
+  if (stopped) state.artifactNotices.push('Удар сорван: ' + action.name)
+  for (const incoming of stopped ? [] : forecast.targets) {
     const hero = state.heroes[incoming.target]
     if (incoming.artifactReduction > 0) {
       const wedge = state.artifacts.find(artifact => artifact.definitionId === 'reliable-wedge' && !artifact.usedThisBattle && heroForArtifact(state, artifact) === incoming.target)
@@ -425,7 +470,9 @@ export function endTurn(state: BattleState): boolean {
     // Only hit heroes consume armor; a partner shield remains available until that hero is hit.
     hero.armor = 0
     for (const spent of incoming.consumedStatuses) consumeStatus(state, spent.carrier, spent.id)
+    if (incoming.exposes && hero.health > 0) applyStatus(state, incoming.target, 'vulnerability')
   }
+  delete state.enemy.hurt
   updateResult(state)
   if (state.result) return true
   // EXPERIMENT "Honest Turn": armor lives exactly one enemy action. It is cleared HERE, after the hits and before the triggers below,
@@ -453,7 +500,7 @@ export function endTurn(state: BattleState): boolean {
   } else {
     const actions = schedule(state)
     const index = state.enemy.behaviorIndex % actions.length
-    state.enemy.nextAction = actions[index]!
+    state.enemy.nextAction = withPower(actions[index]!, state.enemy.power ?? 0)
     state.enemy.nextActionPhase = state.enemy.phase
     state.enemy.behaviorIndex = (index + 1) % actions.length
     state.enemy.focus = hitFocus(state.enemy.nextAction, state.enemy.focus)

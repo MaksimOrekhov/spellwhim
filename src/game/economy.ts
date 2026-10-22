@@ -1,5 +1,6 @@
 import { CARDS_DRAWN_PER_TURN, OPENING_HAND_SIZE, encounters } from './types'
 import type { ArtifactId, EncounterDefinition, EnemyAction, EnemyBehavior } from './types'
+import type { SectorFoeSetId } from './sectorFoesB'
 import { reinforcedEncounters } from './encountersV07'
 
 /**
@@ -55,6 +56,8 @@ export interface EconomyConfig {
   enemyDamageScale?: number
   /** Artifacts never offered in this economy, because their rule needs armor to survive a turn. */
   excludedArtifacts?: readonly ArtifactId[]
+  /** EXPERIMENT "Honest Turn B1": the run's Sector I enemies take their cycles from this data set instead of `sectorContent.ts` (same ids, same map). Absent: the standard enemies. */
+  sectorFoes?: SectorFoeSetId
 }
 
 export const manaCurves: Record<ManaCurveId, { label: string; manaByTurn: readonly number[] }> = {
@@ -126,9 +129,21 @@ function honestEconomy(id: string, damage: number): EconomyConfig {
     excludedArtifacts: ['tension-spool'],
   }
 }
+/**
+ * EXPERIMENT B1 "Новые угрозы" and B2 "Мороз и сталь" (docs/design/honest-turn-b-experiment-v1.md): the same economy as A (7 cards, 4 mana,
+ * discard, armor for one enemy action, health x1.75) with the new Sector I enemy cycles. Their damage numbers are absolute, so no damage
+ * fraction is applied. B2 is B1 plus the Frost and Steel starting deck; the two differ in nothing the engine reads, only in the deck
+ * the mode starts with (rulesMode.ts), so each of them is a mode of its own with its own save slot.
+ */
+function honestEconomyB(id: string, label: string): EconomyConfig {
+  const { enemyDamageScale: _scale, ...economy } = honestEconomy(id, 1)
+  return { ...economy, label, sectorFoes: 'b1' }
+}
 export const honestEconomies = {
   'honest-a08': honestEconomy('honest-a08', 0.8),
   'honest-a09': honestEconomy('honest-a09', 0.9),
+  'honest-b1': honestEconomyB('honest-b1', 'Честный ход B1 · 7 карт, мана 4 · новые угрозы шести врагов сектора I'),
+  'honest-b2': honestEconomyB('honest-b2', 'Честный ход B2 · B1 + «Мороз и сталь»: Обморожение, Раскол льда'),
 } as const
 export type HonestEconomyId = keyof typeof honestEconomies
 export const isHonestEconomy = (economy: Pick<EconomyConfig, 'discardHand'>): boolean => economy.discardHand === true

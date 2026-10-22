@@ -1,6 +1,6 @@
 import { artifactDefinitions } from './artifacts'
 import { cardUpgrades } from './cardUpgrades'
-import { cards } from './types'
+import { cards, experimentalCards } from './types'
 import { defaultDungeonRoster } from './encountersV10'
 import { deriveDungeonSeed, dungeonEncounter, dungeonNode, validateDungeonMap } from './campaign'
 import type { DungeonRunState } from './campaign'
@@ -16,6 +16,8 @@ export const SAVE_SCHEMA_VERSION = 2
 export const RULES_VERSION = 'combat-upgrades-1'
 /** EXPERIMENT "Honest Turn" A: a run saved under these rules carries this version instead, so no other build reads it as its own. */
 export const HONEST_RULES_VERSION = 'honest-turn-a-1'
+/** B1 and B2 are separate generations: a save of one is never read as another's. */
+const HONEST_B_RULES_VERSIONS: Readonly<Record<string, string>> = { 'honest-b1': 'honest-turn-b1-1', 'honest-b2': 'honest-turn-b2-1' }
 export const GENERATOR_VERSION = 'dungeon-six-layers-1'
 
 function canonical(value: unknown): string {
@@ -27,7 +29,10 @@ function canonical(value: unknown): string {
 const sameEconomy = (a: unknown, b: unknown) => canonical(a) === canonical(b)
 const honestEconomyOf = (value: unknown) => Object.values(honestEconomies).find(known => sameEconomy(known, value))
 /** The rules generation a snapshot written under this economy must declare. */
-export const rulesVersionFor = (economy: unknown): string => honestEconomyOf(economy) ? HONEST_RULES_VERSION : RULES_VERSION
+export const rulesVersionFor = (economy: unknown): string => {
+  const honest = honestEconomyOf(economy)
+  return honest ? HONEST_B_RULES_VERSIONS[honest.id] ?? HONEST_RULES_VERSION : RULES_VERSION
+}
 
 function checksum(text: string): string {
   let hash = 0x811c9dc5
@@ -70,7 +75,7 @@ function object(required: Record<string, Check>, optional: Record<string, Check>
       && Object.entries(optional).every(([key, check]) => !Object.prototype.hasOwnProperty.call(data, key) || check(data[key]))
   }
 }
-const cardId: Check = value => cards.some(card => card.id === value)
+const cardId: Check = value => cards.some(card => card.id === value) || experimentalCards.some(card => card.id === value)
 const artifactId: Check = value => artifactDefinitions.some(item => item.id === value)
 const acquisition = object({ definitionId: cardId, upgrade: oneOf(0, 1) })
 const hero = object({ id: oneOf('warrior', 'mage'), characterId: text, classId: oneOf('warrior', 'mage'), partySlot: oneOf('first', 'second'), instanceId: text, name: text, title: text, health: integer(0, 999), maxHealth: integer(1, 999), armor: oneOf(0), icon: text })

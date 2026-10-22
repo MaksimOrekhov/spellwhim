@@ -55,7 +55,8 @@ describe('Honest Turn A — the presets', () => {
       for (const field of ['discardHand', 'armorExpiry', 'enemyDamageScale', 'excludedArtifacts']) expect(Object.keys(economy)).not.toContain(field)
       expect(isHonestEconomy(economy)).toBe(false)
     }
-    expect(knownEconomies()).toHaveLength(5)
+    // The three historical models and the A presets, then the B1/B2 presets of docs/design/honest-turn-b-experiment-v1.md.
+    expect(knownEconomies()).toHaveLength(7)
     expect(gameEconomy.id).toBe('B')
     expect(economyFromSpec('honest-a08')).toBe(A08)
     expect(economyFromSpec('B')).toBe(gameEconomy)

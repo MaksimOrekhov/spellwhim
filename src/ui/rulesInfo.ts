@@ -12,12 +12,16 @@ export interface RulesInfo {
   /** Hero armor is cleared once the enemy action has resolved, instead of waiting for a hit. */
   armorExpires: boolean
   openingHand: number
+  /** EXPERIMENT B1: the sector's enemies carry pierce, interrupt, mark and rage. */
+  newThreats: boolean
+  /** EXPERIMENT B2: the Frost and Steel cards are in the deck. */
+  frost: boolean
 }
 
-const standard: RulesInfo = { discardsHand: false, armorExpires: false, openingHand: 8 }
+const standard: RulesInfo = { discardsHand: false, armorExpires: false, openingHand: 8, newThreats: false, frost: false }
 const key: InjectionKey<RulesInfo> = Symbol('battle-rules')
 
-export const rulesInfoOf = (economy: Pick<EconomyConfig, 'discardHand' | 'armorExpiry' | 'openingHand'>): RulesInfo =>
-  ({ discardsHand: economy.discardHand === true, armorExpires: economy.armorExpiry === 'turn', openingHand: economy.openingHand })
+export const rulesInfoOf = (economy: Pick<EconomyConfig, 'discardHand' | 'armorExpiry' | 'openingHand'> & { sectorFoes?: EconomyConfig['sectorFoes'] }, extra: { frost?: boolean } = {}): RulesInfo =>
+  ({ discardsHand: economy.discardHand === true, armorExpires: economy.armorExpiry === 'turn', openingHand: economy.openingHand, newThreats: economy.sectorFoes !== undefined, frost: extra.frost === true })
 export const provideRules = (info: RulesInfo): void => provide(key, info)
 export const useRules = (): RulesInfo => inject(key, standard)

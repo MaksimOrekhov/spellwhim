@@ -48,7 +48,9 @@ describe('public intent', () => {
       for (const hit of forecast.targets) {
         const shown = intent.hits.find(item => item.hero === hit.target)!
         expect(shown, id).toMatchObject({ healthLoss: hit.healthLoss, attack: hit.attack, absorbed: hit.absorbed, lethal: hit.lethal })
-        expect(heroMarks(intent)[hit.target], id).toMatchObject({ when: 'now', healthLoss: hit.healthLoss })
+        // A blow the party has stopped (B1) marks nobody.
+        if (shown.cancelled) expect(heroMarks(intent)[hit.target], id).toBeUndefined()
+        else expect(heroMarks(intent)[hit.target], id).toMatchObject({ when: 'now', healthLoss: hit.healthLoss })
       }
     }
   })
@@ -194,7 +196,8 @@ describe('the forecast is what happens', () => {
       if (intent.kind !== 'attack' && intent.kind !== 'attack_all') continue
       const before = { warrior: state.heroes.warrior.health, mage: state.heroes.mage.health }
       endTurn(state)
-      for (const hit of intent.hits) expect(before[hit.hero] - state.heroes[hit.hero].health, id).toBe(hit.healthLoss)
+      // A blow the party has stopped (B1) is shown struck out and loses nothing.
+      for (const hit of intent.hits) expect(before[hit.hero] - state.heroes[hit.hero].health, id).toBe(hit.cancelled ? 0 : hit.healthLoss)
     }
   })
 

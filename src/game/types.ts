@@ -6,8 +6,10 @@ export type CardClassId = 'warrior' | 'mage'
 export type PartySlotId = 'first' | 'second'
 export type ArtifactId = 'reliable-wedge' | 'double-pulley' | 'weakpoint-lens' | 'shift-whistle' | 'tension-spool'
 export type GameResult = 'victory' | 'defeat' | null
-export type CardId = 'sword-strike' | 'fireball' | 'guard' | 'quick-cut' | 'thunderbolt' | 'bastion' | 'parry' | 'shield-bash' | 'interpose' | 'frostbolt' | 'arcane-insight' | 'ice-ward' | 'rend' | 'reaping-blow' | 'boil-blood' | 'stance-strike' | 'wound-clamp' | 'covering-counter' | 'crushing-swing' | 'arcane-mark' | 'ice-echo' | 'frost-seal' | 'blood-resonance'
-export type StatusId = 'vulnerability' | 'bleeding'
+/** Cards that exist only in the starting deck of the B2 experiment: no reward, no upgrade, not part of the saved-catalogue fingerprint. */
+export type ExperimentalCardId = 'frost-grip' | 'ice-breaker'
+export type CardId = ExperimentalCardId | 'sword-strike' | 'fireball' | 'guard' | 'quick-cut' | 'thunderbolt' | 'bastion' | 'parry' | 'shield-bash' | 'interpose' | 'frostbolt' | 'arcane-insight' | 'ice-ward' | 'rend' | 'reaping-blow' | 'boil-blood' | 'stance-strike' | 'wound-clamp' | 'covering-counter' | 'crushing-swing' | 'arcane-mark' | 'ice-echo' | 'frost-seal' | 'blood-resonance'
+export type StatusId = 'vulnerability' | 'bleeding' | 'frostbite'
 /** Who can hold a status. `'enemy'` is the current opponent; hero keys follow the legacy engine key (`Hero.id`). */
 export type StatusCarrierId = 'enemy' | HeroId
 /** A status held by one carrier. `value` is read according to the definition: charges or intensity. */
@@ -71,6 +73,8 @@ export interface CardDefinition {
   damageBonus?: CardDamageBonus
   exhaust?: boolean
   reward?: boolean
+  /** EXPERIMENT "Honest Turn B2": a card that exists only in the starting deck of that mode. Left out of the saved-catalogue fingerprint and of every reward pool. */
+  experimental?: boolean
 }
 
 export interface CardInstance {
@@ -146,6 +150,15 @@ export const cards: CardDefinition[] = [
   { id: 'blood-resonance', name: 'Кровавый резонанс', className: 'mage', cost: 2, description: '3 урона и добор карты. Снимает Кровотечение: +1 урон за каждую силу.', icon: '✹', kind: 'spell', tags: ['offensive-spell'], effects: [{ type: 'damage', amount: 3 }, { type: 'status-burst', status: 'bleeding', perPoint: 1 }, { type: 'draw', amount: 1 }], reward: true },
 ]
 
+/**
+ * EXPERIMENT "Honest Turn B2": the two cards of the Frost and Steel package. They live apart from `cards` on purpose: the catalogue the
+ * saves fingerprint, the reward pools and every "all cards" check stay exactly as they were, and only `cardDefinition` knows these two.
+ */
+export const experimentalCards: CardDefinition[] = [
+  { id: 'frost-grip', name: 'Ледяная хватка', className: 'mage', cost: 1, description: '2 урона. Накладывает Обморожение: следующая атака врага слабее.', icon: '❄', kind: 'spell', tags: ['offensive-spell'], effects: [{ type: 'damage', amount: 2 }, { type: 'status', status: 'frostbite' }], experimental: true },
+  { id: 'ice-breaker', name: 'Раскол льда', className: 'warrior', cost: 1, description: '5 урона. Если враг обморожен: ещё 7 урона, Обморожение снимается.', icon: '⚔', kind: 'attack', tags: ['strike'], effects: [{ type: 'damage', amount: 5 }, { type: 'status-burst', status: 'frostbite', perPoint: 7 }], experimental: true },
+]
+
 export const startingDeck: CardId[] = [
   'sword-strike', 'sword-strike', 'fireball', 'fireball', 'guard', 'guard',
   'parry', 'parry', 'shield-bash', 'shield-bash', 'interpose', 'interpose',
@@ -153,13 +166,15 @@ export const startingDeck: CardId[] = [
 ]
 
 export function cardDefinition(id: CardId): CardDefinition {
-  const definition = cards.find(card => card.id === id)
+  const definition = cards.find(card => card.id === id) ?? experimentalCards.find(card => card.id === id)
   if (!definition) throw new Error('Unknown card: ' + id)
   return definition
 }
 
 export type EnemyAppearance = 'root' | 'guardian' | 'heart' | 'defias' | 'goblin' | 'mechanical'
 
+/** What the scene says the moment a boss changes phase: shown beside the unchanged current intent, so the rest of the fight is announced. */
+export interface PhaseNote { title: string; lines: string[] }
 export interface EncounterDefinition {
   id: string
   name: string
@@ -168,10 +183,20 @@ export interface EncounterDefinition {
   behavior: EnemyBehavior
   appearance: EnemyAppearance
   mapLabel: string
+  phaseNote?: PhaseNote
 }
 
-export type EnemyHit = { kind: 'attack'; name: string; damage: number; target: HeroId } | { kind: 'attack_all'; name: string; damage: number; primaryTarget: HeroId }
-export type EnemyAction = EnemyHit | { kind: 'defend'; name: string; armor: number } | { kind: 'prepare'; name: string; prepared: EnemyHit } | { kind: 'recover'; name: string; armor: number }
+/**
+ * EXPERIMENT "Honest Turn B1": optional properties of an enemy hit. Every one is absent from the standard enemies, and each
+ * is announced together with the hit, so the intent a player was shown is exactly what the engine executes.
+ *  - `pierce`: the hit ignores that many points of its target's armor;
+ *  - `interrupt`: the hit is stopped, whole, if the party dealt at least that much damage to the enemy's health this turn;
+ *  - `exposes`: each hero the hit leaves alive becomes Vulnerable (the next hit on them is 3 harder).
+ */
+export interface HitTraits { pierce?: number; interrupt?: number; exposes?: 'vulnerability' }
+export type EnemyHit = ({ kind: 'attack'; name: string; damage: number; target: HeroId } | { kind: 'attack_all'; name: string; damage: number; primaryTarget: HeroId }) & HitTraits
+/** `power` (B1): the enemy's later announced hits are that much harder for the rest of the fight (an action that is already announced never changes). */
+export type EnemyAction = EnemyHit | { kind: 'defend'; name: string; armor: number; power?: number } | { kind: 'prepare'; name: string; prepared: EnemyHit } | { kind: 'recover'; name: string; armor: number; power?: number }
 export interface EnemyBehavior { phase1: EnemyAction[]; phase2?: EnemyAction[] }
 export interface EnemyState {
   /** Stable encounter identity; portrait lookup never depends on localized display text or phase. */
@@ -179,6 +204,11 @@ export interface EnemyState {
   name: string; title: string; health: number; maxHealth: number; armor: number
   appearance: EncounterDefinition['appearance']; phase: 1 | 2; nextActionPhase: 1 | 2; behavior: EnemyBehavior
   behaviorIndex: number; nextAction: EnemyAction; focus: HeroId
+  /** B1 only, each absent until it matters: damage added to hits announced from now on; health damage the party dealt this turn to an enemy whose hit can be interrupted; the player turn its second phase began; the phase note. */
+  power?: number
+  hurt?: number
+  phaseShiftTurn?: number
+  phaseNote?: PhaseNote
 }
 
 export const encounters: EncounterDefinition[] = [

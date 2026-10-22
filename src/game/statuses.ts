@@ -22,7 +22,7 @@ export type StatusReading = 'charges' | 'intensity'
 export type StatusStacking = 'refresh' | 'add'
 export type StatusTriggerGroup = 'player-card' | 'enemy-action' | 'turn-tick'
 /** UI key; the Vue layer maps it to an actual icon, so definitions carry no markup. */
-export type StatusIconKey = 'vulnerability' | 'bleeding'
+export type StatusIconKey = 'vulnerability' | 'bleeding' | 'frostbite'
 
 /** A point of the turn at which the engine evaluates tick rules. Only phases that exist in `endTurn` are listed. */
 export type StatusTickPhase = 'enemy-turn-start'
@@ -53,6 +53,10 @@ export interface StatusDefinition {
   maxValue: number
   /** Flat damage added to the next damaging hit the carrier takes, before armor; that hit spends one charge. */
   hitBonus?: number
+  /** EXPERIMENT B2: every hit the CARRIER deals is weakened by this share of its base damage (at least `min`), then the status is spent. */
+  outgoingReduction?: { ratio: number; min: number }
+  /** Wording for a hero who carries the status, when it differs from `description`. */
+  descriptionHero?: string
   tick?: StatusTick
   icon: StatusIconKey
 }
@@ -61,6 +65,7 @@ export const statusDefinitions: Record<StatusId, StatusDefinition> = {
   vulnerability: {
     id: 'vulnerability', name: 'Уязвимость', shortName: 'Уязвим',
     description: 'Следующая наносящая урон карта получает +3 урона и снимает Уязвимость.',
+    descriptionHero: 'Следующий удар по герою сильнее на 3 (до брони) и снимает Уязвимость.',
     note: 'Состояние сохраняется между ходами.',
     spoken: { enemy: 'Противник уязвим', hero: 'Герой уязвим' },
     polarity: 'negative', carriers: ['enemy', 'hero'], reading: 'charges', stacking: 'refresh', maxValue: 1, hitBonus: 3, icon: 'vulnerability',
@@ -72,6 +77,13 @@ export const statusDefinitions: Record<StatusId, StatusDefinition> = {
     spoken: { enemy: 'Противник истекает кровью', hero: 'Герой истекает кровью' },
     polarity: 'negative', carriers: ['enemy'], reading: 'intensity', stacking: 'add', maxValue: 5,
     tick: { phase: 'enemy-turn-start', damage: true, ignoresArmor: true, decay: 1 }, icon: 'bleeding',
+  },
+  frostbite: {
+    id: 'frostbite', name: 'Обморожение', shortName: 'Мороз',
+    description: 'Следующая атака врага слабее на 30% (не меньше чем на 2) по каждой цели, затем Обморожение исчезает. «Раскол льда» может потратить его на усиленный удар вместо защиты.',
+    note: 'Держится, пока враг не атакует; повторное наложение не складывается. Тихие ходы врага его не тратят.',
+    spoken: { enemy: 'Противник обморожен', hero: 'Герой обморожен' },
+    polarity: 'negative', carriers: ['enemy'], reading: 'charges', stacking: 'refresh', maxValue: 1, outgoingReduction: { ratio: 0.3, min: 2 }, icon: 'frostbite',
   },
 }
 
@@ -200,9 +212,9 @@ export function statusViews(state: StatusHolder, carrier: StatusCarrierId): Stat
   return state.statuses[carrier].map(item => {
     const definition = statusDefinition(item.id)
     return {
-      id: item.id, carrier, name: definition.name, shortName: definition.shortName, description: definition.description, note: definition.note, spoken: definition.spoken[carrier === 'enemy' ? 'enemy' : 'hero'],
+      id: item.id, carrier, name: definition.name, shortName: definition.shortName, description: carrier !== 'enemy' && definition.descriptionHero ? definition.descriptionHero : definition.description, note: definition.note, spoken: definition.spoken[carrier === 'enemy' ? 'enemy' : 'hero'],
       polarity: definition.polarity, reading: definition.reading, value: item.value, icon: definition.icon, trigger: triggerGroup(item.id, carrier),
-      badge: definition.hitBonus ? '+' + definition.hitBonus : definition.reading === 'intensity' ? String(item.value) : null,
+      badge: definition.hitBonus ? '+' + definition.hitBonus : definition.outgoingReduction ? '−' + Math.round(definition.outgoingReduction.ratio * 100) + '%' : definition.reading === 'intensity' ? String(item.value) : null,
     }
   })
 }
@@ -219,6 +231,19 @@ export function hitBonuses(state: StatusHolder, carrier: StatusCarrierId): HitBo
   })
 }
 const noBonuses: HitBonus[] = Object.freeze([]) as unknown as HitBonus[]
+
+export interface HitReduction { id: StatusId; label: string; amount: number }
+
+/** Statuses on `carrier` that weaken a hit it deals, for a hit of `baseDamage`; empty when it holds none. Spending them is the caller's job. */
+export function outgoingReductions(state: StatusHolder, carrier: StatusCarrierId, baseDamage: number): HitReduction[] {
+  const list = state.statuses[carrier]
+  if (list.length === 0) return noReductions
+  return list.flatMap(item => {
+    const rule = statusDefinition(item.id).outgoingReduction
+    return rule ? [{ id: item.id, label: statusDefinition(item.id).name, amount: Math.max(rule.min, Math.round(baseDamage * rule.ratio)) }] : []
+  })
+}
+const noReductions: HitReduction[] = Object.freeze([]) as unknown as HitReduction[]
 
 export interface DueTick { id: StatusId; value: number; tick: StatusTick }
 

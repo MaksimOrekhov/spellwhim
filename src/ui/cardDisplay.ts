@@ -7,7 +7,7 @@ import { createBattle, previewCard } from '../game/battle'
 import { characterGenitive } from '../game/party'
 import { getClassTheme } from '../game/classThemes'
 
-export type GlyphKind = 'damage' | 'armor' | 'draw' | 'vulnerable' | 'exhaust' | 'bonus' | 'lock' | 'bleeding'
+export type GlyphKind = 'damage' | 'armor' | 'draw' | 'vulnerable' | 'exhaust' | 'bonus' | 'lock' | 'bleeding' | 'frostbite'
 export type Tone = 'on' | 'off' | 'plain'
 
 export interface StatChip {
@@ -25,7 +25,7 @@ export interface StatChip {
 }
 /** `short` is used when the card is partly covered by its neighbour and only a narrow strip is visible. */
 export interface RuleLine { tone: Tone; glyph?: GlyphKind; text: string; short: string }
-export interface CardTag { id: 'vulnerability' | 'exhaust'; glyph: GlyphKind; text: string; short: string }
+export interface CardTag { id: 'vulnerability' | 'exhaust' | 'frostbite'; glyph: GlyphKind; text: string; short: string }
 export interface DamagePart { label: string; amount: number; kind: 'base' | 'armor' | 'vulnerability' | 'status' | 'artifact' }
 export interface Keyword { glyph: GlyphKind; name: string; text: string }
 export interface CardNotesModel {
@@ -125,7 +125,12 @@ export function ruleLines(card: CardDefinition, preview: CardPreview): RuleLine[
     lines.push({ tone: preview.statusDamage > 0 ? 'on' : 'off', glyph: 'bleeding', text: preview.statusDamage > 0 ? `Кровотечение: ${preview.statusDamage} сейчас` : 'Тик Кровотечения сейчас', short: 'Тик Крови сейчас' })
   }
   const burstEffect = card.effects.find((effect): effect is Extract<CardEffect, { type: 'status-burst' }> => effect.type === 'status-burst')
-  if (burstEffect) {
+  if (burstEffect?.status === 'frostbite') {
+    const burst = preview.damageParts.find(part => part.id === 'frostbite-burst')
+    lines.push(burst
+      ? { tone: 'on', glyph: 'frostbite', text: `+${burst.amount} — враг обморожен (Обморожение будет потрачено)`, short: `+${burst.amount} мороз` }
+      : { tone: 'off', glyph: 'frostbite', text: `+${burstEffect.perPoint}, если враг обморожен`, short: `+${burstEffect.perPoint} при морозе` })
+  } else if (burstEffect) {
     const burst = preview.damageParts.find(part => part.id === 'bleeding-burst')
     lines.push(burst
       ? { tone: 'on', glyph: 'bleeding', text: `+${burst.amount} — Кровотечение врага`, short: `+${burst.amount} Кровь` }
@@ -139,6 +144,7 @@ export function ruleLines(card: CardDefinition, preview: CardPreview): RuleLine[
 export function cardTags(card: CardDefinition): CardTag[] {
   const tags: CardTag[] = []
   if (card.effects.some(effect => effect.type === 'status' && effect.status === 'vulnerability')) tags.push({ id: 'vulnerability', glyph: 'vulnerable', text: 'Уязвимость врагу', short: 'Уязвимость' })
+  if (card.effects.some(effect => effect.type === 'status' && effect.status === 'frostbite')) tags.push({ id: 'frostbite', glyph: 'frostbite', text: 'Обморожение врагу', short: 'Мороз' })
   if (card.exhaust) tags.push({ id: 'exhaust', glyph: 'exhaust', text: 'Выбывает', short: 'Выбывает' })
   return tags
 }
@@ -197,6 +203,11 @@ export function cardNotes(card: CardDefinition, preview: CardPreview, context: '
     const burst = card.effects.some(effect => effect.type === 'status-burst')
     const tick = card.effects.some(effect => effect.type === 'status-tick')
     keywords.push({ glyph: 'bleeding', name: status.name, text: status.description + (burst ? ' Эта карта забирает всё Кровотечение сразу: будущих тиков не будет.' : tick ? ' Тик, сработавший сейчас, не повторится в начале хода врага: общий урон Кровотечения не растёт.' : '') })
+  }
+  if (card.effects.some(effect => (effect.type === 'status' || effect.type === 'status-burst') && effect.status === 'frostbite')) {
+    const status = statusDefinitions.frostbite
+    const burst = card.effects.some(effect => effect.type === 'status-burst')
+    keywords.push({ glyph: 'frostbite', name: status.name, text: status.description + (burst ? ' Эта карта тратит Обморожение на усиленный удар: враг после этого бьёт в полную силу.' : '') })
   }
   const armor = context === 'neutral'
     ? card.effects.flatMap(effect => effect.type === 'armor' ? [{ hero: effect.target, name: armorRecipient(effect.target, preview, 'цели врага'), amount: effect.amount }] : [])

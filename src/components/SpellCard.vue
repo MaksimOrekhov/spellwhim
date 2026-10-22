@@ -122,6 +122,7 @@ const style = computed(() => ({ ...classThemeStyle(props.card.className), '--vis
 .tag{display:inline-flex;align-items:center;gap:.25em;padding:.1em .5em .1em .3em;border-radius:var(--r-pill);border:.08em solid color-mix(in srgb,var(--class-accent) 70%,var(--parch-ink));background:color-mix(in srgb,var(--class-accent) 20%,transparent);font:800 .66em/1.2 var(--font-ui);color:var(--parch-ink);white-space:nowrap}
 .tag .glyph{width:1.1em;height:1.1em}
 .tag--vulnerability .glyph{color:color-mix(in srgb,var(--c-vulnerable) 60%,#5a2a00)}
+.tag--frostbite .glyph{color:color-mix(in srgb,#4ab0ff 70%,#0a2a4a)}
 .sc-foot{flex:none;display:flex;align-items:center;gap:.45em;height:1.4em;margin-top:.1em;border-top:.07em solid color-mix(in srgb,var(--parch-ink-soft) 35%,transparent);padding-top:.2em}
 .sc-foot kbd{display:inline-grid;place-items:center;min-width:1.35em;height:1.35em;border-radius:var(--r-1);border:.08em solid var(--brass-3);background:var(--wood-1);color:var(--ink);font:700 .7em/1 var(--font-num)}
 .sc-class{display:flex;white-space:nowrap;align-items:center;gap:.35em;font:800 .6em/1 var(--font-ui);letter-spacing:var(--ls-caps);text-transform:uppercase;color:color-mix(in srgb,var(--class-primary) 70%,var(--parch-ink))}

@@ -84,11 +84,13 @@ export function useBattleAnimation(options: { state: Readonly<Ref<BattleState>>;
     const incoming = forecastEnemyAction(state)
     const action = incoming.action
     const primary = incoming.threatened[0] ?? state.enemy.focus
-    const effect = action.kind === 'attack_all' ? 'hit-all' : action.kind === 'defend' ? 'defend' : action.kind === 'prepare' ? 'prepare' : action.kind === 'recover' ? 'recover' : action.damage >= 9 ? 'heavy' : 'hit'
+    // EXPERIMENT B1: a blow the party has stopped plays as a failed wind-up: nothing lands, so nothing is drawn on a hero.
+    const stopped = incoming.interrupt?.broken === true
+    const effect = stopped ? 'prepare' : action.kind === 'attack_all' ? 'hit-all' : action.kind === 'defend' ? 'defend' : action.kind === 'prepare' ? 'prepare' : action.kind === 'recover' ? 'recover' : action.damage >= 9 ? 'heavy' : 'hit'
     const suffix = incoming.threatened.length > 1 ? ' → оба героя' : incoming.threatened.length ? ' → ' + state.heroes[primary].name : ''
-    start({ phase: 'enemy', source: 'enemy', effect, target: effect === 'defend' || effect === 'prepare' || effect === 'recover' ? 'enemy' : primary, incoming, amount: incoming.targets.reduce((sum, target) => sum + target.healthLoss, 0) || incoming.armorGain, bonusDamage: 0, partnerArmor: 0, label: action.name + suffix }, 560, 880, () => {
+    start({ phase: 'enemy', source: 'enemy', effect, target: effect === 'defend' || effect === 'prepare' || effect === 'recover' ? 'enemy' : primary, incoming, amount: stopped ? 0 : incoming.targets.reduce((sum, target) => sum + target.healthLoss, 0) || incoming.armorGain, bonusDamage: 0, partnerArmor: 0, label: stopped ? action.name + ' — сорвано' : action.name + suffix }, 560, 880, () => {
       options.finishTurn()
-      animation.value = { ...animation.value, label: action.name + ' выполнено' }
+      animation.value = { ...animation.value, label: stopped ? action.name + ' сорвано' : action.name + ' выполнено' }
     })
   }
   function cancel() { clearTimers(); pending = null; animation.value = { ...idle(), pulse: animation.value.pulse + 1 } }

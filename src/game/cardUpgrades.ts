@@ -1,8 +1,8 @@
-import type { CardDefinition, CardEffect, CardId } from './types'
+import type { CardDefinition, CardEffect, CardId, ExperimentalCardId } from './types'
 
 type Upgrade = { effect?: { index: number; amount: number }; insert?: { index: number; effect: CardEffect }; description: string }
 /** Full delta only. Costs, classes, status rules and exhaust are inherited unchanged. GDD §5.2 prototype. */
-export const cardUpgrades: Record<CardId, Upgrade> = {
+export const cardUpgrades: Record<Exclude<CardId, ExperimentalCardId>, Upgrade> = {
   'sword-strike': { effect: { index: 0, amount: 8 }, description: '8 урона.' },
   fireball: { effect: { index: 0, amount: 10 }, description: '10 урона.' },
   guard: { effect: { index: 0, amount: 5 }, description: '5 брони цели врага.' },
@@ -29,7 +29,7 @@ export const cardUpgrades: Record<CardId, Upgrade> = {
 }
 
 export function upgradedDefinition(base: CardDefinition): CardDefinition {
-  const delta = cardUpgrades[base.id]
+  const delta = (cardUpgrades as Partial<Record<CardId, Upgrade>>)[base.id]
   if (!delta) throw new Error('Нет улучшенной версии карты: ' + base.id)
   const effects = base.effects.map(effect => ({ ...effect }))
   if (delta.effect) {
