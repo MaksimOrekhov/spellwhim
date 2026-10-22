@@ -2,6 +2,8 @@
 
 21.10.2026. Ветка `experiment/honest-turn-a`, от `origin/main` @ `8d4ffd6`; в `main` не сливалась. Статус — **EXPERIMENT** ([Decision Log](spellwhim-gdd-v2-decisions.md), X01): владелец принял отступление от GDD §4 **для экспериментального прототипа**; правила не утверждены как баланс Spellwhim и не заменяют текущие. Основание и числа — [независимое ревью боевых основ](https://github.com/MaksimOrekhov/spellwhim/blob/design/combat-foundations-review/docs/design/combat-foundations-independent-review-v1.md) (ветка `design/combat-foundations-review`, коммит `88c6d2d`, концепт A).
 
+> Продолжение — [Честный ход B1/B2](honest-turn-b-experiment-v1.md): те же правила A, но другие циклы врагов (B1) и командная механика «Мороз и сталь» (B2). Режим A остаётся доступным и не менялся.
+
 **Главная цель** — играбельная версия, в которую можно зайти самому и сразу сравнить ощущения от боя с текущим Spellwhim. Оценивать её нужно человеческим плейтестом; числа ниже взяты из исследования **без подгонки** под метрики стенда.
 
 ## 1. Как зайти и сравнить

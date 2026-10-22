@@ -64,6 +64,11 @@ try {
               interruptTried: breakable.length, interruptBroken: r(share(breakable.filter(item => item.interruptBroken).length, breakable.length)),
               frostApplied: r(share(turns.filter(item => item.frostApplied).length, turns.length)), frostShattered: r(share(turns.filter(item => item.frostBurst).length, turns.length)),
               armorFromWarriorCards: r(mean(strikes.map(item => item.armorByClass.warrior))), armorFromMageCards: r(mean(strikes.map(item => item.armorByClass.mage))),
+              // Who protects whom, per strike turn: armor on Varian / on Jaina from each hero's cards, and Frostbite's saving (Jaina's card).
+              armorOnVarianFromVarian: r(mean(strikes.map(item => item.armorGrid.warrior.warrior))), armorOnJainaFromVarian: r(mean(strikes.map(item => item.armorGrid.warrior.mage))),
+              armorOnVarianFromJaina: r(mean(strikes.map(item => item.armorGrid.mage.warrior))), armorOnJainaFromJaina: r(mean(strikes.map(item => item.armorGrid.mage.mage))),
+              jainaCardsHelped: r(share(strikes.filter(item => item.armorByClass.mage + item.chillSaved > 0).length, strikes.length)), varianCardsHelped: r(share(strikes.filter(item => item.armorByClass.warrior > 0).length, strikes.length)),
+              jainaLossPerBattle: r(mean(fights.map(item => item.lost.mage)), 1), varianLossPerBattle: r(mean(fights.map(item => item.lost.warrior)), 1),
               warriorShareOfLoss: r(share(fights.reduce((s, i) => s + i.lost.warrior, 0), fights.reduce((s, i) => s + i.lost.warrior + i.lost.mage, 0))),
               manaLeftTurns3Plus: r(share(turns.filter(item => item.manaLeft >= 3 && item.playableLeft > 0).length, turns.length)),
               bothHeroesArmored: r(share(strikes.filter(item => item.armorGranted > 0 && item.armorByClass.warrior > 0 && item.armorByClass.mage > 0).length, strikes.length)),

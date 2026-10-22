@@ -1,7 +1,7 @@
 import { chooseCard } from './balance'
 import type { ClassicStrategy } from './balance'
 import { cloneBattleState, createTurnPlanner } from './balancePlanner'
-import { createBattle, endTurn, forecastEnemyAction, hasStatus, playCard, previewCard } from './battle'
+import { createBattle, endTurn, forecastEnemyAction, playCard, previewCard } from './battle'
 import { availableDungeonNodes, claimDungeonArtifact, claimDungeonReward, createCampaignBattle, createSectorRun, dungeonEncounter, dungeonNode, dungeonRewardOptions, enterDungeonNode, resolveDungeonBattle, resolveDungeonRest, skipDungeonReward, upgradeDungeonRest } from './campaign'
 import type { DungeonRunState } from './campaign'
 import { canUpgradeCard } from './cardProgression'
@@ -90,6 +90,8 @@ export interface TurnLog {
   manaOnOffense: number
   armorGranted: number
   armorByClass: { warrior: number; mage: number }
+  /** Armor granted, by the class of the card and by the hero who received it: who protects whom. */
+  armorGrid: Record<'warrior' | 'mage', { warrior: number; mage: number }>
   armorAbsorbed: number
   /** Armor that did no work: on a hero who is not hit, or beyond what the hit needed (counting what piercing ignores). */
   armorWasted: number
@@ -136,7 +138,7 @@ export function runFight(state: BattleState, chooser: Chooser, maxTurns = 40, ma
       turn: state.turn, phase: state.enemy.phase, kind: announced.kind, strike: !!hitNow,
       traits: { pierce: !!hitNow?.pierce, interrupt: hitNow?.interrupt !== undefined, exposes: !!hitNow?.exposes, group: announced.kind === 'attack_all' },
       mana: state.mana, handArmorCards: state.hand.filter(card => hasArmorEffect(card.definitionId)).length,
-      manaOnDefense: 0, manaOnOffense: 0, armorGranted: 0, armorByClass: { warrior: 0, mage: 0 }, armorAbsorbed: 0, armorWasted: 0, chillSaved: 0,
+      manaOnDefense: 0, manaOnOffense: 0, armorGranted: 0, armorByClass: { warrior: 0, mage: 0 }, armorGrid: { warrior: { warrior: 0, mage: 0 }, mage: { warrior: 0, mage: 0 } }, armorAbsorbed: 0, armorWasted: 0, chillSaved: 0,
       frostApplied: false, frostBurst: false, damageDealt: 0, interruptNeed: hitNow?.interrupt ?? 0, interruptDealt: 0, interruptBroken: false,
       lost: { warrior: 0, mage: 0 }, unexplained: 0, manaLeft: 0, playableLeft: 0, targets: forecast0.threatened, enemyPower: state.enemy.power ?? 0,
     }
@@ -153,6 +155,8 @@ export function runFight(state: BattleState, chooser: Chooser, maxTurns = 40, ma
       const granted = preview.armor.warrior + preview.armor.mage
       entry.armorGranted += granted
       entry.armorByClass[card.className] += granted
+      entry.armorGrid[card.className].warrior += preview.armor.warrior
+      entry.armorGrid[card.className].mage += preview.armor.mage
       if (preview.appliedStatuses.includes('frostbite')) entry.frostApplied = true
       if (preview.damageParts.some(part => part.id === 'frostbite-burst')) entry.frostBurst = true
       entry.damageDealt += result.damageDealt
@@ -385,4 +389,3 @@ export function simulateSectorRun(seed: number, economy: EconomyConfig, deck: re
   }
 }
 
-export { hasStatus }
