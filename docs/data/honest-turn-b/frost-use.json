@@ -1,0 +1,110 @@
+[
+ {
+  "strategy": "planner",
+  "enemy": "raider",
+  "strikeHold": 83,
+  "strikeSpend": 241,
+  "quietHold": 0,
+  "quietSpend": 0,
+  "strikeKept": 0.26
+ },
+ {
+  "strategy": "planner",
+  "enemy": "digger",
+  "strikeHold": 47,
+  "strikeSpend": 200,
+  "quietHold": 34,
+  "quietSpend": 115,
+  "strikeKept": 0.19
+ },
+ {
+  "strategy": "planner",
+  "enemy": "watchman",
+  "strikeHold": 64,
+  "strikeSpend": 152,
+  "quietHold": 28,
+  "quietSpend": 103,
+  "strikeKept": 0.3
+ },
+ {
+  "strategy": "planner",
+  "enemy": "overseer",
+  "strikeHold": 95,
+  "strikeSpend": 216,
+  "quietHold": 30,
+  "quietSpend": 115,
+  "strikeKept": 0.31
+ },
+ {
+  "strategy": "planner",
+  "enemy": "johnson",
+  "strikeHold": 149,
+  "strikeSpend": 373,
+  "quietHold": 68,
+  "quietSpend": 226,
+  "strikeKept": 0.29
+ },
+ {
+  "strategy": "planner",
+  "enemy": "rhahk-zor",
+  "strikeHold": 163,
+  "strikeSpend": 429,
+  "quietHold": 80,
+  "quietSpend": 259,
+  "strikeKept": 0.28
+ },
+ {
+  "strategy": "planner-careful",
+  "enemy": "raider",
+  "strikeHold": 172,
+  "strikeSpend": 231,
+  "quietHold": 0,
+  "quietSpend": 0,
+  "strikeKept": 0.43
+ },
+ {
+  "strategy": "planner-careful",
+  "enemy": "digger",
+  "strikeHold": 87,
+  "strikeSpend": 197,
+  "quietHold": 34,
+  "quietSpend": 115,
+  "strikeKept": 0.31
+ },
+ {
+  "strategy": "planner-careful",
+  "enemy": "watchman",
+  "strikeHold": 160,
+  "strikeSpend": 126,
+  "quietHold": 28,
+  "quietSpend": 111,
+  "strikeKept": 0.56
+ },
+ {
+  "strategy": "planner-careful",
+  "enemy": "overseer",
+  "strikeHold": 207,
+  "strikeSpend": 104,
+  "quietHold": 38,
+  "quietSpend": 144,
+  "strikeKept": 0.67
+ },
+ {
+  "strategy": "planner-careful",
+  "enemy": "johnson",
+  "strikeHold": 274,
+  "strikeSpend": 277,
+  "quietHold": 73,
+  "quietSpend": 240,
+  "strikeKept": 0.5
+ },
+ {
+  "strategy": "planner-careful",
+  "enemy": "rhahk-zor",
+  "strikeHold": 290,
+  "strikeSpend": 320,
+  "quietHold": 93,
+  "quietSpend": 290,
+  "strikeKept": 0.48
+ }
+]

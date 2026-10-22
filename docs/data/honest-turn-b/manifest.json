@@ -1,0 +1,19 @@
+{
+ "study": "honest-turn-b",
+ "commit": "8c1fe4c",
+ "seeds": 300,
+ "hands": 400,
+ "runs": 300,
+ "information": "public",
+ "planner": "createTurnPlanner, profile keep 0 (planner-careful: health x2)",
+ "modes": [
+  "honest-a08",
+  "honest-b1",
+  "honest-b2"
+ ],
+ "defaultDecks": {
+  "honest-a08": "armor10",
+  "honest-b1": "armor10",
+  "honest-b2": "armor8"
+ }
+}

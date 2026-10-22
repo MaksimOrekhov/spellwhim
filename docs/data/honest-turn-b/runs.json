@@ -1,0 +1,514 @@
+[
+ {
+  "mode": "honest-a08",
+  "deck": "armor10",
+  "strategy": "planner",
+  "runs": 300,
+  "win": 1,
+  "timeouts": 0,
+  "battlesPerRun": 3.5,
+  "healthEndV": 12.7,
+  "healthEndJ": 11.8,
+  "lostV": 13.9,
+  "lostJ": 6.5,
+  "diedAt": {}
+ },
+ {
+  "mode": "honest-a08",
+  "deck": "armor8",
+  "strategy": "planner",
+  "runs": 300,
+  "win": 1,
+  "timeouts": 0,
+  "battlesPerRun": 3.4,
+  "healthEndV": 11.3,
+  "healthEndJ": 11.8,
+  "lostV": 15.8,
+  "lostJ": 6.9,
+  "diedAt": {
+   "rhahk-zor": 1
+  }
+ },
+ {
+  "mode": "honest-a08",
+  "deck": "armor6",
+  "strategy": "planner",
+  "runs": 300,
+  "win": 0.99,
+  "timeouts": 0,
+  "battlesPerRun": 3.4,
+  "healthEndV": 9.2,
+  "healthEndJ": 10.8,
+  "lostV": 17.7,
+  "lostJ": 8.6,
+  "diedAt": {
+   "rhahk-zor": 2
+  }
+ },
+ {
+  "mode": "honest-b1",
+  "deck": "armor10",
+  "strategy": "planner",
+  "runs": 300,
+  "win": 0.95,
+  "timeouts": 0,
+  "battlesPerRun": 3.3,
+  "healthEndV": 8.6,
+  "healthEndJ": 6.8,
+  "lostV": 18.3,
+  "lostJ": 14,
+  "diedAt": {
+   "rhahk-zor": 15,
+   "johnson": 1
+  }
+ },
+ {
+  "mode": "honest-b1",
+  "deck": "armor8",
+  "strategy": "planner",
+  "runs": 300,
+  "win": 0.87,
+  "timeouts": 0,
+  "battlesPerRun": 3.3,
+  "healthEndV": 8.1,
+  "healthEndJ": 7,
+  "lostV": 18.8,
+  "lostJ": 14.7,
+  "diedAt": {
+   "rhahk-zor": 34,
+   "watchman": 6
+  }
+ },
+ {
+  "mode": "honest-b1",
+  "deck": "armor6",
+  "strategy": "planner",
+  "runs": 300,
+  "win": 0.83,
+  "timeouts": 0,
+  "battlesPerRun": 3.3,
+  "healthEndV": 8.4,
+  "healthEndJ": 6.1,
+  "lostV": 18.4,
+  "lostJ": 16.1,
+  "diedAt": {
+   "rhahk-zor": 43,
+   "watchman": 6,
+   "overseer": 1
+  }
+ },
+ {
+  "mode": "honest-b2",
+  "deck": "armor10",
+  "strategy": "planner",
+  "runs": 300,
+  "win": 0.97,
+  "timeouts": 0,
+  "battlesPerRun": 3.3,
+  "healthEndV": 10.3,
+  "healthEndJ": 7.8,
+  "lostV": 15.8,
+  "lostJ": 13.5,
+  "diedAt": {
+   "rhahk-zor": 8
+  }
+ },
+ {
+  "mode": "honest-b2",
+  "deck": "armor8",
+  "strategy": "planner",
+  "runs": 300,
+  "win": 0.93,
+  "timeouts": 0,
+  "battlesPerRun": 3.3,
+  "healthEndV": 9.1,
+  "healthEndJ": 7.8,
+  "lostV": 17.2,
+  "lostJ": 13.8,
+  "diedAt": {
+   "rhahk-zor": 18,
+   "watchman": 3
+  }
+ },
+ {
+  "mode": "honest-b2",
+  "deck": "armor6",
+  "strategy": "planner",
+  "runs": 300,
+  "win": 0.93,
+  "timeouts": 0,
+  "battlesPerRun": 3.3,
+  "healthEndV": 8.9,
+  "healthEndJ": 7.2,
+  "lostV": 17.4,
+  "lostJ": 14.6,
+  "diedAt": {
+   "rhahk-zor": 16,
+   "watchman": 4
+  }
+ },
+ {
+  "mode": "honest-a08",
+  "deck": "armor10",
+  "strategy": "planner-careful",
+  "runs": 300,
+  "win": 1,
+  "timeouts": 0,
+  "battlesPerRun": 3.5,
+  "healthEndV": 16.8,
+  "healthEndJ": 14.7,
+  "lostV": 8.7,
+  "lostJ": 3.2,
+  "diedAt": {}
+ },
+ {
+  "mode": "honest-b1",
+  "deck": "armor10",
+  "strategy": "planner-careful",
+  "runs": 300,
+  "win": 0.98,
+  "timeouts": 0,
+  "battlesPerRun": 3.4,
+  "healthEndV": 13,
+  "healthEndJ": 9.4,
+  "lostV": 12.6,
+  "lostJ": 10.4,
+  "diedAt": {
+   "watchman": 2,
+   "rhahk-zor": 4
+  }
+ },
+ {
+  "mode": "honest-b1",
+  "deck": "armor8",
+  "strategy": "planner-careful",
+  "runs": 300,
+  "win": 0.98,
+  "timeouts": 0,
+  "battlesPerRun": 3.4,
+  "healthEndV": 11.4,
+  "healthEndJ": 9,
+  "lostV": 14.6,
+  "lostJ": 11.6,
+  "diedAt": {
+   "watchman": 2,
+   "rhahk-zor": 5
+  }
+ },
+ {
+  "mode": "honest-b1",
+  "deck": "armor6",
+  "strategy": "planner-careful",
+  "runs": 300,
+  "win": 0.93,
+  "timeouts": 0,
+  "battlesPerRun": 3.3,
+  "healthEndV": 10.5,
+  "healthEndJ": 7.2,
+  "lostV": 15.2,
+  "lostJ": 14.6,
+  "diedAt": {
+   "rhahk-zor": 10,
+   "watchman": 6,
+   "overseer": 5
+  }
+ },
+ {
+  "mode": "honest-b2",
+  "deck": "armor10",
+  "strategy": "planner-careful",
+  "runs": 300,
+  "win": 1,
+  "timeouts": 0,
+  "battlesPerRun": 3.5,
+  "healthEndV": 15.6,
+  "healthEndJ": 11.5,
+  "lostV": 9,
+  "lostJ": 8.3,
+  "diedAt": {}
+ },
+ {
+  "mode": "honest-b2",
+  "deck": "armor8",
+  "strategy": "planner-careful",
+  "runs": 300,
+  "win": 0.99,
+  "timeouts": 0,
+  "battlesPerRun": 3.4,
+  "healthEndV": 14.1,
+  "healthEndJ": 11.2,
+  "lostV": 11,
+  "lostJ": 9.3,
+  "diedAt": {
+   "rhahk-zor": 2
+  }
+ },
+ {
+  "mode": "honest-b2",
+  "deck": "armor6",
+  "strategy": "planner-careful",
+  "runs": 300,
+  "win": 0.97,
+  "timeouts": 0,
+  "battlesPerRun": 3.4,
+  "healthEndV": 12.6,
+  "healthEndJ": 9.8,
+  "lostV": 12.4,
+  "lostJ": 11.9,
+  "diedAt": {
+   "rhahk-zor": 3,
+   "watchman": 5
+  }
+ },
+ {
+  "mode": "honest-a08",
+  "deck": "armor10",
+  "strategy": "defensive",
+  "runs": 300,
+  "win": 1,
+  "timeouts": 0,
+  "battlesPerRun": 3.5,
+  "healthEndV": 18.4,
+  "healthEndJ": 15.6,
+  "lostV": 7,
+  "lostJ": 2.3,
+  "diedAt": {}
+ },
+ {
+  "mode": "honest-b1",
+  "deck": "armor10",
+  "strategy": "defensive",
+  "runs": 300,
+  "win": 0.81,
+  "timeouts": 0,
+  "battlesPerRun": 3.3,
+  "healthEndV": 9,
+  "healthEndJ": 6.6,
+  "lostV": 16.6,
+  "lostJ": 14.2,
+  "diedAt": {
+   "rhahk-zor": 49,
+   "watchman": 5,
+   "johnson": 4
+  }
+ },
+ {
+  "mode": "honest-b1",
+  "deck": "armor8",
+  "strategy": "defensive",
+  "runs": 300,
+  "win": 0.68,
+  "timeouts": 0,
+  "battlesPerRun": 3.3,
+  "healthEndV": 8.9,
+  "healthEndJ": 6.1,
+  "lostV": 18.4,
+  "lostJ": 15.1,
+  "diedAt": {
+   "rhahk-zor": 86,
+   "watchman": 7,
+   "overseer": 1,
+   "johnson": 2
+  }
+ },
+ {
+  "mode": "honest-b1",
+  "deck": "armor6",
+  "strategy": "defensive",
+  "runs": 300,
+  "win": 0.62,
+  "timeouts": 0,
+  "battlesPerRun": 3.3,
+  "healthEndV": 7.6,
+  "healthEndJ": 6.5,
+  "lostV": 19.9,
+  "lostJ": 15.6,
+  "diedAt": {
+   "rhahk-zor": 106,
+   "watchman": 3,
+   "johnson": 4,
+   "overseer": 2
+  }
+ },
+ {
+  "mode": "honest-b2",
+  "deck": "armor10",
+  "strategy": "defensive",
+  "runs": 300,
+  "win": 0.85,
+  "timeouts": 0,
+  "battlesPerRun": 3.4,
+  "healthEndV": 10.5,
+  "healthEndJ": 6.7,
+  "lostV": 14.8,
+  "lostJ": 14,
+  "diedAt": {
+   "rhahk-zor": 40,
+   "watchman": 3,
+   "johnson": 2
+  }
+ },
+ {
+  "mode": "honest-b2",
+  "deck": "armor8",
+  "strategy": "defensive",
+  "runs": 300,
+  "win": 0.76,
+  "timeouts": 0,
+  "battlesPerRun": 3.3,
+  "healthEndV": 9.2,
+  "healthEndJ": 7.5,
+  "lostV": 17.6,
+  "lostJ": 13.9,
+  "diedAt": {
+   "rhahk-zor": 64,
+   "watchman": 6,
+   "johnson": 2
+  }
+ },
+ {
+  "mode": "honest-b2",
+  "deck": "armor6",
+  "strategy": "defensive",
+  "runs": 300,
+  "win": 0.69,
+  "timeouts": 0,
+  "battlesPerRun": 3.3,
+  "healthEndV": 7.9,
+  "healthEndJ": 6.9,
+  "lostV": 19.2,
+  "lostJ": 15,
+  "diedAt": {
+   "rhahk-zor": 85,
+   "watchman": 3,
+   "johnson": 3,
+   "overseer": 2
+  }
+ },
+ {
+  "mode": "honest-a08",
+  "deck": "armor10",
+  "strategy": "balanced",
+  "runs": 300,
+  "win": 1,
+  "timeouts": 0,
+  "battlesPerRun": 3.4,
+  "healthEndV": 14,
+  "healthEndJ": 10.3,
+  "lostV": 12.5,
+  "lostJ": 8.3,
+  "diedAt": {
+   "rhahk-zor": 1
+  }
+ },
+ {
+  "mode": "honest-b1",
+  "deck": "armor10",
+  "strategy": "balanced",
+  "runs": 300,
+  "win": 0.7,
+  "timeouts": 0,
+  "battlesPerRun": 3.2,
+  "healthEndV": 7.2,
+  "healthEndJ": 5.8,
+  "lostV": 19.7,
+  "lostJ": 16,
+  "diedAt": {
+   "rhahk-zor": 82,
+   "watchman": 3,
+   "johnson": 4
+  }
+ },
+ {
+  "mode": "honest-b1",
+  "deck": "armor8",
+  "strategy": "balanced",
+  "runs": 300,
+  "win": 0.64,
+  "timeouts": 0,
+  "battlesPerRun": 3.3,
+  "healthEndV": 7.2,
+  "healthEndJ": 5.3,
+  "lostV": 21.1,
+  "lostJ": 15.9,
+  "diedAt": {
+   "rhahk-zor": 106,
+   "watchman": 1
+  }
+ },
+ {
+  "mode": "honest-b1",
+  "deck": "armor6",
+  "strategy": "balanced",
+  "runs": 300,
+  "win": 0.55,
+  "timeouts": 0,
+  "battlesPerRun": 3.2,
+  "healthEndV": 6.4,
+  "healthEndJ": 5.6,
+  "lostV": 21.7,
+  "lostJ": 15.7,
+  "diedAt": {
+   "rhahk-zor": 121,
+   "johnson": 4,
+   "overseer": 7,
+   "watchman": 2,
+   "digger": 1
+  }
+ },
+ {
+  "mode": "honest-b2",
+  "deck": "armor10",
+  "strategy": "balanced",
+  "runs": 300,
+  "win": 0.72,
+  "timeouts": 0,
+  "battlesPerRun": 3.3,
+  "healthEndV": 7.3,
+  "healthEndJ": 5.9,
+  "lostV": 19.6,
+  "lostJ": 16,
+  "diedAt": {
+   "rhahk-zor": 80,
+   "watchman": 2,
+   "johnson": 2
+  }
+ },
+ {
+  "mode": "honest-b2",
+  "deck": "armor8",
+  "strategy": "balanced",
+  "runs": 300,
+  "win": 0.65,
+  "timeouts": 0,
+  "battlesPerRun": 3.3,
+  "healthEndV": 7.1,
+  "healthEndJ": 6.1,
+  "lostV": 20.8,
+  "lostJ": 15.7,
+  "diedAt": {
+   "rhahk-zor": 103,
+   "watchman": 1
+  }
+ },
+ {
+  "mode": "honest-b2",
+  "deck": "armor6",
+  "strategy": "balanced",
+  "runs": 300,
+  "win": 0.56,
+  "timeouts": 0,
+  "battlesPerRun": 3.2,
+  "healthEndV": 6.2,
+  "healthEndJ": 5.8,
+  "lostV": 21.7,
+  "lostJ": 15.7,
+  "diedAt": {
+   "rhahk-zor": 119,
+   "johnson": 3,
+   "overseer": 6,
+   "watchman": 3,
+   "digger": 1
+  }
+ }
+]
