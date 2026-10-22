@@ -167,6 +167,29 @@ try {
     console.log('frost written', rows.length)
   }
 
+  if (phase === 'frost-use' || phase === 'all') {
+    // What a player actually does with Frostbite in B2: keeps it (applies and does not spend) or spends it on Ice Breaker in the same turn.
+    // Counted separately for turns when a blow lands and quiet turns, for the two planners. A one-turn planner cannot keep a status for the
+    // next turn's blow, so on quiet turns it always spends; that is a limit of the player, not of the rule (see the report).
+    const rows = []
+    const eco = economy.honestEconomies['honest-b2']
+    const deck = decks.honestDeck('armor8', true)
+    for (const strategy of ['planner', 'planner-careful']) {
+      for (const enemy of lab.sectorEnemyIds) {
+        const count = { strikeHold: 0, strikeSpend: 0, quietHold: 0, quietSpend: 0 }
+        for (let seed = 1; seed <= seeds; seed += 1) {
+          for (const turn of lab.fightEnemy(eco, enemy, deck, strategy, seed).log) {
+            if (!turn.frostApplied) continue
+            count[(turn.strike ? 'strike' : 'quiet') + (turn.frostBurst ? 'Spend' : 'Hold')] += 1
+          }
+        }
+        rows.push({ strategy, enemy: enemyName(enemy), ...count, strikeKept: r(share(count.strikeHold, count.strikeHold + count.strikeSpend)) })
+      }
+    }
+    await write('frost-use', rows)
+    console.log('frost-use written', rows.length)
+  }
+
   if (phase === 'runs' || phase === 'all') {
     // Whole Sector I runs, same seeds in every mode, same policy for route, rooms, rewards and rests.
     const rows = []

@@ -7,6 +7,7 @@ const args = process.argv.slice(2)
 const dir = args.includes('--dir') ? args[args.indexOf('--dir') + 1] : 'docs/data/honest-turn-b'
 const inject = args.includes('--inject') ? args[args.indexOf('--inject') + 1] : null
 const read = name => existsSync(`${dir}/${name}.json`) ? JSON.parse(readFileSync(`${dir}/${name}.json`, 'utf8')) : null
+const frostUse = read('frost-use')
 const enemies = read('enemies'), profiles = read('enemy-profiles'), phases = read('boss-phases'), hands = read('hands'), frost = read('frost'), runs = read('runs'), manifest = read('manifest')
 const pct = value => Math.round(value * 100) + '%'
 const table = (header, rows) => [`| ${header.join(' | ')} |`, `|${header.map(() => '---').join('|')}|`, ...rows.map(row => `| ${row.join(' | ')} |`)].join('\n')
@@ -58,6 +59,10 @@ if (hands) {
 if (frost) {
   sections.frost = table(['Колода', 'Удар', 'рук с хваткой', 'хватка снижает потерю', 'на сколько', 'рук с обеими картами', 'настоящий выбор', 'раскол всегда лучше', 'держать всегда лучше', 'цена раскола, здоровья'],
     frost.filter(item => item.deck === 'armor8').map(item => [item.deck, item.threat, item.handsWithGrip, pct(item.frostCutsLoss), item.meanCut, item.handsWithBoth, pct(item.realChoice), pct(item.shatterAlwaysBest), pct(item.holdAlwaysBest), item.extraLossToShatter]))
+}
+if (frostUse) {
+  sections['frost-use'] = table(['Игрок', 'Враг', 'ход удара: Обморожение оставлено', 'ход удара: потрачено на Раскол', 'доля «оставлено»', 'тихий ход: оставлено', 'тихий ход: потрачено'],
+    frostUse.map(item => [item.strategy, enemyRu[item.enemy], item.strikeHold, item.strikeSpend, pct(item.strikeKept), item.quietHold, item.quietSpend]))
 }
 if (runs) {
   const row = item => [modeName[item.mode], item.deck, item.strategy, item.runs, pct(item.win), item.battlesPerRun, `${item.healthEndV} / ${item.healthEndJ}`, `${item.lostV} / ${item.lostJ}`, Object.entries(item.diedAt).map(([k, v]) => `${enemyRu[k] ?? k}:${v}`).join(' ')]
