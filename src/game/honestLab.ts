@@ -217,7 +217,7 @@ export const threatSuite: readonly ThreatSpec[] = [
   { id: 'heavy-mage', label: 'Удар 12 по Джайне', action: strike('Удар', 12, 'mage') },
   { id: 'group', label: 'Удар 8 по обоим', action: { kind: 'attack_all', name: 'Удар по обоим', damage: 8, primaryTarget: 'warrior' } },
   { id: 'pierce-mage', label: 'Удар 10 по Джайне, пробивает 5 брони', action: strike('Бронебойный болт', 10, 'mage', { pierce: 5 }) },
-  { id: 'interruptible', label: 'Удар 13 по Вариану; сорвать: 14 урона', action: strike('Удар забойщика', 13, 'warrior', { interrupt: 14 }) },
+  { id: 'interruptible', label: 'Удар 13 по Вариану; сорвать: 20 урона', action: strike('Удар забойщика', 13, 'warrior', { interrupt: 20 }) },
   { id: 'group-pierce', label: 'Удар 7 по обоим, пробивает 3 брони', action: { kind: 'attack_all', name: 'Дрожь', damage: 7, primaryTarget: 'mage', pierce: 3 } },
   { id: 'exposed-mage', label: 'Удар 8 по Джайне, она Уязвима', action: strike('Удар', 8, 'mage'), exposed: 'mage' },
 ]
