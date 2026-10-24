@@ -1,5 +1,7 @@
 # Dungeon Map Foundation v0.1
 
+> **Историческая справка (аудит v1, 24.10.2026).** Документ написан до решения X04 и описывает тогдашние правила, числа и интерфейс; они могут не совпадать с игрой. Действующие правила — B2 Long: [default-b2-long-v1.md](design/default-b2-long-v1.md). Прежние модели остаются контролем Balance Lab и эталонов.
+
 ## Scope
 
 The playable campaign is now a deterministic route through the existing encounter package. A run has six choice layers with three nodes each, followed by one guaranteed final encounter. The first layer offers three normal fights; later layers introduce rests and elites. This is a foundation for route choices, not a new event, shop, artifact, narrative, or encounter-content system.

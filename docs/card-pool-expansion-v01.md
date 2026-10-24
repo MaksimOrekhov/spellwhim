@@ -1,5 +1,7 @@
 # Card Pool Expansion v0.1 — review results
 
+> **Историческая справка (аудит v1, 24.10.2026).** Документ написан до решения X04 и описывает тогдашние правила, числа и интерфейс; они могут не совпадать с игрой. Действующие правила — B2 Long: [default-b2-long-v1.md](design/default-b2-long-v1.md). Прежние модели остаются контролем Balance Lab и эталонов.
+
 ## Scope and art direction
 
 The eight new abilities are reward-only; the 18-card starting deck is unchanged. Ability illustrations follow **class/mechanic-driven action on an adventure-neutral background**. Enemy portraits, events, bosses, and scene art remain tied to their encounter locations. The eight generated ability images are review drafts and are intentionally not mapped in `src/ui/cardArt.ts`; the card UI shows its art-pending fallback until individual art approval.
