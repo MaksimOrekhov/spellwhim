@@ -128,10 +128,9 @@ describe('the start screen', () => {
     expect(html).toContain('Скачать копию')
     expect(html).not.toMatch(forbidden)
   })
-  it('offers the way back from a run in progress, and only the retry for an unreadable save', async () => {
+  it('offers the way back from a run in progress, and for an unreadable save a retry, a copy and a new run', async () => {
     expect(await render({ canReturn: true })).toContain('Вернуться в поход')
     const broken = await render({ unreadable: true, notice: 'Не удалось прочитать сохранение.' })
-    expect(broken).toContain('Повторить загрузку')
-    expect(broken).not.toContain('Новый поход')
+    for (const label of ['Повторить загрузку', 'Скачать копию', 'Новый поход']) expect(broken).toContain(label)
   })
 })

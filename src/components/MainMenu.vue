@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import varianPortrait from '../assets/art/varian-krea.webp'
 import jainaPortrait from '../assets/art/jaina-krea.webp'
 
 /**
  * The one start screen. It offers a saved run, a way back into the run being played, and a new run; there are no rules to choose.
- * Starting a new run while another one could still be continued asks once, so a saved run is never replaced by a stray click.
+ * A new run overwrites the save slot, so whenever something is in it (a run that can be continued, a finished one, a record that cannot be read
+ * or the run being played now) the first click only asks, and the second confirms. An unreadable save can be copied out before that.
  */
 const props = defineProps<{
   /** A run waiting in the save slot: `active` can be continued, `finished` only shows its result. */
@@ -13,17 +14,24 @@ const props = defineProps<{
   /** The menu was opened from a run in progress (the map, a result), which can be returned to. */
   canReturn: boolean
   notice: string
-  /** The save could not be read; nothing is offered but another try and a copy. */
+  /** The slot holds a record that could not be read or is not compatible: it can be retried, copied, or knowingly overwritten by a new run. */
   unreadable: boolean
 }>()
 const emit = defineEmits<{ continue: []; return: []; newRun: []; download: []; retry: [] }>()
 const confirming = ref(false)
-const replaces = () => props.canReturn || props.saved?.active === true
+const replaces = computed(() => props.canReturn || props.saved !== null || props.unreadable)
+const warning = computed(() => props.unreadable
+  ? 'Сохранение повреждено или не подходит этой версии игры. Новый поход перезапишет его, и вернуть старые данные будет нельзя. Сначала можно скачать копию.'
+  : props.canReturn ? 'Новый поход заменит текущий.'
+  : props.saved?.active ? 'Новый поход заменит сохранённый, который ещё можно продолжить.'
+  : 'Новый поход заменит сохранённый завершённый поход.')
 function startNew() {
-  if (replaces() && !confirming.value) { confirming.value = true; return }
+  if (replaces.value && !confirming.value) { confirming.value = true; return }
   confirming.value = false
   emit('newRun')
 }
+// Whatever the slot holds has changed (another read, a run returned to): an old question is no longer the question.
+watch([() => props.saved?.active ?? null, () => props.canReturn, () => props.unreadable], () => { confirming.value = false })
 </script>
 
 <template>
@@ -39,12 +47,12 @@ function startNew() {
       <div class="menu-actions">
         <button v-if="canReturn" class="game-button" @click="emit('return')">Вернуться в поход</button>
         <button v-else-if="saved" class="game-button" @click="emit('continue')">{{ saved.active ? 'Продолжить поход' : 'Посмотреть итог' }}</button>
-        <button v-if="!unreadable" class="game-button" :class="{ 'is-warning': confirming }" @click="startNew">{{ confirming ? 'Да, начать новый поход' : 'Новый поход' }}</button>
-        <button v-if="confirming" class="game-button" @click="confirming = false">Отмена</button>
         <button v-if="unreadable" class="game-button" @click="emit('retry')">Повторить загрузку</button>
+        <button class="game-button" :class="{ 'is-warning': confirming }" @click="startNew">{{ confirming ? (unreadable ? 'Да, перезаписать сохранение' : 'Да, начать новый поход') : 'Новый поход' }}</button>
+        <button v-if="confirming" class="game-button" @click="confirming = false">Отмена</button>
         <button v-if="saved || unreadable" class="game-button" @click="emit('download')">Скачать копию</button>
       </div>
-      <p v-if="confirming" class="menu-note" role="alert">Новый поход заменит {{ canReturn ? 'текущий' : 'сохранённый' }}.</p>
+      <p v-if="confirming" class="menu-note" role="alert">{{ warning }}</p>
     </section>
   </main>
 </template>
