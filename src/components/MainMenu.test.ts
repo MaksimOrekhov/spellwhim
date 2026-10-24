@@ -30,7 +30,7 @@ const { createApp } = createRenderer<Node, Node>({
 const textOf = (item: Node): string => item.text ?? item.children.map(textOf).join('')
 const all = (item: Node): Node[] => [item, ...item.children.flatMap(all)]
 
-interface MenuState { saved: { active: boolean } | null; canReturn: boolean; notice: string; unreadable: boolean }
+interface MenuState { saved: { active: boolean } | null; canReturn: boolean; finished?: boolean; notice: string; unreadable: boolean }
 function mount(initial: Partial<MenuState> = {}) {
   const state = reactive<MenuState>({ saved: null, canReturn: false, notice: '', unreadable: false, ...initial })
   const events: string[] = []
@@ -90,6 +90,17 @@ describe('new run from the main menu', () => {
     await menu.click('Да, начать новый поход')
     await menu.click('Вернуться в поход')
     expect(menu.events).toEqual(['newRun', 'return'])
+  })
+
+  it('opened from the summary of a finished run, leads back to that summary and calls it finished', async () => {
+    const menu = mount({ canReturn: true, finished: true })
+    expect(menu.labels()).toEqual(['Вернуться к итогам похода', 'Новый поход'])
+    await menu.click('Новый поход')
+    expect(menu.alert()).toContain('заменит завершённый')
+    expect(menu.alert()).not.toContain('текущий')
+    await menu.click('Отмена')
+    await menu.click('Вернуться к итогам похода')
+    expect(menu.events).toEqual(['return'])
   })
 
   it('lets an unreadable save be retried, copied out, or overwritten after an explicit warning', async () => {

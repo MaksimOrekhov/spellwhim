@@ -35,7 +35,7 @@ describe('B1 threat texts', () => {
     const interrupt = intentOf(battleScene('b-interrupt'))
     expect(interrupt).toMatchObject({ kind: 'attack', interrupt: { need: 20, dealt: 12, broken: false } })
     const text = [intentSpoken(interrupt, names), ...intentTooltip(interrupt, names)].join('\n')
-    expect(text).toContain('Можно сорвать: нанесите врагу 20 урона за ход (сейчас 12)')
+    expect(text).toContain('Можно сорвать: отнимите у врага 20 здоровья за ход (сейчас 12). Урон по броне врага не в счёт.')
 
     const pierce = intentOf(battleScene('b-pierce'))
     expect(traitLines(pierce, names).join(' ')).toContain('игнорирует 6 брони')
