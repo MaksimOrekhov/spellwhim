@@ -1,8 +1,8 @@
 <script setup lang="ts">
-// The artifact carried by a hero as a brass medallion with a tooltip. Charges and notices stay in the engine; this only reads them.
+// The artifact carried by a hero, as a brass StatChip with a tooltip. Charges and notices stay in the engine; this only reads them.
 import { computed } from 'vue'
 import { Bell, Crosshair, Gauge, Link2, Shield } from '@lucide/vue'
-import GameTooltip from './GameTooltip.vue'
+import StatChip from './StatChip.vue'
 import { artifactDefinition } from '../game/artifacts'
 import type { BattleArtifactState } from '../game/types'
 
@@ -17,16 +17,8 @@ const perTurn = computed(() => props.artifact.definitionId === 'tension-spool' |
 </script>
 
 <template>
-  <GameTooltip :label="details.name" class="artifact" :class="{ 'is-spent': artifact.usedThisBattle }">
-    <button class="artifact-chip" :aria-label="details.name + '. ' + details.description + ' Статус: ' + status">
-      <component :is="icon" :size="22" :stroke-width="2.1" aria-hidden="true" />
-    </button>
+  <StatChip tone="brass" :label="details.name" :aria="details.name + '. ' + details.description + ' Статус: ' + status" :polarity="artifact.usedThisBattle ? undefined : 'positive'" :spent="artifact.usedThisBattle">
+    <component :is="icon" :stroke-width="2.1" aria-hidden="true" />
     <template #content><p>{{ details.description }}</p><p>Статус: {{ status }}. {{ perTurn ? 'Срабатывает не чаще раза за ход.' : 'Заряд восстанавливается перед следующим боем.' }}</p></template>
-  </GameTooltip>
+  </StatChip>
 </template>
-
-<style scoped>
-.artifact-chip{display:grid;place-items:center;width:clamp(30px,4.6vh,40px);height:clamp(30px,4.6vh,40px);border:var(--border-brass);border-radius:var(--shape-medallion);background:var(--mat-brass);color:var(--parch-ink);box-shadow:var(--shadow-2),var(--bevel-top)}
-.is-spent .artifact-chip{filter:saturate(.45);opacity:.78}
-.artifact-chip:focus-visible{outline:var(--focus-ring);outline-offset:2px}
-</style>

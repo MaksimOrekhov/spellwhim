@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, shallowRef, useTemplateRef, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, useTemplateRef, watch } from 'vue'
 import HandCard from './HandCard.vue'
 import CardNotes from './CardNotes.vue'
 import GameTooltip from './GameTooltip.vue'
@@ -7,7 +7,8 @@ import type { HandCardView } from '../composables/useBattle'
 import type { HeroId } from '../game/types'
 import type { BattlePhase } from '../composables/useBattleAnimation'
 import type { CardBlock } from '../ui/cardDisplay'
-import { handMode, handOrder, TILE_EM_HEIGHT, TILE_EM_WIDTH, zoomFactor, zoomShift } from '../ui/handLayout'
+import { handMode, handOrder, notesPlacement, TILE_EM_HEIGHT, TILE_EM_WIDTH, zoomFactor, zoomShift } from '../ui/handLayout'
+import type { Box } from '../ui/handLayout'
 import { useRules } from '../ui/rulesInfo'
 
 const props = defineProps<{ cards: HandCardView[]; outgoing: HandCardView | null; outgoingIndex: number; drawCount: number; discardCount: number; exhaustedCount: number; phase: BattlePhase; mana: number; maxMana: number; nextMana?: number; nextDraw?: number; drawBoostFrom?: number; drawBoostAmount?: number; idleArmor?: HeroId[] }>()
@@ -86,19 +87,37 @@ function holderStyle(index: number) {
   const tilt = overlapped.value ? 0.6 : 0
   return { '--rot': (offset * tilt).toFixed(2) + 'deg', '--drop': (offset * offset * (overlapped.value ? 0.02 : 0)).toFixed(3) + 'em', '--shift': (index === activeIndex.value ? shiftFor(index) : 0).toFixed(1) + 'px', '--zoom': zoom.value.toFixed(3), '--lift': LIFT_EM + 'em' }
 }
+// The readouts that must stay visible while a card is open: health plates, the intent banner, status trays. The scroll may rise only
+// until it would cover one of them in its own columns (ui/handLayout.ts, notesPlacement), and folds its text when that leaves too little room.
+const critical = shallowRef<Box[]>([])
+function collectCritical() {
+  critical.value = [...document.querySelectorAll('[data-battle-scene] [data-critical]')].map(element => { const rect = element.getBoundingClientRect(); return { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom } })
+}
+const notesElement = useTemplateRef<HTMLElement>('notesElement')
+const fold = ref(0)
 const notesStyle = computed(() => {
   const g = geometry.value
   const index = activeIndex.value
   if (index < 0) return {}
   const zoomed = cardWidth.value * zoom.value
   const left = g.left + slotX(index) + shiftFor(index) - (zoomed - slotWidth.value) / 2
-  const right = left + zoomed
   const bottom = Math.max(8, window.innerHeight - g.bottom + LIFT_EM * g.em)
-  const base = { bottom: bottom + 'px', maxHeight: `calc(100vh - ${bottom + 16}px)`, fontSize: `${Math.max(13, Math.min(16, g.em * 1.05))}px` }
-  return g.viewport - right - 14 >= NOTES_WIDTH ? { ...base, left: right + 14 + 'px' } : { ...base, right: g.viewport - left + 14 + 'px' }
+  const place = notesPlacement({ left, right: left + zoomed, top: 0, bottom: 0 }, { width: g.viewport, height: window.innerHeight }, bottom, critical.value, NOTES_WIDTH)
+  const size = fold.value > 1 ? 11 : Math.max(13, Math.min(16, g.em * 1.05))
+  return { bottom: bottom + 'px', maxHeight: place.maxHeight + 'px', fontSize: size + 'px', [place.side === 'right' ? 'left' : 'right']: place.offset + 'px' }
 })
+// Unfolded text that does not fit its room first loses the keyword explanations, then shrinks a little: the scroll always fits whole.
+async function fit() {
+  for (let step = 1; step <= 2; step += 1) {
+    const element = notesElement.value
+    if (!element || element.scrollHeight <= element.clientHeight + 1) return
+    fold.value = step
+    await nextTick()
+  }
+}
 // Little height above the hand (short screens): fold the notes instead of letting them cover the heroes.
-const briefNotes = computed(() => geometry.value.bottom + LIFT_EM * geometry.value.em - geometry.value.dockTop < 340)
+const briefNotes = computed(() => fold.value > 0 || geometry.value.bottom + LIFT_EM * geometry.value.em - geometry.value.dockTop < 340)
+watch(activeIndex, async index => { fold.value = 0; if (index < 0) return; collectCritical(); await nextTick(); await fit() })
 function enter(item: HandCardView) { if (props.outgoing?.instanceId !== item.instanceId) active.value = item.instanceId }
 function leave(item: HandCardView) { if (active.value === item.instanceId) active.value = null }
 function focusOut(item: HandCardView, event: FocusEvent) {
@@ -112,12 +131,11 @@ watch(() => displayed.value.length, () => { if (activeIndex.value < 0) active.va
 </script>
 <template>
   <footer class="battle-dock">
-    <aside class="hand-resources">
-      <div class="mana-pool" aria-label="Мана отряда"><span>Мана</span><strong>{{ mana }}<small>/{{ maxMana }}</small></strong><div class="mana-pips" aria-hidden="true"><i v-for="pip in maxMana" :key="pip" :class="{ 'is-spent': pip > mana }"></i></div><em v-if="manaHint" class="mana-next">{{ manaHint }}</em></div>
-      <GameTooltip label="Общая колода"><button class="deck-counts" aria-label="Колода и сброс"><span>▤ Колода <b>{{ drawCount }}</b></span><span>↻ Сброс <b>{{ discardCount }}</b></span></button><template #content><p>В начале боя в руке {{ rules.openingHand }} карт. {{ drawHint }}</p><p>Максимум руки — 10. Карты сверх лимита остаются в колоде. Выбывших до конца боя: {{ exhaustedCount }}.</p></template></GameTooltip>
-    </aside>
     <section class="hand-area" aria-label="Карты в руке">
-      <p class="hand-hint">{{ displayed.length }} / 10 карт · наведите для полного описания · клавиши 1–9, 0</p>
+      <div class="hand-bar">
+        <GameTooltip label="Общая колода"><button class="deck-counts" aria-label="Колода и сброс"><span>▤ Колода <b>{{ drawCount }}</b></span><span>↻ Сброс <b>{{ discardCount }}</b></span></button><template #content><p>В начале боя в руке {{ rules.openingHand }} карт. {{ drawHint }}</p><p>Максимум руки — 10. Карты сверх лимита остаются в колоде. Выбывших до конца боя: {{ exhaustedCount }}.</p></template></GameTooltip>
+        <p class="hand-hint">{{ displayed.length }} / 10 карт · наведите для полного описания · клавиши 1–9, 0</p>
+      </div>
       <div ref="track" class="hand-track" :class="{ 'is-overlapped': overlapped, 'is-compact': compact, 'is-burning': rules.discardsHand && phase === 'enemy' }">
         <TransitionGroup name="deal">
           <div v-for="(item, index) in displayed" :key="item.instanceId" class="slot" :class="{ 'is-active': index === activeIndex }" :style="slotStyle(index)" @mouseenter="enter(item)" @mouseleave="leave(item)" @focusin="enter(item)" @focusout="focusOut(item, $event)">
@@ -129,10 +147,10 @@ watch(() => displayed.value.length, () => { if (activeIndex.value < 0) active.va
         <p v-if="!displayed.length" class="empty-hand">Рука пуста.<br />Завершите ход, чтобы добрать карты.</p>
       </div>
     </section>
-    <aside class="turn-controls"><button class="game-button end-turn" :disabled="phase !== 'player'" @click="emit('endTurn')"><span>{{ phase === 'enemy' ? 'Ход врага' : phase === 'card' ? 'Действие…' : 'Завершить ход' }}</span><kbd>Enter</kbd></button><small>{{ phase === 'player' ? (rules.discardsHand && displayed.length ? 'Затем ход противника. Несыгранные карты уйдут в сброс: ' + displayed.length : 'Затем ход противника') : 'Дождитесь окончания действия' }}</small></aside>
+    <aside class="turn-controls"><div class="mana-pool" aria-label="Мана отряда"><span>Мана</span><strong>{{ mana }}<small>/{{ maxMana }}</small></strong><div class="mana-pips" aria-hidden="true"><i v-for="pip in maxMana" :key="pip" :class="{ 'is-spent': pip > mana }"></i></div><em v-if="manaHint" class="mana-next">{{ manaHint }}</em></div><button class="game-button end-turn" :disabled="phase !== 'player'" @click="emit('endTurn')"><span>{{ phase === 'enemy' ? 'Ход врага' : phase === 'card' ? 'Действие…' : 'Завершить ход' }}</span><kbd>Enter</kbd></button><small>{{ phase === 'player' ? (rules.discardsHand && displayed.length ? 'Затем ход противника. Несыгранные карты уйдут в сброс: ' + displayed.length : 'Затем ход противника') : 'Дождитесь окончания действия' }}</small></aside>
     <Teleport to="body">
       <Transition name="notes">
-        <div v-if="activeItem" class="card-notes-pop" :style="notesStyle" aria-hidden="true">
+        <div v-if="activeItem" ref="notesElement" class="card-notes-pop" :style="notesStyle" aria-hidden="true">
           <CardNotes :brief="briefNotes" :card="activeItem.card" :preview="activeItem.preview" :block="block(activeItem)" :hotkey="String(activeIndex === 9 ? 0 : activeIndex + 1)" :idle-armor="idleArmor" />
         </div>
       </Transition>
@@ -140,9 +158,10 @@ watch(() => displayed.value.length, () => { if (activeIndex.value < 0) active.va
   </footer>
 </template>
 <style scoped>
-.battle-dock{position:absolute;z-index:10;left:0;right:0;bottom:0;height:var(--hand-height);display:grid;grid-template-columns:clamp(120px,8vw,160px) minmax(0,1fr) clamp(140px,9.5vw,190px);align-items:center;gap:clamp(8px,1.4vw,28px);padding:0 clamp(14px,2vw,40px);background:linear-gradient(#1c34332b,#172e30 28%);border-top:1px solid #c5b07b29}
-.hand-resources{display:grid;gap:18px;justify-items:start}.mana-pool{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;align-items:baseline;width:100%}.mana-pool>span{font-size:16px;color:#d7e7de}.mana-pool strong{font-size:36px;color:#bce9ed;line-height:1}.mana-pool small{font-size:18px;color:#b4c7c3;font-weight:400}.mana-pips{grid-column:1/-1;display:flex;gap:5px}.mana-next{grid-column:1/-1;font-style:normal;font-size:12px;color:#f3dfb3}.mana-pips i{height:12px;flex:0 1 22px;min-width:0;border-radius:var(--r-1);background:#7ac6cd;border:1px solid #b7edec}.mana-pips .is-spent{background:#38504f;border-color:#55716a}.deck-counts{display:grid;gap:7px;width:min(128px,100%);padding:0;border:0;background:none;color:#ced4bd;font-size:14px;text-align:left}.deck-counts span{display:flex;align-items:center;gap:5px}.deck-counts b{margin-left:auto;color:#f3dfb3}
-.hand-area{min-width:0;height:100%;position:relative;display:grid;grid-template-rows:27px minmax(0,1fr)}.hand-hint{margin:0;align-self:end;text-align:center;color:#e0d9c2;font-size:13px;white-space:nowrap}
+.battle-dock{position:absolute;z-index:10;left:0;right:0;bottom:0;height:var(--hand-height);display:grid;grid-template-columns:minmax(0,1fr) clamp(124px,9.5vw,190px);align-items:center;gap:clamp(8px,1.4vw,28px);padding:0 clamp(14px,2vw,40px);background:linear-gradient(#2a1a10e8,#1b110bf5 30%,#120a06);border-top:3px solid var(--brass-3);box-shadow:0 -14px 26px #0008,inset 0 2px 0 #f5d58b33}
+.mana-pool{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;align-items:baseline;width:100%;padding:clamp(6px,1vh,10px) clamp(8px,.9vw,14px);border-radius:var(--shape-chip);background:#0e1a1e99;border:1px solid #7ac6cd55}.mana-pool>span{font-size:15px;color:#d7e7de}.mana-pool strong{font-size:clamp(28px,3.4vh,40px);color:#bce9ed;line-height:1;justify-self:end}.mana-pool small{font-size:.5em;color:#b4c7c3;font-weight:400}.mana-pips{grid-column:1/-1;display:flex;gap:4px}.mana-next{grid-column:1/-1;font-style:normal;font-size:11px;line-height:1.25;color:#f3dfb3}.mana-pips i{height:11px;flex:0 1 22px;min-width:0;border-radius:var(--r-1);background:#7ac6cd;border:1px solid #b7edec}.mana-pips .is-spent{background:#38504f;border-color:#55716a}
+.deck-counts{display:flex;gap:14px;padding:0;border:0;background:none;color:#ced4bd;font-size:13px;text-align:left}.deck-counts span{display:flex;align-items:center;gap:5px}.deck-counts b{color:#f3dfb3}
+.hand-area{min-width:0;height:100%;position:relative;display:grid;grid-template-rows:27px minmax(0,1fr)}.hand-bar{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;min-width:0;padding:0 clamp(4px,1vw,14px)}.hand-hint{margin:0;color:#e0d9c2;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .hand-track{position:relative;align-self:end;height:calc(var(--card-height) + 4px);margin-bottom:18px;font-size:calc(var(--card-height) / 16.6)}
 .slot{position:absolute;left:0;bottom:0;height:16.6em;transition:transform var(--dur-base) var(--ease-out),opacity var(--dur-base)}
 .holder{width:100%;height:100%;transform-origin:50% 100%;transform:translateY(var(--drop,0)) rotate(var(--rot,0deg));transition:transform var(--dur-base) var(--ease-out)}
@@ -153,9 +172,9 @@ watch(() => displayed.value.length, () => { if (activeIndex.value < 0) active.va
 .deal-enter-from .holder{transform:translateY(5em) scale(.9)}
 .deal-leave-active{transition:opacity .12s}
 .empty-hand{position:absolute;inset:0;display:grid;place-content:center;margin:0;text-align:center;font-size:16px;line-height:1.5;color:#d1cfba}
-.turn-controls{display:grid;gap:12px;text-align:center;align-content:center}.end-turn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;min-height:74px;padding:12px 14px;font-size:17px;white-space:nowrap}.end-turn kbd{font:12px var(--font-ui);font-weight:400;opacity:.7}.turn-controls>small{font-size:12px;line-height:1.4;color:#c0caba}
-@media(min-width:1800px){.mana-pool strong{font-size:42px}.hand-hint{font-size:15px}.deck-counts{font-size:16px}.turn-controls>small{font-size:14px}.end-turn{font-size:20px}}
-@media(max-width:1100px){.end-turn{font-size:14px;padding:10px 8px}.deck-counts{font-size:13px}.mana-pool{gap:3px 7px}.mana-pool strong{font-size:30px}.mana-pool>span{font-size:14px}.hand-hint{font-size:12px}}
+.turn-controls{display:grid;gap:10px;text-align:center;align-content:center}.end-turn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;min-height:74px;padding:12px 14px;font-size:17px;white-space:nowrap}.end-turn kbd{font:12px var(--font-ui);font-weight:400;opacity:.7}.turn-controls>small{font-size:12px;line-height:1.4;color:#c0caba}
+@media(min-width:1800px){.mana-pool strong{font-size:42px}.hand-hint{font-size:15px}.deck-counts{font-size:15px}.turn-controls>small{font-size:14px}.end-turn{font-size:20px}}
+@media(max-width:1100px){.end-turn{font-size:14px;padding:10px 8px;min-height:60px}.deck-counts{font-size:12px;gap:10px}.mana-pool{gap:3px 7px}.mana-pool>span{font-size:13px}.hand-hint{font-size:12px}.turn-controls>small{display:none}}
 </style>
 <style>
 .card-notes-pop{position:fixed;z-index:1000;width:300px;overflow:hidden;pointer-events:none}

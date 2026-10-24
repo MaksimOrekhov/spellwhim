@@ -31,6 +31,13 @@ export type HeroNames = Record<HeroId, string>
 
 const kindLabel: Record<IntentKind, string> = { attack: 'Атака', attack_all: 'Атака по обоим', defend: 'Защита', prepare: 'Готовит удар', recover: 'Передышка' }
 
+/** The short tab on the banner: what the enemy does and when its effect lands (a preparation lands a turn later). */
+export function intentLabel(intent: PublicIntent): string {
+  if (intent.kind === 'prepare') return 'Готовит удар · на следующем ходу'
+  if (intent.kind === 'attack' || intent.kind === 'attack_all') return intent.hits.every(hit => hit.cancelled) ? 'Удар сорван' : kindLabel[intent.kind] + ' · в конце хода'
+  return kindLabel[intent.kind]
+}
+
 /** Heroes the announced action hits during this enemy turn (a hit the party has stopped hits nobody). A preparation lands a turn later. */
 export function heroesStruckNow(intent: PublicIntent): HeroId[] {
   return intent.kind === 'attack' || intent.kind === 'attack_all' ? intent.hits.filter(hit => !hit.cancelled).map(hit => hit.hero) : []

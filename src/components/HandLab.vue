@@ -42,13 +42,17 @@ function labState(): BattleState {
   state.hand = ids.map((id, index) => ({ instanceId: `lab/${index + 1}`, definitionId: id }))
   state.drawPile = state.drawPile.slice(0, 8)
   if (query.get('mana')) { state.mana = Number(query.get('mana')); state.maxMana = Math.max(state.maxMana, state.mana) }
+  // &result=victory|defeat shows the result dialog over the board; &help=1 opens the battle help (both for screenshots).
+  const result = query.get('result')
+  if (result === 'victory') { state.result = 'victory'; state.enemy.health = 0 }
+  if (result === 'defeat') { state.result = 'defeat'; state.heroes.mage.health = 0 }
   if (query.get('bonus') === '1') { applyStatus(state, 'enemy', 'vulnerability'); state.heroes.mage.armor = 3 }
   return state
 }
 
 const state = shallowRef(labState())
-// &hover=N opens the zoomed card of the N-th hand slot (for screenshots; headless Chrome cannot hover).
-onMounted(() => { const n = Number(query.get('hover')); if (n) setTimeout(() => document.querySelectorAll('.slot')[n - 1]?.dispatchEvent(new MouseEvent('mouseenter')), 400) })
+// &result=victory|defeat, &help=1 (dialogs over the board) and &hover=N opens the zoomed card of the N-th hand slot (for screenshots; headless Chrome cannot hover).
+onMounted(() => { if (query.get('help') === '1') setTimeout(() => document.querySelector<HTMLElement>('.help-button')?.click(), 300); const n = Number(query.get('hover')); if (n) setTimeout(() => document.querySelectorAll('.slot')[n - 1]?.dispatchEvent(new MouseEvent('mouseenter')), 400) })
 function resolvePlay(actionId: string) {
   const next = structuredClone(state.value)
   const result = resolveCardPlay(next, actionId)
