@@ -7,7 +7,7 @@ import { createBattle, previewCard } from '../game/battle'
 import { characterGenitive } from '../game/party'
 import { getClassTheme } from '../game/classThemes'
 
-export type GlyphKind = 'damage' | 'armor' | 'draw' | 'vulnerable' | 'exhaust' | 'bonus' | 'lock' | 'bleeding' | 'frostbite'
+export type GlyphKind = 'damage' | 'armor' | 'draw' | 'vulnerable' | 'exhaust' | 'bonus' | 'lock' | 'bleeding' | 'frostbite' | 'upgrade'
 export type Tone = 'on' | 'off' | 'plain'
 
 export interface StatChip {

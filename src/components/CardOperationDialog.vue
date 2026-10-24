@@ -199,7 +199,7 @@ footer{padding-top:var(--sp-3);border-top:var(--border-panel)}
 footer>div{display:flex;flex:none;gap:var(--sp-3)}
 .cod-summary{margin:0;font:700 var(--fs-md)/1.35 var(--font-ui);color:var(--parch-1)}
 .game-button.is-danger{background:linear-gradient(#b8452f,#6e2418);border-color:#e58a6c}
-@media(min-height:900px){.cod{width:min(1600px,96vw);height:min(92vh,1000px)}.cod :deep(.cg-grid){--cs:12px}figure,.cod--replace figure{font-size:15px}.cod-single{font-size:16px}.cod-single :deep(.notes){font-size:15px}.cod-offer{font-size:14px;width:calc(14px * 12 + 20px)}}
+@media(min-height:900px){.cod{width:min(1600px,96vw);height:min(92vh,1000px)}.cod :deep(.cg-grid){--cs:12px}figure{font-size:18px}.cod--replace figure{font-size:15px}.cod-single{font-size:16px}.cod-single :deep(.notes){font-size:15px}.cod-offer{font-size:14px;width:calc(14px * 12 + 20px)}}
 @media(max-height:800px){figure,.cod--replace figure,.cod-offer{font-size:9px}.cod-offer{width:calc(9px * 12 + 16px)}.cod-single{font-size:12px}.cod-single :deep(.notes){font-size:12px}}
 @media(max-width:900px){
   .cod{padding:var(--sp-2);height:94vh}

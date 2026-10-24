@@ -185,7 +185,7 @@ describe('reward screen', () => {
     const ids = [...html.matchAll(/data-card-id="([^"]+)"/g)].map(match => match[1])
     expect(ids).toEqual(options.map(option => option.id))
     for (const option of options) expect(html).toContain(option.name)
-    expect(html.match(/class="sc /g)).toHaveLength(options.length)
+    expect(html.match(/class="cf sc /g)).toHaveLength(options.length)
   })
 
   it('claiming a card adds exactly that card to the deck', () => {

@@ -44,9 +44,9 @@ const footer = computed(() => props.block?.text ?? (props.mode === 'choose' ? 'Ð
 
 <style scoped>
 .notes{box-sizing:border-box;width:100%;padding:.95em 1.1em .8em;border-radius:var(--shape-scroll);background:var(--mat-parchment);box-shadow:var(--shadow-3),inset 0 0 1.6em #8a622c66,0 0 0 .14em var(--brass-3),0 0 0 .26em var(--wood-1);color:var(--parch-ink);font:var(--fw-semibold) 1em/1.3 var(--font-ui);text-align:left}
-header{display:flex;flex-direction:column;gap:.1em;margin-bottom:.45em;padding-bottom:.4em;border-bottom:.08em solid #8a622c88}
-header strong{font:var(--fw-bold) 1.2em/1.15 var(--font-display)}
-header small{font:var(--fw-bold) .68em/1.2 var(--font-ui);letter-spacing:.1em;text-transform:uppercase;color:var(--parch-ink-soft)}
+header{display:flex;flex-direction:column;gap:.1em;margin-bottom:.45em;padding-bottom:.4em;border-bottom:.08em solid color-mix(in srgb,var(--class-primary) 45%,#8a622c88)}
+header strong{font:var(--fw-bold) 1.2em/1.15 var(--font-display);color:color-mix(in srgb,var(--class-primary) 50%,var(--parch-ink))}
+header small{font:var(--fw-bold) .68em/1.2 var(--font-ui);letter-spacing:.1em;text-transform:uppercase;color:color-mix(in srgb,var(--class-primary) 40%,var(--parch-ink-soft))}
 .notes-text{margin:0 0 .45em;font-size:.92em;line-height:1.35}
 .notes-math{display:flex;flex-wrap:wrap;align-items:center;gap:.1em .45em;margin:.3em 0 0;font:var(--fw-bold) .92em/1.2 var(--font-ui)}
 .notes-math>.glyph{width:1.3em;height:1.3em}

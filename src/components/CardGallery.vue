@@ -6,6 +6,7 @@ import type { PersistentCard } from '../game/types'
 import { classThemeStyle, getClassTheme } from '../game/classThemes'
 import type { CardClassId } from '../game/types'
 import { cardSummary, classLabel, groupCopies, manaText } from '../ui/cardOperations'
+import { Check } from '@lucide/vue'
 import SpellCard from './SpellCard.vue'
 
 const props = defineProps<{
@@ -56,8 +57,8 @@ defineExpose({ focusSelected })
     </div>
     <div ref="grid" class="cg-grid" role="group" :aria-label="label" @keydown="onKey">
       <button v-for="group in shown" :key="group.key" class="cg-item" :class="{ 'is-selected': isSelected(group), 'is-locked': !group.eligible.length, 'is-upgraded': group.card.upgrade }" :style="classThemeStyle(group.card.className)" :aria-pressed="isSelected(group)" :aria-disabled="!group.eligible.length" :aria-label="`${group.card.name}${group.card.upgrade ? ', улучшена' : ''}. ${classLabel(group.card)}, ${manaText(group.card.cost)}. ${cardSummary(group.card, group.preview)}. Копий: ${group.copies.length}.${group.eligible.length ? '' : ' Недоступна: ' + lockedReason(group.copies[0]!) + '.'}`" @click="pick(group)">
-        <span class="cg-card"><SpellCard :card="group.card" :preview="group.preview" /></span>
-        <b v-if="group.copies.length > 1" class="cg-count" aria-hidden="true">×{{ group.copies.length }}</b>
+        <span class="cg-card" :class="{ 'cf-stack': group.copies.length > 1, 'cf-stack--2': group.copies.length > 2 }"><SpellCard :card="group.card" :preview="group.preview" /><b v-if="group.copies.length > 1" class="cg-count" aria-hidden="true">×{{ group.copies.length }}</b></span>
+        <span v-if="isSelected(group)" class="cg-picked"><Check :size="14" aria-hidden="true" />Выбрана</span>
         <span class="cg-name">{{ group.card.name }}<template v-if="group.card.upgrade"> ↑</template></span>
         <span class="cg-meta"><i class="cg-dot" aria-hidden="true"></i>{{ classLabel(group.card) }} · {{ manaText(group.card.cost) }}</span>
         <span class="cg-sum">{{ cardSummary(group.card, group.preview) }}</span>
@@ -79,8 +80,9 @@ defineExpose({ focusSelected })
 .cg-item:not(.is-locked):hover{transform:translateY(-3px);background:#ffffff10}
 .cg-item.is-selected{border-color:var(--brass-1);background:color-mix(in srgb,var(--brass-1) 16%,transparent);box-shadow:0 0 18px color-mix(in srgb,var(--brass-1) 45%,transparent)}
 .cg-item.is-upgraded:not(.is-selected){border-color:color-mix(in srgb,var(--c-bonus) 55%,transparent)}
-.cg-card{display:block;font-size:var(--cs);width:calc(var(--cs) * 12);height:calc(var(--cs) * 16.6);margin-bottom:var(--sp-1)}
-.cg-count{position:absolute;z-index:2;top:2px;right:6px;padding:1px 9px;border-radius:var(--r-pill);border:2px solid var(--brass-1);background:var(--wood-0);color:var(--parch-1);font:700 var(--fs-md) var(--font-num);box-shadow:var(--shadow-2)}
+.cg-card{position:relative;display:block;font-size:var(--cs);width:calc(var(--cs) * 12);height:calc(var(--cs) * 16.6);margin:0 .6em var(--sp-1) 0}
+.cg-count{position:absolute;z-index:4;right:-.5em;bottom:-.2em;padding:.1em .6em;border-radius:var(--r-pill);border:.14em solid var(--brass-1);background:var(--wood-0);color:var(--parch-1);font:700 1.4em/1.1 var(--font-num);box-shadow:var(--shadow-2)}
+.cg-picked{display:inline-flex;align-items:center;gap:4px;padding:1px 10px;border-radius:var(--r-pill);background:var(--brass-1);color:var(--parch-ink);font:800 var(--fs-xs) var(--font-ui);letter-spacing:.06em;text-transform:uppercase}
 .cg-name{max-width:100%;font:700 var(--fs-md)/1.15 var(--font-display);color:var(--parch-1)}
 .cg-meta{display:inline-flex;align-items:center;gap:6px;font:800 var(--fs-xs) var(--font-ui);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .cg-sum{max-width:100%;font:600 var(--fs-xs)/1.25 var(--font-ui);color:var(--ink)}

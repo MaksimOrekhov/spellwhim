@@ -49,7 +49,7 @@ const items = computed(() => props.options.map(card => ({ card, preview: neutral
 .reward-content h1{margin:0;font:700 clamp(28px,3vw,46px) var(--font-display);color:#fff0ca}
 .reward-copy{margin:8px 0 clamp(14px,3vh,28px);color:#e4dfcb;font-size:16px}
 /* One card scale for the whole row: limited by the viewport height (card + notes + header) and by the width shared between the options. */
-.reward-options{--em:min(calc((100vh - var(--reward-room)) / 22),calc((100vw - 9rem - (var(--n) - 1) * 1.5rem) / (12.4 * var(--n))),23px);display:flex;justify-content:center;align-items:flex-start;gap:clamp(12px,1.6vw,28px);font-size:var(--em)}
+.reward-options{--em:min(calc((100vh - var(--reward-room)) / 22),calc((100vw - 9rem - (var(--n) - 1) * 1.5rem) / (12.4 * var(--n))),28px);display:flex;justify-content:center;align-items:flex-start;gap:clamp(12px,1.6vw,28px);font-size:var(--em)}
 .reward-option{display:flex;flex-direction:column;gap:.9em;align-items:center;width:12.4em;padding:.2em;border:0;border-radius:2em;background:none;font-size:inherit;transition:transform var(--dur-base) var(--ease-out)}
 .reward-option:hover,.reward-option:focus-visible{transform:translateY(-.5em)}
 .reward-option:focus-visible{outline:var(--focus-ring);outline-offset:.2em}

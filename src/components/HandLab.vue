@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { resolveCardDefinition } from '../game/cardProgression'
-// Dev-only lab (card-preview.html): the real board, hand and reward screen driven by the real rules engine
+// Dev-only lab (card-preview.html; &view=sheet|states|deck|ops open CardLab: all cards, card states, deck viewer, deck operation): the real board, hand and reward screen driven by the real rules engine
 // in reproducible states. Query: ?view=hand|reward  &hand=8|10  &bonus=1  &mana=N  &elite=1  &ids=a,b,c  &rewardIds=a,b,c
 // &scene=<id of battleSceneIds> (battle scenes of src/ui/battleScenes.ts; replaces &enemy)  &intent=caption (banner variant with the action name)
 import { computed, onMounted, shallowRef } from 'vue'
 import BattleBoard from './BattleBoard.vue'
 import BattleHand from './BattleHand.vue'
 import CardReward from './CardReward.vue'
+import CardLab from './CardLab.vue'
 import { createBattle, previewCard, resolveCardPlay, startCardPlay, endTurn } from '../game/battle'
 import { applyStatus } from '../game/statuses'
 import { useBattleAnimation } from '../composables/useBattleAnimation'
@@ -82,7 +83,8 @@ const chosen = shallowRef('')
 </script>
 
 <template>
-  <div class="app-shell">
+  <CardLab v-if="['sheet', 'states', 'deck', 'ops'].includes(view)" :view="view as 'sheet' | 'states' | 'deck' | 'ops'" :query="query" />
+  <div v-else class="app-shell">
     <div class="game-wrap">
       <template v-if="view === 'hand'">
         <BattleBoard :state="state" :animation="animation" :phase="phase" :captioned="query.get('intent') === 'caption'" @impact="impact" @end-turn="onEndTurn" />

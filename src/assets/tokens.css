@@ -128,3 +128,15 @@
   --map-halo-available: radial-gradient(circle, #ffd56b99 0, #ffd56b44 45%, #0000 70%);
   --map-glow-lamp: 0 0 34px 14px #ff9a2e55;
 }
+
+/* ── Cards (Card Visual Polish v3): gem enamel for the numbers, paper, metal trims. Class colours stay in classThemes.ts. ───────────── */
+:root {
+  --mat-gem-ruby:     radial-gradient(circle at 34% 26%, #ffc2b5 0, #f0685a 26%, var(--c-health) 48%, #7d1f27 100%);
+  --mat-gem-sapphire: radial-gradient(circle at 34% 26%, #d6ebff 0, #7fb4e6 26%, #3d78b8 52%, #183a66 100%);
+  --mat-gem-topaz:    radial-gradient(circle at 34% 26%, #fff1c4 0, #f0c466 28%, #b97a2a 56%, #6a3d14 100%);
+  --mat-gem-garnet:   radial-gradient(circle at 34% 26%, #ffb3a4 0, #d6402b 30%, #8f1a0f 62%, #3d0805 100%);
+  --mat-gem-dull:     radial-gradient(circle at 34% 26%, #d9d3c6 0, #9a948a 40%, #5d5850 100%);
+  --mat-card-paper:   repeating-linear-gradient(8deg, #7a4a1a0d 0 .1em, #0000 .1em .4em);
+  --card-engrave:     0 .06em 0 #fff8, 0 -.04em 0 #3a240e55;
+  --glow-upgrade:     0 0 .9em #ffe08acc;
+}
