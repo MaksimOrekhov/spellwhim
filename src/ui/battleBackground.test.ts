@@ -17,7 +17,8 @@ describe('battle background', () => {
   })
   it('falls back to the standard mine for an unknown encounter or sector', () => {
     expect(battleBackground('nobody-here')).toBe(deadminesBackgrounds.normal)
-    expect(battleBackground(rhahkZor.id, 'unknown-sector')).toBe(deadminesBackgrounds.boss)
+    expect(battleBackground(rhahkZor.id, 'unknown-sector')).toBe(deadminesBackgrounds.normal)
+    expect(battleBackground(sectorOneElite.id, 'unknown-sector')).toBe(deadminesBackgrounds.normal)
     expect(battleBackground('', 'unknown-sector')).toBe(deadminesBackgrounds.normal)
   })
   it('has three different painted files with unique ids', () => {
