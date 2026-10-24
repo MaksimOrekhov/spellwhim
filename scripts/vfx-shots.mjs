@@ -53,7 +53,13 @@ for (const id of ids) {
     await evaluate(`window.__vfxLab.play(${JSON.stringify(id)})`)
     await sleep(200)
     // The canvas clock only runs as fast as the machine draws; wait until it has really reached the frame we froze at.
-    for (let i = 0; i < 100 && !((await evaluate('window.__fx ? window.__fx().clock : 0')) >= time); i++) await sleep(60)
+    // (When the effect has already ended the canvas stops its ticker and the clock rests: the frame is then simply empty.)
+    for (let i = 0; i < 100; i++) {
+      const stats = await evaluate('window.__fx ? JSON.stringify(window.__fx()) : "{}"')
+      const { clock = 0, ticking = true } = JSON.parse(stats)
+      if (clock >= time || (!ticking && i > 5)) break
+      await sleep(60)
+    }
     await sleep(120)
     const { result } = await send('Page.captureScreenshot', { format: 'png' })
     const file = `${out}/${id}__${String(time).padStart(4, '0')}.png`

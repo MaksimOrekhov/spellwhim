@@ -9,7 +9,7 @@ import {
   ARMOR_FX_DUR, BREAK_TIMING, DRAW_DUR, FALLBACK_MARGIN, GATHER_TIMING, GUARD_TIMING, MIN_AFTER_IMPACT, NUMBER_DUR, NUMBER_STAGGER, PLATE_TIMING,
   RECOVERY_MARGIN, RESULT_DUR, RUNE_TIMING, STATUS_DUR, STRIKE_TIMING,
 } from './timing'
-import type { GuardStyle, HeroOutcome, Motion, NumberSize, NumberTone, Paint, Reaction, School, StrikeStyle, VfxAnchor, VfxBeat, VfxPlan, Weight } from './types'
+import type { GuardStyle, HeroOutcome, Motion, NumberSize, NumberTone, Paint, Reaction, StrikeStyle, VfxAnchor, VfxBeat, VfxPlan, Weight } from './types'
 
 /**
  * Builds the VFX plan of one action from what the engine has ALREADY decided.
@@ -272,6 +272,3 @@ export function enemyVfxPlan({ state, forecast, motion = 'full' }: EnemyPlanInpu
   }
   return finalize({ scenario, actor: 'enemy', motion, raw: b.list, impactMs: land, reaction, lead })
 }
-
-/** Schools are used by painters for palettes; exported so a lab or a test can name them without importing the table. */
-export const schools: readonly School[] = ['physical', 'fire', 'frost', 'lightning', 'arcane', 'blood']

@@ -19,7 +19,7 @@ const sleep = ms => new Promise(done => setTimeout(done, ms))
 
 const port = 9333
 const profile = join(tmpdir(), 'spellwhim-app-smoke-' + Date.now())
-const proc = spawn(chrome, [`--remote-debugging-port=${port}`, `--user-data-dir=${profile}`, '--headless=new', '--disable-gpu', '--hide-scrollbars', 'about:blank'], { stdio: 'ignore' })
+const proc = spawn(chrome, [`--remote-debugging-port=${port}`, `--user-data-dir=${profile}`, '--headless=new', '--enable-unsafe-swiftshader', '--use-angle=swiftshader', '--ignore-gpu-blocklist', '--hide-scrollbars', 'about:blank'], { stdio: 'ignore' })
 let target
 for (let i = 0; i < 50 && !target; i++) {
   await sleep(200)

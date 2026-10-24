@@ -1,4 +1,4 @@
-import { easeOut, glowDisc, ring, span } from '../draw'
+import { easeOut, glowDisc, ring } from '../draw'
 import { palette } from '../palette'
 import type { ParticleShape } from '../particles'
 import type { FxRuntime } from '../runtime'
@@ -119,7 +119,3 @@ export function dropletBurst(fx: FxRuntime, x: number, y: number, count: number,
 
 export const toward = (from: { x: number; y: number }, to: { x: number; y: number }) => Math.atan2(to.y - from.y, to.x - from.x)
 
-/** Smooth in/out weight of an effect that is visible between `from` and `to`, with soft edges. */
-export function window(t: number, from: number, to: number, soft = 100): number {
-  return Math.min(span(t, from, from + soft), 1 - span(t, to - soft, to))
-}

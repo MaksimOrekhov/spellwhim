@@ -80,13 +80,6 @@ export function polygon(x: number, y: number, r: number, sides: number, rotation
   return Array.from({ length: sides }, (_, index) => ({ x: x + Math.cos(rotation + index * Math.PI * 2 / sides) * r, y: y + Math.sin(rotation + index * Math.PI * 2 / sides) * r }))
 }
 
-export function strokePolygon(g: Graphics, points: readonly Pt[], color: number, width: number, alpha = 1, fill?: { color: number; alpha: number }): void {
-  if (points.length < 3) return
-  g.poly(points.flatMap(point => [point.x, point.y]), true)
-  if (fill) g.fill(fill)
-  g.stroke({ color, width, alpha, join: 'round' })
-}
-
 /** An arc of a circle as a stroke. */
 export function arc(g: Graphics, x: number, y: number, r: number, from: number, to: number, color: number, width: number, alpha = 1): void {
   if (alpha <= 0 || r <= 0) return

@@ -12,7 +12,7 @@ export interface Box { x: number; y: number; w: number; h: number }
 export interface Layers { under: Graphics; glow: Graphics; over: Graphics }
 /** One running effect: advance by `dt` ms, draw into the layers, return true when finished. */
 export type Actor = (dt: number) => boolean
-export interface FxStats { actors: number; particles: number; timers: number; labels: number; children: number; ticking: boolean; /** Milliseconds of the current plan the canvas has played. */ clock: number }
+export interface FxStats { actors: number; particles: number; timers: number; labels: number; children: number; ticking: boolean; /** Milliseconds of the current plan the canvas has played. */ clock: number; /** Script time of one frame of effects (updating and drawing every actor and particle; the GPU work is not included): average and worst of the frames since `begin`. */ frameMs: { avg: number; max: number } }
 
 const POINTS: readonly VfxPoint[] = ['warrior', 'mage', 'enemy', 'hand']
 const PARTICLE_CAP = 200
@@ -66,6 +66,9 @@ export class FxRuntime implements PaintHost {
   private styles = new Map<string, TextStyle>()
   private boxes = new Map<VfxPoint, Box>()
   private idleFrames = 0
+  private frameTotal = 0
+  private frameCount = 0
+  private frameWorst = 0
   private seed = 1
   private disposed = false
   private paintFn: ((fx: FxRuntime, beat: VfxBeat) => void) | null = null
@@ -122,6 +125,7 @@ export class FxRuntime implements PaintHost {
     this.seed = hash >>> 0
     this.reduced = reduced
     this.pool.cap = reduced ? REDUCED_PARTICLE_CAP : PARTICLE_CAP
+    this.frameTotal = this.frameCount = this.frameWorst = 0
     this.measure()
   }
 
@@ -177,7 +181,7 @@ export class FxRuntime implements PaintHost {
   }
 
   stats(): FxStats {
-    return { actors: this.actors.length, particles: this.pool.count, timers: this.timeline.pending, labels: this.labels.length, children: this.textLayer.children.filter(child => child.visible).length + this.root.children.length - 1, ticking: this.app.ticker.started, clock: Math.round(this.clock) }
+    return { actors: this.actors.length, particles: this.pool.count, timers: this.timeline.pending, labels: this.labels.length, children: this.textLayer.children.filter(child => child.visible).length + this.root.children.length - 1, ticking: this.app.ticker.started, clock: Math.round(this.clock), frameMs: { avg: this.frameCount ? this.frameTotal / this.frameCount : 0, max: this.frameWorst } }
   }
 
   destroy(): void {
@@ -223,6 +227,7 @@ export class FxRuntime implements PaintHost {
 
   private tick = (ticker: Ticker): void => {
     if (this.disposed) return
+    const started = performance.now()
     let dt = Math.min(ticker.deltaMS, 50) * this.timeScale
     if (this.holdAt !== null) dt = Math.max(0, Math.min(dt, this.holdAt - this.clock))
     this.clock += dt
@@ -237,6 +242,12 @@ export class FxRuntime implements PaintHost {
     this.updateLabels(dt)
     const busy = this.actors.length || this.pool.count || this.timeline.pending || this.labels.length
     this.idleFrames = busy ? 0 : this.idleFrames + 1
+    if (busy) {
+      const spent = performance.now() - started
+      this.frameTotal += spent
+      this.frameCount += 1
+      this.frameWorst = Math.max(this.frameWorst, spent)
+    }
     // One more frame after the last effect is gone so the cleared layers are rendered, then the ticker rests.
     if (this.idleFrames > 2) this.app.ticker.stop()
   }

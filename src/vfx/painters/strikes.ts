@@ -11,6 +11,8 @@ type Strike = Beat<'strike'>
 const quad = (a: Pt, c: Pt, e: Pt, p: number): Pt => { const i = 1 - p; return { x: i * i * a.x + 2 * i * p * c.x + p * p * e.x, y: i * i * a.y + 2 * i * p * c.y + p * p * e.y } }
 const sample = (f: (p: number) => Pt, from: number, to: number, n: number): Pt[] => Array.from({ length: n + 1 }, (_, index) => f(lerp(from, to, index / n)))
 const side = (a: Pt, b: Pt) => Math.sign(b.x - a.x) || 1
+/** The last `count` positions of a moving thing, sampled from its path: the tail has the same length at any frame rate. */
+const trailPoints = (at: (progress: number) => Pt, progress: number, count: number, step: number): Pt[] => Array.from({ length: count }, (_, index) => at(Math.max(0, progress - (count - 1 - index) * step)))
 
 /** Colours of an enemy blow: the common orange, magma for a boss, ice when the Frostbite weakened it. */
 function enemyColors(beat: Strike): Palette {
@@ -213,13 +215,11 @@ function orbBolt(fx: FxRuntime, beat: Strike, kind: 'fire' | 'arcane'): void {
   const pal = palettes[beat.school]
   const { end, at } = boltPath(fx, beat, 0.2)
   const land = beat.landMs
-  const history: Pt[] = []
   let ember = 0
   run(fx, land, (t, p, dt) => {
     const g = fx.layers.glow
     const point = at(p)
-    history.push(point)
-    if (history.length > 11) history.shift()
+    const history = trailPoints(at, p, 12, 0.03)
     for (let index = 1; index < history.length; index += 1) {
       const k = index / history.length
       line(g, history[index - 1]!, history[index]!, pal.deep, 30 * u * k, 0.45 * k)
@@ -264,15 +264,13 @@ function frostbolt(fx: FxRuntime, beat: Strike): void {
   const pal = palettes.frost
   const { end, at } = boltPath(fx, beat, 0.07)
   const land = beat.landMs
-  const history: Pt[] = []
   let mist = 0
   run(fx, land, (t, p, dt) => {
     const g = fx.layers.glow
     const point = at(p, 1.15)
     const ahead = at(Math.min(1, p + 0.03), 1.15)
     const angle = toward(point, ahead)
-    history.push(point)
-    if (history.length > 10) history.shift()
+    const history = trailPoints(progress => at(progress, 1.15), p, 11, 0.032)
     for (let index = 1; index < history.length; index += 1) { const k = index / history.length; line(g, history[index - 1]!, history[index]!, pal.mid, 14 * u * k, 0.55 * k); line(g, history[index - 1]!, history[index]!, 0xffffff, 3.4 * u * k, 0.95 * k) }
     g.circle(point.x, point.y, 38 * u).fill({ color: pal.deep, alpha: 0.24 })
     g.circle(point.x, point.y, 24 * u).fill({ color: pal.mid, alpha: 0.4 })
@@ -437,21 +435,21 @@ function slam(fx: FxRuntime, beat: Strike): void {
   const start = { x: from.x + Math.cos(angle) * from.w * 0.3, y: from.y + Math.sin(angle) * from.h * 0.15 }
   const hit = { x: to.x, y: to.y + to.h * 0.04 }
   const cracks = Array.from({ length: boss ? 9 : 7 }, (_, index) => ({ angle: index * Math.PI * 2 / (boss ? 9 : 7) + fx.between(-0.25, 0.25), length: fx.between(54, boss ? 132 : 100) }))
-  const history: Pt[] = []
-  run(fx, land, p0 => {
-    const p = easeIn(span(p0, 40, land))
-    const point = { x: lerp(start.x, hit.x, p), y: lerp(start.y, hit.y, p) - Math.sin(Math.PI * p) * 36 * u }
-    history.push(point)
-    if (history.length > 12) history.shift()
+  const pathAt = (q: number): Pt => { const p = easeIn(q); return { x: lerp(start.x, hit.x, p), y: lerp(start.y, hit.y, p) - Math.sin(Math.PI * p) * 36 * u } }
+  run(fx, land, t => {
+    const q = span(t, 40, land)
+    const point = pathAt(q)
+    const history = trailPoints(pathAt, q, 14, 0.07)
     const g = fx.layers.glow
     for (let index = 1; index < history.length; index += 1) {
       const k = index / history.length
-      line(g, history[index - 1]!, history[index]!, pal.deep, 44 * u * k, 0.4 * k)
-      line(g, history[index - 1]!, history[index]!, pal.mid, 27 * u * k, 0.8 * k)
-      line(g, history[index - 1]!, history[index]!, pal.core, 9 * u * k, 0.95 * k)
+      line(g, history[index - 1]!, history[index]!, pal.deep, 66 * u * k, 0.4 * k)
+      line(g, history[index - 1]!, history[index]!, pal.mid, 40 * u * k, 0.8 * k)
+      line(g, history[index - 1]!, history[index]!, pal.core, 14 * u * k, 0.95 * k)
     }
-    g.circle(point.x, point.y, (boss ? 30 : 24) * u).fill({ color: pal.mid, alpha: 0.92 })
-    g.circle(point.x, point.y, 14 * u).fill({ color: pal.core })
+    g.circle(point.x, point.y, (boss ? 42 : 33) * u).fill({ color: pal.deep, alpha: 0.5 })
+    g.circle(point.x, point.y, (boss ? 32 : 25) * u).fill({ color: pal.mid, alpha: 0.95 })
+    g.circle(point.x, point.y, (boss ? 17 : 13) * u).fill({ color: pal.core })
   })
   fx.after(land, () => {
     const size = boss ? 128 : 100

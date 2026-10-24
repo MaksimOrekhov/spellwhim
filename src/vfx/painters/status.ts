@@ -3,7 +3,7 @@ import type { Pt } from '../draw'
 import { palette, palettes } from '../palette'
 import type { FxRuntime } from '../runtime'
 import type { RuneSigil } from '../types'
-import { dropletBurst, flash, run, shock, sparks } from './kit'
+import { dropletBurst, flash, run, shock, sparks, starburst } from './kit'
 import type { Beat } from './kit'
 
 const radiusOf = (fx: FxRuntime, anchor: Parameters<FxRuntime['box']>[0]) => { const box = fx.box(anchor); return Math.min(box.w, box.h) * 0.5 }
@@ -251,20 +251,22 @@ export function paintDraw(fx: FxRuntime, beat: Beat<'draw'>): void {
     return
   }
   const flight = 380
-  const motes = Array.from({ length: beat.count }, (_, index) => ({ delay: index * 110, bend: fx.between(-70, 70) * u, history: [] as Pt[] }))
+  const motes = Array.from({ length: beat.count }, (_, index) => ({ delay: index * 110, bend: fx.between(-70, 70) * u }))
   const start = { x: from.x, y: from.y - from.h * 0.05 }
   run(fx, beat.durMs, (t) => {
     const g = fx.layers.glow
     for (const mote of motes) {
       const p = span(t, mote.delay, mote.delay + flight)
       if (p <= 0 || p >= 1) continue
-      const e = easeIn(p) * 0.35 + p * 0.65
       const control = { x: (start.x + target.x) / 2 + mote.bend, y: Math.min(start.y, target.y) + (target.y - start.y) * 0.2 }
-      const i = 1 - e
-      const point = { x: i * i * start.x + 2 * i * e * control.x + e * e * target.x, y: i * i * start.y + 2 * i * e * control.y + e * e * target.y }
-      mote.history.push(point)
-      if (mote.history.length > 8) mote.history.shift()
-      for (let index = 1; index < mote.history.length; index += 1) { const k = index / mote.history.length; line(g, mote.history[index - 1]!, mote.history[index]!, pal.mid, 14 * u * k, 0.65 * k); line(g, mote.history[index - 1]!, mote.history[index]!, 0xffffff, 4 * u * k, 0.95 * k) }
+      const pathAt = (q: number): Pt => {
+        const e = easeIn(q) * 0.35 + q * 0.65
+        const i = 1 - e
+        return { x: i * i * start.x + 2 * i * e * control.x + e * e * target.x, y: i * i * start.y + 2 * i * e * control.y + e * e * target.y }
+      }
+      const point = pathAt(p)
+      const history = Array.from({ length: 9 }, (_, index) => pathAt(Math.max(0, p - (8 - index) * 0.04)))
+      for (let index = 1; index < history.length; index += 1) { const k = index / history.length; line(g, history[index - 1]!, history[index]!, pal.mid, 14 * u * k, 0.65 * k); line(g, history[index - 1]!, history[index]!, 0xffffff, 4 * u * k, 0.95 * k) }
       glowDisc(g, point.x, point.y, 24 * u, pal.mid, 1)
     }
   })
@@ -345,13 +347,14 @@ export function paintBreak(fx: FxRuntime, beat: Beat<'break'>): void {
       const mid = a0 + Math.PI / pieces
       const ox = Math.cos(mid) * drift
       const oy = Math.sin(mid) * drift
-      arc(g, box.x + ox, box.y + oy, R * 0.8 * (1 + broken * 0.2), a0 + 0.04, a0 + Math.PI * 2 / pieces - 0.04, inner, 6 * u * (1 - broken * 0.5), 0.95 * alpha)
+      arc(g, box.x + ox, box.y + oy, R * 0.8 * (1 + broken * 0.2), a0 + 0.04, a0 + Math.PI * 2 / pieces - 0.04, inner, 17 * u * (1 - broken * 0.5), 0.35 * alpha)
+      arc(g, box.x + ox, box.y + oy, R * 0.8 * (1 + broken * 0.2), a0 + 0.04, a0 + Math.PI * 2 / pieces - 0.04, 0xffffff, 6 * u * (1 - broken * 0.5), 0.95 * alpha)
     }
     if (t < land) glowDisc(g, box.x, box.y, R * 0.32, inner, 0.6)
   })
   fx.after(land, () => {
-    flash(fx, box.x, box.y, R * 0.55 / u, 0xe6ddff, 180, 0.7)
-    sparks(fx, box.x, box.y, { count: 10, speed: [120, 300], life: [380, 620], size: [7, 12], colors: [0xcdbbff, 0x8a7aa8, inner], shape: 'shard', drag: 2, gravity: 200 })
+    starburst(fx, box.x, box.y, R * 0.75 / u, { core: 0xffffff, mid: 0xcdbbff, deep: 0x7a62b8 }, 280, 8)
+    sparks(fx, box.x, box.y, { count: 12, speed: [120, 300], life: [380, 620], size: [7, 12], colors: [0xcdbbff, 0x8a7aa8, inner], shape: 'shard', drag: 2, gravity: 200 })
     sparks(fx, box.x, box.y, { count: 6, speed: [20, 70], life: [480, 760], size: [12, 20], colors: [0xb8aad0, 0x8a7aa8], shape: 'dot', alpha: 0.35, grow: 1.2, drag: 1 })
   })
 }
