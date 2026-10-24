@@ -34,7 +34,7 @@ function setIntent(state: BattleState, action: EnemyAction, phase: 1 | 2 = 1): v
   state.enemy.focus = action.kind === 'attack' ? action.target : action.kind === 'attack_all' ? action.primaryTarget : action.kind === 'prepare' && action.prepared.kind === 'attack' ? action.prepared.target : state.enemy.focus
 }
 
-/** EXPERIMENT B1/B2: the Sector I enemy with its new cycle, at the honest-rules health (x1.75), advanced by real turns to the moment a scene needs. */
+/** B1/B2 (the game since X04): the Sector I enemy with its new cycle, at the honest-rules health (x1.75), advanced by real turns to the moment a scene needs. */
 function foeScene(id: string, turns: number, seed: number): BattleState {
   const foe = sectorFoesB1.find(item => item.id === id)!
   const state = createBattle({ ...foe, maxHealth: Math.round(foe.maxHealth * 1.75) }, undefined, { seed, economy: honestEconomies['honest-b2'] })

@@ -52,7 +52,7 @@ export const cardArt: Partial<Record<CardId, string>> = {
   'ice-echo': iceEcho,
   'frost-seal': frostSeal,
   'blood-resonance': bloodResonance,
-  // EXPERIMENT B2: temporary illustrations borrowed from the nearest card of the same class until real art exists (docs/design/honest-turn-b-experiment-v1.md).
+  // B2 cards (the game since X04): temporary illustrations borrowed from the nearest card of the same class until real art exists (docs/design/honest-turn-b-experiment-v1.md).
   'frost-grip': frostbolt,
   'ice-breaker': shieldBash,
 }

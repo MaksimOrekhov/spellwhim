@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// EXPERIMENT "Honest Turn B1": the moment a boss with a phase note enters its second phase. A card in the middle of the scene says what
+// B1 enemy rules (the game since X04): the moment a boss with a phase note enters its second phase. A card in the middle of the scene says what
 // changed and what comes next, and says plainly that the action already on the board is NOT changed: the engine keeps the announced
 // intent and starts the new cycle only after it. It never blocks a click, fades by itself after a few seconds, can be closed, and the same
 // words stay available all fight long in the tooltip of the "Фаза II" badge on the enemy.

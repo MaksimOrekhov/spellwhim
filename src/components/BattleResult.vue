@@ -1,13 +1,20 @@
 <script setup lang="ts">
-import { onMounted, useTemplateRef } from 'vue'
-defineProps<{ result: 'victory' | 'defeat'; continueLabel?: string }>()
+import { computed, onMounted, useTemplateRef } from 'vue'
+/** `final`: the fight was the sector's boss, so the next screen sums up the run instead of offering a reward. */
+const props = defineProps<{ result: 'victory' | 'defeat'; continueLabel?: string; final?: boolean }>()
 const emit = defineEmits<{ continue: [] }>()
 const dialog = useTemplateRef<HTMLDialogElement>('dialog')
 onMounted(() => dialog.value?.showModal())
+// A defeat ends the run: the button leads to its summary, where a new run can be started.
+const text = computed(() => props.result === 'defeat'
+  ? { kicker: 'Отряд пал', title: 'Поражение', body: 'Один из героев не выдержал удара, и поход окончен. Дальше — итоги похода.', button: 'К итогам похода' }
+  : props.final
+  ? { kicker: 'Сектор пройден', title: 'Победа!', body: 'Главный противник повержен. Осталось подвести итоги похода.', button: props.continueLabel ?? 'К итогам похода' }
+  : { kicker: 'Путь открыт', title: 'Победа!', body: 'Противник повержен, штрек свободен. Пора двигаться дальше.', button: props.continueLabel ?? 'Продолжить' })
 </script>
 <template>
   <dialog ref="dialog" class="result-card" aria-labelledby="battle-result-title" @cancel.prevent>
-    <span class="result-spark">{{ result === 'victory' ? '✦' : '◇' }}</span><p>{{ result === 'victory' ? 'Путь открыт' : 'Отряд пал' }}</p><h1 id="battle-result-title">{{ result === 'victory' ? 'Победа!' : 'Поражение' }}</h1><p>{{ result === 'victory' ? 'Чаща отступила. Пора двигаться дальше.' : 'Используйте Уязвимость и прикрывайте героя под прицелом.' }}</p><button class="game-button" autofocus @click="emit('continue')">{{ result === 'victory' ? continueLabel ?? 'Продолжить' : 'Начать заново' }}</button>
+    <span class="result-spark">{{ result === 'victory' ? '✦' : '◇' }}</span><p>{{ text.kicker }}</p><h1 id="battle-result-title">{{ text.title }}</h1><p>{{ text.body }}</p><button class="game-button" autofocus @click="emit('continue')">{{ text.button }}</button>
   </dialog>
 </template>
 <style scoped>

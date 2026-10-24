@@ -170,8 +170,12 @@ export function damageParts(preview: CardPreview): DamagePart[] {
   }))
 }
 
-/** `neutral`: no board context (reward screen), so armor is described by its target rule instead of a concrete hero. */
-export function cardNotes(card: CardDefinition, preview: CardPreview, context: 'board' | 'neutral' = 'board', armorExpires = false): CardNotesModel {
+/**
+ * `neutral`: no board context (reward screen), so armor is described by its target rule instead of a concrete hero.
+ * `idleArmor` (board only): heroes the enemy does not hit during its coming turn; where armor expires with that turn, armor this card gives
+ * them is gone before it can absorb anything, and the notes say so (it still counts for "while … has armor" conditions this turn).
+ */
+export function cardNotes(card: CardDefinition, preview: CardPreview, context: 'board' | 'neutral' = 'board', armorExpires = false, idleArmor: readonly HeroId[] = []): CardNotesModel {
   const parts = damageParts(preview)
   const totalBase = damageEffects(card).reduce((sum, effect) => sum + effect.amount, 0)
   const activeBase = preview.damage > 0 ? preview.damage - preview.bonusDamage : 0
@@ -188,6 +192,8 @@ export function cardNotes(card: CardDefinition, preview: CardPreview, context: '
   }
   if (preview.vulnerabilityBonus > 0) conditions.push({ tone: 'on', glyph: 'vulnerable', text: `Враг Уязвим: +${preview.vulnerabilityBonus} урона. Уязвимость будет снята.`, short: '' })
   if (preview.artifactBonuses.length) conditions.push({ tone: 'on', glyph: 'bonus', text: `Артефакт сработает: ${preview.artifactBonuses.join('; ')}.`, short: '' })
+  const wasted = context === 'board' && armorExpires ? (['warrior', 'mage'] as const).filter(hero => preview.armor[hero] > 0 && idleArmor.includes(hero)) : []
+  if (wasted.length) conditions.push({ tone: 'off', glyph: 'armor', text: `В этот ход враг не бьёт по ${wasted.map(hero => heroDative[hero]).join(' и ')}: эта броня исчезнет в конце его хода, ничего не поглотив.`, short: '' })
 
   const keywords: Keyword[] = []
   const appliesVulnerability = preview.appliedStatuses.includes('vulnerability')
@@ -212,7 +218,7 @@ export function cardNotes(card: CardDefinition, preview: CardPreview, context: '
   const armor = context === 'neutral'
     ? card.effects.flatMap(effect => effect.type === 'armor' ? [{ hero: effect.target, name: armorRecipient(effect.target, preview, 'цели врага'), amount: effect.amount }] : [])
     : (['warrior', 'mage'] as const).map(hero => ({ hero, name: heroName[hero], amount: preview.armor[hero] })).filter(item => item.amount > 0)
-  if (context === 'board' && card.effects.some(effect => effect.type === 'armor' && effect.target === 'threatened')) keywords.push({ glyph: 'armor', name: 'Броня', text: (armorExpires ? 'Поглощает урон и исчезает, когда враг закончит свой ход.' : 'Поглощает урон и исчезает после следующей атаки по герою.') + ' «Цель» — герой, которого атакует противник.' })
+  if (context === 'board' && card.effects.some(effect => effect.type === 'armor' && effect.target === 'threatened')) keywords.push({ glyph: 'armor', name: 'Броня', text: (armorExpires ? 'Поглощает урон и исчезает, когда враг закончит свой ход.' : 'Поглощает урон и исчезает после следующей атаки по герою.') + ' «Цель» — герой, которого атакует противник; против удара по обоим героям вы выберете её сами.' })
   if (card.exhaust) keywords.push({ glyph: 'exhaust', name: 'Выбывает', text: 'Эта копия не вернётся в колоду до конца боя.' })
 
   // The sum above already names every active bonus, so repeating them as sentences only makes the notes taller.

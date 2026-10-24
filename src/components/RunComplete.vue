@@ -7,7 +7,8 @@ import { artifactDefinition } from '../game/artifacts'
 import DeckViewer from './DeckViewer.vue'
 import varianPortrait from '../assets/art/varian-krea.webp'
 import jainaPortrait from '../assets/art/jaina-krea.webp'
-import rhahkZor from '../assets/art/enemy-rhahk-zor.svg'
+import rhahkZorArt from '../assets/art/enemy-rhahk-zor.svg'
+import { rhahkZor } from '../game/sectorContent'
 const props = defineProps<{ result: 'victory' | 'defeat'; run?: DungeonRunState }>()
 const sector = computed(() => props.run?.status === 'sector-complete')
 const rooms = computed(() => props.run?.visitedNodeIds.map(id=>dungeonNode(props.run!.map,id)!).filter(Boolean) ?? [])
@@ -15,7 +16,8 @@ const labels = { battle:'Обычный бой', elite:'Элитный бой', 
 const icons = { battle: Swords, elite: Crown, forge: Anvil, treasure: Gem, event: ScrollText, rest: Flame, final: Skull }
 const count = (type: string) => rooms.value.filter(n => n.type === type).length
 const upgraded = computed(() => props.run?.deck.filter(card => card.upgrade).length ?? 0)
-const emit = defineEmits<{ restart: [] }>()
+// The run is over, so a new one replaces nothing that can still be played; the menu stays one click away.
+const emit = defineEmits<{ newRun: []; menu: [] }>()
 </script>
 
 <template>
@@ -33,7 +35,7 @@ const emit = defineEmits<{ restart: [] }>()
         <div class="left">
           <div class="heroes">
             <figure class="hero hero--warrior"><img :src="varianPortrait" alt="" /><figcaption><small>ВАРИАН РИНН</small><strong>{{ run.heroes.warrior.health }} / {{ run.heroes.warrior.maxHealth }} HP</strong></figcaption></figure>
-            <figure class="boss"><img :src="rhahkZor" alt="" /><span class="stamp">ПОВЕРЖЕН</span><figcaption><small>РАК'ЗОР</small><strong>Бригадир штолен</strong></figcaption></figure>
+            <figure class="boss"><img :src="rhahkZorArt" alt="" /><span class="stamp">ПОВЕРЖЕН</span><figcaption><small>{{ rhahkZor.name.toUpperCase() }}</small><strong>{{ rhahkZor.title }}</strong></figcaption></figure>
             <figure class="hero hero--mage"><img :src="jainaPortrait" alt="" /><figcaption><small>ДЖАЙНА ПРАУДМУР</small><strong>{{ run.heroes.mage.health }} / {{ run.heroes.mage.maxHealth }} HP</strong></figcaption></figure>
           </div>
           <ul class="stats" aria-label="Итоги похода">
@@ -55,16 +57,16 @@ const emit = defineEmits<{ restart: [] }>()
         </div>
       </div>
 
-      <footer><DeckViewer :deck="run.deck" /><button class="primary" @click="emit('restart')">Начать новый поход</button></footer>
+      <footer><DeckViewer :deck="run.deck" /><button class="game-button" @click="emit('menu')">Главное меню</button><button class="primary" @click="emit('newRun')">Начать новый поход</button></footer>
     </section>
 
     <section v-else class="complete-card">
       <span class="glyph" aria-hidden="true">{{ result === 'victory' ? '✦' : '◇' }}</span>
       <small>МЁРТВЫЕ КОПИ</small>
       <h1>{{ result === 'victory' ? 'Поход завершён' : 'Отряд пал' }}</h1>
-      <p>{{ result === 'victory' ? 'Вы прошли штреки и одолели Сумеречное сердце.' : 'Выберите другой путь и попробуйте пройти шахту снова.' }}</p>
+      <p>{{ result === 'victory' ? 'Вы прошли штреки и одолели финального противника.' : 'Выберите другой путь и попробуйте пройти шахту снова.' }}</p>
       <div v-if="run" class="run-summary"><p>Вариан: {{ run.heroes.warrior.health }}/{{ run.heroes.warrior.maxHealth }} HP · Джайна: {{ run.heroes.mage.health }}/{{ run.heroes.mage.maxHealth }} HP</p><p>Карт: {{ run.deck.length }} · Обычные бои: {{ count('battle') }} · Элитные бои: {{ count('elite') }}</p><p>{{ rooms.map(n=>labels[n.type]).join(' → ') }}</p><ol v-if="run.journal?.length"><li v-for="(entry,i) in run.journal" :key="i">{{ entry.text }}</li></ol><DeckViewer :deck="run.deck" /></div>
-      <button class="primary" @click="emit('restart')">Начать новый поход</button>
+      <div class="complete-actions"><button class="game-button" @click="emit('menu')">Главное меню</button><button class="primary" @click="emit('newRun')">Начать новый поход</button></div>
     </section>
   </main>
 </template>
@@ -81,7 +83,7 @@ const emit = defineEmits<{ restart: [] }>()
 .run-summary p{font-size:var(--fs-sm);margin:var(--sp-2) 0}.run-summary ol{text-align:left;font:600 var(--fs-sm)/var(--lh-body) var(--font-ui);max-height:180px;overflow:auto}
 .primary{padding:12px 24px;border:var(--border-brass);border-radius:var(--shape-plank);background:var(--mat-ruby);background:linear-gradient(#d49b54,#98572e);color:var(--parch-1);font:700 var(--fs-md) var(--font-display);letter-spacing:.08em;text-transform:uppercase;cursor:pointer;box-shadow:var(--shadow-2),inset 0 1px 0 #fff4}
 .primary:hover,.primary:focus-visible{filter:brightness(1.12);outline:var(--focus-ring);outline-offset:var(--focus-offset)}
-.complete-card .primary{margin-top:18px}
+.complete-card .complete-actions{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:var(--sp-3);margin-top:18px}
 
 .sector-card{width:min(1080px,96vw);max-height:96vh;display:flex;flex-direction:column;overflow:hidden}
 .banner{position:relative;padding:var(--sp-4) var(--sp-5) var(--sp-3);background:radial-gradient(ellipse at 50% 0%,#ffd56b44,#0000 70%),linear-gradient(#4a321f,#2a1a10);border-bottom:var(--border-panel)}

@@ -4,12 +4,13 @@ import HandCard from './HandCard.vue'
 import CardNotes from './CardNotes.vue'
 import GameTooltip from './GameTooltip.vue'
 import type { HandCardView } from '../composables/useBattle'
+import type { HeroId } from '../game/types'
 import type { BattlePhase } from '../composables/useBattleAnimation'
 import type { CardBlock } from '../ui/cardDisplay'
 import { handMode, handOrder, TILE_EM_HEIGHT, TILE_EM_WIDTH, zoomFactor, zoomShift } from '../ui/handLayout'
 import { useRules } from '../ui/rulesInfo'
 
-const props = defineProps<{ cards: HandCardView[]; outgoing: HandCardView | null; outgoingIndex: number; drawCount: number; discardCount: number; exhaustedCount: number; phase: BattlePhase; mana: number; maxMana: number; nextMana?: number; nextDraw?: number; drawBoostFrom?: number; drawBoostAmount?: number }>()
+const props = defineProps<{ cards: HandCardView[]; outgoing: HandCardView | null; outgoingIndex: number; drawCount: number; discardCount: number; exhaustedCount: number; phase: BattlePhase; mana: number; maxMana: number; nextMana?: number; nextDraw?: number; drawBoostFrom?: number; drawBoostAmount?: number; idleArmor?: HeroId[] }>()
 const emit = defineEmits<{ play: [instanceId: string]; endTurn: [] }>()
 const displayed = computed(() => handOrder(props.cards, props.outgoing, props.outgoingIndex))
 const manaHint = computed(() => {
@@ -128,11 +129,11 @@ watch(() => displayed.value.length, () => { if (activeIndex.value < 0) active.va
         <p v-if="!displayed.length" class="empty-hand">Рука пуста.<br />Завершите ход, чтобы добрать карты.</p>
       </div>
     </section>
-    <aside class="turn-controls"><button class="game-button end-turn" :disabled="phase !== 'player'" @click="emit('endTurn')"><span>{{ phase === 'enemy' ? 'Ход врага' : phase === 'card' ? 'Действие…' : 'Завершить ход' }}</span><kbd>Enter</kbd></button><small>{{ phase === 'player' ? (rules.discardsHand && displayed.length ? 'Враг атакует. Несыгранные карты сгорят: ' + displayed.length : 'После этого враг атакует') : 'Дождитесь окончания действия' }}</small></aside>
+    <aside class="turn-controls"><button class="game-button end-turn" :disabled="phase !== 'player'" @click="emit('endTurn')"><span>{{ phase === 'enemy' ? 'Ход врага' : phase === 'card' ? 'Действие…' : 'Завершить ход' }}</span><kbd>Enter</kbd></button><small>{{ phase === 'player' ? (rules.discardsHand && displayed.length ? 'Затем ход противника. Несыгранные карты уйдут в сброс: ' + displayed.length : 'Затем ход противника') : 'Дождитесь окончания действия' }}</small></aside>
     <Teleport to="body">
       <Transition name="notes">
         <div v-if="activeItem" class="card-notes-pop" :style="notesStyle" aria-hidden="true">
-          <CardNotes :brief="briefNotes" :card="activeItem.card" :preview="activeItem.preview" :block="block(activeItem)" :hotkey="String(activeIndex === 9 ? 0 : activeIndex + 1)" />
+          <CardNotes :brief="briefNotes" :card="activeItem.card" :preview="activeItem.preview" :block="block(activeItem)" :hotkey="String(activeIndex === 9 ? 0 : activeIndex + 1)" :idle-armor="idleArmor" />
         </div>
       </Transition>
     </Teleport>

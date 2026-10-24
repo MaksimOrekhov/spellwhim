@@ -54,6 +54,11 @@ export function manaText(cost: number): string {
   const m = cost % 100
   return `${cost} ${m >= 11 && m <= 14 ? 'маны' : cost % 10 === 1 ? 'мана' : 'маны'}`
 }
+/** "1 карта", "3 карты", "18 карт", "21 карта". */
+export function cardsText(count: number): string {
+  const m = count % 100
+  return `${count} ${m >= 11 && m <= 14 ? 'карт' : count % 10 === 1 ? 'карта' : count % 10 >= 2 && count % 10 <= 4 ? 'карты' : 'карт'}`
+}
 export const classLabel = (card: CardDefinition) => getClassTheme(card.className).name
 
 export interface UpgradeChange { id: string; label: string; before: string | null; after: string | null }

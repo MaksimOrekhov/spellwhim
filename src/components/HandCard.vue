@@ -4,6 +4,7 @@ import { computed } from 'vue'
 import type { CardDefinition, CardPreview } from '../game/types'
 import { getClassTheme } from '../game/classThemes'
 import { spokenSummary } from '../ui/cardDisplay'
+import { manaText } from '../ui/cardOperations'
 import type { CardBlock } from '../ui/cardDisplay'
 import SpellCard from './SpellCard.vue'
 import CompactCard from './CompactCard.vue'
@@ -11,7 +12,7 @@ import CompactCard from './CompactCard.vue'
 const props = defineProps<{ card: CardDefinition; instanceId: string; preview: CardPreview; block: CardBlock | null; playing: boolean; index: number; vis?: number; compact?: boolean; active?: boolean; fullShift?: number; fullScale?: number; fullEm?: number }>()
 const emit = defineEmits<{ play: [instanceId: string] }>()
 const hotkey = computed(() => String(props.index === 9 ? 0 : props.index + 1))
-const label = computed(() => `${hotkey.value}. ${props.card.name}, ${props.card.cost} маны. Класс: ${getClassTheme(props.card.className).name}. ${spokenSummary(props.card, props.preview)}${props.block ? ' ' + props.block.text : ''}`)
+const label = computed(() => `${hotkey.value}. ${props.card.name}, ${manaText(props.card.cost)}. Класс: ${getClassTheme(props.card.className).name}. ${spokenSummary(props.card, props.preview)}${props.block ? ' ' + props.block.text : ''}`)
 
 function play() {
   if (!props.block && !props.playing) emit('play', props.instanceId)

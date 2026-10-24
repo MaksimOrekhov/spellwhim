@@ -13,6 +13,8 @@ const props = defineProps<{
   saved: { active: boolean } | null
   /** The menu was opened from a run in progress (the map, a result), which can be returned to. */
   canReturn: boolean
+  /** The run that can be returned to is over (its summary was on screen): the way back leads to that summary. */
+  finished?: boolean
   notice: string
   /** The slot holds a record that could not be read or is not compatible: it can be retried, copied, or knowingly overwritten by a new run. */
   unreadable: boolean
@@ -22,7 +24,7 @@ const confirming = ref(false)
 const replaces = computed(() => props.canReturn || props.saved !== null || props.unreadable)
 const warning = computed(() => props.unreadable
   ? 'Сохранение повреждено или не подходит этой версии игры. Новый поход перезапишет его, и вернуть старые данные будет нельзя. Сначала можно скачать копию.'
-  : props.canReturn ? 'Новый поход заменит текущий.'
+  : props.canReturn ? (props.finished ? 'Новый поход заменит завершённый.' : 'Новый поход заменит текущий.')
   : props.saved?.active ? 'Новый поход заменит сохранённый, который ещё можно продолжить.'
   : 'Новый поход заменит сохранённый завершённый поход.')
 function startNew() {
@@ -40,12 +42,12 @@ watch([() => props.saved?.active ?? null, () => props.canReturn, () => props.unr
       <div class="menu-heroes" aria-hidden="true"><img :src="varianPortrait" alt=""><img :src="jainaPortrait" alt=""></div>
       <h1>Spellwhim</h1>
       <h2>Мёртвые копи</h2>
-      <p class="menu-story">Вариан и Джайна спускаются в Старые штольни: подрывники, механики и Рак'Зор в конце длинного пути. Стройте колоду вдвоём, выбирайте штреки и не давайте врагу бить по обоим героям.</p>
+      <p class="menu-story">Вариан и Джайна спускаются в Старые штольни: подрывники, механики и Рак'Зор в конце длинного пути. Стройте колоду вдвоём, выбирайте штреки и прикрывайте друг друга от ударов.</p>
       <p v-if="saved?.active" class="menu-note">Отряд ждёт у последней комнаты. Прерванный бой начнётся заново с тем же здоровьем и колодой.</p>
       <p v-else-if="saved" class="menu-note">Сохранённый поход завершён.</p>
       <p v-if="notice" class="menu-note" role="status">{{ notice }}</p>
       <div class="menu-actions">
-        <button v-if="canReturn" class="game-button" @click="emit('return')">Вернуться в поход</button>
+        <button v-if="canReturn" class="game-button" @click="emit('return')">{{ finished ? 'Вернуться к итогам похода' : 'Вернуться в поход' }}</button>
         <button v-else-if="saved" class="game-button" @click="emit('continue')">{{ saved.active ? 'Продолжить поход' : 'Посмотреть итог' }}</button>
         <button v-if="unreadable" class="game-button" @click="emit('retry')">Повторить загрузку</button>
         <button class="game-button" :class="{ 'is-warning': confirming }" @click="startNew">{{ confirming ? (unreadable ? 'Да, перезаписать сохранение' : 'Да, начать новый поход') : 'Новый поход' }}</button>

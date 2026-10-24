@@ -3,7 +3,7 @@
 // face. No sentences: "sword · 9" is an attack, "hourglass · ?" is a preparation whose size is not public yet, "shield · +5" is
 // a defence. Details live in the tooltip. The component only receives the PublicIntent (ui/threatDisplay.ts), so it cannot
 // draw a number that the player must not know. `caption` is the alternative layout with the action's name under the icon.
-// EXPERIMENT "Honest Turn B": a row of small trait tokens sits under the banner when the action carries one — a hit that
+// B1/B2 rules (the game since X04): a row of small trait tokens sits under the banner when the action carries one — a hit that
 // pierces armor (shield-off), a hit the party can stop this turn (bolt, with the progress), a hit that marks its target
 // (crosshair), the weakening of Frostbite (snowflake), the enemy's rage (flame). A preparation shows them without numbers.
 import { computed } from 'vue'

@@ -13,7 +13,7 @@ import BattleFx from './BattleFx.vue'
 import BattleResult from './BattleResult.vue'
 import BattleHelp from './BattleHelp.vue'
 import PhaseShiftBanner from './PhaseShiftBanner.vue'
-const props = defineProps<{ state: BattleState; animation: BattlePresentation; phase: BattlePhase; artifactNotices?: string[]; continueLabel?: string; captioned?: boolean }>()
+const props = defineProps<{ state: BattleState; animation: BattlePresentation; phase: BattlePhase; artifactNotices?: string[]; continueLabel?: string; final?: boolean; captioned?: boolean }>()
 const emit = defineEmits<{ impact: [actionId: string]; endTurn: []; continue: [] }>()
 const enemyStatuses = computed(() => statusViews(props.state, 'enemy'))
 // Health the enemy loses to ticking statuses at the start of its turn (Bleeding), drawn as a ghost on its health bar.
@@ -26,7 +26,7 @@ const marks = computed(() => heroMarks(intent.value))
 const incomingLoss = computed(() => Object.fromEntries(Object.values(marks.value).map(mark => [mark!.hero, mark!.when === 'now' ? mark!.healthLoss : 0])) as Partial<Record<HeroId, number>>)
 const heroNames = computed(() => ({ warrior: props.state.heroes.warrior.name, mage: props.state.heroes.mage.name }))
 const phaseTitle = computed(() => ({ player: 'Ваш ход', card: 'Способность отряда', enemy: 'Ход противника', finished: 'Бой завершён' })[props.phase])
-// EXPERIMENT B1: the boss's second phase is announced when it begins and keeps its own light for the rest of the fight.
+// B1 enemy rules (the game since X04): the boss's second phase is announced when it begins and keeps its own light for the rest of the fight.
 const rebuilt = computed(() => props.state.enemy.phase === 2 && !!props.state.enemy.phaseNote)
 const rayTargets = computed(() => Object.keys(marks.value) as HeroId[])
 const rayLater = computed(() => intent.value.kind === 'prepare')
@@ -48,7 +48,7 @@ const rayTick = computed(() => [props.state.turn, props.phase, intent.value.name
       <path d="M0 920Q240 780 440 900Q650 830 820 920Q1110 800 1300 910Q1480 800 1600 900V1000H0Z" fill="#292b27"/>
     </svg>
     <header class="battle-header">
-      <div class="location-label"><span>✦ Мёртвые копи</span><small>{{ state.enemy.title }}</small></div>
+      <div class="location-label"><span>✦ Мёртвые копи</span><small>Сектор I · Старые штольни</small></div>
       <div :key="phase + (phase === 'player' ? state.turn : '')" class="phase-indicator" :class="'phase-indicator--' + phase" role="status" aria-live="polite"><strong>{{ phaseTitle }}</strong><span>{{ phase === 'player' ? 'Вариан и Джайна · Ход ' + state.turn : phase === 'finished' ? 'Сражение завершено' : animation.label }}</span></div>
       <BattleHelp />
     </header>
@@ -68,7 +68,7 @@ const rayTick = computed(() => [props.state.turn, props.phase, intent.value.name
     <ThreatRays :targets="rayTargets" :later="rayLater" :lethal="rayLethal" :tick="rayTick" />
     <p v-if="artifactNotices?.length" class="artifact-feedback" role="status" aria-live="polite">{{ artifactNotices.join(' · ') }}</p>
     <BattleFx :pulse="animation.pulse" :action-id="animation.actionId" :effect="animation.effect" :source="animation.source" :target="animation.target" :damage="animation.amount" :bonus-damage="animation.bonusDamage" :partner-armor="animation.partnerArmor" :incoming-loss="incomingLoss" @impact="emit('impact', $event)" />
-    <BattleResult v-if="state.result" :result="state.result" :continue-label="continueLabel" @continue="emit('continue')" />
+    <BattleResult v-if="state.result" :result="state.result" :continue-label="continueLabel" :final="final" @continue="emit('continue')" />
   </main>
 </template>
 <style scoped>

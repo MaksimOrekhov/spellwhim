@@ -21,8 +21,8 @@ const action = computed(() => draft.value?.action)
 const paid = computed(() => room.value.eventId === 'forgotten-forge')
 const title = computed(() => room.value.type === 'forge' ? 'Шахтная кузница' : room.value.type === 'treasure' ? 'Забытый тайник' : sectorEventText[room.value.eventId!].name)
 const copy = computed(() => room.value.type === 'event' ? sectorEventText[room.value.eventId!].text : room.value.type === 'forge' ? 'Горн ещё тёплый. Одна услуга на весь отряд: выберите карту и подтвердите изменение.' : 'Под рельсами спрятан сундук. Возьмите один артефакт или одну карту. От остального придётся отказаться.')
-const labels: Record<RoomAction,string> = { upgrade:'Улучшить карту',remove:'Удалить карту',replace:'Заменить карту',card:'Взять обычную карту',risk:'Рискнуть ради улучшенной',artifact:'Взять артефакт',leave:'Уйти без награды' }
-const descriptions = computed<Record<RoomAction,string>>(() => ({ upgrade: paid.value ? `Цена: ${roomRules.upgradeHealth} HP выбранного героя. Он должен пережить оплату.` : 'Одна обычная копия станет улучшенной. Цена маны прежняя.', remove:'Удалить выбранную копию навсегда. Последнюю карту удалить нельзя.',replace:`До ${roomRules.replacements} карт того же класса. Новая копия без улучшения.`,card:`Одна карта из ${roomRules.cards}, без риска для здоровья.`,risk:`${roomRules.riskChance*100}%: улучшенная карта; ${100-roomRules.riskChance*100}%: оба героя теряют по ${roomRules.riskHealth} HP, без карты.`,artifact:`До ${roomRules.artifacts} предложений. Один личный слот на героя, возможна замена.`,leave:'Завершить посещение. Награду потом забрать нельзя.' }))
+const labels = computed<Record<RoomAction,string>>(() => ({ upgrade:'Улучшить карту',remove:'Удалить карту',replace:'Заменить карту',card:'Взять обычную карту',risk:'Рискнуть ради улучшенной',artifact:'Взять артефакт',leave: room.value.type === 'treasure' ? 'Уйти без награды' : 'Уйти, ничего не меняя' }))
+const descriptions = computed<Record<RoomAction,string>>(() => ({ upgrade: paid.value ? `Цена: ${roomRules.upgradeHealth} HP выбранного героя. Он должен пережить оплату.` : 'Одна обычная копия станет улучшенной. Цена маны прежняя.', remove:'Удалить выбранную копию навсегда. Последнюю карту удалить нельзя.',replace:`До ${roomRules.replacements} карт того же класса. Новая копия без улучшения.`,card:`Одна карта из ${roomRules.cards}, без риска для здоровья.`,risk:`${roomRules.riskChance*100}%: улучшенная карта; ${100-roomRules.riskChance*100}%: оба героя теряют по ${roomRules.riskHealth} HP, без карты.`,artifact:`До ${roomRules.artifacts} предложений. Один личный слот на героя, возможна замена.`,leave: room.value.type === 'treasure' ? 'Завершить посещение. Награду потом забрать нельзя.' : 'Завершить посещение без изменений. Вернуться сюда нельзя.' }))
 
 type Tone = 'safe' | 'cost' | 'risk' | 'leave'
 const actionIcons: Record<RoomAction, typeof Anvil> = { upgrade: ArrowBigUpDash, remove: Trash, replace: Replace, card: Gift, risk: Dices, artifact: Gem, leave: DoorOpen }
@@ -34,7 +34,7 @@ const tags = computed<Record<RoomAction, { tone: Tone; text: string; icon: typeo
   card: { tone: 'safe', text: 'Без риска', icon: ShieldCheck },
   risk: { tone: 'risk', text: `Риск: ${roomRules.riskChance*100}% / ${100-roomRules.riskChance*100}%`, icon: Flame },
   artifact: { tone: 'safe', text: 'Личный слот', icon: Sparkles },
-  leave: { tone: 'leave', text: 'Без награды', icon: DoorOpen },
+  leave: { tone: 'leave', text: room.value.type === 'treasure' ? 'Без награды' : 'Без изменений', icon: DoorOpen },
 }))
 const roomIcon = computed(() => room.value.type === 'forge' ? Anvil : room.value.type === 'treasure' ? Gem : room.value.eventId === 'powder-store' ? Bomb : room.value.eventId === 'goblin-trade' ? Handshake : room.value.eventId === 'forgotten-forge' ? Hammer : ScrollText)
 const kicker = computed(() => room.value.type === 'forge' ? 'Сервисная комната · Кузница' : room.value.type === 'treasure' ? 'Сервисная комната · Сокровищница' : 'Случай в шахте')
@@ -56,6 +56,17 @@ const isEligible = (copy: { instanceId: string }) => eligible.value.some(c => c.
 const replacementsFor = (copy: Parameters<typeof roomReplacementOptions>[1]) => roomReplacementOptions(props.run, copy).map(resolveCardDefinition)
 function disabled(a: RoomAction) {
   return !roomActionAvailable(props.run,a)
+}
+/** Why an option is closed, from the same room rules the engine checks (dungeonRooms.ts). */
+function disabledReason(a: RoomAction): string {
+  const heroes = Object.values(props.run.heroes)
+  if (a === 'risk') return heroes.some(h => h.health <= roomRules.riskHealth) ? `Каждому герою нужно больше ${roomRules.riskHealth} HP` : 'Нет предложения'
+  if (a === 'card') return 'Нет карт на выбор'
+  if (a === 'artifact') return 'Нет артефактов на выбор'
+  if (a === 'upgrade' && paid.value && !heroes.some(h => h.health > roomRules.upgradeHealth)) return `Ни у одного героя нет больше ${roomRules.upgradeHealth} HP`
+  if (a === 'upgrade') return 'Нет карт, которые можно улучшить'
+  if (a === 'replace') return 'Нет подходящих замен'
+  return 'Нет подходящих карт'
 }
 function update(value: Partial<RoomSelection>) { emit('select', { ...draft.value!, ...value }) }
 /** The gallery dialog sends only the exact copy (and the replacement) it was shown; the rest of the command is the saved draft. */
@@ -82,7 +93,7 @@ function confirm(choice?: { instanceId?: string; cardId?: string }) {
           <span class="choice-icon" aria-hidden="true"><component :is="actionIcons[a]" :size="26" :stroke-width="1.9"/></span>
           <span class="choice-text"><strong>{{ labels[a] }}</strong><span>{{ descriptions[a] }}</span></span>
           <span class="choice-tag"><component :is="tags[a].icon" :size="13" :stroke-width="2.4" aria-hidden="true"/>{{ tags[a].text }}</span>
-          <small v-if="disabled(a)">Нет доступной цели или недостаточно здоровья</small>
+          <small v-if="disabled(a)">{{ disabledReason(a) }}</small>
         </button>
       </div>
       <section v-if="draft" class="selection" aria-live="polite">

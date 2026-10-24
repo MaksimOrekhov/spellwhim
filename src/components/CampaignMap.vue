@@ -7,6 +7,7 @@ import { availableDungeonNodes } from '../game/campaign'
 import type { DungeonMap, DungeonRunState } from '../game/campaign'
 import { mapAriaLabel, mapFace, mapNodeState, mapPosition, mapRailPath, mapRowLabel, mapStateText } from '../ui/mapDisplay'
 import type { MapFaceKind } from '../ui/mapDisplay'
+import { cardsText } from '../ui/cardOperations'
 
 const props = defineProps<{ map: DungeonMap; run: DungeonRunState }>()
 const emit = defineEmits<{ enter: [nodeId: string]; mode: [] }>()
@@ -134,7 +135,7 @@ watch(current, centreOnParty)
             <component :is="glyphOf(step.face.kind)" v-if="step && glyphOf(step.face.kind)" :size="13" :stroke-width="2.6" aria-hidden="true" />
           </li>
         </ol>
-        <span>{{ run.completedNodeIds.length }}/{{ rows }} ПОСЕЩЕНИЙ · {{ run.deck.length }} КАРТ В КОЛОДЕ</span>
+        <span>{{ run.completedNodeIds.length }}/{{ rows }} ПОСЕЩЕНИЙ · {{ cardsText(run.deck.length).toUpperCase() }} В КОЛОДЕ</span>
       </span>
     </footer>
   </main>

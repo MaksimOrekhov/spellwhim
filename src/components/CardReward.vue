@@ -6,6 +6,7 @@ import SpellCard from './SpellCard.vue'
 import CardNotes from './CardNotes.vue'
 import DeckViewer from './DeckViewer.vue'
 import { neutralPreview } from '../ui/cardDisplay'
+import { manaText } from '../ui/cardOperations'
 import type { CardDefinition, PersistentCard } from '../game/types'
 
 const props = defineProps<{ options: CardDefinition[]; encounterName: string; elite?: boolean; deck?: readonly PersistentCard[]; offerId?: string }>()
@@ -20,10 +21,10 @@ const items = computed(() => props.options.map(card => ({ card, preview: neutral
         <span class="reward-spark" aria-hidden="true">✦</span>
         <p class="reward-kicker">{{ elite ? 'ЦЕННАЯ НАГРАДА ЭЛИТЫ' : 'НАГРАДА ЗА ПОБЕДУ' }} · {{ encounterName.toUpperCase() }}</p>
         <h1>{{ elite ? 'Заберите трофей' : 'Найдите новую силу' }}</h1>
-        <p class="reward-copy">Выберите одну карту из {{ options.length }}. Она останется с отрядом до конца похода.</p>
+        <p class="reward-copy">Выберите одну карту из {{ options.length }}: она войдёт в общую колоду отряда.</p>
       </header>
       <div class="reward-options" :style="{ '--n': options.length }">
-        <button v-for="{ card, preview } in items" :key="card.id" class="reward-option" :data-card-id="card.id" :aria-label="'Взять карту: ' + card.name + ', ' + card.cost + ' маны. ' + (card.upgrade ? 'Улучшена. ' : '') + card.description" @click="emit('choose', card, offerId)">
+        <button v-for="{ card, preview } in items" :key="card.id" class="reward-option" :data-card-id="card.id" :aria-label="'Взять карту: ' + card.name + ', ' + manaText(card.cost) + '. ' + (card.upgrade ? 'Улучшена. ' : '') + card.description" @click="emit('choose', card, offerId)">
           <SpellCard :card="card" :preview="preview" />
           <CardNotes class="reward-notes" :card="card" :preview="preview" mode="choose" />
         </button>

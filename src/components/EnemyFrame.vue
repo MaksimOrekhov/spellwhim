@@ -14,7 +14,7 @@ import type { EnemyState } from '../game/types'
 const props = defineProps<{ enemy: EnemyState; statuses?: StatusView[]; bleedTick?: number; acting?: boolean; hit?: boolean; turn?: number }>()
 const hasPhases = computed(() => !!props.enemy.behavior.phase2)
 const phase2 = computed(() => hasPhases.value && props.enemy.phase === 2)
-// EXPERIMENT B1: a second phase that comes with a note is a different fight, so it also looks like one (hotter portrait, a burst on the turn it begins).
+// B1 enemy rules (the game since X04): a second phase that comes with a note is a different fight, so it also looks like one (hotter portrait, a burst on the turn it begins).
 const rebuilt = computed(() => phase2.value && !!props.enemy.phaseNote)
 const justShifted = computed(() => rebuilt.value && props.enemy.phaseShiftTurn === props.turn)
 const rage = computed(() => props.enemy.power ?? 0)

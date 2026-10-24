@@ -45,7 +45,7 @@ function takeArtifact() {
     <div class="elite-content">
       <p class="reward-kicker">ЭЛИТНАЯ НАХОДКА · {{ encounterName.toUpperCase() }}</p>
       <h1>Выберите одну награду</h1>
-      <p class="reward-copy">Одна карта из пяти или один личный артефакт. Новая находка занимает слот выбранного героя.</p>
+      <p class="reward-copy">Одна карта из {{ options.length }} или один личный артефакт. Артефакт занимает личный слот выбранного героя.</p>
 
       <div class="reward-tabs" role="tablist" aria-label="Виды награды">
         <button role="tab" :aria-selected="section === 'cards'" @click="section = 'cards'; selectedArtifactId = null; selectedOwnerId = null">Карты · {{ options.length }}</button>

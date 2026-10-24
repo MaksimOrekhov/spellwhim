@@ -92,7 +92,7 @@ export function resolveRoom(run: DungeonRunState, command: RoomCommand): Dungeon
   if (paidUpgrade && (!hero || hero.health <= roomRules.upgradeHealth)) throw new Error('Not enough health for this service')
   // Mark completion only in a local immutable value. Errors publish neither payment nor a spent source.
   let next: DungeonRunState = { ...run, room: null, completedNodeIds: [...run.completedNodeIds, room.nodeId], decisions: [...run.decisions, `room:${room.nodeId}`] }
-  let text = 'Уйти без награды', changed: PersistentCard | undefined
+  let text = room.type === 'treasure' ? 'Тайник оставлен без награды' : 'Комната покинута без изменений', changed: PersistentCard | undefined
   if (action === 'upgrade' || action === 'remove' || action === 'replace') {
     const previous = roomEligibleCards(run, action).find(c => c.instanceId === command.instanceId)
     if (!previous) throw new Error('Unavailable card instance')

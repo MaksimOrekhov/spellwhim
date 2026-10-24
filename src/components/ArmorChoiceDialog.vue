@@ -24,6 +24,8 @@ function onKey(event: KeyboardEvent) {
   items[(at + step + items.length) % items.length]!.focus()
 }
 const lossText = (loss: number) => loss > 0 ? `−${loss} HP` : 'без потерь'
+/** The blow is still being prepared and armor lasts one enemy turn: no option can protect anyone from it, and the note says so. */
+const expires = props.choice.options.every(option => option.outcome === 'expired')
 </script>
 
 <template>
@@ -31,7 +33,8 @@ const lossText = (loss: number) => loss > 0 ? `−${loss} HP` : 'без поте
     <h2 id="ac-title">{{ card.name }}: кого прикрыть?</h2>
     <p id="ac-note" class="ac-note">
       «{{ choice.hit.name }}» {{ choice.hit.imminent ? 'ударит по обоим героям в конце вашего хода.' : 'готовится: ударит по обоим героям на следующем ходу врага.' }}
-      Выберите, кому достанется основная защита.
+      <template v-if="expires">Броня с этой карты исчезнет в конце этого хода врага, раньше удара: выбор влияет только на условия «при броне» в этот ход.</template>
+      <template v-else>Выберите, кому достанется основная защита.</template>
     </p>
     <div class="ac-options" role="group" aria-label="Распределение брони">
       <button v-for="option in choice.options" :key="option.focus" class="ac-option" :class="{ 'is-lethal': option.lethal }" :aria-label="`Основная защита: ${heroes[option.focus].name}. ` + ids.map(id => `${heroes[id].name}: ${option.armor[id] > 0 ? '+' + option.armor[id] + ' брони' : 'без брони'}${option.loss ? ', ' + lossText(option.loss[id] ?? 0) : ''}`).join('. ') + (option.lethal ? '. Смертельно.' : '')" @click="emit('pick', option.focus)">

@@ -2,17 +2,18 @@
 // Parchment "scroll" with everything the small card cannot say: verbatim rules, the exact damage sum,
 // who receives armor, every condition and keyword. Used beside the zoomed hand card and under reward cards.
 import { computed } from 'vue'
-import type { CardDefinition, CardPreview } from '../game/types'
+import type { CardDefinition, CardPreview, HeroId } from '../game/types'
 import { cardNotes } from '../ui/cardDisplay'
 import type { CardBlock } from '../ui/cardDisplay'
 import { classThemeStyle } from '../game/classThemes'
 import CardGlyph from './CardGlyph.vue'
 import { useRules } from '../ui/rulesInfo'
 
-const props = defineProps<{ card: CardDefinition; preview: CardPreview; block?: CardBlock | null; hotkey?: string; mode?: 'play' | 'choose' | 'inspect'; brief?: boolean }>()
+/** `idleArmor`: heroes the enemy does not hit this turn, so armor given to them now expires unused (board only). */
+const props = defineProps<{ card: CardDefinition; preview: CardPreview; block?: CardBlock | null; hotkey?: string; mode?: 'play' | 'choose' | 'inspect'; brief?: boolean; idleArmor?: HeroId[] }>()
 const neutral = computed(() => props.mode === 'choose' || props.mode === 'inspect')
 const rules = useRules()
-const notes = computed(() => cardNotes(props.card, props.preview, neutral.value ? 'neutral' : 'board', rules.armorExpires))
+const notes = computed(() => cardNotes(props.card, props.preview, neutral.value ? 'neutral' : 'board', rules.armorExpires, props.idleArmor))
 const footer = computed(() => props.block?.text ?? (props.mode === 'choose' ? 'Нажмите, чтобы взять карту.' : `Нажмите или клавиша ${props.hotkey ?? ''} — разыграть.`))
 </script>
 

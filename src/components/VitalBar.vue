@@ -6,7 +6,7 @@
 import { computed } from 'vue'
 import { Heart, Shield } from '@lucide/vue'
 import GameTooltip from './GameTooltip.vue'
-import { useRules } from '../ui/rulesInfo'
+import { armorNote, useRules } from '../ui/rulesInfo'
 
 const props = defineProps<{ name: string; subtitle?: string; health: number; max: number; armor: number; ghost?: number; ghostTone?: 'threat' | 'strike'; lethal?: boolean; side: 'hero' | 'enemy' }>()
 const pct = computed(() => Math.max(0, Math.min(100, props.health / props.max * 100)))
@@ -25,7 +25,7 @@ const rules = useRules()
     </div>
     <GameTooltip v-if="armor" label="Броня" class="armor-tip">
       <span class="armor" tabindex="0" :aria-label="'Броня ' + armor"><Shield :size="40" :stroke-width="1.6" aria-hidden="true" /><b>{{ armor }}</b></span>
-      <template #content><p v-if="side === 'hero' && rules.armorExpires">Поглощает урон. Исчезает, когда враг закончит свой ход, — даже если по этому герою не били.</p><p v-else>Поглощает урон. Остаток исчезает после атаки по этому герою{{ side === 'enemy' ? '; запас брони врага ограничен 8' : '' }}.</p></template>
+      <template #content><p>{{ armorNote(side, rules) }}</p></template>
     </GameTooltip>
   </div>
 </template>

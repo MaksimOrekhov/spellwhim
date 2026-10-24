@@ -12,6 +12,8 @@ const icon = computed(() => ({ shield: Shield, link: Link2, crosshair: Crosshair
 const status = computed(() => props.artifact.usedThisBattle ? 'заряд использован'
   : props.artifact.definitionId === 'tension-spool' ? props.artifact.lastTriggeredTurn === props.turn ? 'сработал в этом ходу' : props.artifact.armedThisTurn ? 'готов усилить первую атакующую карту отряда' : 'ждёт броню владельца в начале хода'
   : props.artifact.definitionId === 'double-pulley' && props.artifact.lastTriggeredTurn === props.turn ? 'сработал в этом ходу' : 'заряд готов')
+// The spool and the pulley work once a turn; the other artifacts hold one charge per battle.
+const perTurn = computed(() => props.artifact.definitionId === 'tension-spool' || props.artifact.definitionId === 'double-pulley')
 </script>
 
 <template>
@@ -19,7 +21,7 @@ const status = computed(() => props.artifact.usedThisBattle ? 'заряд исп
     <button class="artifact-chip" :aria-label="details.name + '. ' + details.description + ' Статус: ' + status">
       <component :is="icon" :size="22" :stroke-width="2.1" aria-hidden="true" />
     </button>
-    <template #content><p>{{ details.description }}</p><p>Статус: {{ status }}. Заряд боя восстанавливается перед следующим боем.</p></template>
+    <template #content><p>{{ details.description }}</p><p>Статус: {{ status }}. {{ perTurn ? 'Срабатывает не чаще раза за ход.' : 'Заряд восстанавливается перед следующим боем.' }}</p></template>
   </GameTooltip>
 </template>
 

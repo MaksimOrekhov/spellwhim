@@ -19,7 +19,8 @@ import type { DungeonRunState } from './game/campaign'
 import { createRunSaveStore } from './game/runSave'
 import type { RunSnapshot, SaveStorage } from './game/runSave'
 import { resolveCardDefinition } from './game/cardProgression'
-import { armorChoice } from './game/battle'
+import { armorChoice, forecastEnemyAction } from './game/battle'
+import { heroesStruckNow, publicIntent } from './ui/threatDisplay'
 import type { ArmorChoice } from './game/battle'
 import ArmorChoiceDialog from './components/ArmorChoiceDialog.vue'
 import { drawForTurn, economyFromSearch, manaForTurn } from './game/economy'
@@ -40,10 +41,11 @@ const saveStore = createRunSaveStore(() => props.saveStorage ?? window.localStor
 const slot = saveStore.load()
 // A slot holds only runs of its own rules; a foreign record is left in storage untouched and never played.
 const foreign = !!slot.snapshot && !!rulesMode.economy && slot.snapshot.economy.id !== rulesMode.economy.id
-const loaded = foreign ? { snapshot: null, blocked: true, message: 'В этом слоте лежит поход по другим правилам боя. Он оставлен в хранилище и не тронут; откройте его через нужный набор правил.' } : slot
+const loaded = foreign ? { snapshot: null, blocked: true, message: 'Сохранённый поход создан по другим правилам боя, и эта версия игры не может его продолжить. Данные оставлены в хранилище нетронутыми: их можно скачать.' } : slot
 const saved = shallowRef<RunSnapshot | null>(loaded.snapshot)
 const economy = loaded.snapshot?.economy ?? configuredEconomy
-provideRules(rulesInfoOf(economy, { frost: rulesMode.economy?.id === economy.id && rulesMode.frost === true }))
+const rules = rulesInfoOf(economy, { frost: rulesMode.economy?.id === economy.id && rulesMode.frost === true })
+provideRules(rules)
 const experimental = launch.lab
 const saveError = ref('')
 const loadNotice = ref(loaded.message)
@@ -55,11 +57,19 @@ const phase = ref<ReturnType<typeof dungeonRunPhase> | 'resume' | 'start'>(loade
 const phaseBeforeStart = ref<Exclude<typeof phase.value, 'start'> | null>(null)
 const rewardOptions = computed(() => dungeonRewardOptions(run.value))
 const selectedNodeId = computed(() => run.value.currentNodeId)
+const finalBattle = computed(() => dungeonNode(run.value.map, selectedNodeId.value ?? '')?.type === 'final')
+/** Heroes whose new armor would expire before any blow reaches them: under armor that lasts one enemy turn, everyone the enemy does not hit now. */
+const idleArmor = computed<HeroId[]>(() => {
+  if (!rules.armorExpires || state.value.result) return []
+  const struck = heroesStruckNow(publicIntent(forecastEnemyAction(state.value)))
+  return (Object.keys(state.value.heroes) as HeroId[]).filter(id => !struck.includes(id))
+})
 const encounterName = computed(() => {
   const node = run.value.currentNodeId ? dungeonNode(run.value.map, run.value.currentNodeId) : undefined
   return node && ['battle','elite','final'].includes(node.type) ? dungeonEncounter(node, economy).name : ''
 })
 
+const otherRulesNotice = 'Сохранённый поход создан по другим правилам боя. Перезапустите игру, чтобы загрузить его.'
 function persist() {
   const result = saveStore.save(run.value, economy)
   saveError.value = result.message
@@ -76,7 +86,7 @@ function startCurrentBattle() {
 function continueSavedRun() {
   if (!saved.value) return
   if (saved.value.economy.id !== economy.id) {
-    loadNotice.value = 'Перезапустите приложение, чтобы загрузить поход с другой моделью экономики.'
+    loadNotice.value = otherRulesNotice
     return
   }
   try {
@@ -94,7 +104,7 @@ function retryLoad() {
   const result = saveStore.load()
   saved.value = result.snapshot
   loadNotice.value = result.message
-  if (result.snapshot && result.snapshot.economy.id !== economy.id) loadNotice.value = 'Перезапустите приложение, чтобы загрузить поход с другой моделью экономики.'
+  if (result.snapshot && result.snapshot.economy.id !== economy.id) loadNotice.value = otherRulesNotice
 }
 function downloadSave() {
   const raw = saveStore.exportSnapshot()
@@ -221,16 +231,16 @@ function confirmRoom(command: RoomCommand) {
   <div class="app-shell">
     <div class="game-wrap">
       <p v-if="experimental" class="economy-badge" :title="economy.label">Лаборатория · {{ economy.label }}</p>
-      <MainMenu v-if="phase === 'start' || phase === 'resume'" :saved="saved ? { active: saved.run.status === 'active' } : null" :can-return="!!phaseBeforeStart && phaseBeforeStart !== 'resume'" :notice="loadNotice" :unreadable="phase === 'resume' && !saved" @continue="continueSavedRun" @return="phase = phaseBeforeStart!" @new-run="restartRun" @download="downloadSave" @retry="retryLoad" />
+      <MainMenu v-if="phase === 'start' || phase === 'resume'" :saved="saved ? { active: saved.run.status === 'active' } : null" :can-return="!!phaseBeforeStart && phaseBeforeStart !== 'resume'" :finished="phaseBeforeStart === 'complete'" :notice="loadNotice" :unreadable="phase === 'resume' && !saved" @continue="continueSavedRun" @return="phase = phaseBeforeStart!" @new-run="restartRun" @download="downloadSave" @retry="retryLoad" />
       <CampaignMap v-else-if="phase === 'map'" :map="run.map" :run="run" @enter="enterNode" @mode="showStart" />
       <DungeonRoom v-else-if="phase === 'room'" :key="run.room!.id" :run="run" @select="chooseRoom" @confirm="confirmRoom" />
       <EliteReward v-else-if="phase === 'reward' && run.pendingReward?.elite" :key="run.pendingReward.id" :offer-id="run.pendingReward.id" :deck="run.deck" :options="rewardOptions" :artifacts="dungeonArtifactOptions(run)" :heroes="run.heroes" :owned-artifacts="run.artifacts" :encounter-name="encounterName" @choose-card="chooseReward" @choose-artifact="chooseArtifact" />
       <CardReward v-else-if="phase === 'reward'" :key="run.pendingReward!.id" :offer-id="run.pendingReward!.id" :deck="run.deck" :options="rewardOptions" :encounter-name="encounterName" @choose="chooseReward" @skip="skipReward" />
       <RestSite v-else-if="phase === 'rest'" :key="run.runId + '/' + selectedNodeId" :source-id="run.runId + '/' + selectedNodeId" :heroes="run.heroes" :deck="run.deck" :heal-amount="selectedNodeId ? dungeonNode(run.map, selectedNodeId)?.healAmount ?? 6 : 6" @choose="chooseRestTarget" @upgrade="chooseRestUpgrade" />
-      <RunComplete v-else-if="phase === 'complete'" :result="run.status === 'defeat' ? 'defeat' : 'victory'" :run="run" @restart="showStart" />
+      <RunComplete v-else-if="phase === 'complete'" :result="run.status === 'defeat' ? 'defeat' : 'victory'" :run="run" @new-run="restartRun" @menu="showStart" />
       <template v-else>
-        <BattleBoard :state="state" :animation="animation" :phase="battlePhase" :artifact-notices="state.artifactNotices" :continue-label="dungeonNode(run.map, selectedNodeId ?? '')?.type === 'final' ? (run.campaign ? 'Завершить сектор I' : 'Завершить поход') : 'Выбрать награду'" @impact="impact" @end-turn="onEndTurn" @continue="onBattleContinue" />
-        <BattleHand v-if="!isOver" :cards="cards" :outgoing="pendingCard" :outgoing-index="state.pending?.handIndex ?? 0" :draw-count="drawCount" :discard-count="discardCount" :exhausted-count="state.exhausted.length" :phase="battlePhase" :mana="state.mana" :max-mana="state.maxMana" :next-mana="manaForTurn(state.economy, state.turn + 1)" :next-draw="drawForTurn(state.economy, state.turn + 1)" :draw-boost-from="state.economy.drawSchedule.boost?.fromTurn" :draw-boost-amount="state.economy.drawSchedule.boost?.amount" @play="playCard" @end-turn="onEndTurn" />
+        <BattleBoard :state="state" :animation="animation" :phase="battlePhase" :artifact-notices="state.artifactNotices" :continue-label="finalBattle ? (run.campaign ? 'Завершить сектор I' : 'Завершить поход') : 'Выбрать награду'" :final="finalBattle" @impact="impact" @end-turn="onEndTurn" @continue="onBattleContinue" />
+        <BattleHand v-if="!isOver" :cards="cards" :outgoing="pendingCard" :outgoing-index="state.pending?.handIndex ?? 0" :draw-count="drawCount" :discard-count="discardCount" :exhausted-count="state.exhausted.length" :phase="battlePhase" :mana="state.mana" :max-mana="state.maxMana" :next-mana="manaForTurn(state.economy, state.turn + 1)" :next-draw="drawForTurn(state.economy, state.turn + 1)" :draw-boost-from="state.economy.drawSchedule.boost?.fromTurn" :draw-boost-amount="state.economy.drawSchedule.boost?.amount" :idle-armor="idleArmor" @play="playCard" @end-turn="onEndTurn" />
       </template>
       <ArmorChoiceDialog v-if="choosing" :card="choosing.card" :choice="choosing.choice" :heroes="state.heroes" @pick="pickArmorTarget" @cancel="cancelArmorChoice" />
       <aside v-if="saveError && phase !== 'resume'" class="save-error" role="alert"><p>{{ saveError }}</p><button class="game-button" @click="persist">Повторить сохранение</button><button class="game-button" @click="downloadSave">Скачать копию</button></aside>

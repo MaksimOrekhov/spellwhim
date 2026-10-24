@@ -1,11 +1,11 @@
 <script setup lang="ts">
 // One modal for every deck operation (upgrade / remove / replace), at the rest site and in service rooms: a gallery of the real deck on the
 // left, and on the right exactly what the chosen operation will do. It only collects a choice; the transaction is the parent's `confirm`.
-import { computed, onMounted, ref, useTemplateRef, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue'
 import type { CardDefinition, PersistentCard } from '../game/types'
 import { resolveCardDefinition } from '../game/cardProgression'
 import { neutralPreview } from '../ui/cardDisplay'
-import { changedWords, classLabel, manaText, upgradeChanges } from '../ui/cardOperations'
+import { cardsText, changedWords, classLabel, manaText, upgradeChanges } from '../ui/cardOperations'
 import type { CardOperation } from '../ui/cardOperations'
 import SpellCard from './SpellCard.vue'
 import CardNotes from './CardNotes.vue'
@@ -79,10 +79,14 @@ function choosePick(id: string) {
 function confirm() {
   if (ready.value) emit('confirm', { instanceId: selected.value!.instanceId, ...(props.mode === 'replace' ? { cardId: chosen.value!.id } : {}) })
 }
+// The parent removes the dialog (v-if) instead of closing it, so the browser cannot return focus by itself: the button that opened it gets it back.
+let opener: HTMLElement | null = null
 onMounted(() => {
+  opener = document.activeElement instanceof HTMLElement ? document.activeElement : null
   dialog.value?.showModal()
   gallery.value?.focusSelected()
 })
+onUnmounted(() => { if (opener?.isConnected) opener.focus() })
 </script>
 
 <template>
@@ -136,7 +140,7 @@ onMounted(() => {
               </button>
             </div>
           </div>
-          <p class="cod-note">Новая карта придёт без улучшения; в колоде останется {{ deck.length }} карт.</p>
+          <p class="cod-note">Новая карта придёт без улучшения; в колоде останется {{ cardsText(deck.length) }}.</p>
           <p v-if="lossWarning" class="cod-warn"><TriangleAlert :size="20" aria-hidden="true" />{{ lossWarning }}</p>
         </template>
       </section>
