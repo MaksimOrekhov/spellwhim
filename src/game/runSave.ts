@@ -8,6 +8,7 @@ import { honestEconomies, knownEconomies } from './economy'
 import type { EconomyConfig } from './economy'
 import { CARVED_GENERATOR_VERSION, validateSectorConfig } from './dungeonGenerator'
 import { sectorEncounters, sectorEventIds } from './sectorContent'
+import { longSectorEnemies, sectorLongConfig } from './sectorLong'
 import { createRoomVisit, roomActions } from './dungeonRooms'
 import { roomRules } from './roomRules'
 
@@ -17,7 +18,7 @@ export const RULES_VERSION = 'combat-upgrades-1'
 /** EXPERIMENT "Honest Turn" A: a run saved under these rules carries this version instead, so no other build reads it as its own. */
 export const HONEST_RULES_VERSION = 'honest-turn-a-1'
 /** B1 and B2 are separate generations: a save of one is never read as another's. */
-const HONEST_B_RULES_VERSIONS: Readonly<Record<string, string>> = { 'honest-b1': 'honest-turn-b1-1', 'honest-b2': 'honest-turn-b2-1' }
+const HONEST_B_RULES_VERSIONS: Readonly<Record<string, string>> = { 'honest-b1': 'honest-turn-b1-1', 'honest-b2': 'honest-turn-b2-1', 'honest-b1-long': 'honest-turn-b1-long-1', 'honest-b2-long': 'honest-turn-b2-long-1' }
 export const GENERATOR_VERSION = 'dungeon-six-layers-1'
 
 function canonical(value: unknown): string {
@@ -46,6 +47,9 @@ const baseCatalogueVersion = checksum(canonical(baseCatalogue))
 /** Conservative automatic catalogue fingerprint plus explicit rule/generator versions. */
 export const CATALOG_VERSION = checksum(canonical({ ...baseCatalogue, upgrades: cardUpgrades }))
 export const SECTOR_CATALOG_VERSION = checksum(canonical({ base: CATALOG_VERSION, encounters: sectorEncounters, events: sectorEventIds }))
+/** The long route adds three enemies and its own map rules; a save of it declares this instead, so no other build reads it as its own. */
+export const LONG_SECTOR_CATALOG_VERSION = checksum(canonical({ base: SECTOR_CATALOG_VERSION, enemies: longSectorEnemies, config: sectorLongConfig }))
+const sectorCatalogFor = (campaignId: string | undefined) => campaignId === sectorLongConfig.id ? LONG_SECTOR_CATALOG_VERSION : SECTOR_CATALOG_VERSION
 export const ROOM_RULES_VERSION = roomRules.version + ':' + checksum(canonical(roomRules))
 
 export interface RunSnapshot {
@@ -188,13 +192,15 @@ function requireRunMatchesEconomy(run: DungeonRunState, economy: unknown): void 
   const honest = honestEconomyOf(economy)
   if (honest) requireValid(!!run.campaign && canonical(run.excludedArtifacts) === canonical(honest.excludedArtifacts))
   else requireValid(run.excludedArtifacts === undefined)
+  // The long route belongs to its own economies and they to it: no run changes its length by being loaded under other rules.
+  requireValid((economy as EconomyConfig | undefined)?.sectorRoute === 'long' ? run.campaign?.id === sectorLongConfig.id : run.campaign?.id !== sectorLongConfig.id)
 }
 export function encodeSnapshot(run: DungeonRunState, economy: EconomyConfig, revision: number): string {
   validateRun(run)
   requireValid(integer(1)(revision))
   requireValid(knownEconomies().some(known => sameEconomy(known, economy)))
   requireRunMatchesEconomy(run, economy)
-  const payload: RunSnapshot = { schemaVersion: SAVE_SCHEMA_VERSION, rulesVersion: rulesVersionFor(economy), generatorVersion: run.map.configuration?.generatorVersion ?? GENERATOR_VERSION, catalogVersion: run.campaign ? SECTOR_CATALOG_VERSION : CATALOG_VERSION, ...(run.campaign ? {roomRulesVersion:ROOM_RULES_VERSION} : {}), revision, economy, run }
+  const payload: RunSnapshot = { schemaVersion: SAVE_SCHEMA_VERSION, rulesVersion: rulesVersionFor(economy), generatorVersion: run.map.configuration?.generatorVersion ?? GENERATOR_VERSION, catalogVersion: run.campaign ? sectorCatalogFor(run.campaign.id) : CATALOG_VERSION, ...(run.campaign ? {roomRulesVersion:ROOM_RULES_VERSION} : {}), revision, economy, run }
   return JSON.stringify({ payload, checksum: checksum(canonical(payload)) })
 }
 
@@ -207,7 +213,7 @@ export function decodeSnapshot(raw: string): RunSnapshot {
   const legacy = baseCatalogueVersion === FOUNDATION_CATALOG_VERSION && snapshot.schemaVersion === 1 && !honestEconomyOf(snapshot.economy) && snapshot.rulesVersion === 'combat-progression-1' && snapshot.catalogVersion === FOUNDATION_CATALOG_VERSION && snapshot.generatorVersion === GENERATOR_VERSION
   const sector = snapshot.run && typeof snapshot.run === 'object' && !!snapshot.run.campaign
   if (sector && snapshot.roomRulesVersion !== ROOM_RULES_VERSION) throw new IncompatibleSave('Сохранение использует другую версию правил комнат. Исходные данные оставлены в хранилище и доступны для скачивания; нужен новый поход или совместимая версия игры.')
-  if (!legacy && (![1,2].includes(snapshot.schemaVersion) || (sector && snapshot.schemaVersion !== 2) || snapshot.rulesVersion !== rulesVersionFor(snapshot.economy) || snapshot.generatorVersion !== (sector ? CARVED_GENERATOR_VERSION : GENERATOR_VERSION) || snapshot.catalogVersion !== (sector ? SECTOR_CATALOG_VERSION : CATALOG_VERSION))) throw new IncompatibleSave('Сохранение создано для другой версии игры. Оно оставлено в хранилище; начните новый поход или вернитесь к совместимой версии.')
+  if (!legacy && (![1,2].includes(snapshot.schemaVersion) || (sector && snapshot.schemaVersion !== 2) || snapshot.rulesVersion !== rulesVersionFor(snapshot.economy) || snapshot.generatorVersion !== (sector ? CARVED_GENERATOR_VERSION : GENERATOR_VERSION) || snapshot.catalogVersion !== (sector ? sectorCatalogFor(snapshot.run.campaign?.id) : CATALOG_VERSION))) throw new IncompatibleSave('Сохранение создано для другой версии игры. Оно оставлено в хранилище; начните новый поход или вернитесь к совместимой версии.')
   requireValid(object({ schemaVersion: oneOf(1,2), rulesVersion: text, generatorVersion: text, catalogVersion: text, revision: integer(1), economy: value => knownEconomies().some(known => sameEconomy(known, value)), run: () => true }, {roomRulesVersion:text})(snapshot))
   requireValid(envelope.checksum === checksum(canonical(snapshot)))
   validateRun(snapshot.run)

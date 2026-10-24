@@ -1,5 +1,6 @@
 import type { DungeonMap, DungeonMapNode, DungeonNodeType } from './campaign'
-import { rhahkZor, sectorEncounters, sectorEventIds, sectorOneElite, sectorOneEnemies } from './sectorContent'
+import { rhahkZor, sectorEventIds, sectorOneElite, sectorOneEnemies } from './sectorContent'
+import { knownSectorEncounters } from './sectorLong'
 import type { SectorEventId } from './sectorContent'
 import { shuffle } from './deck'
 import { deriveDungeonSeed as sectorSeed } from './dungeonSeed'
@@ -28,6 +29,10 @@ export interface SectorConfig {
   maxElites: number
   maxConsecutiveServices: number
   maxBattles: number
+  /** EXPERIMENT long route: most ordinary battles on one route (the boss and the elite are not counted). Absent: no separate limit. */
+  maxNormalBattles?: number
+  /** EXPERIMENT long route: `forward` assigns enemies with forward checking (most constrained node first). Absent: the original search, so every earlier sector keeps its exact maps. */
+  assigner?: 'forward'
   requireDevelopment: boolean
 }
 export const sectorOneConfig: SectorConfig = {
@@ -53,6 +58,7 @@ export const sectorEnemyFamilies: Readonly<Record<string, string>> = {
   'old-mines-raider': 'defias-worker', 'old-mines-digger': 'defias-worker',
   'old-mines-watchman': 'defias-watchman', 'old-mines-overseer': 'mine-overseer',
   'old-mines-johnson': 'johnson', 'old-mines-rhahk-zor': 'rhahk-zor',
+  'old-mines-saboteur': 'goblin-saboteur', 'old-mines-tinkerer': 'foundry-tinkerer', 'old-mines-veteran': 'defias-veteran',
 }
 
 /** Finite constraint search: variants cannot match any normal ancestor on any route.
@@ -87,19 +93,62 @@ function assignEncounters(layers: DungeonMapNode[][], c: SectorConfig, seed: num
     remaining = 50000
     if (!assign(0,false)) return false
   }
-  battles.forEach(n => { n.encounterHealth = sectorEncounters.find(e => e.id === n.encounterId)!.maxHealth })
+  battles.forEach(n => { n.encounterHealth = knownSectorEncounters.find(e => e.id === n.encounterId)!.maxHealth })
+  return true
+}
+
+/**
+ * Same contract as `assignEncounters` (no normal enemy twice on one route; family repetition is a soft preference) for deep maps, where the
+ * original layer-order search thrashes: each node's options shrink as its comparable nodes (ancestors and descendants) are coloured,
+ * the node with the fewest options goes first, and a dead end is detected as soon as any node has none.
+ */
+function assignForward(layers: DungeonMapNode[][], c: SectorConfig, seed: number): boolean {
+  const nodes = layers.flat(), battles = nodes.filter(n => n.type === 'battle')
+  const ancestors = new Map<string, Set<string>>(), previousCombat = new Map<string, Set<string>>()
+  for (const n of nodes) {
+    const parents = nodes.filter(p => p.edges.includes(n.id))
+    ancestors.set(n.id, new Set(parents.flatMap(p => [p.id, ...ancestors.get(p.id) ?? []])))
+    previousCombat.set(n.id, new Set(parents.flatMap(p => combat(p) ? [p.id] : [...previousCombat.get(p.id) ?? []])))
+  }
+  const comparable = new Map(battles.map(n => [n.id, battles.filter(m => m !== n && (ancestors.get(n.id)!.has(m.id) || ancestors.get(m.id)!.has(n.id))).map(m => m.id)]))
+  const domain = new Map(battles.map(n => [n.id, ordered(sectorSeed(seed, `${c.id}:encounters:${n.id}`), [...new Set(c.rows[n.layer]!.encounters ?? c.normalPool)])]))
+  const colour = new Map<string, string>()
+  const options = (n: DungeonMapNode) => domain.get(n.id)!.filter(id => !comparable.get(n.id)!.some(other => colour.get(other) === id))
+  let remaining = 20000
+  const solve = (): boolean => {
+    if (colour.size === battles.length) return true
+    if (--remaining < 0) return false
+    let next: DungeonMapNode | undefined, choices: string[] = []
+    for (const n of battles) {
+      if (colour.has(n.id)) continue
+      const own = options(n)
+      if (!own.length) return false
+      if (!next || own.length < choices.length) { next = n; choices = own }
+    }
+    const near = [...previousCombat.get(next!.id)!]
+    const penalty = (id: string) => near.filter(other => colour.has(other) && sectorEnemyFamilies[colour.get(other)!] === sectorEnemyFamilies[id]).length
+    for (const id of [...choices].sort((a, b) => penalty(a) - penalty(b))) {
+      colour.set(next!.id, id)
+      if (solve()) return true
+      colour.delete(next!.id)
+    }
+    return false
+  }
+  if (!solve()) return false
+  for (const n of battles) { n.encounterId = colour.get(n.id); n.encounterHealth = knownSectorEncounters.find(e => e.id === n.encounterId)!.maxHealth }
   return true
 }
 
 export function validateSectorConfig(c: SectorConfig): void {
   const types = ['battle', 'elite', 'forge', 'treasure', 'event', 'rest']
-  const known = (id: string) => sectorEncounters.some(e => e.id === id)
+  const known = (id: string) => knownSectorEncounters.some(e => e.id === id)
   if (!c || c.generatorVersion !== CARVED_GENERATOR_VERSION || !c.id || !c.name || !Number.isInteger(c.version) || c.version < 1
     || !Number.isInteger(c.columns) || c.columns < 3 || c.columns > 8 || !Number.isInteger(c.paths) || c.paths < c.columns || c.paths > 32
     || c.maxStep !== 1 || !Array.isArray(c.rows) || c.rows.length < 4 || c.rows.length > 30
     || c.rows[0]?.types.join() !== 'battle' || c.rows[c.rows.length-1]?.types.join() !== 'rest'
     || !c.normalPool?.length || !c.elitePool?.length || !known(c.boss)
     || ![...c.normalPool, ...c.elitePool].every(known) || !c.eventPool?.length || new Set(c.eventPool).size !== c.eventPool.length || !c.eventPool.every(id => sectorEventIds.includes(id))
+    || (c.assigner !== undefined && c.assigner !== 'forward') || (c.maxNormalBattles !== undefined && (!Number.isInteger(c.maxNormalBattles) || c.maxNormalBattles < 3 || c.maxNormalBattles > c.maxBattles))
     || !Number.isInteger(c.maxElites) || c.maxElites < 0 || !Number.isInteger(c.maxBattles) || c.maxBattles < 3
     || !Number.isInteger(c.maxConsecutiveServices) || c.maxConsecutiveServices < 1 || typeof c.requireDevelopment !== 'boolean'
     || c.rows.some((r, i) => !r.types.length || r.types.some(t => !types.includes(t)) || (i < 2 && r.types.includes('elite'))
@@ -143,7 +192,7 @@ export function validateSectorMap(map: DungeonMap): string[] {
       fail(layer === c.rows.length ? n.type === 'final' && n.encounterId === c.boss && n.edges.length === 0 : c.rows[layer]?.types.includes(n.type) && n.edges.length > 0, 'Invalid room role')
       if (combat(n)) {
         const pool = n.type === 'final' ? [c.boss] : n.type === 'elite' ? c.elitePool : c.rows[layer]?.encounters ?? c.normalPool
-        fail(pool.includes(n.encounterId ?? '') && sectorEncounters.find(e => e.id === n.encounterId)?.maxHealth === n.encounterHealth, 'Invalid encounter')
+        fail(pool.includes(n.encounterId ?? '') && knownSectorEncounters.find(e => e.id === n.encounterId)?.maxHealth === n.encounterHealth, 'Invalid encounter')
       }
       for (const id of n.edges) {
         const to = byId.get(id)
@@ -157,7 +206,7 @@ export function validateSectorMap(map: DungeonMap): string[] {
   if (errors.length) return [...new Set(errors)]
   // Dynamic summaries cover all routes without expanding an exponential list of geometric paths.
   const reached = new Set(map.startNodeIds)
-  const budgets = new Map<string, { elites: number; battles: number; services: number }>()
+  const budgets = new Map<string, { elites: number; battles: number; normal: number; services: number }>()
   const variants = new Map<string, Set<string>>()
   for (const n of nodes) {
     const parents = nodes.filter(p => p.edges.includes(n.id))
@@ -167,9 +216,9 @@ export function validateSectorMap(map: DungeonMap): string[] {
     if (n.type === 'battle') seen.add(n.encounterId!)
     variants.set(n.id, seen)
     if (parents.some(p => reached.has(p.id))) reached.add(n.id)
-    const budget = { elites: Math.max(0,...previous.map(p=>p.elites))+Number(n.type==='elite'), battles: Math.max(0,...previous.map(p=>p.battles))+Number(combat(n)), services: service(n) ? Math.max(0,...previous.map(p=>p.services))+1 : 0 }
+    const budget = { elites: Math.max(0,...previous.map(p=>p.elites))+Number(n.type==='elite'), battles: Math.max(0,...previous.map(p=>p.battles))+Number(combat(n)), normal: Math.max(0,...previous.map(p=>p.normal))+Number(n.type==='battle'), services: service(n) ? Math.max(0,...previous.map(p=>p.services))+1 : 0 }
     budgets.set(n.id,budget)
-    fail(budget.elites<=c.maxElites && budget.battles<=c.maxBattles,'Combat budget exceeded')
+    fail(budget.elites<=c.maxElites && budget.battles<=c.maxBattles && budget.normal<=(c.maxNormalBattles ?? c.maxBattles),'Combat budget exceeded')
     fail(budget.services<=c.maxConsecutiveServices,'Too many services in sequence')
     if(n.type==='final') fail(parents.length>0 && parents.every(p=>p.type==='rest'),'Missing rest or boss')
   }
@@ -224,13 +273,13 @@ export function generateSectorMap(seed: number, configuration: SectorConfig = se
         if (n.type === 'battle' || n.type === 'elite') {
           const pool = n.type === 'elite' ? c.elitePool : spec.encounters ?? c.normalPool
           n.encounterId = ordered(sectorSeed(seed, `${prefix}:encounter:${n.id}`), pool)[0]!
-          n.encounterHealth = sectorEncounters.find(e => e.id === n.encounterId)!.maxHealth
+          n.encounterHealth = knownSectorEncounters.find(e => e.id === n.encounterId)!.maxHealth
           n.rewardCount = n.type === 'elite' ? 5 : 3
         }
       }
     }
-    if (!assignEncounters(layers, c, seed)) continue
-    const boss: DungeonMapNode = { id: `${c.id}/final`, layer: c.rows.length, column: (c.columns-1)/2, type: 'final', edges: [], encounterId: c.boss, encounterHealth: sectorEncounters.find(e => e.id === c.boss)!.maxHealth }
+    if (!(c.assigner === 'forward' ? assignForward : assignEncounters)(layers, c, seed)) continue
+    const boss: DungeonMapNode = { id: `${c.id}/final`, layer: c.rows.length, column: (c.columns-1)/2, type: 'final', edges: [], encounterId: c.boss, encounterHealth: knownSectorEncounters.find(e => e.id === c.boss)!.maxHealth }
     layers[layers.length-1]!.forEach(n => { n.edges = [boss.id] })
     const map: DungeonMap = { seed: seed >>> 0, layers: [...layers, [boss]], startNodeIds: layers[0]!.map(n => n.id), finalNodeId: boss.id, configuration: c, generation: { attempts: attempt+1, fallback: false } }
     if (!validateSectorMap(map).length) return map

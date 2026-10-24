@@ -26,6 +26,10 @@ export const enemyPortraitsByEncounterId: Readonly<Partial<Record<string, string
   'old-mines-digger': overseer,
   'old-mines-watchman': lookout,
   'old-mines-overseer': overseer,
+  // Long route (X03): temporary portraits of the same family of art, chosen so the picture does not promise a different fight.
+  'old-mines-saboteur': powderRunner,
+  'old-mines-tinkerer': tinkerer,
+  'old-mines-veteran': veteran,
   'old-mines-johnson': minerJohnson,
   'old-mines-rhahk-zor': rhahkZor,
 })

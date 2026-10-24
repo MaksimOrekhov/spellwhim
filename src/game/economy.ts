@@ -58,6 +58,8 @@ export interface EconomyConfig {
   excludedArtifacts?: readonly ArtifactId[]
   /** EXPERIMENT "Honest Turn B1": the run's Sector I enemies take their cycles from this data set instead of `sectorContent.ts` (same ids, same map). Absent: the standard enemies. */
   sectorFoes?: SectorFoeSetId
+  /** EXPERIMENT "long route" (docs/design/sector-one-long-v1.md): a new Sector I run is generated from the nine-row configuration. Absent: the standard six-visit sector. */
+  sectorRoute?: 'long'
 }
 
 export const manaCurves: Record<ManaCurveId, { label: string; manaByTurn: readonly number[] }> = {
@@ -139,11 +141,17 @@ function honestEconomyB(id: string, label: string): EconomyConfig {
   const { enemyDamageScale: _scale, ...economy } = honestEconomy(id, 1)
   return { ...economy, label, sectorFoes: 'b1' }
 }
+/** EXPERIMENT "long route": B1/B2 rules on the nine-row sector. Nothing but the route differs from the B economy it extends. */
+function honestEconomyLong(id: string, label: string): EconomyConfig {
+  return { ...honestEconomyB(id, label), sectorRoute: 'long' }
+}
 export const honestEconomies = {
   'honest-a08': honestEconomy('honest-a08', 0.8),
   'honest-a09': honestEconomy('honest-a09', 0.9),
   'honest-b1': honestEconomyB('honest-b1', 'Честный ход B1 · 7 карт, мана 4 · новые угрозы шести врагов сектора I'),
   'honest-b2': honestEconomyB('honest-b2', 'Честный ход B2 · B1 + «Мороз и сталь»: Обморожение, Раскол льда'),
+  'honest-b1-long': honestEconomyLong('honest-b1-long', 'Честный ход B1 · длинный сектор I (10 посещений)'),
+  'honest-b2-long': honestEconomyLong('honest-b2-long', 'Честный ход B2 · длинный сектор I (10 посещений)'),
 } as const
 export type HonestEconomyId = keyof typeof honestEconomies
 export const isHonestEconomy = (economy: Pick<EconomyConfig, 'discardHand'>): boolean => economy.discardHand === true

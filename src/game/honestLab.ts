@@ -13,6 +13,7 @@ import type { EconomyConfig } from './economy'
 import { resolveCardDefinition } from './cardProgression'
 import type { Information } from './observableIntent'
 import { rhahkZor, sectorEncounters, sectorOneElite } from './sectorContent'
+import { longSectorEnemies } from './sectorLong'
 import { cardDefinition } from './types'
 import type { BattleState, CardId, CardInstance, EncounterDefinition, EnemyAction, HeroId } from './types'
 
@@ -32,9 +33,11 @@ export const labStrategies: readonly LabStrategy[] = ['planner', 'planner-carefu
 
 /** The six enemies of Sector I as the lab fights them, from the economy's own data (health and damage of that mode). */
 export const sectorEnemyIds: readonly string[] = ['old-mines-raider', 'old-mines-digger', 'old-mines-watchman', 'old-mines-overseer', 'old-mines-johnson', 'old-mines-rhahk-zor']
+/** The long route's three additional enemies (docs/design/sector-one-long-v1.md), fought by the same lab. */
+export const longEnemyIds: readonly string[] = longSectorEnemies.map(enemy => enemy.id)
 
 export function labEncounter(economy: EconomyConfig, id: string): EncounterDefinition {
-  const base = [...sectorEncounters].find(encounter => encounter.id === id)
+  const base = [...sectorEncounters, ...longSectorEnemies].find(encounter => encounter.id === id)
   if (!base) throw new Error('Unknown sector enemy ' + id)
   const type = id === rhahkZor.id ? 'final' : id === sectorOneElite.id ? 'elite' : 'battle'
   return dungeonEncounter({ id: 'lab', layer: 0, column: 0, type, edges: [], encounterId: id, encounterHealth: base.maxHealth }, economy)
@@ -325,6 +328,11 @@ export interface RunLog {
   healthEnd: { warrior: number; mage: number }
   deckEnd: CardId[]
   route: string[]
+  /** Long-route study: the party's health on the way into the last fight, health restored by rests, upgraded copies at the end, the elite fought. */
+  healthBeforeBoss?: { warrior: number; mage: number }
+  healed?: number
+  upgrades?: number
+  elites?: number
 }
 
 function pickRoomAction(run: DungeonRunState, policy: DungeonRoutePolicy): { action: RoomAction; hero: HeroId } {
@@ -342,6 +350,7 @@ export function simulateSectorRun(seed: number, economy: EconomyConfig, deck: re
   let run = createSectorRun(seed, economy, deck, undefined, 'lab-' + seed)
   const battles: RunLog['battles'] = []
   const route: string[] = []
+  let healed = 0, healthBeforeBoss: RunLog['healthBeforeBoss']
   const heroHealth = () => ({ warrior: run.heroes.warrior.health, mage: run.heroes.mage.health })
   for (let guard = 0; guard < 60 && run.status === 'active'; guard += 1) {
     const choices = availableDungeonNodes(run).map(publicDungeonNodeView)
@@ -365,14 +374,17 @@ export function simulateSectorRun(seed: number, economy: EconomyConfig, deck: re
     } else if (chosen.type === 'rest') {
       const injured = (['warrior', 'mage'] as const).slice().sort((a, b) => run.heroes[a].health / run.heroes[a].maxHealth - run.heroes[b].health / run.heroes[b].maxHealth)[0]!
       const copy = run.deck.find(canUpgradeCard)
+      const before = run.heroes.warrior.health + run.heroes.mage.health
       run = run.heroes[injured].health / run.heroes[injured].maxHealth < 0.65 ? resolveDungeonRest(run, injured) : copy ? upgradeDungeonRest(run, copy.instanceId, run.runId + '/' + chosen.id) : resolveDungeonRest(run, null)
+      healed += run.heroes.warrior.health + run.heroes.mage.health - before
     } else {
       const node = dungeonNode(run.map, chosen.id)!
+      if (chosen.type === 'final') healthBeforeBoss = heroHealth()
       const encounter = dungeonEncounter(node, economy)
       const state = createCampaignBattle({ encounter, economy, heroes: run.heroes, deck: run.deck, artifacts: run.artifacts, seed: run.battleEntry!.seed, battleId: 'lab/' + seed + '/' + chosen.id })
       const fight = runFight(state, createChooser(strategy))
       battles.push({ enemy: node.encounterId!, node: chosen.type, fight })
-      if (!state.result) return { seed, result: 'timeout', battles, healthEnd: { warrior: state.heroes.warrior.health, mage: state.heroes.mage.health }, deckEnd: run.deck.map(card => card.definitionId), route }
+      if (!state.result) return { seed, result: 'timeout', battles, healthEnd: { warrior: state.heroes.warrior.health, mage: state.heroes.mage.health }, deckEnd: run.deck.map(card => card.definitionId), route, healthBeforeBoss, healed, upgrades: run.deck.filter(card => card.upgrade).length, elites: route.filter(type => type === 'elite').length }
       run = resolveDungeonBattle(run, state)
     }
     if (run.pendingReward) {
@@ -386,6 +398,7 @@ export function simulateSectorRun(seed: number, economy: EconomyConfig, deck: re
   return {
     seed, result: run.status === 'sector-complete' || run.status === 'victory' ? 'victory' : run.status === 'defeat' ? 'defeat' : 'timeout', battles,
     healthEnd: heroHealth(), deckEnd: run.deck.map(card => card.definitionId), route,
+    healthBeforeBoss, healed, upgrades: run.deck.filter(card => card.upgrade).length, elites: route.filter(type => type === 'elite').length,
   }
 }
 

@@ -340,7 +340,7 @@ describe('B1/B2 — the modes', () => {
       expect(isHonestEconomy(economy)).toBe(true)
     }
     expect(Object.keys(A08)).not.toContain('sectorFoes')
-    expect(knownEconomies().map(economy => economy.id)).toEqual(['A', 'B', 'U', 'honest-a08', 'honest-a09', 'honest-b1', 'honest-b2'])
+    expect(knownEconomies().map(economy => economy.id)).toEqual(['A', 'B', 'U', 'honest-a08', 'honest-a09', 'honest-b1', 'honest-b2', 'honest-b1-long', 'honest-b2-long'])
   })
 
   it('give the six enemies their new cycles and leave the map, the health and the other modes alone', () => {

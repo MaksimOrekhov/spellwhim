@@ -1,0 +1,18 @@
+{
+ "study": "sector-one-long",
+ "variant": "rest6",
+ "commit": "aafdc31",
+ "runs": 150,
+ "modes": [
+  "honest-b2-long"
+ ],
+ "strategies": [
+  "planner",
+  "balanced",
+  "defensive"
+ ],
+ "policies": [
+  "safe",
+  "mixed"
+ ]
+}

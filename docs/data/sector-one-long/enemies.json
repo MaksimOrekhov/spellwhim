@@ -1,0 +1,191 @@
+[
+ {
+  "enemy": "raider",
+  "strategy": "planner",
+  "win": 1,
+  "turns": 3.1,
+  "lostV": 1.3,
+  "lostJ": 2.7,
+  "lostTotal": 4
+ },
+ {
+  "enemy": "raider",
+  "strategy": "balanced",
+  "win": 1,
+  "turns": 3.9,
+  "lostV": 2.3,
+  "lostJ": 3.8,
+  "lostTotal": 6.1
+ },
+ {
+  "enemy": "raider",
+  "strategy": "defensive",
+  "win": 1,
+  "turns": 4.1,
+  "lostV": 1,
+  "lostJ": 1.4,
+  "lostTotal": 2.4
+ },
+ {
+  "enemy": "digger",
+  "strategy": "planner",
+  "win": 1,
+  "turns": 3.4,
+  "lostV": 3.2,
+  "lostJ": 0,
+  "lostTotal": 3.2
+ },
+ {
+  "enemy": "digger",
+  "strategy": "balanced",
+  "win": 1,
+  "turns": 4.4,
+  "lostV": 8.5,
+  "lostJ": 0.3,
+  "lostTotal": 8.7
+ },
+ {
+  "enemy": "digger",
+  "strategy": "defensive",
+  "win": 1,
+  "turns": 4.8,
+  "lostV": 6.2,
+  "lostJ": 0.1,
+  "lostTotal": 6.3
+ },
+ {
+  "enemy": "watchman",
+  "strategy": "planner",
+  "win": 1,
+  "turns": 3.1,
+  "lostV": 0.4,
+  "lostJ": 8.5,
+  "lostTotal": 8.9
+ },
+ {
+  "enemy": "watchman",
+  "strategy": "balanced",
+  "win": 1,
+  "turns": 4,
+  "lostV": 1.1,
+  "lostJ": 8.9,
+  "lostTotal": 9.9
+ },
+ {
+  "enemy": "watchman",
+  "strategy": "defensive",
+  "win": 1,
+  "turns": 4.5,
+  "lostV": 0.8,
+  "lostJ": 6.7,
+  "lostTotal": 7.6
+ },
+ {
+  "enemy": "overseer",
+  "strategy": "planner",
+  "win": 1,
+  "turns": 3.9,
+  "lostV": 6.9,
+  "lostJ": 1.4,
+  "lostTotal": 8.3
+ },
+ {
+  "enemy": "overseer",
+  "strategy": "balanced",
+  "win": 1,
+  "turns": 5,
+  "lostV": 6,
+  "lostJ": 1.1,
+  "lostTotal": 7.2
+ },
+ {
+  "enemy": "overseer",
+  "strategy": "defensive",
+  "win": 1,
+  "turns": 5.4,
+  "lostV": 4.9,
+  "lostJ": 0.3,
+  "lostTotal": 5.2
+ },
+ {
+  "enemy": "saboteur",
+  "strategy": "planner",
+  "win": 1,
+  "turns": 3,
+  "lostV": 2.4,
+  "lostJ": 0,
+  "lostTotal": 2.4
+ },
+ {
+  "enemy": "saboteur",
+  "strategy": "balanced",
+  "win": 1,
+  "turns": 3.5,
+  "lostV": 4.9,
+  "lostJ": 1.3,
+  "lostTotal": 6.2
+ },
+ {
+  "enemy": "saboteur",
+  "strategy": "defensive",
+  "win": 1,
+  "turns": 4.1,
+  "lostV": 8.3,
+  "lostJ": 0.9,
+  "lostTotal": 9.2
+ },
+ {
+  "enemy": "tinkerer",
+  "strategy": "planner",
+  "win": 1,
+  "turns": 3.2,
+  "lostV": 6.3,
+  "lostJ": 1.2,
+  "lostTotal": 7.5
+ },
+ {
+  "enemy": "tinkerer",
+  "strategy": "balanced",
+  "win": 1,
+  "turns": 4.1,
+  "lostV": 5.4,
+  "lostJ": 1.3,
+  "lostTotal": 6.7
+ },
+ {
+  "enemy": "tinkerer",
+  "strategy": "defensive",
+  "win": 1,
+  "turns": 4.5,
+  "lostV": 4.4,
+  "lostJ": 0.3,
+  "lostTotal": 4.7
+ },
+ {
+  "enemy": "veteran",
+  "strategy": "planner",
+  "win": 1,
+  "turns": 4,
+  "lostV": 0.1,
+  "lostJ": 3.7,
+  "lostTotal": 3.8
+ },
+ {
+  "enemy": "veteran",
+  "strategy": "balanced",
+  "win": 1,
+  "turns": 4.8,
+  "lostV": 1,
+  "lostJ": 6.7,
+  "lostTotal": 7.7
+ },
+ {
+  "enemy": "veteran",
+  "strategy": "defensive",
+  "win": 1,
+  "turns": 5.3,
+  "lostV": 0.7,
+  "lostJ": 4.2,
+  "lostTotal": 4.9
+ }
+]

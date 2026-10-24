@@ -12,7 +12,8 @@ import type { DeckInput, PersistentCard } from './types'
 import type { ArtifactDefinition, ArtifactId, ArtifactInstance, BattleState, CardDefinition, CardId, EncounterDefinition, Hero, HeroId } from './types'
 import { generateSectorMap, sectorOneConfig, validateSectorMap } from './dungeonGenerator'
 import type { SectorConfig } from './dungeonGenerator'
-import { sectorEncounters } from './sectorContent'
+import { knownSectorEncounters } from './sectorLong'
+import { sectorLongConfig } from './sectorLong'
 import { sectorFoeSets } from './sectorFoesB'
 import type { SectorEventId } from './sectorContent'
 import { createRoomVisit } from './dungeonRooms'
@@ -261,7 +262,7 @@ export function dungeonEncounter(node: DungeonMapNode, economy: EconomyConfig = 
   // EXPERIMENT B1: an economy may bring its own cycles for the Sector I enemies; the map and the health stay the standard ones.
   const base = (economy.sectorFoes ? sectorFoeSets[economy.sectorFoes].find(encounter => encounter.id === node.encounterId) : undefined)
     ?? [...roster.normal, ...roster.elite, ...(roster.final ? [roster.final] : [])].find(encounter => encounter.id === node.encounterId)
-    ?? sectorEncounters.find(encounter => encounter.id === node.encounterId)
+    ?? knownSectorEncounters.find(encounter => encounter.id === node.encounterId)
     ?? campaignEncounters(economy).find(encounter => encounter.id === node.encounterId)
   if (!base) throw new Error(`Unknown encounter ${node.encounterId}`)
   // The economy may scale health and damage (EXPERIMENT "Honest Turn"); the map keeps the catalogue numbers, so one seed is one map.
@@ -288,7 +289,7 @@ export function createDungeonRun(seed: number, economy: EconomyConfig = gameEcon
 }
 
 /** Uses the same run, battle, reward and progression contracts as the legacy control. */
-export function createSectorRun(seed: number, economy: EconomyConfig = gameEconomy, deck: readonly CardId[] = startingDeck, config: SectorConfig = sectorOneConfig, runId: string = crypto.randomUUID()): DungeonRunState {
+export function createSectorRun(seed: number, economy: EconomyConfig = gameEconomy, deck: readonly CardId[] = startingDeck, config: SectorConfig = economy.sectorRoute === 'long' ? sectorLongConfig : sectorOneConfig, runId: string = crypto.randomUUID()): DungeonRunState {
   const run = createDungeonRun(seed, economy, deck, defaultDungeonRoster, runId)
   return { ...run, map: generateSectorMap(run.mapSeed, config), campaign: { id: config.id, version: config.version }, room: null, journal: [] }
 }

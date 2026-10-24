@@ -31,6 +31,8 @@ export const rulesModes: readonly RulesMode[] = [
   { id: 'honest-a09', title: 'Честный ход A', note: 'враги бьют ×0,9', economy: honestEconomies['honest-a09'], saveKey: RUN_SAVE_KEY + '.honest-a09' },
   { id: 'honest-b1', title: 'Честный ход B1', note: 'новые угрозы', economy: honestEconomies['honest-b1'], saveKey: RUN_SAVE_KEY + '.honest-b1', defaultDeck: 'armor10' },
   { id: 'honest-b2', title: 'Честный ход B2', note: 'мороз и сталь', economy: honestEconomies['honest-b2'], saveKey: RUN_SAVE_KEY + '.honest-b2', frost: true, defaultDeck: 'armor8' },
+  { id: 'honest-b1-long', title: 'Честный ход B1 · длинный сектор', note: '10 посещений', economy: honestEconomies['honest-b1-long'], saveKey: RUN_SAVE_KEY + '.honest-b1-long', defaultDeck: 'armor10' },
+  { id: 'honest-b2-long', title: 'Честный ход B2 · длинный сектор', note: '10 посещений', economy: honestEconomies['honest-b2-long'], saveKey: RUN_SAVE_KEY + '.honest-b2-long', frost: true, defaultDeck: 'armor8' },
 ]
 
 const normalise = (value: string) => value.toLowerCase().replace(/[^a-z0-9]/g, '')

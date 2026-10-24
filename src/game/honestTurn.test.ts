@@ -56,7 +56,7 @@ describe('Honest Turn A — the presets', () => {
       expect(isHonestEconomy(economy)).toBe(false)
     }
     // The three historical models and the A presets, then the B1/B2 presets of docs/design/honest-turn-b-experiment-v1.md.
-    expect(knownEconomies()).toHaveLength(7)
+    expect(knownEconomies()).toHaveLength(9) // + the two long-route economies (X03)
     expect(gameEconomy.id).toBe('B')
     expect(economyFromSpec('honest-a08')).toBe(A08)
     expect(economyFromSpec('B')).toBe(gameEconomy)

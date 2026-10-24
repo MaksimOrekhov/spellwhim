@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, nextTick, onMounted, useTemplateRef, watch } from 'vue'
 import { Anvil, Check, Crown, Flag, Flame, Gem, Lamp, ScrollText, Skull, Swords } from '@lucide/vue'
 import DeckViewer from './DeckViewer.vue'
 import { availableDungeonNodes } from '../game/campaign'
@@ -9,6 +9,9 @@ const props = defineProps<{ map: DungeonMap; run: DungeonRunState }>()
 const emit = defineEmits<{ enter: [nodeId: string]; mode: [] }>()
 const columns = computed(() => props.map.configuration?.columns ?? 3)
 const rows = computed(() => props.map.layers.length)
+/** Maps of nine or ten rows (the long route) use compact rooms and scroll to the party; the six- and seven-row maps keep the original layout exactly. */
+const dense = computed(() => rows.value > 8)
+const viewport = useTemplateRef<HTMLElement>('viewport')
 const nodes = computed(() => props.map.layers.flat())
 const available = computed(() => new Set(availableDungeonNodes(props.run).map(node => node.id)))
 const visited = computed(() => new Set(props.run.visitedNodeIds))
@@ -22,7 +25,7 @@ const edges = computed(() => props.map.layers.flatMap(layer => layer.flatMap(nod
 const progress = computed(() => Array.from({ length: rows.value }, (_, index) => index < props.run.completedNodeIds.length))
 
 function position(node: DungeonMapNode) {
-  return { x: ((node.column + 0.5) / columns.value) * 1000, y: 900 - node.layer * (800 / (rows.value-1)) }
+  return { x: ((node.column + 0.5) / columns.value) * 1000, y: dense.value ? 940 - node.layer * (880 / (rows.value-1)) : 900 - node.layer * (800 / (rows.value-1)) }
 }
 
 function edgePath(from: DungeonMapNode, to: DungeonMapNode) {
@@ -34,7 +37,7 @@ function edgePath(from: DungeonMapNode, to: DungeonMapNode) {
 
 function nodeStyle(node: DungeonMapNode) {
   const p = position(node)
-  return { left: `${p.x/10}%`, top: `${p.y/10}%`, width: `${86/columns.value}%` }
+  return { left: `${p.x/10}%`, top: `${p.y/10}%`, width: `${(dense.value ? 66 : 86)/columns.value}%` }
 }
 
 function categoryIcon(node: DungeonMapNode) {
@@ -57,6 +60,13 @@ function categoryLabel(node: DungeonMapNode) {
   return 'Обычный бой'
 }
 
+/** Brings the rooms the party can enter next to the middle of the scrolled map (the start is at the bottom, the boss at the top). */
+function centreOnParty() {
+  void nextTick(() => viewport.value?.querySelector<HTMLElement>('.is-available, .is-current')?.scrollIntoView({ block: 'nearest', behavior: 'auto' }))
+}
+onMounted(centreOnParty)
+watch(current, centreOnParty)
+
 function layerLabel(node: DungeonMapNode) {
   return node.type === 'final' ? 'ФИНАЛ' : `ШТРЕК ${node.layer + 1}`
 }
@@ -76,8 +86,8 @@ function ariaLabel(node: DungeonMapNode) {
       <p v-if="run.journal?.length" class="last-decision" role="status">{{ run.journal[run.journal.length-1]?.text }}</p>
     </header>
 
-    <section class="map-viewport" aria-label="Карта подземелья">
-      <div class="dungeon-graph">
+    <section ref="viewport" class="map-viewport" :class="{ 'is-dense': dense }" aria-label="Карта подземелья">
+      <div class="dungeon-graph" :style="{ '--rows': rows }">
         <div class="mine-post mine-post--left" aria-hidden="true"><i></i></div>
         <div class="mine-post mine-post--right" aria-hidden="true"><i></i></div>
         <div class="lamp-hang lamp-hang--left" aria-hidden="true"><i></i></div>
@@ -99,11 +109,11 @@ function ariaLabel(node: DungeonMapNode) {
         >
           <span class="node-medal"><component :is="categoryIcon(node)" class="node-glyph" aria-hidden="true" :stroke-width="2.2" /></span>
           <span class="node-content">
-            <small>{{ layerLabel(node) }}</small>
+            <small>{{ dense && node.id === current ? 'ОТРЯД ЗДЕСЬ' : layerLabel(node) }}</small>
             <strong>{{ categoryLabel(node) }}</strong>
           </span>
           <span v-if="visited.has(node.id)" class="node-check" aria-hidden="true"><Check :size="14" :stroke-width="3.4" /></span>
-          <span v-if="node.id === current" class="node-flag" aria-hidden="true"><Flag :size="12" :stroke-width="2.6" />Отряд здесь</span>
+          <span v-if="node.id === current && !dense" class="node-flag" aria-hidden="true"><Flag :size="12" :stroke-width="2.6" />Отряд здесь</span>
         </button>
       </div>
     </section>
@@ -179,6 +189,14 @@ function ariaLabel(node: DungeonMapNode) {
 .hero-medallion{display:grid;place-items:center;width:32px;height:32px;border:var(--border-brass);border-radius:var(--r-pill);background:var(--mat-quiet);color:var(--brass-1)}.hero-medallion--mage{color:var(--c-mana)}.party-divider{color:var(--brass-2)}
 .route-progress{display:flex;align-items:center;gap:var(--sp-3);margin-left:auto;color:var(--muted);font:700 var(--fs-xs) var(--font-ui);text-align:right}
 .progress-pips{display:flex;gap:5px}.progress-pips i{width:14px;height:14px;border-radius:var(--r-pill);border:2px solid var(--brass-3);background:var(--wood-0)}.progress-pips i.done{background:var(--brass-1);box-shadow:0 0 8px #ffd56b99}
+/* Dense (long) maps: every row keeps at least 52px, the viewport scrolls when the window is shorter, the rooms are one line smaller. */
+.map-viewport.is-dense{overflow-y:auto;overflow-x:hidden;scrollbar-width:thin}
+.is-dense .dungeon-graph{min-height:calc(var(--rows) * 52px)}
+.is-dense .map-node{min-height:42px;padding:3px var(--sp-2) 3px 4px;gap:var(--sp-1)}
+.is-dense .node-medal{flex-basis:32px;height:32px}.is-dense .node-glyph{width:18px;height:18px}
+.is-dense .node-content small{font-size:8px}.is-dense .node-content strong{font-size:clamp(11px,.95vw,14px)}
+.is-dense .map-node--final{min-height:48px}.is-dense .map-node--final .node-medal{flex-basis:38px;height:38px}
+.is-dense .node-check{top:-7px;width:18px;height:18px}
 @media(max-width:800px){.campaign-screen{align-items:stretch;padding:var(--sp-3)}.campaign-topline{flex-wrap:wrap;gap:var(--sp-2)}.map-viewport{width:100%;height:460px;min-height:460px;overflow:auto}.dungeon-graph{width:850px;min-height:460px}.party-status{flex-wrap:wrap;gap:var(--sp-2)}.route-progress{width:100%;justify-content:center}.seed-chip{display:none}}
 @media(max-height:760px){.campaign-header h1{font-size:26px}.campaign-header p{font-size:12px}.map-node{min-height:48px}.node-medal{flex-basis:34px;height:34px}.campaign-topline{letter-spacing:normal}.campaign-screen{gap:var(--sp-1)}}
 </style>
