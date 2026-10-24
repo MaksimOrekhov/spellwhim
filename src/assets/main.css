@@ -6,7 +6,7 @@
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   --card-height: clamp(224px, 27vh, 354px);
-  --hand-height: calc(var(--card-height) + 60px);
+  --hand-height: calc(var(--card-height) + 72px);
   --enemy-size: clamp(124px, 19vh, 250px);
   --hero-size: clamp(96px, 14vh, 184px);
 }
@@ -28,7 +28,7 @@ button:focus-visible, [tabindex]:focus-visible { outline: var(--focus-ring); out
 .battle-fx { position: absolute; z-index: 5; inset: 0; pointer-events: none; }
 .battle-fx canvas { display: block; width: 100%; height: 100%; }
 @media (max-height: 700px) {
-  :root { --card-height: 204px; --hand-height: 264px; --enemy-size: 108px; --hero-size: 78px; }
+  :root { --card-height: 204px; --hand-height: 276px; --enemy-size: 108px; --hero-size: 78px; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
