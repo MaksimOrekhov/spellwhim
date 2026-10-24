@@ -18,7 +18,7 @@ src/
   ui/rulesInfo.ts            Что экраны знают о правилах (рука, мана, срок брони, угрозы B1, мороз); без провайдера — правила основной игры (X04); armorNote
   ui/cardOperations.ts       Чистая модель экранов колоды: groupCopies, upgradeChanges (что меняет улучшение), manaText; правил не содержит
   ui/mapDisplay.ts           Чистая модель карты подземелья (Map UI v2): лицо комнаты (кузница/сокровищница/событие = «неизвестная комната» до входа), состояние, геометрия слева направо; ui/mapScenes.ts — dev-сцены начала/середины/конца похода
-  ui/handLayout.ts           Чистая геометрия руки: порядок, перекрытие, увеличение; ui/cardArt.ts — иллюстрации карт
+  ui/handLayout.ts           Чистая геометрия руки: порядок, перекрытие, увеличение; ui/cardArt.ts — иллюстрации карт Также notesPlacement (свиток описания не заходит на показатели) и порог плиток COMPACT_BELOW; ui/enemyTier.ts — обычный/элита/босс по ID (только подача); ui/vitals.ts — модель полосы здоровья
   assets/
     cards.css                Карточная система v3: общие `cf-*` стили полной карты и плитки (рама воина/мага, плашка названия, гем-числа, печать класса, состояния)
     tokens.css               Дизайн-токены: цвета, материалы, типографика, мягкие формы, тени, движение, отступы
@@ -27,7 +27,9 @@ src/
     main.css                 Глобальные базовые стили, кнопка .game-button и размеры сцены (геометрия, не токены)
     art/                     Заменяемые иллюстрации героев, противника и карт
   components/
-    BattleBoard.vue          Поле боя, намерение врага, здоровье, мана, конец хода
+    BattleBoard.vue          Battle UI v2: сцена (BattleBackdrop → лента фазы → арена-контейнер cqh → лучи → Pixi → результат); враги и герои в «вилке», показатели над линией руки (docs/design/battle-ui-v2.md)
+    BattleBackdrop.vue       Фон Мёртвых копей: дальний/средний/ближний план в SVG без картинок; настроение — переменные --scene-core/-lamp/-far
+    StatChip.vue / StatusTray.vue   Единый жетон статуса/ярости/артефакта и лоток жетонов участника (в боевой сцене все они с data-critical)
     BattleFx.vue             PixiJS-эффекты, impact с ID действия, очистка callbacks
     IntentBanner.vue         Баннер намерения врага: что, сколько и по кому; «сейчас» и «следом» различаются; ThreatRays.vue — лучи от баннера к целям
     GameTooltip.vue          Контекстные подсказки мышью и фокусом
@@ -45,7 +47,7 @@ src/
     CardLab.vue              Dev-лаборатория карт (card-preview.html?view=sheet|states|deck|ops): все 23 карты, состояния, колода, операции; снимки — `node scripts/card-shots.mjs <каталог> <префикс>` (Chrome headless, нужен `npm run dev`)
     SpellCard.vue            Единая лицевая сторона карты в em (рука, награда, колода, операции): разметка и раскладка; материалы (рама, плашка, гемы, печать, кристалл маны, звезда улучшения) — в assets/cards.css (`cf-*`), общие с CompactCard; CardNotes.vue — свиток с полным описанием; CardGlyph.vue — Lucide-иконки эффектов
     HandLab.vue              Dev-лаборатория (card-preview.html): реальные доска/рука/награда в воспроизводимых состояниях
-    HeroFrame.vue / EnemyFrame.vue / VitalBar.vue   Арка героя, медальон врага, полоса здоровья с «призраком» потери; StatusChip.vue, ArtifactChip.vue
+    HeroFrame.vue / EnemyFrame.vue / VitalBar.vue   Арка героя (плашка сверху, класс в материале), медальон врага (рамка по уровню: обычный/элита/босс, плашка на нижнем ободе), плашка здоровья с гнездом брони и призраком потери; StatusChip.vue, ArtifactChip.vue — обёртки над StatChip
     RunComplete.vue          Экран завершения похода: «Начать новый поход» (сразу) и «Главное меню»
     DeckViewer.vue           Просмотр колоды с любого экрана (только чтение, «Закрыть»); группировка как в CardGallery
   composables/
@@ -72,6 +74,7 @@ src/
     encountersV07.ts         Усиленные враги v0.7 (только данные)
     economy.test.ts          Тесты экономики, врагов v0.7 и Balance Lab с экономиками
 scripts/run-combat-scenarios.mjs CLI сценариев через существующий Vite
+scripts/battle-layout-check.mjs     Геометрия боевого экрана (Chrome headless, нужен npm run dev): увеличенная карта и свиток не закрывают показатели, якоря Pixi, холст = сцена; scripts/app-smoke.mjs — игровой smoke-тест
 scripts/run-economy.mjs          Balance Lab: сравнение экономик (npm run economy), --trace показывает ходы одного похода
 scripts/whatif-expensive-cards.mjs Что-если: дорогие карты в памяти, игру не меняет
 docs/combat-v02.md           Решения, анализ баланса и следующие задачи

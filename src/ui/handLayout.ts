@@ -41,7 +41,7 @@ export function zoomFactor(trackBottom: number, dockTop: number, cardHeight: num
 }
 
 /** Below this visible fraction a fan hides too much of every card; the hand switches to compact tiles instead. */
-export const COMPACT_BELOW = 0.75
+export const COMPACT_BELOW = 0.6
 export const TILE_EM_WIDTH = 7.2
 export const TILE_EM_HEIGHT = 11
 
@@ -61,4 +61,29 @@ export function handMode(count: number, width: number, cardWidth: number, gap: n
   if (count === 0 || fan.visible >= COMPACT_BELOW) return { compact: false, slotWidth: cardWidth, layout: fan }
   const tile = Math.min(cardWidth * 0.8, (width - (count - 1) * gap) / count)
   return { compact: true, slotWidth: tile, layout: fanLayout(count, width, tile, gap) }
+}
+
+export interface Box { left: number; top: number; right: number; bottom: number }
+
+export interface NotesPlacement {
+  side: 'right' | 'left'
+  /** Distance from the viewport's left edge (side 'right') or from its right edge (side 'left'). */
+  offset: number
+  /** The scroll's height limit: it grows up from the hand and stops under the lowest readout it would otherwise cover. */
+  maxHeight: number
+}
+
+/**
+ * Where the notes scroll of the zoomed card goes. It opens beside the card on the side with room (the right one first) and
+ * may rise only until it would cover a critical readout (health plate, intent, statuses) in its own columns, so the heroes'
+ * health stays readable while a card is open. `bottom` is the scroll's distance from the viewport's bottom edge.
+ */
+export function notesPlacement(card: Box, viewport: { width: number; height: number }, bottom: number, critical: readonly Box[], width = 300, gap = 14, margin = 8): NotesPlacement {
+  const fitsRight = viewport.width - card.right - gap >= width
+  const left = fitsRight ? card.right + gap : Math.max(margin, card.left - gap - width)
+  const right = left + width
+  const lowest = critical.filter(box => box.right > left && box.left < right).reduce((max, box) => Math.max(max, box.bottom), 0)
+  const top = Math.max(margin, lowest > 0 ? lowest + 3 : margin)
+  const maxHeight = Math.max(0, viewport.height - bottom - top)
+  return fitsRight ? { side: 'right', offset: left, maxHeight } : { side: 'left', offset: viewport.width - (card.left - gap), maxHeight }
 }

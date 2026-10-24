@@ -12,9 +12,10 @@ import type { ArtifactId, BattleState, EncounterDefinition, EnemyAction, HeroId 
  */
 export type BattleSceneId = 'normal' | 'warrior' | 'both' | 'lethal' | 'prepared' | 'revealed' | 'absorbed' | 'phase2' | 'artifacts' | 'bleeding' | 'vulnerable' | 'everything'
   | 'b-interrupt' | 'b-broken' | 'b-pierce' | 'b-pierce-prepared' | 'b-rage' | 'b-raging' | 'b-shift' | 'b-boss2' | 'b-frost' | 'b-mark'
+  | 'b-elite' | 'b-boss1' | 'b-crowded'
 
 export const battleSceneIds: readonly BattleSceneId[] = ['normal', 'warrior', 'both', 'lethal', 'prepared', 'revealed', 'absorbed', 'phase2', 'artifacts', 'bleeding', 'vulnerable', 'everything',
-  'b-interrupt', 'b-broken', 'b-pierce', 'b-pierce-prepared', 'b-rage', 'b-raging', 'b-shift', 'b-boss2', 'b-frost', 'b-mark']
+  'b-interrupt', 'b-broken', 'b-pierce', 'b-pierce-prepared', 'b-rage', 'b-raging', 'b-shift', 'b-boss2', 'b-frost', 'b-mark', 'b-elite', 'b-boss1', 'b-crowded']
 
 function encounter(id: string): EncounterDefinition {
   const all = [...defaultDungeonRoster.normal, ...defaultDungeonRoster.elite, ...(defaultDungeonRoster.final ? [defaultDungeonRoster.final] : [])]
@@ -101,6 +102,23 @@ export function battleScene(id: BattleSceneId, seed = 7): BattleState {
       const state = foeScene('old-mines-watchman', 1, seed)
       state.heroes.mage.armor = 8
       applyStatus(state, 'enemy', 'frostbite')
+      return state
+    }
+    case 'b-elite': return foeScene('old-mines-johnson', 2, seed)
+    case 'b-boss1': return foeScene('old-mines-rhahk-zor', 0, seed)
+    case 'b-crowded': {
+      // Every readout at once: three statuses and rage on an armored enemy, Vulnerability and an artifact on each hero, armor on both.
+      const state = foeScene('old-mines-overseer', 4, seed)
+      state.enemy.armor = 6
+      applyStatus(state, 'enemy', 'vulnerability')
+      applyStatus(state, 'enemy', 'bleeding', 3)
+      applyStatus(state, 'enemy', 'frostbite')
+      applyStatus(state, 'mage', 'vulnerability')
+      applyStatus(state, 'warrior', 'vulnerability')
+      equip(state, 'reliable-wedge', 'mage')
+      equip(state, 'tension-spool', 'warrior')
+      state.heroes.warrior.armor = 4
+      state.heroes.mage.armor = 5
       return state
     }
     case 'b-mark': {

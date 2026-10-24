@@ -1,12 +1,13 @@
 <script setup lang="ts">
-// A curved, animated ray from the enemy's intent banner to each threatened hero. Positions are read from the
-// [data-threat-source] / [data-threat-target] elements, the same idea as BattleFx's [data-fx-anchor], so the ray follows
-// the layout at any window size. The ray lives in a DOM layer under the Pixi canvas, so it never covers the effects.
-// A prepared strike ("later") draws a dashed, dimmer ray: the viewer can tell a hit that lands now from one that is coming.
+// A thin curved ray from the enemy's intent banner to the inner shoulder of each threatened hero, where the threat marker sits.
+// Positions are read from the [data-threat-source] / [data-threat-target] elements, the same idea as BattleFx's [data-fx-anchor],
+// so the ray follows the layout at any window size. The ray lives in a DOM layer under the Pixi canvas, so it never covers the effects.
+// It is quiet by default: a steady line, dashed and dimmer for a strike that is only being prepared, and it flows only while the
+// enemy's action is being carried out (`executing`).
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { HeroId } from '../game/types'
 
-const props = defineProps<{ targets: HeroId[]; later?: boolean; lethal?: HeroId[]; tick: string }>()
+const props = defineProps<{ targets: HeroId[]; later?: boolean; lethal?: HeroId[]; tick: string; executing?: boolean }>()
 const svg = ref<SVGSVGElement | null>(null)
 const paths = ref<{ id: HeroId; d: string; x: number; y: number }[]>([])
 let observer: ResizeObserver | undefined
@@ -22,12 +23,13 @@ function measure() {
     const arch = root.querySelector(`[data-threat-target="${id}"]`)?.getBoundingClientRect()
     if (!arch) return []
     const leftSide = arch.left + arch.width / 2 < intent.left + intent.width / 2
-    const sx = (leftSide ? intent.left + 6 : intent.right - 6) - base.left
-    const sy = intent.top + intent.height * 0.62 - base.top
-    const ex = arch.left + arch.width / 2 - base.left + (leftSide ? arch.width * 0.2 : -arch.width * 0.2)
-    const ey = arch.top - base.top + arch.height * 0.2
+    const sx = (leftSide ? intent.left + 4 : intent.right - 4) - base.left
+    const sy = intent.top + intent.height * 0.5 - base.top
+    // The inner shoulder of the arch, at the height of the marker.
+    const ex = (leftSide ? arch.right - arch.width * 0.04 : arch.left + arch.width * 0.04) - base.left
+    const ey = arch.top - base.top + arch.height * 0.34
     const cx = (sx + ex) / 2
-    const cy = Math.min(sy, ey) - Math.abs(ex - sx) * 0.12 + 40
+    const cy = Math.min(sy, ey) - Math.abs(ex - sx) * 0.16
     return [{ id, d: `M${sx} ${sy} Q${cx} ${cy} ${ex} ${ey}`, x: ex, y: ey }]
   })
 }
@@ -41,24 +43,24 @@ watch(() => [props.targets.join(), props.tick, props.later], schedule)
 
 <template>
   <svg ref="svg" class="rays" aria-hidden="true" data-testid="threat-rays">
-    <defs><filter id="ray-glow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4" /></filter></defs>
-    <g v-for="p in paths" :key="p.id" :class="{ later, lethal: lethal?.includes(p.id) }" :data-ray="p.id">
-      <path :d="p.d" class="ray-glow" filter="url(#ray-glow)" />
+    <g v-for="p in paths" :key="p.id" :class="{ later, lethal: lethal?.includes(p.id), executing }" :data-ray="p.id">
+      <path :d="p.d" class="ray-glow" />
       <path :d="p.d" class="ray" />
-      <circle :cx="p.x" :cy="p.y" r="7" class="ray-dot" />
+      <circle :cx="p.x" :cy="p.y" r="5" class="ray-dot" />
     </g>
   </svg>
 </template>
 
 <style scoped>
 .rays{position:absolute;inset:0;width:100%;height:100%;z-index:4;pointer-events:none;overflow:visible}
-.ray,.ray-glow{fill:none;stroke:var(--c-threat);stroke-width:5;stroke-linecap:round;stroke-dasharray:3 16;animation:flow 1.1s linear infinite}
-.ray-glow{stroke-width:11;opacity:.55;stroke-dasharray:none;animation:none}
-.ray-dot{fill:var(--c-threat);stroke:var(--ink);stroke-width:2.5}
+.ray,.ray-glow{fill:none;stroke:var(--c-threat);stroke-width:3;stroke-linecap:round}
+.ray-glow{stroke-width:8;opacity:.22}
+.ray-dot{fill:var(--c-threat);stroke:var(--ink);stroke-width:2}
 .lethal .ray,.lethal .ray-glow,.lethal .ray-dot{stroke:var(--c-lethal)}
 .lethal .ray-dot{fill:var(--c-lethal)}
-.later .ray{stroke:var(--c-later-line);stroke-dasharray:2 14;opacity:.75}
-.later .ray-glow{opacity:.2;stroke:var(--c-later-line)}
+.later .ray{stroke:var(--c-later-line);stroke-dasharray:2 12;opacity:.8}
+.later .ray-glow{opacity:.1;stroke:var(--c-later-line)}
 .later .ray-dot{fill:var(--c-later-line)}
-@keyframes flow{to{stroke-dashoffset:-19}}
+.executing .ray{stroke-dasharray:3 14;animation:flow 1.1s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-17}}
 </style>
