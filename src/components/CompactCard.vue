@@ -11,7 +11,7 @@ import { cardArt } from '../ui/cardArt'
 import CardGlyph from './CardGlyph.vue'
 import '../assets/cards.css'
 
-const props = defineProps<{ card: CardDefinition; preview: CardPreview; block?: CardBlock | null; hotkey?: string }>()
+const props = defineProps<{ card: CardDefinition; preview: CardPreview; block?: CardBlock | null }>()
 const theme = computed(() => getClassTheme(props.card.className))
 const face = computed(() => cardFace(props.card, props.preview))
 const artUrl = computed(() => cardArt[props.card.id])
@@ -30,13 +30,12 @@ const style = computed(() => ({ ...classThemeStyle(props.card.className), '--emb
         <img v-if="artUrl" :src="artUrl" alt="" draggable="false" />
         <span v-else class="cf-art-pending" aria-label="Иллюстрация ожидает утверждения"><small>Арт ожидает утверждения</small></span>
         <span class="cf-shade"></span>
-        <kbd v-if="hotkey" class="tc-key">{{ hotkey }}</kbd>
         <span v-if="face.tags.length" class="tc-marks"><CardGlyph v-for="tag in face.tags" :key="tag.id" :kind="tag.glyph" /></span>
         <span v-if="locked" class="cf-lock"><CardGlyph kind="lock" /></span>
       </span>
       <span class="cf-paper tc-stats">
         <span v-for="(chip, i) in face.chips" :key="i" class="cf-chip" :class="['cf-chip--' + chip.kind, { 'is-boosted': chip.boosted, 'is-inactive': chip.inactive }]">
-          <i class="cf-gem" :class="{ 'is-wide': chip.value >= 10 }"><b class="cf-num">{{ chip.value }}</b><CardGlyph :kind="chip.kind" class="cf-ico" /><CardGlyph v-if="chip.boosted" kind="bonus" class="cf-up" /></i>
+          <i class="cf-gem"><CardGlyph :kind="chip.kind" class="cf-ico" /><b class="cf-num">{{ chip.value }}</b><CardGlyph v-if="chip.boosted" kind="bonus" class="cf-up" /></i>
         </span>
       </span>
     </span>
@@ -52,15 +51,13 @@ const style = computed(() => ({ ...classThemeStyle(props.card.className), '--emb
 .tc-art{flex:1;min-height:0}
 .tc-plate{left:.12em;right:.12em;bottom:4.55em;min-height:2.3em;padding:.2em .6em}
 .tc-name{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;white-space:normal;line-height:1.1}
-.tc-stats{flex:none;display:flex;align-items:center;justify-content:center;gap:1em;height:4.8em;padding:1em .6em .2em 1.7em}
-.tc-key{position:absolute;right:.4em;top:.4em;display:grid;place-items:center;min-width:1.5em;height:1.5em;padding:0 .2em;border-radius:var(--r-1);border:.08em solid var(--brass-3);background:#1b1210cc;color:var(--ink);font:700 1em/1 var(--font-num)}
-.tc-marks{position:absolute;right:.4em;top:2.4em;display:flex;flex-direction:column;gap:.3em}
+.tc-stats{flex:none;display:flex;align-items:center;justify-content:center;gap:.7em;height:4.8em;padding:1em .6em .2em 1.7em}
+.tc-marks{position:absolute;right:.4em;top:.4em;display:flex;flex-direction:column;gap:.3em}
 .tc-marks .glyph{width:1.9em;height:1.9em;padding:.35em;border-radius:50%;background:#1b1210d0;color:var(--c-vulnerable)}
 .tc-marks .glyph--exhaust{color:var(--muted)}
-.tc .cf-gem{width:3em;height:3em}
-.tc .cf-num{font-size:2em}
-.tc .cf-gem.is-wide .cf-num{font-size:1.6em}
-.tc .cf .cf-ico,.tc .cf-gem .cf-ico{width:1.7em;height:1.7em;left:-.6em}
+.tc .cf-gem{min-width:4.3em;height:2.6em}
+.tc .cf-num{font-size:1.75em}
+.tc .cf-ico{width:1.8em;height:1.8em}
 .tc .cf-lock{padding:.5em;border-radius:50%;top:36%}
 .tc .cf-lock .glyph{width:1.8em;height:1.8em}
 .tc .cf-seal{width:2.3em;height:2.3em}

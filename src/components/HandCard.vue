@@ -22,10 +22,10 @@ function play() {
 <template>
   <button :id="'card-' + instanceId" class="hand-card" :class="{ 'is-playing': playing }" :aria-disabled="!!block || playing" :aria-label="label" @click="play">
     <template v-if="compact">
-      <CompactCard :card="card" :preview="preview" :block="block" :hotkey="hotkey" />
-      <span v-if="active" class="hand-full" :style="{ fontSize: (fullEm ?? 14) + 'px', '--shift': (fullShift ?? 0) + 'px', '--zoom': String(fullScale ?? 1.2) }"><SpellCard :card="card" :preview="preview" :block="block" :hotkey="hotkey" /></span>
+      <CompactCard :card="card" :preview="preview" :block="block" />
+      <span v-if="active" class="hand-full" :style="{ fontSize: (fullEm ?? 14) + 'px', '--shift': (fullShift ?? 0) + 'px', '--zoom': String(fullScale ?? 1.2) }"><SpellCard :card="card" :preview="preview" :block="block" /></span>
     </template>
-    <SpellCard v-else :card="card" :preview="preview" :block="block" :hotkey="hotkey" :vis="vis" />
+    <SpellCard v-else :card="card" :preview="preview" :block="block" :vis="vis" />
   </button>
 </template>
 

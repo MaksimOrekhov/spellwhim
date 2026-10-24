@@ -14,21 +14,12 @@
 .cf--angular .cf-rim{background:
   repeating-linear-gradient(95deg,#ffffff14 0 .06em,#0000 .06em .22em),
   linear-gradient(145deg,color-mix(in srgb,var(--class-accent) 55%,#fff) 0%,var(--class-primary) 22%,color-mix(in srgb,var(--class-accent) 72%,#000) 52%,color-mix(in srgb,var(--class-primary) 60%,#000) 100%)}
-.cf--arcane .cf-rim{border-radius:2.4em 2.4em 1.4em 1.5em/2.2em 2.5em 1.5em 1.4em;background:
-  radial-gradient(circle at .3em calc(100% - .35em),var(--class-secondary) 0 .07em,#0000 .13em),
-  radial-gradient(circle at calc(100% - .3em) calc(100% - .35em),var(--class-secondary) 0 .07em,#0000 .13em),
-  radial-gradient(ellipse at 50% 0,color-mix(in srgb,var(--class-secondary) 55%,#0000) 0,#0000 60%),
+/* mage: the same silhouette, cooler sapphire enamel (the class shows in palette, material, trim colour and seal, never in shape) */
+.cf--arcane .cf-rim{background:
   linear-gradient(145deg,color-mix(in srgb,var(--class-secondary) 60%,var(--class-primary)) 0%,var(--class-primary) 24%,color-mix(in srgb,var(--class-accent) 80%,#000) 55%,color-mix(in srgb,var(--class-primary) 55%,#000) 100%)}
 .cf.is-upgraded .cf-rim{box-shadow:0 .35em .8em #0a181ab0,inset 0 .1em .12em #fff8,inset 0 -.2em .35em #0007,inset 0 0 0 .1em #0004,0 0 0 .08em color-mix(in srgb,var(--brass-4) 80%,#000),var(--glow-upgrade)}
-/* ornament hardware: two brass studs on the right corners of a warrior card; a crown gem on top of a mage card */
-.cf--angular::before,.cf--angular::after{position:absolute;z-index:3;right:-.2em;width:1em;height:1em;border-radius:50%;background:radial-gradient(circle at 34% 28%,#fff6c8,var(--brass-1) 22%,var(--brass-2) 55%,var(--brass-4));border:.08em solid var(--brass-4);box-shadow:0 .14em .22em #000a,inset 0 -.1em .12em #0006;content:""}
-.cf--angular::before{top:-.2em}.cf--angular::after{bottom:-.2em}
-.cf--angular.is-upgraded::before{display:none}
-.cf--arcane::after{position:absolute;z-index:3;top:-.55em;left:50%;width:1.3em;height:1.3em;translate:-50% 0;border-radius:50% 50% 48% 48%/42% 42% 58% 58%;background:radial-gradient(circle at 35% 28%,#fff,var(--class-secondary) 45%,var(--class-primary));border:.1em solid var(--brass-2);box-shadow:0 0 .7em .12em var(--class-secondary),0 .1em .2em #0008;content:""}
-
 /* body shell and art window */
 .cf-body{position:absolute;inset:.5em;display:flex;flex-direction:column;border-radius:1em .9em 1.1em .95em/.95em 1.1em .9em 1.05em;background:var(--class-surface);box-shadow:0 0 0 .1em color-mix(in srgb,var(--class-surface) 70%,#000),0 0 0 .2em var(--trim),0 0 .5em .22em color-mix(in srgb,var(--trim) 35%,#0000),inset 0 0 1.2em #000a}
-.cf--arcane .cf-body{border-radius:2em 2em 1em 1.1em/1.9em 2.1em 1.1em 1em}
 .cf-art{position:relative;display:block;flex:none;overflow:hidden;border-radius:inherit;border-bottom-left-radius:0;border-bottom-right-radius:0;background:var(--class-surface)}
 .cf-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 52%}
 .cf-art-pending{position:absolute;inset:0;display:grid;place-items:center;padding:.4em;background:var(--class-surface);color:var(--ink);text-align:center;font:800 .72em/1.1 var(--font-ui);letter-spacing:.03em;text-transform:uppercase}
@@ -36,13 +27,12 @@
 .cf-lock{position:absolute;left:50%;top:38%;z-index:2;display:flex;align-items:center;gap:.35em;translate:-50% -50%;padding:.3em .8em;border-radius:var(--r-pill);background:#1b1210e0;border:.1em solid var(--c-health);color:var(--ink);font:800 .85em/1 var(--font-ui);white-space:nowrap}
 .cf .cf-lock .glyph{width:1.05em;height:1.05em;color:var(--c-health)}
 .cf-paper{position:relative;z-index:1;overflow:hidden;border-radius:0 0 .9em .9em;--paper:color-mix(in srgb,var(--parch-1) 86%,var(--class-secondary));--paper-2:color-mix(in srgb,var(--parch-2) 82%,var(--class-secondary));background:var(--mat-card-paper),linear-gradient(170deg,var(--paper),var(--paper-2));box-shadow:inset 0 .14em .12em #fff9,inset 0 -.2em .4em #5b3d1a44}
-.cf--arcane .cf-paper{border-radius:0 0 1em 1em}
 /* the class watermark: a pressed emblem in the paper, so identity does not depend on a text label */
 .cf-paper::before{position:absolute;right:-.9em;bottom:-1em;width:7.4em;height:7.4em;background:color-mix(in srgb,var(--class-primary) 17%,#0000);-webkit-mask:var(--emblem) center/contain no-repeat;mask:var(--emblem) center/contain no-repeat;content:""}
 
 /* name plate */
 .cf-plate{position:absolute;z-index:2;display:grid;place-items:center;border-radius:.95em .8em 1em .85em/.9em 1em .8em .95em;background:linear-gradient(180deg,color-mix(in srgb,var(--class-primary) 62%,var(--class-surface)),var(--class-surface) 130%);box-shadow:0 .18em .32em #000a,0 0 0 .09em var(--brass-3),0 0 0 .16em color-mix(in srgb,var(--brass-1) 80%,var(--class-primary)),inset 0 .1em .08em #fff5,inset 0 -.16em .22em #0009;color:#fff7e3}
-.cf--arcane .cf-plate{border-radius:1.1em;box-shadow:0 .18em .32em #000a,0 0 .6em -.05em var(--class-secondary),0 0 0 .09em var(--brass-3),0 0 0 .16em color-mix(in srgb,var(--brass-1) 80%,var(--class-secondary)),inset 0 .1em .08em #fff6,inset 0 -.16em .22em #0009}
+.cf--arcane .cf-plate{box-shadow:0 .18em .32em #000a,0 0 .6em -.05em var(--class-secondary),0 0 0 .09em var(--brass-3),0 0 0 .16em color-mix(in srgb,var(--brass-1) 80%,var(--class-secondary)),inset 0 .1em .08em #fff6,inset 0 -.16em .22em #0009}
 .cf.is-upgraded .cf-plate{background:linear-gradient(180deg,color-mix(in srgb,var(--brass-2) 55%,var(--class-surface)),var(--class-surface) 130%);box-shadow:0 .18em .32em #000a,0 0 0 .09em var(--brass-4),0 0 0 .18em var(--brass-1),var(--glow-upgrade),inset 0 .1em .08em #fff6,inset 0 -.16em .22em #0009}
 .cf-name{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center;font:700 var(--name-size,1.1em)/1.2 var(--font-display);letter-spacing:.01em;text-shadow:0 .06em .1em #000,0 0 .4em #0009}
 
@@ -51,11 +41,10 @@
 .cf-chip--armor{--chip-mat:var(--mat-gem-sapphire);--ico-c:#bfe0ff}
 .cf-chip--draw{--chip-mat:var(--mat-gem-topaz);--ico-c:#ffe39a}
 .cf-chip--bleeding{--chip-mat:var(--mat-gem-garnet)}
-.cf-gem{position:relative;display:grid;place-items:center;width:2.4em;height:2.4em;border-radius:var(--shape-medallion);background:var(--chip-mat);border:.13em solid var(--chip-rim);box-shadow:0 .14em .24em #0008,0 0 0 .07em var(--brass-4),inset 0 .12em .14em #fff9,inset 0 -.22em .3em #0007}
-.cf-num{font:700 1.55em/1 var(--font-num);color:#fff;text-shadow:0 .05em .08em #000b,0 0 .12em #000b,.04em 0 0 #0006}
-.cf-gem.is-wide .cf-num{font-size:1.18em;letter-spacing:-.06em}
-.cf .cf-ico{position:absolute;left:-.55em;top:-.2em;width:1.5em;height:1.5em;padding:.28em;stroke-width:2.8;border-radius:50%;background:var(--wood-1);border:.09em solid var(--brass-2);color:var(--ico-c);box-shadow:0 .08em .14em #0008}
-.cf .cf-up{position:absolute;right:-.42em;top:-.4em;width:1.15em;height:1.15em;padding:.14em;border-radius:50%;background:var(--c-bonus);border:.08em solid var(--brass-3);color:var(--parch-ink)}
+.cf-gem{position:relative;display:flex;align-items:center;gap:.15em;min-width:4.1em;height:2.3em;padding:0 .5em 0 .25em;border-radius:var(--r-pill);background:var(--chip-mat);border:.13em solid var(--chip-rim);box-shadow:0 .14em .24em #0008,0 0 0 .07em var(--brass-4),inset 0 .12em .14em #fff9,inset 0 -.22em .3em #0007}
+.cf .cf-ico{flex:none;width:1.55em;height:1.55em;padding:.3em;stroke-width:2.8;border-radius:50%;background:var(--wood-1);border:.09em solid var(--brass-2);color:var(--ico-c);box-shadow:0 .08em .14em #0008}
+.cf-num{flex:1;min-width:1.2em;text-align:center;font:700 1.5em/1 var(--font-num);color:#fff;text-shadow:0 .05em .08em #000b,0 0 .12em #000b}
+.cf .cf-up{position:absolute;right:-.3em;top:-.6em;width:1em;height:1em;padding:.12em;border-radius:50%;background:var(--c-bonus);border:.08em solid var(--brass-3);color:var(--parch-ink)}
 .cf-cap{max-width:7.6em;font:800 .56em/1.1 var(--font-ui);letter-spacing:.07em;text-align:center;text-transform:uppercase;color:var(--parch-ink-soft)}
 .cf-chip.is-boosted .cf-gem{border-color:var(--c-bonus);box-shadow:0 .14em .24em #0008,0 0 0 .07em var(--brass-4),var(--glow-bonus),inset 0 .12em .14em #fff9,inset 0 -.22em .3em #0007}
 .cf-chip.is-boosted .cf-num{color:var(--c-bonus)}

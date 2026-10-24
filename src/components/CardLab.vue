@@ -82,7 +82,7 @@ onMounted(() => { if (props.view === 'deck') setTimeout(() => (document.querySel
       <h2>{{ group.name }}</h2>
       <div class="lab-row">
         <figure v-for="item in group.items" :key="item.title">
-          <SpellCard :card="item.card" :preview="item.preview" :block="item.block" :hotkey="'1'" />
+          <SpellCard :card="item.card" :preview="item.preview" :block="item.block" />
           <figcaption>{{ item.title }}</figcaption>
         </figure>
       </div>

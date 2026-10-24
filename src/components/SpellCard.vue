@@ -16,7 +16,6 @@ const props = defineProps<{
   preview: CardPreview
   /** Why the card cannot be played now; null when playable. */
   block?: CardBlock | null
-  hotkey?: string
   /** Fraction of the card not covered by its right-hand neighbour (1 = fully visible). Keeps the name and the main number inside the visible strip. */
   vis?: number
 }>()
@@ -52,7 +51,7 @@ const style = computed(() => ({ ...classThemeStyle(props.card.className), '--emb
       <span class="cf-paper sc-lower">
         <span class="sc-stats">
           <span v-for="(chip, i) in face.chips" :key="i" class="cf-chip sc-chip" :class="['cf-chip--' + chip.kind, { 'is-boosted': chip.boosted, 'is-inactive': chip.inactive }]">
-            <i class="cf-gem" :class="{ 'is-wide': chip.value >= 10 }"><b class="cf-num">{{ chip.value }}</b><CardGlyph :kind="chip.kind" class="cf-ico" /><CardGlyph v-if="chip.boosted" kind="bonus" class="cf-up" /></i>
+            <i class="cf-gem"><CardGlyph :kind="chip.kind" class="cf-ico" /><b class="cf-num">{{ chip.value }}</b><CardGlyph v-if="chip.boosted" kind="bonus" class="cf-up" /></i>
             <small class="cf-cap">{{ chip.caption }}</small>
           </span>
         </span>
@@ -61,7 +60,7 @@ const style = computed(() => ({ ...classThemeStyle(props.card.className), '--emb
           <span v-for="(line, i) in waiting" :key="'l' + i" class="rule" :class="'rule--' + line.tone"><CardGlyph v-if="line.glyph" :kind="line.glyph" /><span>{{ dense ? line.short : line.text }}</span></span>
           <span v-if="face.tags.length" class="sc-tags"><span v-for="tag in face.tags" :key="tag.id" class="tag" :class="'tag--' + tag.id"><CardGlyph :kind="tag.glyph" /><span>{{ dense ? tag.short : tag.text }}</span></span></span>
         </span>
-        <span class="sc-foot"><kbd v-if="hotkey">{{ hotkey }}</kbd></span>
+        <span class="sc-foot"></span>
       </span>
     </span>
     <span class="cf-plate sc-plate"><strong class="cf-name">{{ card.name }}</strong></span>
@@ -81,7 +80,7 @@ const style = computed(() => ({ ...classThemeStyle(props.card.className), '--emb
 
 /* numbers */
 .sc-stats{flex:none;display:flex;align-items:flex-start;justify-content:center;gap:.5em;min-height:3.1em;padding-right:calc(var(--pad-r) - .6em)}
-.sc-chip{min-width:3.5em}
+.sc-chip{min-width:4.1em}
 .is-dense .sc-stats{justify-content:flex-start;gap:.4em}
 .is-dense .rule>span,.is-dense .tag>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* Cards with nothing but numbers: the gems grow and sit in the middle instead of leaving empty paper. */
@@ -90,9 +89,9 @@ const style = computed(() => ({ ...classThemeStyle(props.card.className), '--emb
 /* narrow visible strip (fan overlap): icon + number only; the caption returns when the card is zoomed */
 .is-dense .sc-chip{min-width:0}
 .is-dense .cf-cap{display:none}
-.is-dense .cf-gem{width:2.25em;height:2.25em}
+.is-dense .cf-gem{min-width:3.4em;height:2.1em;padding:0 .35em 0 .2em}
 .is-dense .cf-num{font-size:1.4em}
-.is-dense .cf-ico{left:-.45em;width:1.35em;height:1.35em}
+.is-dense .cf-ico{width:1.35em;height:1.35em}
 
 /* rules, pills and tags */
 .sc-rules{position:relative;flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;justify-content:safe center;gap:.22em;padding-right:calc(var(--pad-r) - .6em)}
@@ -111,7 +110,6 @@ const style = computed(() => ({ ...classThemeStyle(props.card.className), '--emb
 .tag--vulnerability .glyph{color:color-mix(in srgb,var(--c-vulnerable) 60%,#5a2a00)}
 .tag--frostbite .glyph{color:color-mix(in srgb,#4ab0ff 70%,#0a2a4a)}
 
-/* foot: the hotkey beside the class seal (the seal itself sits on the frame) */
+/* foot: keeps the bottom-left corner free for the class seal, which sits on the frame */
 .sc-foot{position:relative;flex:none;display:flex;align-items:center;height:1.2em;margin-left:1.55em}
-.sc-foot kbd{display:inline-grid;place-items:center;min-width:1.25em;height:1.25em;border-radius:var(--r-1);border:.08em solid var(--brass-3);background:linear-gradient(var(--wood-2),var(--wood-1));color:var(--ink);font:700 .7em/1 var(--font-num);box-shadow:0 .08em .12em #0006}
 </style>
