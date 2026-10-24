@@ -1,5 +1,5 @@
 // Smoke test of the real game (App.vue, default B2 Long) in headless Chrome over the DevTools protocol, with full-resolution screenshots.
-// npm run dev, then: node scripts/app-smoke.mjs [out-dir] [--base http://localhost:5173] [--sizes 1920x1080,1280x720,900x600]
+// npm run dev, then: node scripts/app-smoke.mjs [out-dir] [--base http://localhost:5173] [--sizes 1920x1080,1280x720,900x600] [--audio]
 // New run → first battle (several cards played with the mouse and the keyboard, turns ended until the battle is won) → reward → deck viewer.
 // Fails on any console error, uncaught exception or failed request.
 import { spawn } from 'node:child_process'
@@ -17,16 +17,18 @@ if (!chrome) throw new Error('Chrome not found')
 mkdirSync(out, { recursive: true })
 const sleep = ms => new Promise(done => setTimeout(done, ms))
 
-const port = 9333
+const port = 9730 + Math.floor(Math.random() * 100)
 const profile = join(tmpdir(), 'spellwhim-app-smoke-' + Date.now())
 const proc = spawn(chrome, [`--remote-debugging-port=${port}`, `--user-data-dir=${profile}`, '--headless=new', '--enable-unsafe-swiftshader', '--use-angle=swiftshader', '--ignore-gpu-blocklist', '--hide-scrollbars', 'about:blank'], { stdio: 'ignore' })
+let socket
+try {
 let target
 for (let i = 0; i < 50 && !target; i++) {
   await sleep(200)
   try { target = (await (await fetch(`http://127.0.0.1:${port}/json`)).json()).find(item => item.type === 'page') } catch { /* not up yet */ }
 }
 if (!target) throw new Error('Chrome DevTools did not start')
-const socket = new WebSocket(target.webSocketDebuggerUrl)
+socket = new WebSocket(target.webSocketDebuggerUrl)
 await new Promise(done => socket.addEventListener('open', done))
 let nextId = 1
 const waiting = new Map()
@@ -40,6 +42,7 @@ socket.addEventListener('message', event => {
 })
 const send = (method, params = {}) => new Promise(done => { const id = nextId++; waiting.set(id, done); socket.send(JSON.stringify({ id, method, params })) })
 const evaluate = async expression => (await send('Runtime.evaluate', { expression, awaitPromise: true, returnByValue: true })).result.result?.value
+const waitFor = async expression => { for (let i = 0; i < 150; i++) { if (await evaluate(expression)) return; await sleep(100) } throw Error('Timed out: ' + expression) }
 await send('Runtime.enable'); await send('Log.enable'); await send('Page.enable')
 
 async function shot(name, size) {
@@ -50,6 +53,13 @@ async function shot(name, size) {
 }
 const clickText = text => evaluate(`(() => { const el = [...document.querySelectorAll('button')].find(b => b.textContent.includes(${JSON.stringify(text)}) && !b.disabled); if (!el) return false; el.click(); return true })()`)
 const key = value => evaluate(`document.body.dispatchEvent(new KeyboardEvent('keydown', { key: ${JSON.stringify(value)}, bubbles: true })), true`)
+const unlockAudio = async () => {
+  const p = await evaluate(`(() => { const r = document.querySelector('.audio-toggle').getBoundingClientRect(); return { x:r.x+r.width/2,y:r.y+r.height/2 } })()`)
+  await send('Input.dispatchMouseEvent', { type: 'mousePressed', button: 'left', clickCount: 1, ...p })
+  await send('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, ...p })
+  await sleep(300)
+  await clickText('Закрыть')
+}
 const state = () => evaluate(`JSON.stringify({ hand: document.querySelectorAll('.hand-card').length, playable: document.querySelectorAll('.hand-card:not([aria-disabled="true"])').length, reward: !!document.querySelector('.reward-screen'), map: !!document.querySelector('.map-screen, [aria-label*="штрек" i]') && !document.querySelector('.battle-dock'), dialog: [...document.querySelectorAll('dialog[open] button')].map(b => b.textContent.trim()), title: document.querySelector('h1,h2')?.textContent ?? '' })`).then(JSON.parse)
 
 for (const size of sizes) {
@@ -58,6 +68,11 @@ for (const size of sizes) {
   await send('Page.navigate', { url: base + '/' })
   await evaluate('localStorage.clear()'); await send('Page.navigate', { url: base + '/' })
   await sleep(2500)
+  if (args.includes('--audio')) {
+    // A trusted pointer input supplies browser user activation (modifier keys do not).
+    await unlockAudio()
+    if (!await evaluate('window.__audio?.stats().unlocked')) problems.push('audio did not unlock at ' + size)
+  }
   console.log('loaded', size, await evaluate('document.title'), await evaluate('document.body.innerText.slice(0,80)'))
   if (!await clickText('Новый поход')) throw new Error('No "Новый поход" button')
   await sleep(600)
@@ -110,13 +125,60 @@ for (const size of sizes) {
   console.log(size, 'cards played', played, 'turns', turns, JSON.stringify(final))
   if (!final.reward) problems.push('no reward screen reached at ' + size)
   else {
+    if (args.includes('--audio')) {
+      const a = await evaluate('window.__audio.stats()')
+      if (a.profile !== null || a.ambientSources !== 0 || a.ambientTimers !== 0 || a.contexts !== 1 || a.played === 0) problems.push('audio did not clean up on reward: ' + JSON.stringify(a))
+      console.log('reward audio cleanup', a)
+    }
     await shot('reward', size)
     await evaluate(`document.querySelector('.reward-option')?.click()`)
     await sleep(1200)
     if (await clickText('Посмотреть колоду')) { await sleep(600); await shot('deck-viewer', size); await clickText('Закрыть') }
     else problems.push('deck button not found after the reward at ' + size)
+    if (args.includes('--audio')) {
+      if (!await clickText('Главное меню')) problems.push('no menu button after reward')
+      await sleep(300)
+      const quiet = await evaluate('window.__audio.stats()')
+      if (quiet.profile !== null || quiet.ambientTimers || quiet.ambientSources) problems.push('ambient alive in menu: ' + JSON.stringify(quiet))
+      if (!await clickText('Вернуться в поход')) problems.push('cannot return from menu')
+      await sleep(300)
+      // Routes can put services between fights. Follow public categories and leave service rooms without changing the deck.
+      let nextFight = false
+      for (let room = 0; room < 10 && !nextFight; room++) {
+        const entered = await evaluate(`(() => { const available = [...document.querySelectorAll('button')].filter(b => /Доступно/.test(b.getAttribute('aria-label') ?? '')); const b = available.find(b => /бой|Босс/.test(b.getAttribute('aria-label') ?? '')) ?? available[0]; if (!b) return false; b.click(); return true })()`)
+        if (!entered) break
+        await waitFor('!!document.querySelector("[data-battle-scene],.room-screen,.rest-screen")')
+        nextFight = await evaluate('!!document.querySelector("[data-battle-scene]")')
+        if (nextFight) break
+        const quietRoom = await evaluate('window.__audio.stats()')
+        if (quietRoom.profile !== null || quietRoom.ambientTimers || quietRoom.ambientSources) problems.push('ambient alive in service room: ' + JSON.stringify(quietRoom))
+        if (await evaluate('!!document.querySelector(".room-screen")')) {
+          await evaluate('document.querySelector(".choice--leave")?.click()')
+          await sleep(100)
+          await clickText('Подтвердить')
+        } else await evaluate('document.querySelector(".rest-hero:not(:disabled),.skip-rest")?.click()')
+        await waitFor('!!document.querySelector(".campaign-screen")')
+      }
+      if (nextFight) {
+        await sleep(1500)
+        const a = await evaluate('window.__audio.stats()')
+        if (!a.profile || a.ambientTimers !== 1 || a.ambientSources > 1 || a.contexts !== 1) problems.push('new battle audio profile invalid: ' + JSON.stringify(a))
+        console.log('menu return → new battle', a)
+        // Reload a saved battle: resume from the menu and keep one fresh ambience.
+        await evaluate('delete window.__audio')
+        await send('Page.reload')
+        await waitFor('!!window.__audio && !!document.querySelector(".main-menu")')
+        await clickText('Продолжить поход')
+        await waitFor('!!document.querySelector("[data-battle-scene]")')
+        await unlockAudio()
+        await waitFor('window.__audio?.stats().unlocked && window.__audio?.stats().ambientTimers === 1')
+        const restored = await evaluate('window.__audio.stats()')
+        if (!restored.profile || restored.contexts !== 1 || restored.ambientTimers !== 1 || restored.ambientSources > 1) problems.push('restored battle audio invalid: ' + JSON.stringify(restored))
+        console.log('restored battle audio', restored)
+      } else problems.push('no publicly available fight after reward at ' + size)
+    }
   }
 }
-socket.close(); proc.kill()
-if (problems.length) { console.error('PROBLEMS:\n' + [...new Set(problems)].join('\n')); process.exit(1) }
+if (problems.length) throw Error('PROBLEMS:\n' + [...new Set(problems)].join('\n'))
 console.log('smoke test passed: no console errors')
+} finally { socket?.close(); proc.kill() }

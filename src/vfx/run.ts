@@ -1,4 +1,5 @@
 import type { VfxBeat, VfxPlan } from './types'
+import { soundCues, type SoundCue } from '../audio/cues'
 
 /** What the runner needs from a canvas: draw one beat, and call something later on the canvas's own clock. */
 export interface PaintHost {
@@ -11,6 +12,8 @@ export interface PlanHooks {
   onImpact(): void
   /** False once the action has been replaced or cancelled; nothing scheduled earlier may draw or report after that. */
   current(): boolean
+  /** Decorative cues share the exact canvas clock, including lab slow motion. Never awaited. */
+  onSound?(cue: SoundCue): void
 }
 
 /**
@@ -26,4 +29,7 @@ export function runPlan(plan: VfxPlan, host: PaintHost, hooks: PlanHooks): void 
     hooks.onImpact()
   })
   for (const beat of plan.beats) host.after(beat.at, () => { if (hooks.current()) host.paint(beat) })
+  if (hooks.onSound) for (const cue of soundCues(plan)) host.after(cue.at, () => {
+    if (hooks.current()) { try { hooks.onSound?.(cue) } catch { /* sound cannot interrupt the canvas or impact */ } }
+  })
 }

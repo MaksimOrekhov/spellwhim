@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onUnmounted, watch } from 'vue'
 import { forecastEnemyAction } from '../game/battle'
 import { pendingTickDamage, statusViews } from '../game/statuses'
 import type { BattleState, HeroId } from '../game/types'
@@ -16,6 +16,8 @@ import BattleHelp from './BattleHelp.vue'
 import PhaseShiftBanner from './PhaseShiftBanner.vue'
 import BattleBackdrop from './BattleBackdrop.vue'
 import { battleBackground } from '../ui/battleBackground'
+import { ambientProfile } from '../ambient/profiles'
+import { gameAudio } from '../audio/engine'
 const props = defineProps<{ state: BattleState; animation: BattlePresentation; phase: BattlePhase; artifactNotices?: string[]; continueLabel?: string; final?: boolean; captioned?: boolean; /** Lab only: slow-motion factor and a moment of the effect to freeze at. */ fxSpeed?: number; fxHold?: number | null }>()
 const emit = defineEmits<{ impact: [actionId: string]; endTurn: []; continue: [] }>()
 const enemyStatuses = computed(() => statusViews(props.state, 'enemy'))
@@ -33,6 +35,16 @@ const rebuilt = computed(() => props.state.enemy.phase === 2 && !!props.state.en
 const tier = computed(() => enemyTier(props.state.enemy.encounterId))
 // The painted background follows the same stable encounter ID, so a restored save shows the right one at once.
 const background = computed(() => battleBackground(props.state.enemy.encounterId))
+const ambient = computed(() => ambientProfile(background.value, props.state.enemy.phase))
+watch(() => [props.state.battleId, ambient.value] as const, ([id, profile], before) => {
+  if (before && before[0] !== id) gameAudio.setAmbient(null)
+  gameAudio.setAmbient(profile)
+}, { immediate: true })
+watch(() => props.state.result, (result, before) => { if (result && !before) gameAudio.play(result === 'victory' ? 'victory' : 'defeat', .75, 'result') })
+watch(() => ({ turn: props.state.turn, ids: props.state.hand.map(card => card.instanceId) }), (next, before) => {
+  if (next.turn > before.turn && !props.state.result && next.ids.some(id => !before.ids.includes(id))) gameAudio.play('draw', .55, 'turn-draw')
+})
+onUnmounted(() => { gameAudio.setAmbient(null); gameAudio.stopScope('result'); gameAudio.stopScope('turn-draw') })
 const rayTargets = computed(() => Object.keys(marks.value) as HeroId[])
 const rayLater = computed(() => intent.value.kind === 'prepare')
 const rayLethal = computed(() => lethalHeroes(intent.value))
@@ -41,7 +53,7 @@ const rayTick = computed(() => [props.state.turn, props.phase, intent.value.name
 </script>
 <template>
   <main class="battle-scene" data-battle-scene :class="['battle-scene--' + phase, 'battle-scene--tier-' + tier, { 'battle-scene--p2': rebuilt }]">
-    <BattleBackdrop :background="background" />
+    <BattleBackdrop :background="background" :ambient="ambient" :reduced="animation.vfx?.motion === 'reduced'" />
     <header class="battle-header">
       <div class="location-label"><span>✦ Мёртвые копи</span><small>Сектор I · Старые штольни</small></div>
       <div :key="phase + (phase === 'player' ? state.turn : '')" class="phase-indicator" :class="'phase-indicator--' + phase" role="status" aria-live="polite"><strong>{{ phaseTitle }}</strong><span>{{ phase === 'player' ? 'Ход ' + state.turn : phase === 'finished' ? 'Сражение завершено' : animation.label }}</span></div>
@@ -64,7 +76,7 @@ const rayTick = computed(() => [props.state.turn, props.phase, intent.value.name
     </div>
     <ThreatRays :targets="rayTargets" :later="rayLater" :lethal="rayLethal" :tick="rayTick" :executing="phase === 'enemy'" />
     <p v-if="artifactNotices?.length" class="artifact-feedback" role="status" aria-live="polite">{{ artifactNotices.join(' · ') }}</p>
-    <BattleFx :pulse="animation.pulse" :action-id="animation.actionId" :plan="animation.vfx" :speed="fxSpeed" :hold="fxHold" @impact="emit('impact', $event)" />
+    <BattleFx :pulse="animation.pulse" :action-id="animation.actionId" :plan="animation.vfx" :sound-active="animation.busy" :speed="fxSpeed" :hold="fxHold" @impact="emit('impact', $event)" />
     <BattleResult v-if="state.result" :result="state.result" :continue-label="continueLabel" :final="final" @continue="emit('continue')" />
   </main>
 </template>

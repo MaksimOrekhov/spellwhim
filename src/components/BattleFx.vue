@@ -9,18 +9,21 @@ import { runPlan } from '../vfx/run'
 import { FxRuntime } from '../vfx/runtime'
 import type { FxStats } from '../vfx/runtime'
 import type { VfxPlan } from '../vfx/types'
+import { gameAudio } from '../audio/engine'
 
-const props = defineProps<{ pulse: number; actionId: string | null; plan: VfxPlan | null; /** Lab only: playback speed and a moment of the plan to freeze at. */ speed?: number; hold?: number | null }>()
+const props = defineProps<{ pulse: number; actionId: string | null; plan: VfxPlan | null; soundActive?: boolean; /** Lab only: playback speed and a moment of the plan to freeze at. */ speed?: number; hold?: number | null }>()
 const emit = defineEmits<{ impact: [actionId: string] }>()
 const canvasHost = useTemplateRef<HTMLDivElement>('canvasHost')
 let app: Application | null = null
 let fx: FxRuntime | null = null
 let resizeObserver: ResizeObserver | null = null
 let disposed = false
+let soundScope = ''
 
 onMounted(async () => {
   const instance = new Application()
-  await instance.init({ backgroundAlpha: 0, antialias: true, autoDensity: true, autoStart: false, resolution: Math.min(window.devicePixelRatio || 1, 2), resizeTo: canvasHost.value! })
+  try { await instance.init({ backgroundAlpha: 0, antialias: true, autoDensity: true, autoStart: false, resolution: Math.min(window.devicePixelRatio || 1, 2), resizeTo: canvasHost.value! }) }
+  catch { return /* the existing game fallback timer resolves the action without WebGL */ }
   if (disposed || !canvasHost.value) { instance.destroy(true); return }
   app = instance
   canvasHost.value.appendChild(instance.canvas)
@@ -37,10 +40,11 @@ onMounted(async () => {
 })
 
 // A hidden tab stops the canvas clock while the game moves on through its own timers: showing the leftovers later would draw hits that already happened.
-function onVisible() { if (document.visibilityState === 'visible') fx?.clear() }
+function onVisible() { fx?.clear(); if (soundScope) gameAudio.stopScope(soundScope) }
 
 onUnmounted(() => {
   disposed = true
+  if (soundScope) gameAudio.stopScope(soundScope)
   resizeObserver?.disconnect()
   document.removeEventListener('visibilitychange', onVisible)
   if (import.meta.env.DEV) delete (window as unknown as { __fx?: unknown }).__fx
@@ -54,6 +58,7 @@ onUnmounted(() => {
 })
 
 function trigger() {
+  if (soundScope) gameAudio.stopScope(soundScope)
   if (!fx) return
   const plan = props.plan
   const actionId = props.actionId
@@ -62,9 +67,13 @@ function trigger() {
   fx.timeScale = props.speed ?? 1
   fx.holdAt = props.hold ?? null
   const runtime = fx
+  const pulse = props.pulse
+  soundScope = `vfx/${actionId}/${pulse}`
+  const scope = soundScope
   runPlan(plan, runtime, {
-    current: () => !disposed && fx === runtime && props.actionId === actionId,
+    current: () => !disposed && fx === runtime && props.actionId === actionId && props.pulse === pulse && !document.hidden,
     onImpact: () => emit('impact', actionId),
+    onSound: cue => { if (props.soundActive !== false && props.hold == null) gameAudio.play(cue.sound, cue.gain, scope) },
   })
 }
 watch(() => props.pulse, trigger, { flush: 'post' })

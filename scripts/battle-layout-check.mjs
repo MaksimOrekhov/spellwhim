@@ -4,7 +4,7 @@
 //  - the zoomed card and its notes scroll stay inside the window,
 //  - neither covers a critical readout (anything marked [data-critical]: health plates, the intent banner, status trays),
 //  - every critical readout is whole inside the window and above the hand,
-//  - each Pixi anchor ([data-fx-anchor]) lies inside the window and the canvas has the size of the scene (so DOM and canvas coordinates agree).
+//  - portrait anchors stay above the dock, the hand anchor stays inside the window, and the canvas covers the scene.
 // Fails (exit 1) on any violation, console error or uncaught exception.
 import { spawn } from 'node:child_process'
 import { existsSync } from 'node:fs'
@@ -92,7 +92,9 @@ for (const size of sizes) {
         if (s.notes && s.notes.scrollOverflow > 1) problems.push(`${where}: the notes scroll is cut (${s.notes.scrollOverflow}px of text do not fit)`)
         for (const anchor of s.anchors) {
           const cx = (anchor.left + anchor.right) / 2, cy = (anchor.top + anchor.bottom) / 2
-          if (cx < 0 || cx > s.width || cy < 0 || cy > (s.dockTop ?? s.height)) problems.push(`${where}: Pixi anchor "${anchor.id}" centre is outside the stage`)
+          // The hand is deliberately BELOW dockTop: it is where draw particles land. Portraits must stay above it.
+          const bottom = anchor.id === 'hand' ? s.height : (s.dockTop ?? s.height)
+          if (cx < 0 || cx > s.width || cy < 0 || cy > bottom) problems.push(`${where}: Pixi anchor "${anchor.id}" centre is outside the stage`)
         }
         if (s.canvas && s.scene && (Math.abs(s.canvas.left - s.scene.left) > 1 || Math.abs(s.canvas.right - s.scene.right) > 1 || Math.abs(s.canvas.top - s.scene.top) > 1 || Math.abs(s.canvas.bottom - s.scene.bottom) > 1)) problems.push(`${where}: the Pixi canvas does not cover the scene exactly`)
       }

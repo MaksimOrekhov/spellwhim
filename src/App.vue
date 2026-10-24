@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, shallowRef, watch } from 'vue'
 import BattleBoard from './components/BattleBoard.vue'
+import AudioSettings from './components/AudioSettings.vue'
+import { gameAudio } from './audio/engine'
 import BattleHand from './components/BattleHand.vue'
 import CampaignMap from './components/CampaignMap.vue'
 import CardReward from './components/CardReward.vue'
@@ -133,7 +135,7 @@ function playCard(instanceId: string, armorFocus?: HeroId) {
     if (card && choice) { choosing.value = { instanceId, card, choice }; return }
   }
   const pending = beginPlay(instanceId, armorFocus)
-  if (pending) play(pending)
+  if (pending) { gameAudio.play('card'); play(pending) }
   else document.getElementById('card-' + instanceId)?.focus()
 }
 function pickArmorTarget(focus: HeroId) {
@@ -148,7 +150,7 @@ function cancelArmorChoice() {
 }
 
 function onEndTurn() {
-  if (!animation.value.busy && !isOver.value) enemyTurn()
+  if (!animation.value.busy && !isOver.value) { gameAudio.play('turn'); enemyTurn() }
 }
 
 useBattleControls({ enabled: () => phase.value === 'battle' && battlePhase.value === 'player', cards: () => cards.value, play: playCard, endTurn: onEndTurn })
@@ -156,6 +158,7 @@ useBattleControls({ enabled: () => phase.value === 'battle' && battlePhase.value
 function enterNode(nodeId: string) {
   if (phase.value !== 'map' || !availableDungeonNodes(run.value).some(node => node.id === nodeId)) return
   const nextRun = enterDungeonNode(run.value, nodeId)
+  gameAudio.play('room')
   publish(nextRun)
   if (!nextRun.battleEntry) {
     phase.value = dungeonRunPhase(nextRun)
@@ -175,6 +178,7 @@ function onBattleContinue() {
 function chooseReward(card: CardDefinition, offerId?: string) {
   if (phase.value !== 'reward' || !offerId || run.value.pendingReward?.id !== offerId) return
   publish(claimDungeonReward(run.value, card, offerId))
+  gameAudio.play('reward')
   phase.value = 'map'
 }
 
@@ -187,6 +191,7 @@ function skipReward(offerId: string) {
 function chooseArtifact(artifactId: Parameters<typeof claimDungeonArtifact>[1], ownerInstanceId: string, replaceInstanceId?: string, offerId?: string) {
   if (phase.value !== 'reward' || !offerId || run.value.pendingReward?.id !== offerId) return
   publish(claimDungeonArtifact(run.value, artifactId, ownerInstanceId, replaceInstanceId, offerId))
+  gameAudio.play('reward')
   phase.value = 'map'
 }
 
@@ -230,6 +235,7 @@ function confirmRoom(command: RoomCommand) {
 <template>
   <div class="app-shell">
     <div class="game-wrap">
+      <AudioSettings />
       <p v-if="experimental" class="economy-badge" :title="economy.label">Лаборатория · {{ economy.label }}</p>
       <MainMenu v-if="phase === 'start' || phase === 'resume'" :saved="saved ? { active: saved.run.status === 'active' } : null" :can-return="!!phaseBeforeStart && phaseBeforeStart !== 'resume'" :finished="phaseBeforeStart === 'complete'" :notice="loadNotice" :unreadable="phase === 'resume' && !saved" @continue="continueSavedRun" @return="phase = phaseBeforeStart!" @new-run="restartRun" @download="downloadSave" @retry="retryLoad" />
       <CampaignMap v-else-if="phase === 'map'" :map="run.map" :run="run" @enter="enterNode" @mode="showStart" />

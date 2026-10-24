@@ -1,0 +1,135 @@
+{
+  "viewport": "2560x1440",
+  "renderer": "Chrome headless / SwiftShader",
+  "results": [
+    {
+      "name": "no audio context before input"
+    },
+    {
+      "name": "trusted input unlocks one context"
+    },
+    {
+      "name": "volume persists on reload"
+    },
+    {
+      "name": "reload stays silent before input"
+    },
+    {
+      "name": "mine profile and bounded sources",
+      "detail": {
+        "sources": 1,
+        "ambientSources": 1,
+        "ambientTimers": 1,
+        "buffers": 4,
+        "contexts": 1,
+        "unlocked": true,
+        "unavailable": false,
+        "hidden": false,
+        "profile": "mine",
+        "played": 6
+      }
+    },
+    {
+      "name": "mine particle cap",
+      "detail": 16
+    },
+    {
+      "name": "crystal profile and bounded sources",
+      "detail": {
+        "sources": 1,
+        "ambientSources": 1,
+        "ambientTimers": 1,
+        "buffers": 5,
+        "contexts": 1,
+        "unlocked": true,
+        "unavailable": false,
+        "hidden": false,
+        "profile": "crystal",
+        "played": 10
+      }
+    },
+    {
+      "name": "crystal particle cap",
+      "detail": 18
+    },
+    {
+      "name": "forge profile and bounded sources",
+      "detail": {
+        "sources": 1,
+        "ambientSources": 1,
+        "ambientTimers": 1,
+        "buffers": 6,
+        "contexts": 1,
+        "unlocked": true,
+        "unavailable": false,
+        "hidden": false,
+        "profile": "forge",
+        "played": 14
+      }
+    },
+    {
+      "name": "forge particle cap",
+      "detail": 22
+    },
+    {
+      "name": "forge-fury profile and bounded sources",
+      "detail": {
+        "sources": 1,
+        "ambientSources": 1,
+        "ambientTimers": 1,
+        "buffers": 7,
+        "contexts": 1,
+        "unlocked": true,
+        "unavailable": false,
+        "hidden": false,
+        "profile": "forge-fury",
+        "played": 19
+      }
+    },
+    {
+      "name": "forge-fury particle cap",
+      "detail": 26
+    },
+    {
+      "name": "sequential combat plays actual AudioBufferSources"
+    },
+    {
+      "name": "mute stops sources immediately"
+    },
+    {
+      "name": "mute persists on reload"
+    },
+    {
+      "name": "hidden listener pauses particles, sound and timers"
+    },
+    {
+      "name": "visible listener resumes one timer"
+    },
+    {
+      "name": "reduced motion removes particles but preserves sound"
+    },
+    {
+      "name": "idle main-thread work over 3 seconds (SwiftShader)",
+      "detail": {
+        "full": {
+          "taskMs": 34,
+          "scriptMs": 4
+        },
+        "reduced": {
+          "taskMs": 30,
+          "scriptMs": 5
+        }
+      }
+    },
+    {
+      "name": "no ambient DOM outside battle"
+    },
+    {
+      "name": "unavailable AudioContext preserves combat"
+    },
+    {
+      "name": "no console errors",
+      "detail": []
+    }
+  ]
+}

@@ -5,6 +5,11 @@
    - Class colours are NOT here: they live in src/game/classThemes.ts (classThemeStyle → --class-*).
    - UI icons come from Lucide (@lucide/vue); never hand-drawn or generated. */
 :root {
+  /* Ambient mine light: decorative, deliberately less contrast than combat readouts. */
+  --ambient-mine-light: #ffd18a; --ambient-mine-mote: #ffe2ae;
+  --ambient-crystal-light: #8199ff; --ambient-crystal-mote: #c1ddff;
+  --ambient-forge-light: #ff8a30; --ambient-forge-mote: #ffc568;
+  --ambient-fury-light: #ff4e30; --ambient-fury-mote: #ff9852;
   /* ── Typography ─────────────────────────────────────────────────────────── */
   --font-display: 'El Messiri', 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
   --font-ui: 'Nunito', 'Segoe UI', 'Trebuchet MS', system-ui, sans-serif;

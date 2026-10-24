@@ -6,13 +6,16 @@
 // elite, boss, the boss's second phase), a vignette darkens the edges and the strip under the header and the hand.
 // It only paints: no pointer events, hidden from assistive tech; characters stand on the floor, the hand covers the bottom.
 import { allBattleBackgrounds, type BattleBackground } from '../ui/battleBackground'
-defineProps<{ background: BattleBackground }>()
+import AmbientBackdrop from './AmbientBackdrop.vue'
+import type { AmbientProfile } from '../ambient/profiles'
+defineProps<{ background: BattleBackground; ambient: AmbientProfile; reduced?: boolean }>()
 </script>
 
 <template>
   <div class="backdrop" aria-hidden="true" data-backdrop :data-background="background.id">
     <img v-for="item in allBattleBackgrounds" :key="item.id" class="art" :class="{ 'is-on': item.id === background.id }" :src="item.src" :style="{ objectPosition: item.focus }" alt="" draggable="false" decoding="sync" />
     <div class="light light--far" /><div class="light light--core" /><div class="light light--floor" /><div class="shade" />
+    <AmbientBackdrop :profile="ambient" :reduced="reduced" />
   </div>
 </template>
 

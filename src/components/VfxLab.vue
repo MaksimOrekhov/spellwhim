@@ -3,7 +3,14 @@
 // rules engine (src/vfx/scenarios.ts), and a button that plays the chosen one through the same path as the game (startCardPlay /
 // forecastEnemyAction → useBattleAnimation → BattleFx). Query: &fx=<scenario id>  &motion=reduced  &speed=0.25 (slow motion)
 // &hold=<ms> (freeze the picture at a moment of the effect, for stills)  &auto=1 (play on load)  &loop=1 (replay forever)  &panel=0 (no panel).
-import { computed, nextTick, onMounted, onUnmounted, ref, shallowRef } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, shallowRef, watch } from 'vue'
+import AudioSettings from './AudioSettings.vue'
+import { gameAudio } from '../audio/engine'
+import { soundLabels } from '../audio/catalogue'
+import type { SoundId } from '../audio/cues'
+import { currentMotion, setMotionPreference } from '../vfx/motion'
+import { battleBackground } from '../ui/battleBackground'
+import { ambientProfile } from '../ambient/profiles'
 import BattleBoard from './BattleBoard.vue'
 import BattleHand from './BattleHand.vue'
 import { endTurn, resolveCardPlay, startCardPlay, previewCard } from '../game/battle'
@@ -17,12 +24,21 @@ import type { BattleState } from '../game/types'
 
 const query = new URLSearchParams(window.location.search)
 const showPanel = query.get('panel') !== '0'
-const motion = ref<Motion>(query.get('motion') === 'reduced' ? 'reduced' : 'full')
+const motion = ref<Motion>(query.get('motion') === 'reduced' ? 'reduced' : query.get('motion') === 'full' ? 'full' : currentMotion())
 const speed = ref(Number(query.get('speed') ?? 1) || 1)
 const hold = ref<number | null>(query.get('hold') !== null ? Number(query.get('hold')) : null)
 const loop = ref(query.get('loop') === '1')
+const audition = ref<SoundId>('steel-hit')
+function auditionSound() { void gameAudio.unlock().then(() => { gameAudio.stopScope('audition'); gameAudio.play(audition.value, .7, 'audition') }) }
 const current = shallowRef<VfxScenario>(vfxScenario(query.get('fx') ?? '') ?? vfxScenarios[0]!)
 const state = shallowRef<BattleState>(current.value.build())
+watch(motion, value => setMotionPreference(value), { immediate: true })
+const atmosphereScenes = [
+  { title: 'Шахта', id: 'enemy-all', profile: 'mine' }, { title: 'Кристаллы', id: 'enemy-exposes', profile: 'crystal' },
+  { title: 'Кузница', id: 'boss-hit', profile: 'forge' }, { title: 'Кузница · фаза 2', id: 'boss-all', profile: 'forge-fury' },
+]
+const atmosphereId = computed(() => atmosphereScenes.find(scene => scene.profile === ambientProfile(battleBackground(state.value.enemy.encounterId), state.value.enemy.phase))?.id)
+function atmosphere(id: string) { const scene = vfxScenario(id); if (scene) reset(scene) }
 
 function resolvePlay(actionId: string) {
   const next = structuredClone(state.value)
@@ -43,7 +59,12 @@ const pendingView = computed<HandCardView | null>(() => {
 })
 
 let loopTimer: ReturnType<typeof setTimeout> | undefined
+let replayTimer: ReturnType<typeof setTimeout> | undefined
+let autoTimer: ReturnType<typeof setTimeout> | undefined
+let replayGeneration = 0
+let disposed = false
 function reset(scenario = current.value) {
+  replayGeneration++
   window.clearTimeout(loopTimer)
   cancel()
   current.value = scenario
@@ -51,9 +72,11 @@ function reset(scenario = current.value) {
 }
 async function replay(scenario = current.value) {
   reset(scenario)
+  const generation = replayGeneration
   await nextTick()
   // One frame of stillness between runs so each play starts from the same picture.
-  await new Promise(done => window.setTimeout(done, 80))
+  await new Promise(done => { replayTimer = window.setTimeout(done, 80) })
+  if (disposed || generation !== replayGeneration) return
   const run = scenario.run
   if (run.kind === 'enemy') enemyTurn()
   else {
@@ -80,11 +103,11 @@ const watchBusy = () => {
   wasBusy = animation.value.busy
 }
 const poll = window.setInterval(watchBusy, 100)
-onUnmounted(() => { window.clearInterval(poll); window.clearTimeout(loopTimer) })
+onUnmounted(() => { disposed = true; gameAudio.stopScope('audition'); window.clearInterval(poll); window.clearTimeout(loopTimer); window.clearTimeout(replayTimer); window.clearTimeout(autoTimer); setMotionPreference('auto'); delete (window as unknown as { __vfxLab?: unknown }).__vfxLab })
 
 onMounted(() => {
-  ;(window as unknown as { __vfxLab: unknown }).__vfxLab = { play: (id: string) => { const scenario = vfxScenario(id); if (scenario) return replay(scenario) }, busy: () => animation.value.busy, ids: vfxScenarios.map(item => item.id), setHold: (ms: number | null) => { hold.value = ms }, setSpeed: (value: number) => { speed.value = value }, setMotion: (value: Motion) => { motion.value = value }, plan: () => animation.value.vfx }
-  if (query.get('auto') === '1') window.setTimeout(again, 900)
+  ;(window as unknown as { __vfxLab: unknown }).__vfxLab = { reset: (id: string) => { const scene = vfxScenario(id); if (scene) reset(scene) }, play: (id: string) => { const scenario = vfxScenario(id); if (scenario) return replay(scenario) }, busy: () => animation.value.busy, ids: vfxScenarios.map(item => item.id), setHold: (ms: number | null) => { hold.value = ms }, setSpeed: (value: number) => { speed.value = value }, setMotion: (value: Motion) => { motion.value = value }, plan: () => animation.value.vfx }
+  if (query.get('auto') === '1') autoTimer = window.setTimeout(again, 900)
 })
 </script>
 
@@ -92,6 +115,12 @@ onMounted(() => {
   <div class="lab">
     <aside v-if="showPanel" class="lab-panel" aria-label="Лаборатория эффектов">
       <h1>Эффекты боя</h1>
+      <div class="lab-controls">
+        <button type="button" @click="gameAudio.update({ muted: false }); gameAudio.unlock()">Включить звук</button>
+        <label>Тембр <select v-model="audition"><option v-for="(title, id) in soundLabels" :key="id" :value="id">{{ title }}</option></select></label>
+        <button type="button" @click="auditionSound">Прослушать тембр</button>
+        <label>Атмосфера <select aria-label="Атмосфера" :value="atmosphereId" @change="atmosphere(($event.target as HTMLSelectElement).value)"><option v-for="scene in atmosphereScenes" :key="scene.id" :value="scene.id">{{ scene.title }}</option></select></label>
+      </div>
       <div class="lab-controls">
         <button type="button" class="primary" @click="again">▶ Играть снова</button>
         <button type="button" @click="reset()">⟲ Сброс</button>
@@ -109,6 +138,7 @@ onMounted(() => {
     <div class="lab-stage">
       <div class="app-shell">
         <div class="game-wrap">
+          <AudioSettings />
           <BattleBoard :state="state" :animation="animation" :phase="phase" :fx-speed="speed" :fx-hold="hold" @impact="impact" @end-turn="() => undefined" />
           <BattleHand :cards="views" :outgoing="pendingView" :outgoing-index="state.pending?.handIndex ?? 0" :draw-count="state.drawPile.length" :discard-count="state.discardPile.length" :exhausted-count="state.exhausted.length" :phase="phase" :mana="state.mana" :max-mana="state.maxMana" @play="() => undefined" @end-turn="() => undefined" />
         </div>
