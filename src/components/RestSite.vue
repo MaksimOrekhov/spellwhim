@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import UpgradePicker from './UpgradePicker.vue'
+import CardOperationDialog from './CardOperationDialog.vue'
 import { canUpgradeCard } from '../game/cardProgression'
 import type { PersistentCard, BattleState } from '../game/types'
 
@@ -40,7 +40,7 @@ function amount(hero: BattleState['heroes']['warrior']) {
       <button class="game-button rest-upgrade" :disabled="!hasUpgrades" @click="choosingUpgrade = true">{{ hasUpgrades ? '↑ Улучшить карту вместо лечения' : 'Все карты уже улучшены' }}</button>
       <button v-if="amount(heroes.warrior) === 0 && amount(heroes.mage) === 0" class="skip-rest" @click="emit('choose', null, sourceId)">Здоровье полное · продолжить путь</button>
     </section>
-    <UpgradePicker v-if="choosingUpgrade" :deck="deck" @close="choosingUpgrade = false" @confirm="sourceId && emit('upgrade', $event, sourceId)" />
+    <CardOperationDialog v-if="choosingUpgrade" mode="upgrade" :deck="deck" :is-eligible="canUpgradeCard" explanation="Вместо лечения. Выберите карту и сравните версии: что изменится, выделено." @close="choosingUpgrade = false" @confirm="sourceId && emit('upgrade', $event.instanceId, sourceId)" />
   </main>
 </template>
 

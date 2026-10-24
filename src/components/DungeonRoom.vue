@@ -7,10 +7,9 @@ import { roomRules } from '../game/roomRules'
 import type { RoomAction, RoomCommand, RoomSelection } from '../game/dungeonRooms'
 import { sectorEventText } from '../game/sectorContent'
 import { artifactDefinition } from '../game/artifacts'
-import { cardDefinition } from '../game/types'
 import { resolveCardDefinition } from '../game/cardProgression'
 import { neutralPreview } from '../ui/cardDisplay'
-import UpgradePicker from './UpgradePicker.vue'
+import CardOperationDialog from './CardOperationDialog.vue'
 import SpellCard from './SpellCard.vue'
 import DeckViewer from './DeckViewer.vue'
 
@@ -44,21 +43,26 @@ const eligible = computed(() => roomEligibleCards(props.run, action.value ?? 'le
 const selected = computed(() => eligible.value.find(c => c.instanceId === draft.value?.instanceId))
 const replacements = computed(() => selected.value ? roomReplacementOptions(props.run,selected.value).map(resolveCardDefinition) : [])
 const selectedCard = computed(() => selected.value ? resolveCardDefinition(selected.value) : undefined)
-const selectionSummary = computed(() => selected.value && (action.value === 'remove' || action.value === 'replace') ? `Копия ${props.run.deck.indexOf(selected.value)+1}: ${selectedCard.value!.name}${selected.value.upgrade ? ' ↑ (улучшена)' : ' (без улучшения)'}` : '')
+const selectionSummary = computed(() => selected.value && (action.value === 'remove' || action.value === 'replace') ? `${selectedCard.value!.name}${selected.value.upgrade ? ' ↑ (улучшена)' : ' (без улучшения)'}` : '')
 const lossWarning = computed(() => selected.value?.upgrade ? action.value === 'remove' ? 'Вы удаляете улучшенную копию. Её улучшение будет потеряно навсегда.' : 'При замене улучшение будет потеряно. Новая копия — без улучшения.' : '')
 const offers = computed(() => room.value.cards.map(resolveCardDefinition))
 const selectedOwner = computed(() => draft.value?.heroId ? props.run.heroes[draft.value.heroId] : undefined)
 const occupied = computed(() => props.run.artifacts.find(a => a.ownerInstanceId === selectedOwner.value?.instanceId))
 const canConfirm = computed(() => !!action.value && roomActionAvailable(props.run,action.value) && (action.value === 'leave' || action.value === 'risk' || (action.value === 'remove' && selected.value) || (action.value === 'replace' && selected.value && replacements.value.some(c => c.id === draft.value?.cardId)) || (action.value === 'card' && offers.value.some(c => c.id === draft.value?.cardId)) || (action.value === 'artifact' && selectedOwner.value && draft.value?.artifactId)))
 const payment = computed(() => paid.value && selectedOwner.value ? `Платит ${selectedOwner.value.name}: ${selectedOwner.value.health} → ${selectedOwner.value.health-roomRules.upgradeHealth} HP` : '')
-const upgradeOpen = computed(() => action.value === 'upgrade' && (!paid.value || !!selectedOwner.value))
+const operationOpen = computed(() => (action.value === 'upgrade' && (!paid.value || !!selectedOwner.value)) || action.value === 'remove' || action.value === 'replace')
+const operationMode = computed(() => action.value as 'upgrade' | 'remove' | 'replace')
+const isEligible = (copy: { instanceId: string }) => eligible.value.some(c => c.instanceId === copy.instanceId)
+const replacementsFor = (copy: Parameters<typeof roomReplacementOptions>[1]) => roomReplacementOptions(props.run, copy).map(resolveCardDefinition)
 function disabled(a: RoomAction) {
   return !roomActionAvailable(props.run,a)
 }
 function update(value: Partial<RoomSelection>) { emit('select', { ...draft.value!, ...value }) }
-function confirm(instanceId?: string) {
+/** The gallery dialog sends only the exact copy (and the replacement) it was shown; the rest of the command is the saved draft. */
+function chooseCopy(instanceId: string) { emit('select', { action: draft.value!.action, instanceId, ...(draft.value!.heroId ? { heroId: draft.value!.heroId } : {}) }) }
+function confirm(choice?: { instanceId?: string; cardId?: string }) {
   if (!draft.value) return
-  emit('confirm', { ...draft.value, ...(instanceId ? {instanceId} : {}), roomId:room.value.id, ...(occupied.value ? { replaceInstanceId:occupied.value.instanceId } : {}) })
+  emit('confirm', { ...draft.value, ...(choice?.instanceId ? {instanceId: choice.instanceId} : {}), ...(choice?.cardId ? {cardId: choice.cardId} : {}), roomId:room.value.id, ...(occupied.value ? { replaceInstanceId:occupied.value.instanceId } : {}) })
 }
 </script>
 
@@ -87,12 +91,8 @@ function confirm(instanceId?: string) {
         <div v-if="(action==='upgrade' && paid) || action==='artifact'" class="hero-options">
           <button v-for="hero in [run.heroes.warrior,run.heroes.mage]" :key="hero.instanceId" class="game-button" :disabled="action==='upgrade' && hero.health<=roomRules.upgradeHealth" :aria-pressed="draft.heroId===hero.id" @click="update({heroId:hero.id})">{{ hero.name }} · {{ hero.health }}/{{ hero.maxHealth }} HP<span v-if="action==='artifact'"> · {{ run.artifacts.find(a=>a.ownerInstanceId===hero.instanceId) ? 'слот занят' : 'слот свободен' }}</span></button>
         </div>
-        <div v-if="action==='remove' || action==='replace'" class="deck-options">
-          <button v-for="c in eligible" :key="c.instanceId" class="choice choice--pick" :class="{selected:draft.instanceId===c.instanceId, 'is-upgraded':c.upgrade}" :aria-pressed="draft.instanceId===c.instanceId" @click="emit('select',{action:action!,instanceId:c.instanceId})"><span class="choice-text"><strong>{{ resolveCardDefinition(c).name }}{{ c.upgrade ? ' ↑' : '' }}</strong><span>Копия {{ run.deck.indexOf(c)+1 }} · {{ c.upgrade ? 'Улучшена' : 'Без улучшения' }} · {{ cardDefinition(c.definitionId).className==='warrior' ? 'Воин' : 'Маг' }}</span></span></button>
-        </div>
-        <div v-if="selected && selectedCard && (action==='remove' || action==='replace')" class="selected-copy"><SpellCard :card="selectedCard" :preview="neutralPreview(selectedCard)"/><div><p>{{ selectionSummary }}</p><p>{{ selectedCard.description }}</p><p v-if="action==='remove'">В колоде останется {{ run.deck.length-1 }} карт.</p><strong v-if="lossWarning" class="loss-warning">{{ lossWarning }}</strong></div></div>
-        <div v-if="action==='card' || (action==='replace' && selected)" class="card-options">
-          <button v-for="c in action==='card' ? offers : replacements" :key="c.id" class="card-choice" :class="{selected:draft.cardId===c.id}" :aria-label="c.name+'. '+c.description" @click="update({cardId:c.id})"><SpellCard :card="c" :preview="neutralPreview(c)"/><p>{{ c.description }}</p></button>
+        <div v-if="action==='card'" class="card-options">
+          <button v-for="c in offers" :key="c.id" class="card-choice" :class="{selected:draft.cardId===c.id}" :aria-label="c.name+'. '+c.description" @click="update({cardId:c.id})"><SpellCard :card="c" :preview="neutralPreview(c)"/><p>{{ c.description }}</p></button>
         </div>
         <template v-if="action==='risk' && room.riskCard"><p>{{ descriptions.risk }} Предложение при успехе: {{ resolveCardDefinition(room.riskCard).name }}.</p><div class="card-options"><div class="card-choice"><SpellCard :card="resolveCardDefinition(room.riskCard)" :preview="neutralPreview(resolveCardDefinition(room.riskCard))"/><p>{{ resolveCardDefinition(room.riskCard).description }}</p></div></div></template>
         <div v-if="action==='artifact'" class="artifact-options">
@@ -102,8 +102,8 @@ function confirm(instanceId?: string) {
         <p v-if="action==='leave'">Вы покинете комнату без изменений. Это завершит посещение.</p>
       </section>
     </div>
-    <footer><div class="confirmation-summary" aria-live="polite"><span v-if="selectionSummary">{{ action==='replace' ? 'Заменить' : 'Удалить' }} · {{ selectionSummary }}<template v-if="action==='replace' && draft?.cardId"> → {{ replacements.find(c=>c.id===draft?.cardId)?.name }} (без улучшения)</template></span><strong v-if="lossWarning">{{ lossWarning }}</strong><span v-if="!selectionSummary">Вариан {{ run.heroes.warrior.health }} HP · Джайна {{ run.heroes.mage.health }} HP · Карт: {{ run.deck.length }}</span></div><div><button v-if="draft" class="game-button" @click="emit('select',null)">Отмена выбора</button><button v-if="action!=='upgrade'" class="game-button" :disabled="!canConfirm" @click="confirm()">Подтвердить</button></div></footer>
-    <UpgradePicker v-if="upgradeOpen" :deck="eligible" :selected-instance-id="draft?.instanceId" :explanation="paid ? payment+'. Одна операция за посещение.' : 'Бесплатная услуга кузницы. Одна операция за посещение.'" :confirm-label="paid ? payment+' · Улучшить' : undefined" @select="update({instanceId:$event})" @confirm="confirm" @close="emit('select',null)" />
+    <footer><div class="confirmation-summary" aria-live="polite"><span v-if="selectionSummary">{{ action==='replace' ? 'Заменить' : 'Удалить' }} · {{ selectionSummary }}<template v-if="action==='replace' && draft?.cardId"> → {{ replacements.find(c=>c.id===draft?.cardId)?.name }} (без улучшения)</template></span><strong v-if="lossWarning">{{ lossWarning }}</strong><span v-if="!selectionSummary">Вариан {{ run.heroes.warrior.health }} HP · Джайна {{ run.heroes.mage.health }} HP · Карт: {{ run.deck.length }}</span></div><div><button v-if="draft" class="game-button" @click="emit('select',null)">Отмена выбора</button><button v-if="action && !['upgrade','remove','replace'].includes(action)" class="game-button" :disabled="!canConfirm" @click="confirm()">Подтвердить</button></div></footer>
+    <CardOperationDialog v-if="operationOpen" :key="action" :mode="operationMode" :deck="run.deck" :is-eligible="isEligible" :replacements-for="replacementsFor" :selected-instance-id="draft?.instanceId ?? null" :selected-card-id="draft?.cardId ?? null" :explanation="action==='upgrade' ? (paid ? payment+'. Одна операция за посещение.' : 'Бесплатная услуга кузницы. Одна операция за посещение.') : undefined" :confirm-label="action==='upgrade' && paid ? payment+' · Улучшить' : undefined" @select="chooseCopy" @pick="update({cardId:$event})" @confirm="confirm" @close="emit('select',null)" />
   </main>
 </template>
 
@@ -151,11 +151,9 @@ footer{color:var(--muted)}
 .selected,[aria-pressed=true]{outline:var(--focus-ring);outline-offset:var(--focus-offset)}
 button:disabled{opacity:.45;cursor:default}
 .selection{margin-top:var(--sp-4);padding:var(--sp-4);border:var(--border-brass);border-radius:var(--shape-dialog);background:var(--mat-quiet);box-shadow:var(--shadow-3)}
-.selected-copy{display:flex;align-items:center;justify-content:center;gap:var(--sp-4);font-size:12px;margin:var(--sp-4) 0}.selected-copy>div{max-width:380px;font-size:var(--fs-sm)}
 .loss-warning{display:block;padding:var(--sp-2) var(--sp-3);border-left:4px solid var(--c-threat);border-radius:var(--r-1);background:#ff6a3d22;color:var(--parch-1)}
 footer .confirmation-summary{display:grid;gap:var(--sp-1);max-width:65%}.confirmation-summary strong{color:var(--parch-1)}
 .hero-options{display:flex;flex-wrap:wrap;gap:var(--sp-3);margin-bottom:var(--sp-4)}
-.deck-options{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--sp-2);padding:var(--sp-2)}
 .card-options{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--sp-5);padding:var(--sp-3)}
 .card-choice{display:flex;flex-direction:column;align-items:center;width:220px;border:0;border-radius:var(--shape-dialog);background:transparent;color:var(--ink);font-size:17px;padding:var(--sp-2);cursor:pointer}.card-choice p{font:600 var(--fs-sm)/var(--lh-body) var(--font-ui)}
 .artifact-options{display:grid;gap:var(--sp-3);grid-template-columns:repeat(2,minmax(0,1fr))}.artifact-options p{grid-column:1/-1}

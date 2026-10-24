@@ -192,9 +192,10 @@ describe('room review regressions',()=>{
     for(const action of ['remove','replace'] as const) {
       run.room!.selection={action,instanceId:run.deck[0]!.instanceId}
       const html=await renderToString(createSSRApp(DungeonRoom,{run}))
-      expect(html).toContain('↑');expect(html).toContain('Улучшена');expect(html).toContain('Без улучшения')
-      expect(html).toContain('Копия 1');expect(html).toContain('Копия 2')
+      expect(html).toContain('↑');expect(html).toContain('улучшена');expect(html).toContain('(улучшена)')
+      expect(html).toContain('cg-item');expect(html).toContain('×2')
       expect(html).toContain(action==='remove'?'Вы удаляете улучшенную копию':'При замене улучшение будет потеряно')
+      expect(html).toContain(action==='remove'?'Удаление необратимо':'Новая карта придёт без улучшения')
       expect(html).toContain('Удар мечом');expect(html).toContain('confirmation-summary')
     }
   })
