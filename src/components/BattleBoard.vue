@@ -15,6 +15,7 @@ import BattleResult from './BattleResult.vue'
 import BattleHelp from './BattleHelp.vue'
 import PhaseShiftBanner from './PhaseShiftBanner.vue'
 import BattleBackdrop from './BattleBackdrop.vue'
+import { battleBackground } from '../ui/battleBackground'
 const props = defineProps<{ state: BattleState; animation: BattlePresentation; phase: BattlePhase; artifactNotices?: string[]; continueLabel?: string; final?: boolean; captioned?: boolean }>()
 const emit = defineEmits<{ impact: [actionId: string]; endTurn: []; continue: [] }>()
 const enemyStatuses = computed(() => statusViews(props.state, 'enemy'))
@@ -32,6 +33,8 @@ const phaseTitle = computed(() => ({ player: 'Ваш ход', card: 'Спосо�
 const rebuilt = computed(() => props.state.enemy.phase === 2 && !!props.state.enemy.phaseNote)
 // Presentation only: an elite and a boss tint the lights of the cave, the fight itself is unchanged.
 const tier = computed(() => enemyTier(props.state.enemy.encounterId))
+// The painted background follows the same stable encounter ID, so a restored save shows the right one at once.
+const background = computed(() => battleBackground(props.state.enemy.encounterId))
 const rayTargets = computed(() => Object.keys(marks.value) as HeroId[])
 const rayLater = computed(() => intent.value.kind === 'prepare')
 const rayLethal = computed(() => lethalHeroes(intent.value))
@@ -40,7 +43,7 @@ const rayTick = computed(() => [props.state.turn, props.phase, intent.value.name
 </script>
 <template>
   <main class="battle-scene" data-battle-scene :class="['battle-scene--' + phase, 'battle-scene--tier-' + tier, { 'battle-scene--p2': rebuilt }]">
-    <BattleBackdrop />
+    <BattleBackdrop :background="background" />
     <header class="battle-header">
       <div class="location-label"><span>✦ Мёртвые копи</span><small>Сектор I · Старые штольни</small></div>
       <div :key="phase + (phase === 'player' ? state.turn : '')" class="phase-indicator" :class="'phase-indicator--' + phase" role="status" aria-live="polite"><strong>{{ phaseTitle }}</strong><span>{{ phase === 'player' ? 'Ход ' + state.turn : phase === 'finished' ? 'Сражение завершено' : animation.label }}</span></div>
@@ -70,13 +73,13 @@ const rayTick = computed(() => [props.state.turn, props.phase, intent.value.name
 <style scoped>
 /* The scene is one stage: header on top, the arena (a size container: its own height sets the size of the figures), the hand below.
    Mood is carried by --scene-* variables that recolour the backdrop's lights: a warmer lamp on the enemy's turn, a crimson one in a
-   boss's second phase, a violet one for a boss, a ruddy one for an elite; the interface itself stays quiet. */
+   boss's second phase, an orange forge glow for a boss, a cold blue one for an elite; the interface itself stays quiet. */
 .battle-scene{--scene-core:#ffb866;--scene-lamp:#ffb054;--scene-far:#ffd890;position:absolute;inset:0;padding-bottom:var(--hand-height);display:grid;grid-template-rows:clamp(46px,5.6vh,72px) minmax(0,1fr);overflow:hidden;background:#161a1d}
-.battle-scene--enemy{--scene-lamp:#ff8a4a;--scene-core:#ff9a5a}
+.battle-scene--enemy{--scene-lamp:#ff8a4a;--scene-core:#ff8a5a}
 .battle-scene--card{--scene-core:#c9a8ff}
-.battle-scene--tier-elite{--scene-far:#ffb59a;--scene-core:#ff9a6a}
-.battle-scene--tier-boss{--scene-far:#e6ccff;--scene-core:#d0a8ff;--scene-lamp:#ffc36a}
-.battle-scene--p2{--scene-far:#ff8a5a;--scene-core:#ff6a3d;--scene-lamp:#ff7a45}
+.battle-scene--tier-elite{--scene-far:#7fb2ff;--scene-core:#8aa4ff}
+.battle-scene--tier-boss{--scene-far:#ffa63d;--scene-core:#ff9a45;--scene-lamp:#ffb454}
+.battle-scene--p2{--scene-far:#ff4a28;--scene-core:#ff3d3d;--scene-lamp:#ff5a32}
 .battle-scene::after{content:'';position:absolute;inset:0;bottom:var(--hand-height);pointer-events:none;z-index:1;background:radial-gradient(ellipse at 50% 46%,#0000 50%,#050709b0 100%);transition:background .25s}
 .battle-scene--p2::after{background:radial-gradient(ellipse at 50% 46%,#ff3a1a1c,#0000 40%),radial-gradient(ellipse at 50% 46%,#0000 46%,#2a0805c0 100%)}
 .battle-header{position:relative;z-index:7;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(18px,3vw,70px);background:linear-gradient(#0d1214b8,transparent)}
