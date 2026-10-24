@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, onUnmounted, ref, watch, useId, useTemplateRef } from 'vue'
+import { nextTick, onMounted, onUnmounted, ref, watch, useId, useTemplateRef } from 'vue'
 const props = withDefaults(defineProps<{ label: string; placement?: 'top' | 'bottom'; disabled?: boolean }>(), { placement: 'top' })
 const anchor = useTemplateRef<HTMLElement>('anchor')
 const tip = useTemplateRef<HTMLElement>('tip')
@@ -31,9 +31,11 @@ watch(() => props.disabled, disabled => { if (disabled) hide() })
 function closeOnEscape(event: KeyboardEvent) { if (event.key === 'Escape') hide() }
 // Keep the popup anchored when the viewport changes; scrolling dismisses it.
 function reposition() { if (opened.value) void show() }
-window.addEventListener('resize', reposition)
-window.addEventListener('scroll', hide, true)
-window.addEventListener('keydown', closeOnEscape)
+onMounted(() => {
+  window.addEventListener('resize', reposition)
+  window.addEventListener('scroll', hide, true)
+  window.addEventListener('keydown', closeOnEscape)
+})
 onUnmounted(() => { window.removeEventListener('resize', reposition); window.removeEventListener('scroll', hide, true); window.removeEventListener('keydown', closeOnEscape) })
 </script>
 <template>

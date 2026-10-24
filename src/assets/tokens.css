@@ -110,3 +110,21 @@
   --c-ghost-strike-a: #fff3b8; --c-ghost-strike-b: #e09a1f;
   --glow-lethal: 0 0 18px #ff4a2bb0;
 }
+
+/* ── Dungeon map (Map UI v2): medallion enamel per room kind, rails and tunnel timber ───────────── */
+:root {
+  --map-enamel-battle:   radial-gradient(circle at 36% 28%, #6f8fb3, #2f4a66 52%, #14233a);
+  --map-enamel-elite:    radial-gradient(circle at 36% 28%, #ff9a6d, #a8341a 50%, #36100a);
+  --map-enamel-rest:     radial-gradient(circle at 50% 78%, #ffc15c, #c95d1c 48%, #3e1b0a);
+  --map-enamel-unknown:  radial-gradient(circle at 36% 28%, #7a63b8, #3a2f5a 52%, #130e26);
+  --map-enamel-boss:     radial-gradient(circle at 36% 26%, #c58ae6, #6a3a86 50%, #1f1030);
+  --map-enamel-forge:    radial-gradient(circle at 36% 28%, #f08a4a, #8c3f1c 52%, #2d1208);
+  --map-enamel-treasure: radial-gradient(circle at 36% 28%, #ffd96b, #a97a14 52%, #35260a);
+  --map-enamel-event:    radial-gradient(circle at 36% 28%, #6fd0d8, #1f6a78 52%, #0b2530);
+  --map-enamel-visited:  radial-gradient(circle at 36% 28%, #5e6a5c, #2f3b34 55%, #151d1b);
+  --map-rim: conic-gradient(from 210deg, var(--brass-1), var(--brass-3) 22%, var(--brass-2) 45%, var(--brass-4) 70%, var(--brass-2) 88%, var(--brass-1));
+  --map-rim-elite: conic-gradient(from 210deg, #ffd0a0, #b2401c 25%, #ff9a6d 50%, #5a1a0c 75%, #ffd0a0);
+  --map-rim-boss: conic-gradient(from 210deg, #fff0b8, #b8862e 20%, #ffe08a 45%, #6a4a14 70%, #e8c36a 88%, #fff0b8);
+  --map-halo-available: radial-gradient(circle, #ffd56b99 0, #ffd56b44 45%, #0000 70%);
+  --map-glow-lamp: 0 0 34px 14px #ff9a2e55;
+}
