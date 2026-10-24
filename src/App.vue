@@ -123,7 +123,7 @@ function playCard(instanceId: string, armorFocus?: HeroId) {
   if (armorFocus === undefined) {
     const instance = state.value.hand.find(item => item.instanceId === instanceId)
     const card = instance ? resolveCardDefinition(instance) : null
-    const choice = card && !state.value.pending && state.value.mana >= card.cost ? armorChoice(state.value, card) : null
+    const choice = card && !state.value.pending && state.value.mana >= card.cost ? armorChoice(state.value, instanceId) : null
     if (card && choice) { choosing.value = { instanceId, card, choice }; return }
   }
   const pending = beginPlay(instanceId, armorFocus)

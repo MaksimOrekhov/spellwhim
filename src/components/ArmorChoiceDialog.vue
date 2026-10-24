@@ -42,6 +42,8 @@ const lossText = (loss: number) => loss > 0 ? `−${loss} HP` : 'без поте
           <span v-if="option.loss" class="ac-loss" :class="{ 'is-hit': (option.loss[id] ?? 0) > 0 }">{{ lossText(option.loss[id] ?? 0) }} <small>({{ Math.max(0, heroes[id].health - (option.loss[id] ?? 0)) }}/{{ heroes[id].maxHealth }})</small></span>
         </span>
         <span v-if="option.lethal" class="ac-lethal"><Skull :size="16" aria-hidden="true" />Смертельно для героя</span>
+        <span v-else-if="option.outcome === 'victory'" class="ac-unknown">Враг будет повержен: удара не будет</span>
+        <span v-else-if="option.outcome === 'broken'" class="ac-unknown">Удар будет сорван этой картой</span>
         <span v-else-if="!option.loss" class="ac-unknown">Броня исчезнет раньше этого удара</span>
       </button>
     </div>

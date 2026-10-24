@@ -295,12 +295,14 @@ export function previewCard(state: BattleState, card: CardDefinition, mode?: 'hi
 export interface ArmorChoiceOption {
   /** Pass this to `startCardPlay` / `playCard` to play the card this way. */
   focus: HeroId
-  /** Armor each hero gains from this play (artifact triggers included): exactly `previewCard(...).armor`. */
+  /** Armor each hero really gains from this play (artifact triggers included; a play stopped by a lethal blow gives less). */
   armor: Record<HeroId, number>
   /** Health each hero loses to the announced hit after this play; `null` when no hit lands before the armor would expire. */
   loss: Record<HeroId, number> | null
   /** Some hero would die from the announced hit. */
   lethal: boolean
+  /** `hit`: the blow lands; `broken`: this play's damage stops it; `victory`: this play defeats the enemy, so there is no blow; `expired`: armor is gone before a prepared blow. */
+  outcome: 'hit' | 'broken' | 'victory' | 'expired'
 }
 export interface ArmorChoice {
   options: ArmorChoiceOption[]
@@ -313,21 +315,30 @@ export interface ArmorChoice {
 /**
  * Cards that give armor to "the threatened hero" and/or "the partner" (guard, Ice Ward, Bastion, ...) need a decision only against a
  * hit on both heroes. Returns `null` otherwise, so a single-target hit keeps its automatic choice and costs the player no click.
- * Every number comes from the real plan and the real forecast, so the choice shows what will happen.
+ * Each option is the real thing: the card is played through the engine on a copy of the battle (damage, statuses, interrupt progress,
+ * armor, artifacts, a lethal blow that stops the rest of the card), and the enemy's announced hit is forecast on the result.
  */
-export function armorChoice(state: BattleState, card: CardDefinition): ArmorChoice | null {
-  if (state.result || !hitsBothHeroes(state)) return null
+export function armorChoice(state: BattleState, instanceId: string): ArmorChoice | null {
+  const instance = state.hand.find(item => item.instanceId === instanceId)
+  if (!instance || state.result || state.pending || !hitsBothHeroes(state)) return null
+  const card = resolveCardDefinition(instance)
   if (!card.effects.some(effect => effect.type === 'armor' && (effect.target === 'threatened' || effect.target === 'partner'))) return null
   const prepared = state.enemy.nextAction.kind === 'prepare'
-  const options = heroIdsInPartyOrder(state.heroes).map((focus): ArmorChoiceOption => {
-    const armor = previewCard(state, card, undefined, focus).armor
-    // The forecast reads only armor, health, statuses and artifacts, so a shallow copy with the extra armor is the exact situation after the play.
-    const after = { ...state, heroes: Object.fromEntries(heroIdsInPartyOrder(state.heroes).map(id => [id, { ...state.heroes[id], armor: state.heroes[id].armor + armor[id] }])) } as BattleState
-    const forecast = forecastEnemyAction(after)
+  const ids = heroIdsInPartyOrder(state.heroes)
+  const options = ids.map((focus): ArmorChoiceOption => {
+    const copy = structuredClone(state)
+    copy.mana = Math.max(copy.mana, card.cost)
+    const played = playCard(copy, instanceId, focus)
+    const armor = Object.fromEntries(ids.map(id => [id, copy.heroes[id].armor - state.heroes[id].armor])) as Record<HeroId, number>
+    const zero = Object.fromEntries(ids.map(id => [id, 0])) as Record<HeroId, number>
+    if (!played.ok) return { focus, armor, loss: null, lethal: false, outcome: 'expired' }
+    if (copy.result === 'victory') return { focus, armor, loss: zero, lethal: false, outcome: 'victory' }
+    const forecast = forecastEnemyAction(copy)
     // Under "armor lasts one enemy action" a prepared hit finds the armor already gone.
-    const hits = prepared && state.economy.armorExpiry === 'turn' ? [] : prepared ? forecast.futureTargets : forecast.targets
-    const loss = hits.length ? Object.fromEntries(hits.map(hit => [hit.target, hit.healthLoss])) as Record<HeroId, number> : null
-    return { focus, armor, loss, lethal: hits.some(hit => hit.lethal) }
+    if (prepared && state.economy.armorExpiry === 'turn') return { focus, armor, loss: null, lethal: false, outcome: 'expired' }
+    if (!prepared && forecast.interrupt?.broken) return { focus, armor, loss: zero, lethal: false, outcome: 'broken' }
+    const hits = prepared ? forecast.futureTargets : forecast.targets
+    return { focus, armor, loss: Object.fromEntries(hits.map(hit => [hit.target, hit.healthLoss])) as Record<HeroId, number>, lethal: hits.some(hit => hit.lethal), outcome: 'hit' }
   })
   const action = state.enemy.nextAction
   return { options, auto: state.enemy.focus, hit: { name: action.kind === 'prepare' ? action.prepared.name : action.name, imminent: !prepared } }
