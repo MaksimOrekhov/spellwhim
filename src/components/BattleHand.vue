@@ -136,7 +136,7 @@ watch(() => displayed.value.length, () => { if (activeIndex.value < 0) active.va
         <GameTooltip label="Общая колода"><button class="deck-counts" aria-label="Колода и сброс"><span>▤ Колода <b>{{ drawCount }}</b></span><span>↻ Сброс <b>{{ discardCount }}</b></span></button><template #content><p>В начале боя в руке {{ rules.openingHand }} карт. {{ drawHint }}</p><p>Максимум руки — 10. Карты сверх лимита остаются в колоде. Выбывших до конца боя: {{ exhaustedCount }}.</p></template></GameTooltip>
         <p class="hand-hint">{{ displayed.length }} / 10 карт · наведите для полного описания · клавиши 1–9, 0</p>
       </div>
-      <div ref="track" class="hand-track" :class="{ 'is-overlapped': overlapped, 'is-compact': compact, 'is-burning': rules.discardsHand && phase === 'enemy' }">
+      <div ref="track" class="hand-track" data-fx-anchor="hand" :class="{ 'is-overlapped': overlapped, 'is-compact': compact, 'is-burning': rules.discardsHand && phase === 'enemy' }">
         <TransitionGroup name="deal">
           <div v-for="(item, index) in displayed" :key="item.instanceId" class="slot" :class="{ 'is-active': index === activeIndex }" :style="slotStyle(index)" @mouseenter="enter(item)" @mouseleave="leave(item)" @focusin="enter(item)" @focusout="focusOut(item, $event)">
             <div class="holder" :style="holderStyle(index)">

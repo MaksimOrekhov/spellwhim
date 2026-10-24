@@ -16,7 +16,7 @@ import BattleHelp from './BattleHelp.vue'
 import PhaseShiftBanner from './PhaseShiftBanner.vue'
 import BattleBackdrop from './BattleBackdrop.vue'
 import { battleBackground } from '../ui/battleBackground'
-const props = defineProps<{ state: BattleState; animation: BattlePresentation; phase: BattlePhase; artifactNotices?: string[]; continueLabel?: string; final?: boolean; captioned?: boolean }>()
+const props = defineProps<{ state: BattleState; animation: BattlePresentation; phase: BattlePhase; artifactNotices?: string[]; continueLabel?: string; final?: boolean; captioned?: boolean; /** Lab only: slow-motion factor and a moment of the effect to freeze at. */ fxSpeed?: number; fxHold?: number | null }>()
 const emit = defineEmits<{ impact: [actionId: string]; endTurn: []; continue: [] }>()
 const enemyStatuses = computed(() => statusViews(props.state, 'enemy'))
 // Health the enemy loses to ticking statuses at the start of its turn (Bleeding), drawn as a ghost on its health bar.
@@ -25,8 +25,6 @@ const bleedTick = computed(() => props.state.result ? 0 : Math.min(props.state.e
 // The engine's forecast stops here: everything below this line receives only the public intent (ui/threatDisplay.ts).
 const intent = computed(() => publicIntent(props.phase === 'enemy' && props.animation.incoming ? props.animation.incoming : forecastEnemyAction(props.state)))
 const marks = computed(() => heroMarks(intent.value))
-// What the sweep effect of an attack on both draws at each hero: the announced loss of a hit that lands now, nothing for a preparation.
-const incomingLoss = computed(() => Object.fromEntries(Object.values(marks.value).map(mark => [mark!.hero, mark!.when === 'now' ? mark!.healthLoss : 0])) as Partial<Record<HeroId, number>>)
 const heroNames = computed(() => ({ warrior: props.state.heroes.warrior.name, mage: props.state.heroes.mage.name }))
 const phaseTitle = computed(() => ({ player: 'Ваш ход', card: 'Способность отряда', enemy: 'Ход противника', finished: 'Бой завершён' })[props.phase])
 // B1 enemy rules (the game since X04): the boss's second phase is announced when it begins and keeps its own light for the rest of the fight.
@@ -53,20 +51,20 @@ const rayTick = computed(() => [props.state.turn, props.phase, intent.value.name
     <div class="arena">
       <div class="stage">
         <section class="party party--first" aria-label="Вариан Ринн">
-          <HeroFrame side="left" :hero="state.heroes.warrior" :statuses="statusViews(state, 'warrior')" :artifacts="state.artifacts" :turn="state.turn" :threat="marks.warrior" :hit="animation.impactTarget === 'warrior' || animation.impactTarget === 'both'" :acting="phase === 'card' && animation.source === 'warrior'" />
+          <HeroFrame side="left" :hero="state.heroes.warrior" :statuses="statusViews(state, 'warrior')" :artifacts="state.artifacts" :turn="state.turn" :threat="marks.warrior" :hit="!!animation.reaction.warrior" :hit-weight="animation.reaction.warrior" :acting="phase === 'card' && animation.source === 'warrior'" />
         </section>
         <section class="enemy-encounter" aria-label="Противник">
-          <EnemyFrame :enemy="state.enemy" :statuses="enemyStatuses" :bleed-tick="bleedTick" :acting="phase === 'enemy'" :hit="animation.impactTarget === 'enemy'" :turn="state.turn" />
+          <EnemyFrame :enemy="state.enemy" :statuses="enemyStatuses" :bleed-tick="bleedTick" :acting="phase === 'enemy'" :hit="!!animation.reaction.enemy" :hit-weight="animation.reaction.enemy" :turn="state.turn" />
           <IntentBanner :intent="intent" :hero-names="heroNames" :executing="phase === 'enemy'" :caption="captioned" />
         </section>
         <section class="party party--second" aria-label="Джайна Праудмур">
-          <HeroFrame side="right" :hero="state.heroes.mage" :statuses="statusViews(state, 'mage')" :artifacts="state.artifacts" :turn="state.turn" :threat="marks.mage" :hit="animation.impactTarget === 'mage' || animation.impactTarget === 'both'" :acting="phase === 'card' && animation.source === 'mage'" />
+          <HeroFrame side="right" :hero="state.heroes.mage" :statuses="statusViews(state, 'mage')" :artifacts="state.artifacts" :turn="state.turn" :threat="marks.mage" :hit="!!animation.reaction.mage" :hit-weight="animation.reaction.mage" :acting="phase === 'card' && animation.source === 'mage'" />
         </section>
       </div>
     </div>
     <ThreatRays :targets="rayTargets" :later="rayLater" :lethal="rayLethal" :tick="rayTick" :executing="phase === 'enemy'" />
     <p v-if="artifactNotices?.length" class="artifact-feedback" role="status" aria-live="polite">{{ artifactNotices.join(' · ') }}</p>
-    <BattleFx :pulse="animation.pulse" :action-id="animation.actionId" :effect="animation.effect" :source="animation.source" :target="animation.target" :damage="animation.amount" :bonus-damage="animation.bonusDamage" :partner-armor="animation.partnerArmor" :incoming-loss="incomingLoss" @impact="emit('impact', $event)" />
+    <BattleFx :pulse="animation.pulse" :action-id="animation.actionId" :plan="animation.vfx" :speed="fxSpeed" :hold="fxHold" @impact="emit('impact', $event)" />
     <BattleResult v-if="state.result" :result="state.result" :continue-label="continueLabel" :final="final" @continue="emit('continue')" />
   </main>
 </template>

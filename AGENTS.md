@@ -18,6 +18,7 @@ src/
   ui/rulesInfo.ts            Что экраны знают о правилах (рука, мана, срок брони, угрозы B1, мороз); без провайдера — правила основной игры (X04); armorNote
   ui/cardOperations.ts       Чистая модель экранов колоды: groupCopies, upgradeChanges (что меняет улучшение), manaText; правил не содержит
   ui/mapDisplay.ts           Чистая модель карты подземелья (Map UI v2): лицо комнаты (кузница/сокровищница/событие = «неизвестная комната» до входа), состояние, геометрия слева направо; ui/mapScenes.ts — dev-сцены начала/середины/конца похода
+  vfx/                       Combat Feel & VFX v1: plan.ts (чистые cardVfxPlan/enemyVfxPlan: бит-план эффектов из чисел движка), cardStyles.ts (школа/вид карты по ID), timing.ts, run.ts (runPlan: один impact, отмена устаревших битов), timeline.ts, particles.ts (пул с лимитом), motion.ts (prefers-reduced-motion), scenarios.ts (сцены лаборатории), runtime.ts (Pixi: один ticker, три слоя Graphics, пул Text), painters/ (strikes, guards, status, kit); docs/design/combat-feel-vfx-v1.md
   ui/handLayout.ts           Чистая геометрия руки: порядок, перекрытие, увеличение; ui/cardArt.ts — иллюстрации карт Также notesPlacement (свиток описания не заходит на показатели) и порог плиток COMPACT_BELOW; ui/enemyTier.ts — обычный/элита/босс по ID (только подача); ui/vitals.ts — модель полосы здоровья
   assets/
     cards.css                Карточная система v3: общие `cf-*` стили полной карты и плитки (рама воина/мага, плашка названия, гем-числа, печать класса, состояния)
@@ -30,7 +31,8 @@ src/
     BattleBoard.vue          Battle UI v2: сцена (BattleBackdrop → лента фазы → арена-контейнер cqh → лучи → Pixi → результат); враги и герои в «вилке», показатели над линией руки (docs/design/battle-ui-v2.md)
     BattleBackdrop.vue       Фон Мёртвых копей: дальний/средний/ближний план в SVG без картинок; настроение — переменные --scene-core/-lamp/-far
     StatChip.vue / StatusTray.vue   Единый жетон статуса/ярости/артефакта и лоток жетонов участника (в боевой сцене все они с data-critical)
-    BattleFx.vue             PixiJS-эффекты, impact с ID действия, очистка callbacks
+    BattleFx.vue             Тонкая оболочка PixiJS: рисует VfxPlan (src/vfx), сообщает impact с ID действия один раз, очищает всё при новом плане/размонтировании
+    VfxLab.vue               Dev-лаборатория боевых эффектов (card-preview.html?view=vfx&fx=<сцена>): настоящие доска и рука, список сцен, повтор, замедление, стоп-кадр, reduced motion
     IntentBanner.vue         Баннер намерения врага: что, сколько и по кому; «сейчас» и «следом» различаются; ThreatRays.vue — лучи от баннера к целям
     GameTooltip.vue          Контекстные подсказки мышью и фокусом
     BattleHelp.vue           Модальная справка об управлении и правилах боя (тексты по `useRules()`)

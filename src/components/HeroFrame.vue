@@ -20,7 +20,7 @@ import type { StatusView } from '../game/statuses'
 import type { BattleArtifactState, Hero } from '../game/types'
 import type { HeroMark } from '../ui/threatDisplay'
 
-const props = defineProps<{ hero: Hero; artifacts?: BattleArtifactState[]; statuses?: StatusView[]; turn: number; threat?: HeroMark; acting?: boolean; hit?: boolean; side?: 'left' | 'right' }>()
+const props = defineProps<{ hero: Hero; artifacts?: BattleArtifactState[]; statuses?: StatusView[]; turn: number; threat?: HeroMark; acting?: boolean; hit?: boolean; hitWeight?: 'light' | 'normal' | 'heavy'; side?: 'left' | 'right' }>()
 const portrait = computed(() => props.hero.id === 'warrior' ? varianPortrait : jainaPortrait)
 const style = computed(() => classThemeStyle(props.hero.classId))
 const emblem = computed(() => getClassTheme(props.hero.classId).emblem)
@@ -35,7 +35,7 @@ const threatText = computed(() => props.threat ? markSpoken(props.threat, props.
 </script>
 
 <template>
-  <article class="hero" :class="['hero--' + hero.id, 'hero--' + (side ?? 'left'), { 'is-threat': now, 'is-prepared': prepared, 'is-lethal': lethal, 'is-blocked': blocked, 'is-acting': acting, 'is-hit': hit }]" :style="style" :aria-label="`${hero.name}, здоровье ${hero.health} из ${hero.maxHealth}, броня ${hero.armor}${threatText ? '. ' + threatText : ''}`">
+  <article class="hero" :class="['hero--' + hero.id, 'hero--' + (side ?? 'left'), { 'is-threat': now, 'is-prepared': prepared, 'is-lethal': lethal, 'is-blocked': blocked, 'is-acting': acting, 'is-hit': hit, 'is-hit--light': hit && hitWeight === 'light', 'is-hit--heavy': hit && hitWeight === 'heavy' }]" :style="style" :aria-label="`${hero.name}, здоровье ${hero.health} из ${hero.maxHealth}, броня ${hero.armor}${threatText ? '. ' + threatText : ''}`">
     <div class="hero-plate"><VitalBar :name="hero.name" :subtitle="hero.title" :health="hero.health" :max="hero.maxHealth" :armor="hero.armor" :ghost="ghost" :lethal="lethal" side="hero" /></div>
     <div class="arch" :data-threat-target="hero.id" :data-fx-anchor="hero.id">
       <span class="arch-rim"></span>
@@ -69,8 +69,14 @@ const threatText = computed(() => props.threat ? markSpoken(props.threat, props.
 .hero.is-acting .arch{filter:drop-shadow(0 12px 12px #000a) drop-shadow(0 0 14px var(--class-secondary))}
 .hero.is-hit .arch-art img{animation:hit-flash .42s ease-out}
 .hero.is-hit .arch{animation:shake .42s ease-out}
+.hero.is-hit--light .arch{animation:shake-light .28s ease-out}
+.hero.is-hit--heavy .arch{animation:shake-heavy .52s ease-out}
+.hero.is-hit--heavy .arch-art img{animation:hit-flash-heavy .52s ease-out}
 @keyframes hit-flash{0%{filter:brightness(2.2) saturate(.4)}100%{filter:none}}
 @keyframes shake{20%{translate:-6px 0}45%{translate:5px 0}70%{translate:-2px 0}}
+@keyframes shake-light{25%{translate:-3px 0}60%{translate:2px 0}}
+@keyframes shake-heavy{12%{translate:-11px 2px}30%{translate:9px -1px}50%{translate:-6px 0}72%{translate:3px 0}}
+@keyframes hit-flash-heavy{0%{filter:brightness(2.8) saturate(.3)}35%{filter:brightness(1.5) saturate(.7)}100%{filter:none}}
 /* The rim says it all: hot when a hit lands this turn, deep red when it would kill, steel when armor takes it, dashed amber for a strike still being prepared. Static: nothing pulses. */
 .hero.is-threat .arch-rim{background:linear-gradient(160deg,#ffd9a8 0%,var(--c-threat) 24%,#8a2a10 55%,var(--c-threat) 80%,#5a1608 100%)}
 .hero.is-lethal .arch{filter:drop-shadow(0 12px 12px #000a) drop-shadow(0 0 12px var(--c-lethal))}

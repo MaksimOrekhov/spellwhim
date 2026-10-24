@@ -26,7 +26,7 @@ const hasNumber = (text: string, value: number) => new RegExp(`(?<![\\d.])${valu
 /** Visible text and every accessible-name attribute of the rendered scene. */
 async function rendered(state: BattleState): Promise<string> {
   const phase = 'player' as const
-  const animation = { phase, busy: false, effect: 'none', source: null, target: 'enemy', amount: 0, bonusDamage: 0, partnerArmor: 0, label: '', pulse: 0, actionId: null, impactTarget: null, incoming: null }
+  const animation = { phase, busy: false, effect: 'none', source: null, target: 'enemy', amount: 0, bonusDamage: 0, partnerArmor: 0, label: '', pulse: 0, actionId: null, impactTarget: null, incoming: null, vfx: null, reaction: {} }
   const html = await renderToString(createSSRApp(BattleBoard, { state, phase, animation }))
   const attributes = [...html.matchAll(/(?:aria-label|title|alt)="([^"]*)"/g)].map(match => match[1])
   return [html.replace(/<[^>]*>/g, ' '), ...attributes].join('\n')

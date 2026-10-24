@@ -17,7 +17,7 @@ import { vitalsSpoken, vitalsView } from './vitals'
 const intentOf = (state: BattleState) => publicIntent(forecastEnemyAction(state))
 async function board(state: BattleState): Promise<string> {
   const phase = 'player' as const
-  const animation = { phase, busy: false, effect: '', source: null, target: 'enemy', amount: 0, bonusDamage: 0, partnerArmor: 0, label: '', pulse: 0, actionId: null, impactTarget: null, incoming: null }
+  const animation = { phase, busy: false, effect: '', source: null, target: 'enemy', amount: 0, bonusDamage: 0, partnerArmor: 0, label: '', pulse: 0, actionId: null, impactTarget: null, incoming: null, vfx: null, reaction: {} }
   return renderToString(createSSRApp(BattleBoard, { state, phase, animation }))
 }
 beforeAll(() => { Object.assign(globalThis, { window: { addEventListener() {}, removeEventListener() {}, innerWidth: 1920, innerHeight: 1080 } }) })

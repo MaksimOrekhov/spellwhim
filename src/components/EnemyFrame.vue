@@ -14,7 +14,7 @@ import { enemyTier, tierLabel } from '../ui/enemyTier'
 import type { StatusView } from '../game/statuses'
 import type { EnemyState } from '../game/types'
 
-const props = defineProps<{ enemy: EnemyState; statuses?: StatusView[]; bleedTick?: number; acting?: boolean; hit?: boolean; turn?: number }>()
+const props = defineProps<{ enemy: EnemyState; statuses?: StatusView[]; bleedTick?: number; acting?: boolean; hit?: boolean; hitWeight?: 'light' | 'normal' | 'heavy'; turn?: number }>()
 const hasPhases = computed(() => !!props.enemy.behavior.phase2)
 const phase2 = computed(() => hasPhases.value && props.enemy.phase === 2)
 // B1 enemy rules (the game since X04): a second phase that comes with a note is a different fight, so it also looks like one (hotter portrait, a burst on the turn it begins).
@@ -29,7 +29,7 @@ const tier = computed(() => enemyTier(props.enemy.encounterId))
 </script>
 
 <template>
-  <article class="enemy" :class="['enemy--' + enemy.appearance, 'tier--' + tier, { 'is-acting': acting, 'is-hit': hit, 'is-vulnerable': vulnerable, 'is-p2': phase2, 'is-p2-rebuilt': rebuilt, 'is-shifting': justShifted, 'has-fallback-art': portrait.fallback }]" :aria-label="`${enemy.name}${tierLabel[tier] ? ', ' + tierLabel[tier].toLowerCase() : ''}, здоровье ${enemy.health} из ${enemy.maxHealth}, броня ${enemy.armor}${phase2 ? ', вторая фаза' : ''}`">
+  <article class="enemy" :class="['enemy--' + enemy.appearance, 'tier--' + tier, { 'is-acting': acting, 'is-hit': hit, 'is-hit--light': hit && hitWeight === 'light', 'is-hit--heavy': hit && hitWeight === 'heavy', 'is-vulnerable': vulnerable, 'is-p2': phase2, 'is-p2-rebuilt': rebuilt, 'is-shifting': justShifted, 'has-fallback-art': portrait.fallback }]" :aria-label="`${enemy.name}${tierLabel[tier] ? ', ' + tierLabel[tier].toLowerCase() : ''}, здоровье ${enemy.health} из ${enemy.maxHealth}, броня ${enemy.armor}${phase2 ? ', вторая фаза' : ''}`">
     <div class="medal" data-threat-source="enemy" data-fx-anchor="enemy">
       <span class="medal-aura"></span>
       <span class="medal-rim"></span>
@@ -74,8 +74,14 @@ const tier = computed(() => enemyTier(props.enemy.encounterId))
 .tier--boss .medal-gloss{inset:clamp(14px,3cqh,24px)}
 .enemy.is-hit .medal-art img{animation:hit-flash .42s ease-out}
 .enemy.is-hit .medal{animation:shake .42s ease-out}
+.enemy.is-hit--light .medal{animation:shake-light .28s ease-out}
+.enemy.is-hit--heavy .medal{animation:shake-heavy .52s ease-out}
+.enemy.is-hit--heavy .medal-art img{animation:hit-flash-heavy .52s ease-out}
 @keyframes hit-flash{0%{filter:brightness(2.2) saturate(.4)}100%{filter:none}}
 @keyframes shake{20%{translate:-7px 0}45%{translate:6px 0}70%{translate:-3px 0}}
+@keyframes shake-light{25%{translate:-3px 0}60%{translate:2px 0}}
+@keyframes shake-heavy{12%{translate:-12px 2px}30%{translate:10px -1px}50%{translate:-7px 0}72%{translate:3px 0}}
+@keyframes hit-flash-heavy{0%{filter:brightness(2.8) saturate(.3)}35%{filter:brightness(1.5) saturate(.7)}100%{filter:none}}
 .is-p2 .medal-rim{background:conic-gradient(from 210deg,#ffd9a0,#a53a1a,#ff9a5a,#5a1608,#ffd9a0)}
 .is-vulnerable .medal-rim{box-shadow:0 0 0 3px var(--c-vulnerable),0 0 20px var(--c-vulnerable)}
 .phase,.tier-tag{position:absolute;left:50%;top:-4px;translate:-50% -50%;z-index:3;display:flex;align-items:center;gap:6px;padding:2px 12px;border-radius:var(--r-pill);background:linear-gradient(#3a2a52,#1c1230);border:2px solid var(--gold);font:var(--fw-bold) clamp(10px,1.3vh,13px)/1.2 var(--font-ui);letter-spacing:var(--ls-caps);text-transform:uppercase;color:var(--ink);white-space:nowrap;box-shadow:var(--shadow-2)}
