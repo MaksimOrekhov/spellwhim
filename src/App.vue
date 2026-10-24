@@ -8,7 +8,7 @@ import EliteReward from './components/EliteReward.vue'
 import RestSite from './components/RestSite.vue'
 import RunComplete from './components/RunComplete.vue'
 import DungeonRoom from './components/DungeonRoom.vue'
-import RulesSwitch from './components/RulesSwitch.vue'
+import MainMenu from './components/MainMenu.vue'
 import { useBattle } from './composables/useBattle'
 import { useBattleControls } from './composables/useBattleControls'
 import { useBattleAnimation } from './composables/useBattleAnimation'
@@ -22,23 +22,19 @@ import { resolveCardDefinition } from './game/cardProgression'
 import { armorChoice } from './game/battle'
 import type { ArmorChoice } from './game/battle'
 import ArmorChoiceDialog from './components/ArmorChoiceDialog.vue'
-import { drawForTurn, economyFromSearch, gameEconomy, isHonestEconomy, manaForTurn } from './game/economy'
-import { deckVariantFor, requestedSeed, resolveRulesMode, startingDeckFor } from './game/rulesMode'
-import { armorSources } from './game/honestDecks'
+import { drawForTurn, economyFromSearch, manaForTurn } from './game/economy'
+import { requestedSeed, resolveLaunch, startingDeckFor } from './game/rulesMode'
 import { provideRules, rulesInfoOf } from './ui/rulesInfo'
 import type { CardDefinition, HeroId } from './game/types'
 
-// Model B is the standard economy in development, production and Tauri. A and U remain dev-only comparisons.
-// EXPERIMENT "Honest Turn": `?rules=honest-a08|honest-a09` plays other battle rules in every build, in a save slot of its own.
-const rulesMode = resolveRulesMode(window.location.search)
-// B1/B2 also start from a chosen deck (`?deck=armor10|armor8|armor6`); the standard game and A keep the standard deck.
-const startDeck = startingDeckFor(rulesMode, window.location.search)
-const deckVariant = deckVariantFor(rulesMode, window.location.search)
-// `?seed=N` makes the next run start from that seed, so the same map can be played under two sets of rules.
-let seedOnce = requestedSeed(window.location.search)
-const configuredEconomy = rulesMode.economy ?? (import.meta.env.DEV
-  ? economyFromSearch(window.location.search || (import.meta.env.VITE_SPELLWHIM_ECONOMY ? '?economy=' + import.meta.env.VITE_SPELLWHIM_ECONOMY : ''))
-  : gameEconomy)
+// The game is Honest Turn B2 on the long Sector I (Decision Log X04). A development build alone can open another set of rules, and only through
+// an explicit `?dev-rules=` (docs/design/default-b2-long-v1.md); every other address, in every build, plays the default game.
+const launch = resolveLaunch(window.location.search, import.meta.env.DEV)
+const rulesMode = launch.mode
+const startDeck = startingDeckFor(rulesMode, launch.search)
+// `?seed=N` (laboratory only) makes the next run start from that seed.
+let seedOnce = requestedSeed(launch.search)
+const configuredEconomy = rulesMode.economy ?? economyFromSearch(launch.search || (import.meta.env.VITE_SPELLWHIM_ECONOMY ? '?economy=' + import.meta.env.VITE_SPELLWHIM_ECONOMY : ''))
 const props = defineProps<{ saveStorage?: SaveStorage }>()
 const saveStore = createRunSaveStore(() => props.saveStorage ?? window.localStorage, rulesMode.saveKey)
 const slot = saveStore.load()
@@ -48,7 +44,7 @@ const loaded = foreign ? { snapshot: null, blocked: true, message: 'В этом 
 const saved = shallowRef<RunSnapshot | null>(loaded.snapshot)
 const economy = loaded.snapshot?.economy ?? configuredEconomy
 provideRules(rulesInfoOf(economy, { frost: rulesMode.economy?.id === economy.id && rulesMode.frost === true }))
-const experimental = economy.id !== gameEconomy.id
+const experimental = launch.lab
 const saveError = ref('')
 const loadNotice = ref(loaded.message)
 const initialSeed = Date.now() >>> 0
@@ -196,20 +192,17 @@ function chooseRestUpgrade(instanceId: string, sourceId: string) {
   phase.value = 'map'
 }
 
-function restartRun(mode: 'sector' | 'legacy') {
+function restartRun() {
   cancel()
   const nextSeed = seedOnce ?? (((Date.now() >>> 0) === run.value.seed ? run.value.seed + 1 : Date.now()) >>> 0)
   seedOnce = null
-  publish(mode === 'sector' ? createSectorRun(nextSeed, economy, startDeck) : createDungeonRun(nextSeed, economy))
+  publish(createSectorRun(nextSeed, economy, startDeck))
   restart(nextSeed)
   saved.value = null
   loadNotice.value = ''
   phaseBeforeStart.value = null
   phase.value = 'map'
 }
-// The seed a rules switch carries: the run being played, else the saved one, else the one the address asked for.
-const startDeckArmor = startDeck ? armorSources(startDeck) : 10
-const switchSeed = computed(() => phaseBeforeStart.value && phaseBeforeStart.value !== 'resume' ? run.value.seed : (saved.value?.run.seed ?? seedOnce))
 function showStart() {
   if (phase.value !== 'start') phaseBeforeStart.value = phase.value
   phase.value = 'start'
@@ -227,23 +220,8 @@ function confirmRoom(command: RoomCommand) {
 <template>
   <div class="app-shell">
     <div class="game-wrap">
-      <p v-if="experimental" class="economy-badge" :title="economy.label">{{ isHonestEconomy(economy) ? 'Эксперимент · ' + economy.label : 'Режим сравнения · модель ' + economy.manaCurve + ' · ' + economy.label }}<template v-if="deckVariant && phase === 'start'"><br>Новый поход: колода «броня {{ startDeckArmor }}»</template></p>
-      <main v-if="phase === 'start'" class="resume-screen">
-        <section class="resume-panel"><h1>Мёртвые копи</h1><h2>Выберите поход</h2><p>Вариан и Джайна спускаются в Старые штольни. Шесть посещений, развилки, кузницы, тайники и встреча с Рак'Зором.</p><RulesSwitch :current="rulesMode.id" :seed="switchSeed" :deck="deckVariant" /><button class="game-button" @click="restartRun('sector')">Сектор I — Старые штольни</button><button v-if="!isHonestEconomy(economy)" class="game-button" @click="restartRun('legacy')">Контрольный поход · 7 посещений</button><p>Начало нового похода заменит текущее сохранение.</p><button v-if="phaseBeforeStart" class="game-button" @click="phase = phaseBeforeStart">Назад</button></section>
-      </main>
-      <main v-else-if="phase === 'resume'" class="resume-screen">
-        <section class="resume-panel">
-          <h1>Spellwhim</h1>
-          <p v-if="saved?.run.status === 'active'">Отряд ждёт у последней комнаты. Прерванный бой начнётся заново с тем же здоровьем и колодой.</p>
-          <p v-else-if="saved">Сохранённый поход завершён.</p>
-          <p v-if="loadNotice" role="status">{{ loadNotice }}</p>
-          <RulesSwitch :current="rulesMode.id" :seed="switchSeed" :deck="deckVariant" />
-          <button v-if="saved" class="game-button" @click="continueSavedRun">{{ saved.run.status === 'active' ? 'Продолжить поход' : 'Посмотреть итог' }}</button>
-          <button v-if="saved || loadNotice" class="game-button" @click="downloadSave">Скачать копию</button>
-          <button v-if="!saved" class="game-button" @click="retryLoad">Повторить загрузку</button>
-          <button class="game-button" @click="showStart">Начать новый поход</button>
-        </section>
-      </main>
+      <p v-if="experimental" class="economy-badge" :title="economy.label">Лаборатория · {{ economy.label }}</p>
+      <MainMenu v-if="phase === 'start' || phase === 'resume'" :saved="saved ? { active: saved.run.status === 'active' } : null" :can-return="!!phaseBeforeStart && phaseBeforeStart !== 'resume'" :notice="loadNotice" :unreadable="phase === 'resume' && !saved" @continue="continueSavedRun" @return="phase = phaseBeforeStart!" @new-run="restartRun" @download="downloadSave" @retry="retryLoad" />
       <CampaignMap v-else-if="phase === 'map'" :map="run.map" :run="run" @enter="enterNode" @mode="showStart" />
       <DungeonRoom v-else-if="phase === 'room'" :key="run.room!.id" :run="run" @select="chooseRoom" @confirm="confirmRoom" />
       <EliteReward v-else-if="phase === 'reward' && run.pendingReward?.elite" :key="run.pendingReward.id" :offer-id="run.pendingReward.id" :deck="run.deck" :options="rewardOptions" :artifacts="dungeonArtifactOptions(run)" :heroes="run.heroes" :owned-artifacts="run.artifacts" :encounter-name="encounterName" @choose-card="chooseReward" @choose-artifact="chooseArtifact" />
@@ -260,7 +238,6 @@ function confirmRoom(command: RoomCommand) {
   </div>
 </template>
 <style scoped>
-.resume-screen{position:absolute;inset:0;display:grid;place-items:center;background:var(--mat-wood);color:var(--ink)}.resume-panel{max-width:650px;padding:var(--sp-6);border:var(--border-brass);border-radius:var(--shape-dialog);background:var(--mat-quiet);box-shadow:var(--shadow-4)}.resume-panel h1{font:700 var(--fs-4xl) var(--font-display);margin:0}.resume-panel p{line-height:var(--lh-body)}.resume-panel button{margin:var(--sp-2)}
 .save-error{position:absolute;z-index:100;bottom:var(--sp-3);left:50%;transform:translateX(-50%);width:min(760px,95%);padding:var(--sp-3);border:var(--border-brass);border-radius:var(--shape-scroll);background:var(--wood-1);color:var(--ink);box-shadow:var(--shadow-3)}.save-error p{margin:0 0 var(--sp-2)}.save-error button{margin-right:var(--sp-2);font-size:var(--fs-sm)}
 .economy-badge{position:absolute;z-index:40;top:64px;left:24px;max-width:230px;margin:0;padding:5px 12px;border-radius:12px;border:1px solid #f0c36a;background:#3b2a52e6;color:#ffe8b0;font-size:12px;line-height:1.35;pointer-events:none;letter-spacing:.02em}
 </style>

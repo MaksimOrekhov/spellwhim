@@ -13,6 +13,8 @@ const emit = defineEmits<{ enter: [nodeId: string]; mode: [] }>()
 const columns = computed(() => props.map.configuration?.columns ?? 3)
 const rows = computed(() => props.map.layers.length)
 /** Maps of nine or ten rows (the long route) get a tighter rhythm; the route always runs left to right and scrolls sideways only in narrow windows. */
+/** The sector's public name: the route variant after the dot ("· длинный путь") is an internal tag, the player just walks the Old Mines. */
+const sectorTitle = computed(() => (props.map.configuration?.name ?? '').split(' · ')[0]!)
 const dense = computed(() => rows.value > 8)
 const viewport = useTemplateRef<HTMLElement>('viewport')
 const nodes = computed(() => props.map.layers.flat())
@@ -78,7 +80,7 @@ watch(current, centreOnParty)
 <template>
   <main class="campaign-screen">
     <header class="campaign-header">
-      <div class="campaign-topline"><Lamp :size="22" aria-hidden="true"/><span>{{ map.configuration ? 'СЕКТОР I · '+map.configuration.name.toUpperCase() : 'КОНТРОЛЬНЫЙ ПОХОД · 7 ПОСЕЩЕНИЙ' }}</span><span class="seed-chip">ЗЕРНО {{ run.seed }}</span><button class="game-button new-run" @click="emit('mode')">Выбор похода</button><DeckViewer :deck="run.deck" /></div>
+      <div class="campaign-topline"><Lamp :size="22" aria-hidden="true"/><span>{{ map.configuration ? 'СЕКТОР I · '+sectorTitle.toUpperCase() : 'КОНТРОЛЬНЫЙ ПОХОД · 7 ПОСЕЩЕНИЙ' }}</span><span class="seed-chip">ЗЕРНО {{ run.seed }}</span><button class="game-button new-run" @click="emit('mode')">Главное меню</button><DeckViewer :deck="run.deck" /></div>
       <h1>Выберите штрек</h1>
       <p>{{ run.campaign ? 'Следуйте освещённым рельсам. Знак вопроса скрывает комнату, пока отряд в неё не войдёт.' : 'Следуйте рельсам. Привал лечит или улучшает карту, а элита предлагает больше карт на выбор.' }}</p>
       <p v-if="run.journal?.length" class="last-decision" role="status">{{ run.journal[run.journal.length-1]?.text }}</p>

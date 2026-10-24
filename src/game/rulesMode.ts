@@ -35,10 +35,16 @@ export const rulesModes: readonly RulesMode[] = [
   { id: 'honest-b2-long', title: 'Честный ход B2 · длинный сектор', note: '10 посещений', economy: honestEconomies['honest-b2-long'], saveKey: RUN_SAVE_KEY + '.honest-b2-long', frost: true, defaultDeck: 'armor8' },
 ]
 
+/**
+ * The rules the game is played under (Decision Log X04): Honest Turn B2 on the long Sector I. Its internal id, economy and save slot
+ * (`spellwhim.run.v1.honest-b2-long`) are exactly the ones its playtest runs were saved under, so those runs continue unchanged.
+ */
+export const defaultRulesMode: RulesMode = rulesModes.find(mode => mode.id === 'honest-b2-long')!
+
 const normalise = (value: string) => value.toLowerCase().replace(/[^a-z0-9]/g, '')
 const aliases = (mode: RulesMode) => [mode.id, mode.id.replace('honest-a', 'honest'), mode.id.replace('honest-', '')].map(normalise)
 
-/** Reads `?rules=`; an unknown or missing value is the standard game. */
+/** Reads `?rules=`; an unknown or missing value is the former control game. This is the laboratory resolver: the game itself starts from `resolveLaunch`. */
 export function resolveRulesMode(search: string): RulesMode {
   const asked = new URLSearchParams(search).get('rules')
   const wanted = asked ? normalise(asked) : ''
@@ -76,3 +82,31 @@ export function startingDeckFor(mode: RulesMode, search: string): CardId[] | und
 }
 
 export { deckVariantIds }
+
+/** The address parameter that opens a laboratory mode in a development build, e.g. `?dev-rules=honest-a08&seed=7`. */
+export const LAB_PARAM = 'dev-rules'
+
+export interface Launch {
+  mode: RulesMode
+  /** A development build was asked, by `?dev-rules=`, to play another set of rules (or to repeat a seed and deck). Never true in production or Tauri. */
+  lab: boolean
+  /** The address parameters that count: `?rules=`-style for the laboratory resolvers when `lab`, empty otherwise, so `?seed=`, `?deck=` and `?economy=` cannot reach a normal game. */
+  search: string
+}
+
+/**
+ * What a page load plays. Everything but a development build with an explicit `?dev-rules=` is the default game, whatever the address says:
+ * the old `?rules=`, `?deck=`, `?seed=` and `?economy=` links no longer change a normal game. An unknown `dev-rules` value is ignored.
+ */
+export function resolveLaunch(search: string, developer: boolean): Launch {
+  const params = new URLSearchParams(search)
+  const asked = developer ? params.get(LAB_PARAM) : null
+  if (asked !== null) {
+    params.delete(LAB_PARAM)
+    params.set('rules', asked)
+    const labSearch = '?' + params.toString()
+    const mode = resolveRulesMode(labSearch)
+    if (mode.id !== 'control' || normalise(asked) === 'control') return { mode, lab: true, search: labSearch }
+  }
+  return { mode: defaultRulesMode, lab: false, search: '' }
+}
