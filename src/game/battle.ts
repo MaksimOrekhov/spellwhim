@@ -145,7 +145,23 @@ function runEnemyTurnStart(state: BattleState): void {
   }
 }
 
-function buildPlan(state: BattleState, card: CardDefinition, historical = false): Omit<PendingPlay, 'actionId' | 'card' | 'handIndex'> {
+/** True when the announced hit lands on both heroes, so "the threatened hero" is a choice and not a fact. */
+function hitsBothHeroes(state: BattleState): boolean {
+  const action = state.enemy.nextAction
+  const hit = action.kind === 'prepare' ? action.prepared : action
+  return hit.kind === 'attack_all'
+}
+
+/**
+ * The hero a card's "threatened" armor goes to. Against one target it is that target, always. Against a hit on both heroes the player may
+ * choose (`chosen`); without a choice the enemy's own focus (the hit's main target) is used, exactly as before.
+ */
+export function armorFocusOf(state: BattleState, chosen?: HeroId): HeroId {
+  return chosen !== undefined && chosen in state.heroes && hitsBothHeroes(state) ? chosen : state.enemy.focus
+}
+
+function buildPlan(state: BattleState, card: CardDefinition, historical = false, chosen?: HeroId): Omit<PendingPlay, 'actionId' | 'card' | 'handIndex'> {
+  const focus = armorFocusOf(state, chosen)
   const enemyAction = state.enemy.nextAction
   const enemyAttacking = enemyAction.kind === 'attack' || enemyAction.kind === 'attack_all'
   const allEffects = card.effects.filter(effect => effect.type !== 'damage' || effect.when !== 'enemy-attacking' || enemyAttacking)
@@ -227,7 +243,7 @@ function buildPlan(state: BattleState, card: CardDefinition, historical = false)
   const armor = zeroArmor(state.heroes)
   for (const effect of reachable) {
     if (effect.type !== 'armor') continue
-    const target = resolveArmorTarget(state.heroes, effect.target, state.enemy.focus)
+    const target = resolveArmorTarget(state.heroes, effect.target, focus)
     if (target) armor[target] += effect.amount
   }
   const artifactArmor = zeroArmor(state.heroes)
@@ -271,11 +287,53 @@ function buildPlan(state: BattleState, card: CardDefinition, historical = false)
   }
 }
 
-export function previewCard(state: BattleState, card: CardDefinition, mode?: 'historical'): CardPreview {
-  return buildPlan(state, card, mode === 'historical').preview
+export function previewCard(state: BattleState, card: CardDefinition, mode?: 'historical', armorFocus?: HeroId): CardPreview {
+  return buildPlan(state, card, mode === 'historical', armorFocus).preview
 }
 
-export function startCardPlay(state: BattleState, instanceId: string): PlayStartResult {
+/** One way to spend a card's armor against a hit on both heroes: who ends up with how much, and what the hit then costs each of them. */
+export interface ArmorChoiceOption {
+  /** Pass this to `startCardPlay` / `playCard` to play the card this way. */
+  focus: HeroId
+  /** Armor each hero gains from this play (artifact triggers included): exactly `previewCard(...).armor`. */
+  armor: Record<HeroId, number>
+  /** Health each hero loses to the announced hit after this play; `null` when no hit lands before the armor would expire. */
+  loss: Record<HeroId, number> | null
+  /** Some hero would die from the announced hit. */
+  lethal: boolean
+}
+export interface ArmorChoice {
+  options: ArmorChoiceOption[]
+  /** What the card does without a choice (the hit's main target). */
+  auto: HeroId
+  /** The announced hit: its name and whether it lands this enemy turn (a prepared hit lands on the next one). */
+  hit: { name: string; imminent: boolean }
+}
+
+/**
+ * Cards that give armor to "the threatened hero" and/or "the partner" (guard, Ice Ward, Bastion, ...) need a decision only against a
+ * hit on both heroes. Returns `null` otherwise, so a single-target hit keeps its automatic choice and costs the player no click.
+ * Every number comes from the real plan and the real forecast, so the choice shows what will happen.
+ */
+export function armorChoice(state: BattleState, card: CardDefinition): ArmorChoice | null {
+  if (state.result || !hitsBothHeroes(state)) return null
+  if (!card.effects.some(effect => effect.type === 'armor' && (effect.target === 'threatened' || effect.target === 'partner'))) return null
+  const prepared = state.enemy.nextAction.kind === 'prepare'
+  const options = heroIdsInPartyOrder(state.heroes).map((focus): ArmorChoiceOption => {
+    const armor = previewCard(state, card, undefined, focus).armor
+    // The forecast reads only armor, health, statuses and artifacts, so a shallow copy with the extra armor is the exact situation after the play.
+    const after = { ...state, heroes: Object.fromEntries(heroIdsInPartyOrder(state.heroes).map(id => [id, { ...state.heroes[id], armor: state.heroes[id].armor + armor[id] }])) } as BattleState
+    const forecast = forecastEnemyAction(after)
+    // Under "armor lasts one enemy action" a prepared hit finds the armor already gone.
+    const hits = prepared && state.economy.armorExpiry === 'turn' ? [] : prepared ? forecast.futureTargets : forecast.targets
+    const loss = hits.length ? Object.fromEntries(hits.map(hit => [hit.target, hit.healthLoss])) as Record<HeroId, number> : null
+    return { focus, armor, loss, lethal: hits.some(hit => hit.lethal) }
+  })
+  const action = state.enemy.nextAction
+  return { options, auto: state.enemy.focus, hit: { name: action.kind === 'prepare' ? action.prepared.name : action.name, imminent: !prepared } }
+}
+
+export function startCardPlay(state: BattleState, instanceId: string, armorFocus?: HeroId): PlayStartResult {
   state.artifactNotices = []
   updateResult(state)
   if (state.result) return { ok: false, reason: 'finished' }
@@ -285,10 +343,10 @@ export function startCardPlay(state: BattleState, instanceId: string): PlayStart
   if (!instance) return { ok: false, reason: 'not-in-hand' }
   const definition = resolveCardDefinition(instance)
   if (state.mana < definition.cost) return { ok: false, reason: 'mana' }
-  const plan = buildPlan(state, definition)
+  const plan = buildPlan(state, definition, false, armorFocus)
   state.mana -= definition.cost
   state.hand.splice(index, 1)
-  state.pending = { actionId: state.battleId + '/action/' + state.nextActionId++, card: instance, handIndex: index, ...plan }
+  state.pending = { actionId: state.battleId + '/action/' + state.nextActionId++, card: instance, handIndex: index, ...plan, ...(armorFocus !== undefined && hitsBothHeroes(state) && armorFocus in state.heroes ? { armorFocus } : {}) }
   return { ok: true, play: state.pending }
 }
 
@@ -319,7 +377,7 @@ export function resolveCardPlay(state: BattleState, actionId: string): PlayResul
           }
         }
       } else if (effect.type === 'armor') {
-        const target = resolveArmorTarget(state.heroes, effect.target, state.enemy.focus)
+        const target = resolveArmorTarget(state.heroes, effect.target, pending.armorFocus ?? state.enemy.focus)
         if (target) state.heroes[target].armor += effect.amount
         for (const trigger of pending.artifactTriggers.filter(item => item.kind === 'armor' && item.reason === 'Карта укрепила владельца' && item.owner === target)) {
           const artifact = state.artifacts.find(item => item.instanceId === trigger.artifactInstanceId)
@@ -348,8 +406,8 @@ export function resolveCardPlay(state: BattleState, actionId: string): PlayResul
 }
 
 // Atomic, rendering-free API for scenarios and future AI/simulation tools.
-export function playCard(state: BattleState, instanceId: string): PlayResult {
-  const start = startCardPlay(state, instanceId)
+export function playCard(state: BattleState, instanceId: string, armorFocus?: HeroId): PlayResult {
+  const start = startCardPlay(state, instanceId, armorFocus)
   return start.ok ? resolveCardPlay(state, start.play.actionId) : start
 }
 

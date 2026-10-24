@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, shallowRef, watch } from 'vue'
+import { computed, nextTick, ref, shallowRef, watch } from 'vue'
 import BattleBoard from './components/BattleBoard.vue'
 import BattleHand from './components/BattleHand.vue'
 import CampaignMap from './components/CampaignMap.vue'
@@ -19,6 +19,9 @@ import type { DungeonRunState } from './game/campaign'
 import { createRunSaveStore } from './game/runSave'
 import type { RunSnapshot, SaveStorage } from './game/runSave'
 import { resolveCardDefinition } from './game/cardProgression'
+import { armorChoice } from './game/battle'
+import type { ArmorChoice } from './game/battle'
+import ArmorChoiceDialog from './components/ArmorChoiceDialog.vue'
 import { drawForTurn, economyFromSearch, gameEconomy, isHonestEconomy, manaForTurn } from './game/economy'
 import { deckVariantFor, requestedSeed, resolveRulesMode, startingDeckFor } from './game/rulesMode'
 import { armorSources } from './game/honestDecks'
@@ -113,11 +116,29 @@ watch(() => state.value.result, result => {
   if (result && phase.value === 'battle' && run.value.battleEntry) publish(resolveDungeonBattle(run.value, state.value))
 }, { flush: 'sync' })
 
-function playCard(instanceId: string) {
+/** A card that spreads armor over "the threatened hero" and "the partner" asks who gets the main share, but only against a hit on both heroes. */
+const choosing = ref<{ instanceId: string; card: CardDefinition; choice: ArmorChoice } | null>(null)
+function playCard(instanceId: string, armorFocus?: HeroId) {
   if (animation.value.busy || isOver.value) return
-  const pending = beginPlay(instanceId)
+  if (armorFocus === undefined) {
+    const instance = state.value.hand.find(item => item.instanceId === instanceId)
+    const card = instance ? resolveCardDefinition(instance) : null
+    const choice = card && !state.value.pending && state.value.mana >= card.cost ? armorChoice(state.value, card) : null
+    if (card && choice) { choosing.value = { instanceId, card, choice }; return }
+  }
+  const pending = beginPlay(instanceId, armorFocus)
   if (pending) play(pending)
   else document.getElementById('card-' + instanceId)?.focus()
+}
+function pickArmorTarget(focus: HeroId) {
+  const picked = choosing.value
+  choosing.value = null
+  if (picked) playCard(picked.instanceId, focus)
+}
+function cancelArmorChoice() {
+  const picked = choosing.value
+  choosing.value = null
+  if (picked) void nextTick(() => document.getElementById('card-' + picked.instanceId)?.focus())
 }
 
 function onEndTurn() {
@@ -233,6 +254,7 @@ function confirmRoom(command: RoomCommand) {
         <BattleBoard :state="state" :animation="animation" :phase="battlePhase" :artifact-notices="state.artifactNotices" :continue-label="dungeonNode(run.map, selectedNodeId ?? '')?.type === 'final' ? (run.campaign ? 'Завершить сектор I' : 'Завершить поход') : 'Выбрать награду'" @impact="impact" @end-turn="onEndTurn" @continue="onBattleContinue" />
         <BattleHand v-if="!isOver" :cards="cards" :outgoing="pendingCard" :outgoing-index="state.pending?.handIndex ?? 0" :draw-count="drawCount" :discard-count="discardCount" :exhausted-count="state.exhausted.length" :phase="battlePhase" :mana="state.mana" :max-mana="state.maxMana" :next-mana="manaForTurn(state.economy, state.turn + 1)" :next-draw="drawForTurn(state.economy, state.turn + 1)" :draw-boost-from="state.economy.drawSchedule.boost?.fromTurn" :draw-boost-amount="state.economy.drawSchedule.boost?.amount" @play="playCard" @end-turn="onEndTurn" />
       </template>
+      <ArmorChoiceDialog v-if="choosing" :card="choosing.card" :choice="choosing.choice" :heroes="state.heroes" @pick="pickArmorTarget" @cancel="cancelArmorChoice" />
       <aside v-if="saveError && phase !== 'resume'" class="save-error" role="alert"><p>{{ saveError }}</p><button class="game-button" @click="persist">Повторить сохранение</button><button class="game-button" @click="downloadSave">Скачать копию</button></aside>
     </div>
   </div>

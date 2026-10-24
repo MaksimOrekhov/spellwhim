@@ -7,7 +7,7 @@ import type { ArtifactInstance } from '../game/types'
 import { cardDefinition, startingDeck } from '../game/types'
 import { resolveCardDefinition } from '../game/cardProgression'
 import type { DeckInput } from '../game/types'
-import type { BattleState, CardDefinition, CardId, CardInstance, CardPreview, EncounterDefinition } from '../game/types'
+import type { BattleState, CardDefinition, CardId, CardInstance, CardPreview, EncounterDefinition, HeroId } from '../game/types'
 
 export interface HandCardView {
   instanceId: string
@@ -48,9 +48,9 @@ export function useBattle(options: { seed?: number; deck?: readonly CardId[]; ru
   const cards = computed(() => current.value.hand.map(instance => cardView(instance)))
   const pendingCard = computed(() => current.value.pending ? cardView(current.value.pending.card, current.value.pending.preview) : null)
 
-  function beginPlay(instanceId: string) {
+  function beginPlay(instanceId: string, armorFocus?: HeroId) {
     const next = structuredClone(current.value)
-    const result = startCardPlay(next, instanceId)
+    const result = startCardPlay(next, instanceId, armorFocus)
     if (!result.ok) {
       log.value = result.reason === 'mana' ? 'Недостаточно маны.' : 'Сейчас нельзя разыграть эту карту.'
       return null

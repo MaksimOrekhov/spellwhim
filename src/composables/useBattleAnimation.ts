@@ -60,7 +60,7 @@ export function useBattleAnimation(options: { state: Readonly<Ref<BattleState>>;
     const card = resolveCardDefinition(play.card)
     const state = options.state.value
     const preview = play.preview
-    const target = state.enemy.focus
+    const target = play.armorFocus ?? state.enemy.focus
     const partner = partnerOf(state.heroes, target)
     // The acting hero is whoever owns the card's class; an absent or ambiguous owner is not guessed.
     const owner = cardOwner(state.heroes, card)

@@ -274,6 +274,8 @@ export interface PendingPlay {
   consumedStatuses: ConsumedStatus[]
   artifactTriggers: PendingArtifactTrigger[]
   preview: CardPreview
+  /** The party chose who is the "threatened" hero of this play's armor (only against a hit on both heroes). Absent: the enemy's own focus. */
+  armorFocus?: HeroId
 }
 
 export interface BattleState {
