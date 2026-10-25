@@ -344,6 +344,41 @@ describe('E06 saves: the effect is kept exactly, and nothing can be forged', () 
     expect(() => validateRun({ ...resolveRoom(wounded, command(wounded, { action: 'bypass', heroId: 'mage' })), pendingBattleEffects: [{ ...effect, id: `${wounded.runId}/effect/${wounded.currentNodeId}`, sourceNodeId: wounded.currentNodeId! }] })).toThrow()
   })
 
+  it('the recipient of the armor is the hero chosen at the cart: swapping heroId in the effect or in the journal is refused', () => {
+    for (const rider of ['warrior', 'mage'] as const) {
+      const other = rider === 'warrior' ? 'mage' : 'warrior'
+      const done = ride(atCart().run, rider)
+      expect(done.journal!.slice(-1)[0]!.heroId).toBe(rider)
+      expect(done.pendingBattleEffects![0]!.heroId).toBe(rider)
+      expect(() => validateRun(done)).not.toThrow()
+      expect(reload(done)).toEqual(done)
+      const swappedEffect = structuredClone(done)
+      swappedEffect.pendingBattleEffects![0]!.heroId = other
+      expect(() => validateRun(swappedEffect), 'effect ' + rider).toThrow()
+      expect(() => encodeSnapshot(swappedEffect, economy, 1)).toThrow()
+      const swappedJournal = structuredClone(done)
+      swappedJournal.journal![swappedJournal.journal!.length - 1]!.heroId = other
+      expect(() => validateRun(swappedJournal), 'journal ' + rider).toThrow()
+      // Changing both together still contradicts the entry's text, which names the rider.
+      const both = structuredClone(swappedEffect)
+      both.journal![both.journal!.length - 1]!.heroId = other
+      expect(() => validateRun(both), 'both ' + rider).toThrow()
+      const anonymous = structuredClone(done)
+      delete anonymous.journal![anonymous.journal!.length - 1]!.heroId
+      expect(() => validateRun(anonymous)).toThrow()
+      // A decoded save carries the same protection (the checksum is recomputed by whoever edits the file).
+      const raw = JSON.parse(encodeSnapshot(done, economy, 1))
+      raw.payload.run.pendingBattleEffects[0].heroId = other
+      expect(() => decodeSnapshot(JSON.stringify(raw))).toThrow()
+    }
+    // Only a ride names a hero.
+    const { run } = atCart()
+    const left = resolveRoom(run, command(run, { action: 'leave' }))
+    const named = structuredClone(left)
+    named.journal![named.journal!.length - 1]!.heroId = 'warrior'
+    expect(() => validateRun(named)).toThrow()
+  })
+
   it('refuses a ride whose boon was removed, and a boon that outlives the battle it was owed to', () => {
     const done = owing()
     const lost = structuredClone(done)

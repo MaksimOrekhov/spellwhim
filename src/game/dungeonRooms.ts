@@ -25,7 +25,8 @@ export interface RoomVisit {
   riskSuccess: boolean
   selection: RoomSelection | null
 }
-export interface RunJournalEntry { nodeId: string; kind: RoomAction | 'reward' | 'skip' | 'rest'; text: string; card?: PersistentCard }
+/** `heroId` is written only by a cart ride (E06): who paid and who owes the armor, so a save can be checked against it. */
+export interface RunJournalEntry { nodeId: string; kind: RoomAction | 'reward' | 'skip' | 'rest'; text: string; card?: PersistentCard; heroId?: HeroId }
 const heroIds: readonly HeroId[] = ['warrior', 'mage']
 const offer = <T>(seed: number, pool: readonly T[], count: number) => shuffle({ rngState: seed }, pool).slice(0, count)
 
@@ -217,5 +218,5 @@ export function resolveRoom(run: DungeonRunState, command: RoomCommand): Dungeon
     if (dinner) next = { ...next, heroes: { ...next.heroes, [hero.id]: { ...next.heroes[hero.id], health: hero.health - dinnerRules.trophyHealth } } }
     text = `${hero.name}: ${artifactDefinitions.find(a => a.id === command.artifactId)!.name}${dinner ? ` (−${dinnerRules.trophyHealth} HP)` : ''}`
   }
-  return { ...next, journal: [...(run.journal ?? []), { nodeId: room.nodeId, kind: action, text, ...(changed ? { card: { ...changed } } : {}) }] }
+  return { ...next, journal: [...(run.journal ?? []), { nodeId: room.nodeId, kind: action, text, ...(changed ? { card: { ...changed } } : {}), ...(action === 'ride' && hero ? { heroId: hero.id } : {}) }] }
 }

@@ -109,7 +109,7 @@ const runShape = object({
   heroes: object({ warrior: hero, mage: hero }), artifacts: list(object({ instanceId: text, definitionId: artifactId, ownerInstanceId: text }), 2),
   status: oneOf('active', 'victory', 'defeat', 'sector-complete'),
   pendingReward: nullable(object({ id: text, nodeId: text, seed: uint, artifactSeed: uint, count: integer(1, 5), elite: oneOf(true, false), cards: list(acquisition, 5), artifactIds: list(artifactId, 3) }, { rarity: oneOf('gold') })),
-}, { pendingBattleEffects: list(object({ id: text, kind: oneOf('start-armor'), heroId: oneOf('warrior', 'mage'), amount: integer(1, cartRules.armor), sourceNodeId: text }), 4), goldRewards: oneOf(true), excludedRewards: list(cardId), excludedArtifacts: list(artifactId, 5), campaign: object({ id: text, version: integer(1) }), room: nullable(room), journal: list(object({ nodeId: text, kind: oneOf('upgrade', 'remove', 'replace', 'card', 'risk', 'artifact', 'heal', 'ride', 'bypass', 'leave', 'reward', 'skip', 'rest'), text }, { card: object({ instanceId: text, definitionId: cardId, upgrade: oneOf(0, 1) }) })) })
+}, { pendingBattleEffects: list(object({ id: text, kind: oneOf('start-armor'), heroId: oneOf('warrior', 'mage'), amount: integer(1, cartRules.armor), sourceNodeId: text }), 4), goldRewards: oneOf(true), excludedRewards: list(cardId), excludedArtifacts: list(artifactId, 5), campaign: object({ id: text, version: integer(1) }), room: nullable(room), journal: list(object({ nodeId: text, kind: oneOf('upgrade', 'remove', 'replace', 'card', 'risk', 'artifact', 'heal', 'ride', 'bypass', 'leave', 'reward', 'skip', 'rest'), text }, { card: object({ instanceId: text, definitionId: cardId, upgrade: oneOf(0, 1) }), heroId: oneOf('warrior', 'mage') })) })
 
 /** Every sector configuration a save may carry. */
 const knownSectorConfigs = [sectorOneConfig, ...longSectorConfigs]
@@ -217,15 +217,18 @@ export function validateRun(value: unknown): asserts value is DungeonRunState {
 function validateBattleEffects(run: DungeonRunState, sector: boolean, isCombat: (type: string) => boolean): void {
   const effects = run.pendingBattleEffects ?? []
   requireValid(run.pendingBattleEffects === undefined || (sector && effects.length > 0))
-  const owed = new Map<string, string>()
+  const owed = new Map<string, { source: string; heroId: string }>()
   for (const entry of run.journal ?? []) {
     const node = dungeonNode(run.map, entry.nodeId)
-    if (entry.kind !== 'ride' || node?.eventId !== 'runaway-cart') continue
+    // Only a cart ride carries a hero, and every ride names one (the rider, whose name the entry's text must also contain).
+    requireValid((entry.kind === 'ride') === (entry.heroId !== undefined))
+    if (entry.kind !== 'ride') continue
+    requireValid(node?.eventId === 'runaway-cart' && entry.text.includes(run.heroes[entry.heroId!].name))
     const later = run.completedNodeIds.slice(run.completedNodeIds.indexOf(entry.nodeId) + 1)
-    if (run.status === 'active' && later.every(id => !isCombat(dungeonNode(run.map, id)!.type))) owed.set(`${run.runId}/effect/${entry.nodeId}`, entry.nodeId)
+    if (run.status === 'active' && later.every(id => !isCombat(dungeonNode(run.map, id)!.type))) owed.set(`${run.runId}/effect/${entry.nodeId}`, { source: entry.nodeId, heroId: entry.heroId! })
   }
   requireValid(unique(effects.map(effect => effect.id)) && effects.length === owed.size)
-  effects.forEach(effect => requireValid(owed.get(effect.id) === effect.sourceNodeId && effect.amount === cartRules.armor))
+  effects.forEach(effect => requireValid(owed.get(effect.id)?.source === effect.sourceNodeId && owed.get(effect.id)?.heroId === effect.heroId && effect.amount === cartRules.armor))
 }
 
 export class IncompatibleSave extends Error {}
