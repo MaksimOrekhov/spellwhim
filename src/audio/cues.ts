@@ -3,7 +3,7 @@ import type { VfxPlan } from '../vfx/types'
 export type SoundId = 'swing' | 'heavy-swing' | 'steel-hit' | 'heavy-hit' | 'shield-hit'
   | 'fire-launch' | 'fire-hit' | 'frost-launch' | 'frost-hit' | 'lightning' | 'arcane-launch' | 'arcane-hit'
   | 'steel-guard' | 'magic-guard' | 'block' | 'armor-break' | 'bleed' | 'ice-crack' | 'ice-form' | 'interrupt'
-  | 'draw' | 'gather' | 'victory' | 'defeat' | 'card' | 'turn' | 'reward' | 'room'
+  | 'draw' | 'gather' | 'victory' | 'defeat' | 'card' | 'turn' | 'reward' | 'room' | 'weapon-draw' | 'door' | 'lock'
   | 'mine-air' | 'crystal-air' | 'forge-air' | 'creak' | 'distant-metal' | 'crystal-chime' | 'embers'
 export interface SoundCue { at: number; sound: SoundId; gain?: number }
 

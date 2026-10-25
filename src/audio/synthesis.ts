@@ -17,6 +17,7 @@ const timbres: Record<SoundId, Timbre> = {
   victory: { seconds: 1.25, hz: 392, noise: .08, metal: true, attack: .02 }, defeat: { seconds: 1.3, hz: 155, end: 73, noise: .17, metal: true, attack: .07 },
   card: { seconds: .1, hz: 420, end: 580, noise: .75 }, turn: { seconds: .2, hz: 235, end: 170, noise: .25, metal: true },
   reward: { seconds: .7, hz: 740, noise: .08, metal: true }, room: { seconds: .18, hz: 160, end: 90, noise: .62 },
+  'weapon-draw': { seconds: .3, hz: 270, end: 120, noise: .75, metal: true }, door: { seconds: .55, hz: 105, end: 70, noise: .65 }, lock: { seconds: .28, hz: 430, end: 180, noise: .55, metal: true },
   'mine-air': { seconds: 7, hz: 43, noise: .95, attack: 1.6, air: true },
   'crystal-air': { seconds: 8, hz: 148, noise: .6, attack: 2, air: true },
   'forge-air': { seconds: 7, hz: 56, noise: 1, attack: 1.5, air: true },

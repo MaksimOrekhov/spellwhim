@@ -40,7 +40,7 @@ watch(() => [props.state.battleId, ambient.value] as const, ([id, profile], befo
   if (before && before[0] !== id) gameAudio.setAmbient(null)
   gameAudio.setAmbient(profile)
 }, { immediate: true })
-watch(() => props.state.result, (result, before) => { if (result && !before) gameAudio.play(result === 'victory' ? 'victory' : 'defeat', .75, 'result') })
+watch(() => props.state.result, (result, before) => { if (result === 'defeat' && !before) gameAudio.play('defeat', .75, 'result') })
 watch(() => ({ turn: props.state.turn, ids: props.state.hand.map(card => card.instanceId) }), (next, before) => {
   if (next.turn > before.turn && !props.state.result && next.ids.some(id => !before.ids.includes(id))) gameAudio.play('draw', .55, 'turn-draw')
 })

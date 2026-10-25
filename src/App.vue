@@ -3,6 +3,7 @@ import { computed, nextTick, ref, shallowRef, watch } from 'vue'
 import BattleBoard from './components/BattleBoard.vue'
 import AudioSettings from './components/AudioSettings.vue'
 import { gameAudio } from './audio/engine'
+import { musicForContext } from './audio/music'
 import BattleHand from './components/BattleHand.vue'
 import CampaignMap from './components/CampaignMap.vue'
 import CardReward from './components/CardReward.vue'
@@ -60,6 +61,13 @@ const phaseBeforeStart = ref<Exclude<typeof phase.value, 'start'> | null>(null)
 const rewardOptions = computed(() => dungeonRewardOptions(run.value))
 const selectedNodeId = computed(() => run.value.currentNodeId)
 const finalBattle = computed(() => dungeonNode(run.value.map, selectedNodeId.value ?? '')?.type === 'final')
+const musicRequest = computed(() => musicForContext({
+  screen: phase.value === 'start' || phase.value === 'resume' ? 'menu' : phase.value === 'battle' ? 'battle' : phase.value === 'complete' ? 'complete' : 'map',
+  encounterId: state.value.enemy.encounterId,
+  result: phase.value === 'battle' ? state.value.result : null,
+  finalBattle: finalBattle.value,
+}))
+watch(musicRequest, request => gameAudio.setMusic(request), { immediate: true })
 /** Heroes whose new armor would expire before any blow reaches them: under armor that lasts one enemy turn, everyone the enemy does not hit now. */
 const idleArmor = computed<HeroId[]>(() => {
   if (!rules.armorExpires || state.value.result) return []
@@ -158,7 +166,10 @@ useBattleControls({ enabled: () => phase.value === 'battle' && battlePhase.value
 function enterNode(nodeId: string) {
   if (phase.value !== 'map' || !availableDungeonNodes(run.value).some(node => node.id === nodeId)) return
   const nextRun = enterDungeonNode(run.value, nodeId)
-  gameAudio.play('room')
+  if (nextRun.battleEntry) gameAudio.play('weapon-draw', .45, 'battle-start')
+  else if (nextRun.room?.type === 'treasure') gameAudio.play('lock', .48, 'room-open')
+  else if (nextRun.room) gameAudio.play('door', .38, 'room-open')
+  else gameAudio.play('room', .32, 'room-open')
   publish(nextRun)
   if (!nextRun.battleEntry) {
     phase.value = dungeonRunPhase(nextRun)

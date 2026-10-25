@@ -13,6 +13,7 @@ function mute() { update({ muted: !settings.value.muted }); if (!settings.value.
     <div v-if="open" id="audio-options" class="audio-options">
       <strong>Звук</strong>
       <button class="game-button" type="button" :aria-pressed="settings.muted" @click="mute">{{ settings.muted ? 'Включить звук' : 'Выключить звук' }}</button>
+      <label>Музыка <output>{{ Math.round(settings.music * 100) }}%</output><input aria-label="Громкость музыки" type="range" min="0" max="1" step="0.05" :value="settings.music" @input="update({ music: Number(($event.target as HTMLInputElement).value) })" /></label>
       <label>Эффекты <output>{{ Math.round(settings.effects * 100) }}%</output><input aria-label="Громкость эффектов" type="range" min="0" max="1" step="0.05" :value="settings.effects" @input="update({ effects: Number(($event.target as HTMLInputElement).value) })" /></label>
       <label>Окружение <output>{{ Math.round(settings.ambience * 100) }}%</output><input aria-label="Громкость окружения" type="range" min="0" max="1" step="0.05" :value="settings.ambience" @input="update({ ambience: Number(($event.target as HTMLInputElement).value) })" /></label>
       <button type="button" class="audio-close" @click="open = false">Закрыть</button>

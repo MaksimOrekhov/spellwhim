@@ -24,7 +24,8 @@
     "honest-b:lab": "node scripts/run-honest-b.mjs",
     "honest-b:report": "node scripts/honest-b-report.mjs",
     "sector-long:lab": "node scripts/run-sector-long.mjs",
-    "sector-long:enemies": "node scripts/run-sector-long-enemies.mjs"
+    "sector-long:enemies": "node scripts/run-sector-long-enemies.mjs",
+    "audio:catalog:check": "node scripts/audio-catalog-check.mjs"
   },
   "dependencies": {
     "@lucide/vue": "^1.59.0",

@@ -20,7 +20,10 @@ function plan(id: string, motion: 'full' | 'reduced' = 'full') {
 }
 function fakeAudio() {
   const sources: { stop: ReturnType<typeof vi.fn>; disconnect: ReturnType<typeof vi.fn>; onended: (() => void) | null; start: ReturnType<typeof vi.fn> }[] = []
-  const gain = () => ({ gain: { value: 1, setTargetAtTime: vi.fn(), cancelScheduledValues: vi.fn() }, connect: vi.fn(), disconnect: vi.fn() })
+  const gain = () => {
+    const param = { value: 1, setTargetAtTime: vi.fn(), cancelScheduledValues: vi.fn(), setValueAtTime: vi.fn((value: number) => { param.value = value }), linearRampToValueAtTime: vi.fn((value: number) => { param.value = value }) }
+    return { gain: param, connect: vi.fn(), disconnect: vi.fn() }
+  }
   const context = {
     state: 'suspended', currentTime: 1, destination: {},
     resume: vi.fn(async () => { context.state = 'running' }), close: vi.fn(async () => { context.state = 'closed' }),
@@ -28,9 +31,20 @@ function fakeAudio() {
     createDynamicsCompressor: () => ({ connect: vi.fn(), disconnect: vi.fn(), threshold: { value: 0 }, knee: { value: 0 }, ratio: { value: 0 } }),
     createBuffer: (_channels: number, size: number) => ({ getChannelData: () => new Float32Array(size) }),
     createBufferSource: () => { const s = { connect: vi.fn(), disconnect: vi.fn(), start: vi.fn(), stop: vi.fn(), onended: null as (() => void) | null }; sources.push(s); return s },
+    createMediaElementSource: () => ({ connect: vi.fn(), disconnect: vi.fn() }),
   }
   const factory = vi.fn(() => context as unknown as AudioContext)
   return { context, sources, factory }
+}
+function fakeMedia() {
+  const listeners = new Map<string, (event: Event) => void>()
+  const media = {
+    src: '', preload: 'none', loop: false, volume: 1, currentTime: 0, duration: 100, paused: true,
+    play: vi.fn(async () => { media.paused = false }), pause: vi.fn(() => { media.paused = true }), load: vi.fn(),
+    addEventListener: vi.fn((type: string, listener: (event: Event) => void) => { listeners.set(type, listener) }), removeEventListener: vi.fn(), removeAttribute: vi.fn(),
+    fire: (type: string) => listeners.get(type)?.(new Event(type)),
+  }
+  return media as unknown as HTMLAudioElement & typeof media
 }
 afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals() })
 
@@ -85,6 +99,73 @@ describe('public sound cues on the VFX clock', () => {
 })
 
 describe('lazy audio, settings and resource lifetime', () => {
+  it('streams one music element, keeps a stable track on repeated updates, and serializes transitions', async () => {
+    vi.useFakeTimers()
+    const f = fakeAudio(), media = fakeMedia(), audio = new GameAudio({ context: f.factory, audio: () => media })
+    audio.setMusic({ track: 'music-town-theme' })
+    await audio.unlock(); await Promise.resolve()
+    expect(media.preload).toBe('none')
+    expect(media.src).toContain('town-theme')
+    expect(media.play).toHaveBeenCalledTimes(1)
+    audio.setMusic({ track: 'music-town-theme' })
+    expect(media.play).toHaveBeenCalledTimes(1)
+    audio.setMusic({ track: 'music-battle-theme' })
+    await vi.advanceTimersByTimeAsync(900)
+    expect(media.src).toContain('battle-theme')
+    expect(media.play).toHaveBeenCalledTimes(2)
+    expect(audio.stats()).toMatchObject({ musicTrack: 'music-battle-theme', musicPlayers: 1 })
+    audio.dispose(); expect(media.pause).toHaveBeenCalled()
+  })
+
+  it('plays a requested music stream through the native element when Web Audio is missing', async () => {
+    vi.useFakeTimers()
+    const media = fakeMedia(), audio = new GameAudio({ context: () => null, audio: () => media })
+    audio.setMusic({ track: 'music-town-theme' })
+    await audio.unlock()
+    await vi.advanceTimersByTimeAsync(600)
+    expect(audio.stats()).toMatchObject({ unavailable: true, contexts: 0, musicTrack: 'music-town-theme', musicPlayers: 1 })
+    audio.update({ music: .3 })
+    expect(media.volume).toBeCloseTo(.3 * .88)
+    audio.setHidden(true)
+    expect(media.pause).toHaveBeenCalled()
+    audio.setHidden(false); await Promise.resolve()
+    expect(audio.stats().musicPlayers).toBe(1)
+    audio.dispose()
+  })
+
+  it('finishes a victory fanfare before resuming the latest requested screen theme', async () => {
+    vi.useFakeTimers()
+    const f = fakeAudio(), media = fakeMedia(), audio = new GameAudio({ context: f.factory, audio: () => media })
+    audio.setMusic({ track: 'music-victory-fanfare-short', resumeAfter: 'music-cave-theme' })
+    await audio.unlock(); await vi.advanceTimersByTimeAsync(600)
+    const fanfareUrl = media.src
+    audio.setMusic({ track: 'music-battle-theme' })
+    expect(audio.stats()).toMatchObject({ musicRequested: 'music-victory-fanfare-short', musicTrack: 'music-victory-fanfare-short', musicPlayers: 1 })
+    expect(media.src).toBe(fanfareUrl)
+    media.fire('ended')
+    await vi.advanceTimersByTimeAsync(600)
+    expect(audio.stats()).toMatchObject({ musicRequested: 'music-battle-theme', musicTrack: 'music-battle-theme', musicPlayers: 1 })
+    expect(media.src).toContain('battle-theme')
+    audio.dispose()
+  })
+
+  it('keeps the active track and position muted, then restores its level without creating a second player', async () => {
+    vi.useFakeTimers()
+    const f = fakeAudio(), media = fakeMedia(), audio = new GameAudio({ context: f.factory, audio: () => media })
+    audio.setMusic({ track: 'music-town-theme' })
+    await audio.unlock(); await vi.advanceTimersByTimeAsync(600)
+    media.currentTime = 12
+    audio.update({ muted: true })
+    expect(audio.stats()).toMatchObject({ musicTrack: 'music-town-theme', musicPlayers: 1, musicGain: 0 })
+    expect(media.currentTime).toBe(12)
+    audio.update({ muted: false })
+    expect(audio.stats()).toMatchObject({ musicTrack: 'music-town-theme', musicPlayers: 1 })
+    expect(media.currentTime).toBe(12)
+    expect(audio.stats().musicGain).toBeGreaterThan(0)
+    expect(media.play).toHaveBeenCalledTimes(1)
+    audio.dispose()
+  })
+
   it('does not create or play audio before input, then reuses one context and buffers', async () => {
     const f = fakeAudio(), audio = new GameAudio({ context: f.factory })
     audio.setAmbient('mine'); audio.play('fire-hit')
@@ -127,8 +208,10 @@ describe('lazy audio, settings and resource lifetime', () => {
     audio.update({ muted: true, effects: .35, ambience: .1 })
     expect(new GameAudio({ storage: () => storage }).settings).toEqual(audio.settings)
     expect([...data.keys()]).toEqual([AUDIO_SETTINGS_KEY])
+    data.set(AUDIO_SETTINGS_KEY, '{"muted":true,"effects":0.4,"ambience":0.2}')
+    expect(new GameAudio({ storage: () => storage }).settings).toEqual({ muted: true, music: .55, effects: .4, ambience: .2 })
     data.set(AUDIO_SETTINGS_KEY, '{"effects":25,"ambience":-5,"muted":"no"}')
-    expect(new GameAudio({ storage: () => storage }).settings).toEqual({ effects: 1, ambience: 0, muted: false })
+    expect(new GameAudio({ storage: () => storage }).settings).toEqual({ muted: false, music: .55, effects: 1, ambience: 0 })
     expect(() => new GameAudio({ storage: () => { throw Error('blocked') } }).update({ muted: true })).not.toThrow()
   })
   it('handles absent and rejecting Web Audio without throwing or retry loops', async () => {
