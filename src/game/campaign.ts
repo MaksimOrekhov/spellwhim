@@ -13,7 +13,7 @@ import type { ArtifactDefinition, ArtifactId, ArtifactInstance, BattleState, Car
 import { generateSectorMap, sectorOneConfig, validateSectorMap } from './dungeonGenerator'
 import type { SectorConfig } from './dungeonGenerator'
 import { knownSectorEncounters } from './sectorLong'
-import { sectorLongConfig } from './sectorLong'
+import { sectorLongConfigV2 } from './sectorLong'
 import { sectorFoeSets } from './sectorFoesB'
 import type { SectorEventId } from './sectorContent'
 import { createRoomVisit } from './dungeonRooms'
@@ -295,7 +295,7 @@ export function createDungeonRun(seed: number, economy: EconomyConfig = gameEcon
 }
 
 /** Uses the same run, battle, reward and progression contracts as the legacy control. */
-export function createSectorRun(seed: number, economy: EconomyConfig = gameEconomy, deck: readonly CardId[] = startingDeck, config: SectorConfig = economy.sectorRoute === 'long' ? sectorLongConfig : sectorOneConfig, runId: string = crypto.randomUUID()): DungeonRunState {
+export function createSectorRun(seed: number, economy: EconomyConfig = gameEconomy, deck: readonly CardId[] = startingDeck, config: SectorConfig = economy.sectorRoute === 'long' ? sectorLongConfigV2 : sectorOneConfig, runId: string = crypto.randomUUID()): DungeonRunState {
   const run = createDungeonRun(seed, economy, deck, defaultDungeonRoster, runId)
   return { ...run, map: generateSectorMap(run.mapSeed, config), campaign: { id: config.id, version: config.version }, room: null, journal: [], goldRewards: true }
 }

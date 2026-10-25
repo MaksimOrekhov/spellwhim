@@ -1,14 +1,15 @@
 import { describe, expect, it } from 'vitest'
 import { allBattleBackgrounds, battleBackground, deadminesBackgrounds } from './battleBackground'
 import { defaultDungeonRoster } from '../game/encountersV10'
-import { knownSectorEncounters } from '../game/sectorLong'
+import { expansionElites, knownSectorEncounters } from '../game/sectorLong'
 import { rhahkZor, sectorOneElite } from '../game/sectorContent'
 
 describe('battle background', () => {
   it('shows the forge for Rak\'Zor, the crystal mine for the elite and the plain mine for everything else', () => {
     expect(battleBackground(rhahkZor.id).id).toBe('deadmines-rakzor-forge')
     expect(battleBackground(sectorOneElite.id).id).toBe('deadmines-elite-crystal')
-    for (const enemy of knownSectorEncounters.filter(item => item.id !== rhahkZor.id && item.id !== sectorOneElite.id)) expect(battleBackground(enemy.id).id, enemy.id).toBe('deadmines-regular')
+    for (const enemy of expansionElites) expect(battleBackground(enemy.id).id, enemy.id).toBe('deadmines-elite-crystal')
+    for (const enemy of knownSectorEncounters.filter(item => item.id !== rhahkZor.id && item.id !== sectorOneElite.id && !expansionElites.includes(item))) expect(battleBackground(enemy.id).id, enemy.id).toBe('deadmines-regular')
     for (const enemy of defaultDungeonRoster.normal) expect(battleBackground(enemy.id).id, enemy.id).toBe('deadmines-regular')
   })
   it('follows the encounter ID alone: the node suffix of a campaign battle changes nothing', () => {

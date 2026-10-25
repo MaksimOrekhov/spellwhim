@@ -1,6 +1,6 @@
 import type { EncounterDefinition } from './types'
 import type { SectorConfig, SectorRow } from './dungeonGenerator'
-import { rhahkZor, sectorEventIds, sectorOneElite, sectorOneEnemies } from './sectorContent'
+import { allSectorEventIds, rhahkZor, sectorEventIds, sectorOneElite, sectorOneEnemies } from './sectorContent'
 
 /**
  * EXPERIMENT "Sector I — long route" (docs/design/sector-one-long-v1.md, Decision Log X03). Ten visits instead of six.
@@ -40,8 +40,6 @@ const veteran: EncounterDefinition = {
 }
 
 export const longSectorEnemies: readonly EncounterDefinition[] = [saboteur, tinkerer, veteran]
-/** Every encounter a Sector I map may name: the standard ones and the long route's extras. */
-export const knownSectorEncounters: readonly EncounterDefinition[] = [...sectorOneEnemies, sectorOneElite, rhahkZor, ...longSectorEnemies]
 
 const ids = (...list: EncounterDefinition[]) => list.map(item => item.id)
 const [raider, digger, watchman, overseer] = sectorOneEnemies as [EncounterDefinition, EncounterDefinition, EncounterDefinition, EncounterDefinition]
@@ -69,3 +67,33 @@ export const sectorLongConfig: SectorConfig = {
   normalPool: ids(...sectorOneEnemies, ...longSectorEnemies), elitePool: [sectorOneElite.id], eventPool: [...sectorEventIds], boss: rhahkZor.id,
   maxElites: 1, maxConsecutiveServices: 2, maxBattles: 7, maxNormalBattles: 5, assigner: 'forward', requireDevelopment: true,
 }
+
+/**
+ * Sector I Content Expansion v1 (docs/design/sector-one-content-expansion-v1.md). Configuration version 2 of the long route: the elite
+ * is one of two (chosen once per map by its seed), and the dinner event joins the pool. Version 1 above stays exactly as it was,
+ * because runs saved under it carry that configuration and its fingerprint (`LONG_SECTOR_CATALOG_VERSION`).
+ *
+ * Foreman Thistlenettle is the Deadmines' undead foreman (a dwarf who died in the cave-in he was digging out). His question is a clock:
+ * every shift call makes his later blows harder (`power`), and the one blow that pierces armor can be stopped by damage in a single turn
+ * (`interrupt`). Armor alone loses slowly, and so does a slow fight; a burst turn or a frozen foreman answers him.
+ */
+export const thistlenettle: EncounterDefinition = {
+  id: 'old-mines-thistlenettle', name: 'Прораб Чертополох', title: 'Перекличка смены окончена', maxHealth: 58, appearance: 'defias', mapLabel: 'Опасный забой',
+  behavior: { phase1: [
+    { kind: 'attack', name: 'Кирка мертвеца', damage: 8, target: 'warrior' },
+    { kind: 'recover', name: 'Перекличка смены', armor: 4, power: 2 },
+    { kind: 'prepare', name: 'Тянет жизнь', prepared: { kind: 'attack', name: 'Зов Чертополоха', damage: 11, target: 'mage', pierce: 4, interrupt: 26 } },
+    { kind: 'attack_all', name: 'Обвал крепи', damage: 5, primaryTarget: 'warrior' },
+  ] },
+}
+export const expansionElites: readonly EncounterDefinition[] = [thistlenettle]
+
+export const sectorLongConfigV2: SectorConfig = {
+  ...sectorLongConfig, version: 2,
+  elitePool: [sectorOneElite.id, thistlenettle.id], eventPool: [...allSectorEventIds],
+}
+/** Every configuration a saved long run may carry, by version: the map in a save must be exactly the one its version generated. */
+export const longSectorConfigs: readonly SectorConfig[] = [sectorLongConfig, sectorLongConfigV2]
+
+/** Every encounter a Sector I map may name: the standard ones, the long route's extras and the expansion's elite. */
+export const knownSectorEncounters: readonly EncounterDefinition[] = [...sectorOneEnemies, sectorOneElite, rhahkZor, ...longSectorEnemies, ...expansionElites]

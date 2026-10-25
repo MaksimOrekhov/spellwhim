@@ -25,6 +25,7 @@
     "honest-b:report": "node scripts/honest-b-report.mjs",
     "sector-long:lab": "node scripts/run-sector-long.mjs",
     "sector-long:enemies": "node scripts/run-sector-long-enemies.mjs",
+    "sector-expansion:lab": "node scripts/run-sector-expansion.mjs",
     "gold:lab": "node scripts/run-gold-lab.mjs",
     "audio:catalog:check": "node scripts/audio-catalog-check.mjs"
   },

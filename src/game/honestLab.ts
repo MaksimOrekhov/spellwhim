@@ -7,13 +7,15 @@ import type { DungeonRunState } from './campaign'
 import { canUpgradeCard } from './cardProgression'
 import { chooseDungeonRouteNode, publicDungeonNodeView } from './dungeonRoutePolicy'
 import type { DungeonRoutePolicy } from './dungeonRoutePolicy'
-import { resolveRoom, roomActionAvailable, roomEligibleCards } from './dungeonRooms'
+import type { SectorConfig } from './dungeonGenerator'
+import { dinnerHealBudget, resolveRoom, roomActionAvailable, roomEligibleCards, suggestDinnerHeal } from './dungeonRooms'
+import { dinnerRules } from './roomRules'
 import type { RoomAction } from './dungeonRooms'
 import type { EconomyConfig } from './economy'
 import { resolveCardDefinition } from './cardProgression'
 import type { Information } from './observableIntent'
 import { rhahkZor, sectorEncounters, sectorOneElite } from './sectorContent'
-import { longSectorEnemies } from './sectorLong'
+import { expansionElites, longSectorEnemies } from './sectorLong'
 import { cardDefinition } from './types'
 import type { BattleState, CardId, CardInstance, EncounterDefinition, EnemyAction, HeroId } from './types'
 
@@ -35,11 +37,13 @@ export const labStrategies: readonly LabStrategy[] = ['planner', 'planner-carefu
 export const sectorEnemyIds: readonly string[] = ['old-mines-raider', 'old-mines-digger', 'old-mines-watchman', 'old-mines-overseer', 'old-mines-johnson', 'old-mines-rhahk-zor']
 /** The long route's three additional enemies (docs/design/sector-one-long-v1.md), fought by the same lab. */
 export const longEnemyIds: readonly string[] = longSectorEnemies.map(enemy => enemy.id)
+/** The two elites a long-route map may hold (Sector I Content Expansion v1): Johnson and the foreman. */
+export const eliteIds: readonly string[] = [sectorOneElite.id, ...expansionElites.map(enemy => enemy.id)]
 
 export function labEncounter(economy: EconomyConfig, id: string): EncounterDefinition {
-  const base = [...sectorEncounters, ...longSectorEnemies].find(encounter => encounter.id === id)
+  const base = [...sectorEncounters, ...longSectorEnemies, ...expansionElites].find(encounter => encounter.id === id)
   if (!base) throw new Error('Unknown sector enemy ' + id)
-  const type = id === rhahkZor.id ? 'final' : id === sectorOneElite.id ? 'elite' : 'battle'
+  const type = id === rhahkZor.id ? 'final' : eliteIds.includes(id) ? 'elite' : 'battle'
   return dungeonEncounter({ id: 'lab', layer: 0, column: 0, type, edges: [], encounterId: id, encounterHealth: base.maxHealth }, economy)
 }
 
@@ -333,6 +337,8 @@ export interface RunLog {
   healed?: number
   upgrades?: number
   elites?: number
+  /** Service rooms visited with the event (if any) and what the policy did there (Content Expansion v1 study). */
+  rooms?: { type: 'forge' | 'treasure' | 'event'; event?: string; action: RoomAction; heal?: Record<HeroId, number>; hero?: HeroId }[]
 }
 
 function pickRoomAction(run: DungeonRunState, policy: DungeonRoutePolicy): { action: RoomAction; hero: HeroId } {
@@ -342,12 +348,15 @@ function pickRoomAction(run: DungeonRunState, policy: DungeonRoutePolicy): { act
     : room.type === 'forge' ? (policy === 'safe' ? ['remove', 'upgrade'] : policy === 'risky' ? ['replace', 'upgrade'] : ['upgrade', 'remove'])
       : room.eventId === 'powder-store' ? (policy === 'safe' ? ['card'] : ['risk', 'card'])
         : room.eventId === 'goblin-trade' ? (policy === 'safe' ? ['remove'] : ['replace', 'remove'])
+          // The dinner: a hurt party eats first; a healthy one (or a bold policy) takes the trophy, which costs health it can spare.
+          : room.eventId === 'suspicious-dinner' ? (policy === 'safe' || dinnerHealBudget(run) >= dinnerRules.heal ? ['heal', 'artifact'] : ['artifact', 'heal'])
           : (policy === 'safe' ? ['remove', 'upgrade'] : ['upgrade', 'remove'])
   return { action: wishes.find(item => roomActionAvailable(run, item)) ?? 'leave', hero }
 }
 
-export function simulateSectorRun(seed: number, economy: EconomyConfig, deck: readonly CardId[], strategy: LabStrategy, policy: DungeonRoutePolicy = 'mixed'): RunLog {
-  let run = createSectorRun(seed, economy, deck, undefined, 'lab-' + seed)
+export function simulateSectorRun(seed: number, economy: EconomyConfig, deck: readonly CardId[], strategy: LabStrategy, policy: DungeonRoutePolicy = 'mixed', config?: SectorConfig): RunLog {
+  let run = createSectorRun(seed, economy, deck, config, 'lab-' + seed)
+  const rooms: NonNullable<RunLog['rooms']> = []
   const battles: RunLog['battles'] = []
   const route: string[] = []
   let healed = 0, healthBeforeBoss: RunLog['healthBeforeBoss']
@@ -365,11 +374,14 @@ export function simulateSectorRun(seed: number, economy: EconomyConfig, deck: re
       const replacement = target && action === 'replace' ? room.replacements[cardDefinition(target.definitionId).className].find(card => card.definitionId !== target.definitionId) : undefined
       const owner = (['warrior', 'mage'] as const).find(id => !run.artifacts.some(item => item.ownerInstanceId === run.heroes[id].instanceId))
       let finalAction: RoomAction = action
-      if (action === 'artifact' && !owner) finalAction = 'card'
+      const trophyOwner = owner && run.heroes[owner].health > dinnerRules.trophyHealth ? owner : undefined
+      if (room.eventId === 'suspicious-dinner' && action === 'artifact' && !trophyOwner) finalAction = roomActionAvailable(run, 'heal') ? 'heal' : 'leave'
+      else if (action === 'artifact' && !owner) finalAction = 'card'
       if (['upgrade', 'remove', 'replace'].includes(finalAction) && !target) finalAction = 'leave'
+      rooms.push({ type: room.type, ...(room.eventId ? { event: room.eventId } : {}), action: finalAction, ...(finalAction === 'heal' ? { heal: suggestDinnerHeal(run) } : {}), ...(finalAction === 'artifact' ? { hero: owner } : {}) })
       run = resolveRoom(run, {
         roomId: room.id, action: finalAction, instanceId: target?.instanceId, cardId: finalAction === 'replace' ? replacement?.definitionId : room.cards[0]?.definitionId,
-        heroId: finalAction === 'artifact' ? owner : hero, artifactId: room.artifactIds[0],
+        heroId: finalAction === 'artifact' ? owner : hero, artifactId: room.artifactIds[0], ...(finalAction === 'heal' ? { heal: suggestDinnerHeal(run) } : {}),
       })
     } else if (chosen.type === 'rest') {
       const injured = (['warrior', 'mage'] as const).slice().sort((a, b) => run.heroes[a].health / run.heroes[a].maxHealth - run.heroes[b].health / run.heroes[b].maxHealth)[0]!
@@ -384,7 +396,7 @@ export function simulateSectorRun(seed: number, economy: EconomyConfig, deck: re
       const state = createCampaignBattle({ encounter, economy, heroes: run.heroes, deck: run.deck, artifacts: run.artifacts, seed: run.battleEntry!.seed, battleId: 'lab/' + seed + '/' + chosen.id })
       const fight = runFight(state, createChooser(strategy))
       battles.push({ enemy: node.encounterId!, node: chosen.type, fight })
-      if (!state.result) return { seed, result: 'timeout', battles, healthEnd: { warrior: state.heroes.warrior.health, mage: state.heroes.mage.health }, deckEnd: run.deck.map(card => card.definitionId), route, healthBeforeBoss, healed, upgrades: run.deck.filter(card => card.upgrade).length, elites: route.filter(type => type === 'elite').length }
+      if (!state.result) return { seed, result: 'timeout', battles, healthEnd: { warrior: state.heroes.warrior.health, mage: state.heroes.mage.health }, deckEnd: run.deck.map(card => card.definitionId), route, healthBeforeBoss, healed, upgrades: run.deck.filter(card => card.upgrade).length, elites: route.filter(type => type === 'elite').length, rooms }
       run = resolveDungeonBattle(run, state)
     }
     if (run.pendingReward) {
@@ -398,7 +410,7 @@ export function simulateSectorRun(seed: number, economy: EconomyConfig, deck: re
   return {
     seed, result: run.status === 'sector-complete' || run.status === 'victory' ? 'victory' : run.status === 'defeat' ? 'defeat' : 'timeout', battles,
     healthEnd: heroHealth(), deckEnd: run.deck.map(card => card.definitionId), route,
-    healthBeforeBoss, healed, upgrades: run.deck.filter(card => card.upgrade).length, elites: route.filter(type => type === 'elite').length,
+    healthBeforeBoss, healed, upgrades: run.deck.filter(card => card.upgrade).length, elites: route.filter(type => type === 'elite').length, rooms,
   }
 }
 

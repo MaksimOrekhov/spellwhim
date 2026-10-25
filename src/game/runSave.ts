@@ -6,11 +6,11 @@ import { createDungeonRewardOffer, deriveDungeonSeed, dungeonEncounter, dungeonN
 import type { DungeonRunState } from './campaign'
 import { honestEconomies, knownEconomies } from './economy'
 import type { EconomyConfig } from './economy'
-import { CARVED_GENERATOR_VERSION, validateSectorConfig } from './dungeonGenerator'
-import { sectorEncounters, sectorEventIds } from './sectorContent'
-import { longSectorEnemies, sectorLongConfig } from './sectorLong'
+import { CARVED_GENERATOR_VERSION, sectorOneConfig, validateSectorConfig } from './dungeonGenerator'
+import { allSectorEventIds, sectorEncounters, sectorEventIds } from './sectorContent'
+import { expansionElites, longSectorConfigs, longSectorEnemies, sectorLongConfig, sectorLongConfigV2 } from './sectorLong'
 import { createRoomVisit, roomActions } from './dungeonRooms'
-import { roomRules } from './roomRules'
+import { dinnerRules, roomRules } from './roomRules'
 
 export const RUN_SAVE_KEY = 'spellwhim.run.v1'
 export const SAVE_SCHEMA_VERSION = 2
@@ -49,10 +49,15 @@ export const CATALOG_VERSION = checksum(canonical({ ...baseCatalogue, upgrades: 
 export const SECTOR_CATALOG_VERSION = checksum(canonical({ base: CATALOG_VERSION, encounters: sectorEncounters, events: sectorEventIds }))
 /** The long route adds three enemies and its own map rules; a save of it declares this instead, so no other build reads it as its own. */
 export const LONG_SECTOR_CATALOG_VERSION = checksum(canonical({ base: SECTOR_CATALOG_VERSION, enemies: longSectorEnemies, config: sectorLongConfig }))
+/** Long route configuration version 2 (Sector I Content Expansion v1): the second elite and the dinner event. Version-1 runs keep `LONG_SECTOR_CATALOG_VERSION` above, which no longer changes. */
+export const LONG_SECTOR_CATALOG_VERSION_2 = checksum(canonical({ base: LONG_SECTOR_CATALOG_VERSION, elites: expansionElites, events: allSectorEventIds, dinner: dinnerRules, config: sectorLongConfigV2 }))
+/** The configuration version a new long run is generated under. */
+export const CURRENT_LONG_CONFIG_VERSION = sectorLongConfigV2.version
 /** A run that can hold gold also declares the gold catalogue it was played under; runs saved before gold keep the plain sector fingerprint. */
 export const GOLD_CATALOG_VERSION = checksum(canonical(goldCards))
-export const sectorCatalogFor = (campaignId: string | undefined, gold = false) => {
-  const sector = campaignId === sectorLongConfig.id ? LONG_SECTOR_CATALOG_VERSION : SECTOR_CATALOG_VERSION
+export const sectorCatalogFor = (campaignId: string | undefined, gold = false, campaignVersion: number = CURRENT_LONG_CONFIG_VERSION) => {
+  // An unknown long version has no fingerprint, so a save that names one can never match.
+  const sector = campaignId === sectorLongConfig.id ? (campaignVersion === 1 ? LONG_SECTOR_CATALOG_VERSION : campaignVersion === 2 ? LONG_SECTOR_CATALOG_VERSION_2 : 'unknown-long-version-' + campaignVersion) : SECTOR_CATALOG_VERSION
   return gold ? checksum(canonical({ base: sector, gold: GOLD_CATALOG_VERSION })) : sector
 }
 export const ROOM_RULES_VERSION = roomRules.version + ':' + checksum(canonical(roomRules))
@@ -88,9 +93,9 @@ const cardId: Check = value => cards.some(card => card.id === value) || experime
 const artifactId: Check = value => artifactDefinitions.some(item => item.id === value)
 const acquisition = object({ definitionId: cardId, upgrade: oneOf(0, 1) })
 const hero = object({ id: oneOf('warrior', 'mage'), characterId: text, classId: oneOf('warrior', 'mage'), partySlot: oneOf('first', 'second'), instanceId: text, name: text, title: text, health: integer(0, 999), maxHealth: integer(1, 999), armor: oneOf(0), icon: text })
-const node = object({ id: text, layer: integer(0, 30), column: value => typeof value === 'number' && value >= 0 && value < 8 && Number.isInteger(value * 2), type: oneOf('battle', 'elite', 'rest', 'final', 'forge', 'treasure', 'event'), edges: list(text, 8) }, { encounterId: text, encounterHealth: integer(1, 10000), rewardCount: integer(1, 5), healAmount: integer(0, 999), eventId: oneOf(...sectorEventIds) })
-const roomSelection = object({ action: oneOf('upgrade', 'remove', 'replace', 'card', 'risk', 'artifact', 'leave') }, { instanceId: text, heroId: oneOf('warrior', 'mage'), cardId: cardId, artifactId })
-const room = object({ id: text, nodeId: text, type: oneOf('forge', 'treasure', 'event'), cards: list(acquisition, roomRules.cards), riskCard: nullable(acquisition), replacements: object({ warrior: list(acquisition, roomRules.replacementCandidates), mage: list(acquisition, roomRules.replacementCandidates) }), artifactIds: list(artifactId, roomRules.artifacts), riskSuccess: oneOf(true, false), selection: nullable(roomSelection) }, { eventId: oneOf(...sectorEventIds) })
+const node = object({ id: text, layer: integer(0, 30), column: value => typeof value === 'number' && value >= 0 && value < 8 && Number.isInteger(value * 2), type: oneOf('battle', 'elite', 'rest', 'final', 'forge', 'treasure', 'event'), edges: list(text, 8) }, { encounterId: text, encounterHealth: integer(1, 10000), rewardCount: integer(1, 5), healAmount: integer(0, 999), eventId: oneOf(...allSectorEventIds) })
+const roomSelection = object({ action: oneOf('upgrade', 'remove', 'replace', 'card', 'risk', 'artifact', 'heal', 'leave') }, { instanceId: text, heroId: oneOf('warrior', 'mage'), cardId: cardId, artifactId, heal: object({ warrior: integer(0, dinnerRules.heal), mage: integer(0, dinnerRules.heal) }) })
+const room = object({ id: text, nodeId: text, type: oneOf('forge', 'treasure', 'event'), cards: list(acquisition, roomRules.cards), riskCard: nullable(acquisition), replacements: object({ warrior: list(acquisition, roomRules.replacementCandidates), mage: list(acquisition, roomRules.replacementCandidates) }), artifactIds: list(artifactId, roomRules.artifacts), riskSuccess: oneOf(true, false), selection: nullable(roomSelection) }, { eventId: oneOf(...allSectorEventIds) })
 const runShape = object({
   runId: text, nextCardId: integer(1), decisions: list(text),
   deckOperations: list(object({ sourceId: text, kind: oneOf('remove', 'replace', 'upgrade'), options: list(acquisition, 100), resolved: oneOf(true, false) })),
@@ -102,7 +107,10 @@ const runShape = object({
   heroes: object({ warrior: hero, mage: hero }), artifacts: list(object({ instanceId: text, definitionId: artifactId, ownerInstanceId: text }), 2),
   status: oneOf('active', 'victory', 'defeat', 'sector-complete'),
   pendingReward: nullable(object({ id: text, nodeId: text, seed: uint, artifactSeed: uint, count: integer(1, 5), elite: oneOf(true, false), cards: list(acquisition, 5), artifactIds: list(artifactId, 3) }, { rarity: oneOf('gold') })),
-}, { goldRewards: oneOf(true), excludedRewards: list(cardId), excludedArtifacts: list(artifactId, 5), campaign: object({ id: text, version: integer(1) }), room: nullable(room), journal: list(object({ nodeId: text, kind: oneOf('upgrade', 'remove', 'replace', 'card', 'risk', 'artifact', 'leave', 'reward', 'skip', 'rest'), text }, { card: object({ instanceId: text, definitionId: cardId, upgrade: oneOf(0, 1) }) })) })
+}, { goldRewards: oneOf(true), excludedRewards: list(cardId), excludedArtifacts: list(artifactId, 5), campaign: object({ id: text, version: integer(1) }), room: nullable(room), journal: list(object({ nodeId: text, kind: oneOf('upgrade', 'remove', 'replace', 'card', 'risk', 'artifact', 'heal', 'leave', 'reward', 'skip', 'rest'), text }, { card: object({ instanceId: text, definitionId: cardId, upgrade: oneOf(0, 1) }) })) })
+
+/** Every sector configuration a save may carry. */
+const knownSectorConfigs = [sectorOneConfig, ...longSectorConfigs]
 
 function requireValid(condition: unknown): asserts condition {
   if (!condition) throw new Error('Повреждены данные сохранённого похода.')
@@ -119,6 +127,8 @@ export function validateRun(value: unknown): asserts value is DungeonRunState {
   if (sector) requireValid(run.campaign?.id === run.map.configuration!.id && run.campaign?.version === run.map.configuration!.version && run.map.generation && run.journal && run.deck.length > 0)
   else requireValid(!run.campaign && run.room === undefined && run.journal === undefined && !run.map.generation && run.map.layers.length === 7 && run.map.layers.every((layer, i) => layer.length === (i === 6 ? 1 : 3)))
   requireValid(validateDungeonMap(run.map).length === 0)
+  // A sector map is only ever one a known configuration generated: a save cannot bring its own pools (other enemies, events or elites) along.
+  if (sector) requireValid(knownSectorConfigs.some(known => known.id === run.campaign!.id && known.version === run.campaign!.version && canonical(known) === canonical(run.map.configuration)))
   run.map.layers.forEach((layer, i) => layer.forEach((entry, j) => {
     requireValid(entry.layer === i && (sector || entry.column === (i === 6 ? 1 : j)) && unique(entry.edges))
     if (entry.type === 'rest') requireValid(entry.healAmount === 6 && entry.encounterId === undefined && entry.encounterHealth === undefined && entry.rewardCount === undefined)
@@ -212,7 +222,7 @@ export function encodeSnapshot(run: DungeonRunState, economy: EconomyConfig, rev
   requireValid(integer(1)(revision))
   requireValid(knownEconomies().some(known => sameEconomy(known, economy)))
   requireRunMatchesEconomy(run, economy)
-  const payload: RunSnapshot = { schemaVersion: SAVE_SCHEMA_VERSION, rulesVersion: rulesVersionFor(economy), generatorVersion: run.map.configuration?.generatorVersion ?? GENERATOR_VERSION, catalogVersion: run.campaign ? sectorCatalogFor(run.campaign.id, !!run.goldRewards) : CATALOG_VERSION, ...(run.campaign ? {roomRulesVersion:ROOM_RULES_VERSION} : {}), revision, economy, run }
+  const payload: RunSnapshot = { schemaVersion: SAVE_SCHEMA_VERSION, rulesVersion: rulesVersionFor(economy), generatorVersion: run.map.configuration?.generatorVersion ?? GENERATOR_VERSION, catalogVersion: run.campaign ? sectorCatalogFor(run.campaign.id, !!run.goldRewards, run.campaign.version) : CATALOG_VERSION, ...(run.campaign ? {roomRulesVersion:ROOM_RULES_VERSION} : {}), revision, economy, run }
   return JSON.stringify({ payload, checksum: checksum(canonical(payload)) })
 }
 
@@ -225,7 +235,7 @@ export function decodeSnapshot(raw: string): RunSnapshot {
   const legacy = baseCatalogueVersion === FOUNDATION_CATALOG_VERSION && snapshot.schemaVersion === 1 && !honestEconomyOf(snapshot.economy) && snapshot.rulesVersion === 'combat-progression-1' && snapshot.catalogVersion === FOUNDATION_CATALOG_VERSION && snapshot.generatorVersion === GENERATOR_VERSION
   const sector = snapshot.run && typeof snapshot.run === 'object' && !!snapshot.run.campaign
   if (sector && snapshot.roomRulesVersion !== ROOM_RULES_VERSION) throw new IncompatibleSave('Сохранение использует другую версию правил комнат. Исходные данные оставлены в хранилище и доступны для скачивания; нужен новый поход или совместимая версия игры.')
-  if (!legacy && (![1,2].includes(snapshot.schemaVersion) || (sector && snapshot.schemaVersion !== 2) || snapshot.rulesVersion !== rulesVersionFor(snapshot.economy) || snapshot.generatorVersion !== (sector ? CARVED_GENERATOR_VERSION : GENERATOR_VERSION) || snapshot.catalogVersion !== (sector ? sectorCatalogFor(snapshot.run.campaign?.id, !!snapshot.run.goldRewards) : CATALOG_VERSION))) throw new IncompatibleSave('Сохранение создано для другой версии игры. Оно оставлено в хранилище; начните новый поход или вернитесь к совместимой версии.')
+  if (!legacy && (![1,2].includes(snapshot.schemaVersion) || (sector && snapshot.schemaVersion !== 2) || snapshot.rulesVersion !== rulesVersionFor(snapshot.economy) || snapshot.generatorVersion !== (sector ? CARVED_GENERATOR_VERSION : GENERATOR_VERSION) || snapshot.catalogVersion !== (sector ? sectorCatalogFor(snapshot.run.campaign?.id, !!snapshot.run.goldRewards, snapshot.run.campaign?.version) : CATALOG_VERSION))) throw new IncompatibleSave('Сохранение создано для другой версии игры. Оно оставлено в хранилище; начните новый поход или вернитесь к совместимой версии.')
   requireValid(object({ schemaVersion: oneOf(1,2), rulesVersion: text, generatorVersion: text, catalogVersion: text, revision: integer(1), economy: value => knownEconomies().some(known => sameEconomy(known, value)), run: () => true }, {roomRulesVersion:text})(snapshot))
   requireValid(envelope.checksum === checksum(canonical(snapshot)))
   validateRun(snapshot.run)

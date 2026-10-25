@@ -1,5 +1,5 @@
 import type { DungeonMap, DungeonMapNode, DungeonNodeType } from './campaign'
-import { rhahkZor, sectorEventIds, sectorOneElite, sectorOneEnemies } from './sectorContent'
+import { allSectorEventIds, rhahkZor, sectorEventIds, sectorOneElite, sectorOneEnemies } from './sectorContent'
 import { knownSectorEncounters } from './sectorLong'
 import type { SectorEventId } from './sectorContent'
 import { shuffle } from './deck'
@@ -57,7 +57,7 @@ const combat = (n: DungeonMapNode) => ['battle', 'elite', 'final'].includes(n.ty
 export const sectorEnemyFamilies: Readonly<Record<string, string>> = {
   'old-mines-raider': 'defias-worker', 'old-mines-digger': 'defias-worker',
   'old-mines-watchman': 'defias-watchman', 'old-mines-overseer': 'mine-overseer',
-  'old-mines-johnson': 'johnson', 'old-mines-rhahk-zor': 'rhahk-zor',
+  'old-mines-johnson': 'johnson', 'old-mines-thistlenettle': 'thistlenettle', 'old-mines-rhahk-zor': 'rhahk-zor',
   'old-mines-saboteur': 'goblin-saboteur', 'old-mines-tinkerer': 'foundry-tinkerer', 'old-mines-veteran': 'defias-veteran',
 }
 
@@ -147,7 +147,7 @@ export function validateSectorConfig(c: SectorConfig): void {
     || c.maxStep !== 1 || !Array.isArray(c.rows) || c.rows.length < 4 || c.rows.length > 30
     || c.rows[0]?.types.join() !== 'battle' || c.rows[c.rows.length-1]?.types.join() !== 'rest'
     || !c.normalPool?.length || !c.elitePool?.length || !known(c.boss)
-    || ![...c.normalPool, ...c.elitePool].every(known) || !c.eventPool?.length || new Set(c.eventPool).size !== c.eventPool.length || !c.eventPool.every(id => sectorEventIds.includes(id))
+    || ![...c.normalPool, ...c.elitePool].every(known) || !c.eventPool?.length || new Set(c.eventPool).size !== c.eventPool.length || !c.eventPool.every(id => (allSectorEventIds as readonly string[]).includes(id))
     || (c.assigner !== undefined && c.assigner !== 'forward') || (c.maxNormalBattles !== undefined && (!Number.isInteger(c.maxNormalBattles) || c.maxNormalBattles < 3 || c.maxNormalBattles > c.maxBattles))
     || !Number.isInteger(c.maxElites) || c.maxElites < 0 || !Number.isInteger(c.maxBattles) || c.maxBattles < 3
     || !Number.isInteger(c.maxConsecutiveServices) || c.maxConsecutiveServices < 1 || typeof c.requireDevelopment !== 'boolean'
@@ -183,6 +183,7 @@ export function validateSectorMap(map: DungeonMap): string[] {
   fail(new Set(map.startNodeIds).size === map.startNodeIds.length && map.startNodeIds.length === map.layers[0]?.length && map.startNodeIds.every(id => byId.get(id)?.layer === 0), 'Invalid entrances')
   const events = nodes.filter(n => n.type === 'event').map(n => n.eventId)
   fail(new Set(events).size === events.length && events.every(id => id && c.eventPool.includes(id)), 'Repeated or invalid event')
+  fail(new Set(nodes.filter(n => n.type === 'elite').map(n => n.encounterId)).size <= 1, 'Two different elites on one map')
   map.layers.forEach((row, layer) => {
     fail(row.length >= (c.rows[layer]?.minNodes ?? 1) && new Set(row.map(n => n.column)).size === row.length, 'Empty row or duplicate columns')
     for (const t of c.rows[layer]?.required ?? []) fail(row.some(n => n.type === t), 'Missing required room')
@@ -263,6 +264,8 @@ export function generateSectorMap(seed: number, configuration: SectorConfig = se
     }
     if (layers.some((row,i) => row.length < Math.max(c.rows[i]!.minNodes ?? 1, c.rows[i]!.required?.length ?? 0))) continue
     const events = ordered(sectorSeed(seed, `${prefix}:event-assignments:${attempt}`), c.eventPool)
+    // One elite for the whole map, drawn from its own stream: the elites are alternatives between runs, never two different fights on one map (a one-elite pool draws the same fight as always).
+    const eliteId = ordered(sectorSeed(seed, `${prefix}:elite-choice`), c.elitePool)[0]!
     for (const [i,row] of layers.entries()) {
       row.sort((a,b) => a.column-b.column)
       const spec = c.rows[i]!, positions = ordered(sectorSeed(seed, `${prefix}:rooms:${attempt}:${i}`), row)
@@ -271,7 +274,7 @@ export function generateSectorMap(seed: number, configuration: SectorConfig = se
         if (n.type === 'event') n.eventId = events.pop()
         if (n.type === 'rest') n.healAmount = 6
         if (n.type === 'battle' || n.type === 'elite') {
-          const pool = n.type === 'elite' ? c.elitePool : spec.encounters ?? c.normalPool
+          const pool = n.type === 'elite' ? [eliteId] : spec.encounters ?? c.normalPool
           n.encounterId = ordered(sectorSeed(seed, `${prefix}:encounter:${n.id}`), pool)[0]!
           n.encounterHealth = knownSectorEncounters.find(e => e.id === n.encounterId)!.maxHealth
           n.rewardCount = n.type === 'elite' ? 5 : 3

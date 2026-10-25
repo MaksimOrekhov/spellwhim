@@ -102,13 +102,13 @@ describe('long route modes, saves and versions', () => {
   it('a long run is saved and restored exactly, on the first step and mid-route, with its own catalogue version', () => {
     let run = createSectorRun(11, economy, honestDeck('armor8', true), undefined, 'long-run')
     expect(run.map.layers).toHaveLength(10)
-    expect(run.campaign).toEqual({ id: sectorLongConfig.id, version: 1 })
+    expect(run.campaign).toEqual({ id: sectorLongConfig.id, version: 2 })
     expect(decodeSnapshot(encodeSnapshot(run, economy, 1)).run).toEqual(run)
     run = enterDungeonNode(run, availableDungeonNodes(run)[0]!.id)
     const raw = encodeSnapshot(run, economy, 2)
     // A new run can hold gold, so it declares the long catalogue together with the gold one; a run saved before gold keeps the plain long fingerprint (goldCards.test.ts).
     expect(JSON.parse(raw).payload.catalogVersion).toBe(sectorCatalogFor(sectorLongConfig.id, true))
-    expect(sectorCatalogFor(sectorLongConfig.id, false)).toBe(LONG_SECTOR_CATALOG_VERSION)
+    expect(sectorCatalogFor(sectorLongConfig.id, false, 1)).toBe(LONG_SECTOR_CATALOG_VERSION)
     expect(LONG_SECTOR_CATALOG_VERSION).not.toBe(SECTOR_CATALOG_VERSION)
     expect(decodeSnapshot(raw).run).toEqual(run)
     expect(dungeonNode(run.map, run.currentNodeId!)).toBeTruthy()

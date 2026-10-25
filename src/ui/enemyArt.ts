@@ -31,6 +31,8 @@ export const enemyPortraitsByEncounterId: Readonly<Partial<Record<string, string
   'old-mines-tinkerer': tinkerer,
   'old-mines-veteran': veteran,
   'old-mines-johnson': minerJohnson,
+  // Content Expansion v1: the foreman has no portrait of his own yet; the grey-bearded veteran's picture stands in (a bearded foreman), and a drawing of his own replaces it later.
+  'old-mines-thistlenettle': veteran,
   'old-mines-rhahk-zor': rhahkZor,
 })
 

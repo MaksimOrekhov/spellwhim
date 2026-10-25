@@ -42,7 +42,8 @@ function winBattle(run: DungeonRunState): DungeonRunState {
   return resolveDungeonBattle(run, battle)
 }
 function eliteReward(seed = 11, gold = true): DungeonRunState {
-  let run = createSectorRun(seed, economy, honestDeck('armor8', true), undefined, 'gold-run')
+  // A run without the flag is a run from before gold, and so from before the expansion too: it is built on long configuration version 1.
+  let run = createSectorRun(seed, economy, honestDeck('armor8', true), gold ? undefined : sectorLongConfig, 'gold-run')
   if (!gold) delete run.goldRewards
   const path = enumerateDungeonPaths(run.map).find(nodes => nodes.some(node => node.type === 'elite'))!
   for (const node of path) {

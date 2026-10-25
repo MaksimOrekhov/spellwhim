@@ -27,9 +27,15 @@ export const rhahkZor: EncounterDefinition = { id: 'old-mines-rhahk-zor', name: 
 } }
 
 export const sectorEncounters = [...sectorOneEnemies, sectorOneElite, rhahkZor]
+/** The three events of the standard (short) Sector I and of long-route runs saved before the content expansion. Their fingerprint (`SECTOR_CATALOG_VERSION`) reads this list, so it never grows. */
 export const sectorEventIds = ['forgotten-forge', 'powder-store', 'goblin-trade'] as const
-export type SectorEventId = typeof sectorEventIds[number]
+/** Events added by Sector I Content Expansion v1 (docs/design/sector-one-content-expansion-v1.md); only the long route's configuration version 2 offers them. */
+export const expansionEventIds = ['suspicious-dinner'] as const
+/** Every event a map or a saved room may carry. */
+export const allSectorEventIds = [...sectorEventIds, ...expansionEventIds] as const
+export type SectorEventId = typeof allSectorEventIds[number]
 export const sectorEventText: Record<SectorEventId, { name: string; text: string }> = {
+  'suspicious-dinner': { name: 'Подозрительный ужин', text: 'В столовой Братства Справедливости дымится котёл. Вариан принюхивается и мрачнеет. Джайна читает табличку: «Блюдо дня — сюрприз повара». Повара нет. Сюрприз остался.' },
   'forgotten-forge': { name: 'Забытая кузница', text: 'Инструменты ещё целы. Вариан проверяет клещи. Джайна замечает: «Инструкция начинается со слов: берегите пальцы».' },
   'powder-store': { name: 'Пороховой склад', text: 'На ящике написано: «Не трясти». Надпись дрожит вместе с крышкой.' },
   'goblin-trade': { name: 'Обмен у пройдохи', text: '«Гарантия до ближайшего поворота!» — обещает гоблин. Поворот, конечно, совсем рядом.' },

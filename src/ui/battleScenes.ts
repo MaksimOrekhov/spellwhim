@@ -3,6 +3,7 @@ import { applyStatus } from '../game/statuses'
 import { defaultDungeonRoster } from '../game/encountersV10'
 import { gameEconomy, honestEconomies } from '../game/economy'
 import { sectorFoesB1 } from '../game/sectorFoesB'
+import { expansionElites } from '../game/sectorLong'
 import type { ArtifactId, BattleState, EncounterDefinition, EnemyAction, HeroId } from '../game/types'
 
 /**
@@ -12,10 +13,10 @@ import type { ArtifactId, BattleState, EncounterDefinition, EnemyAction, HeroId 
  */
 export type BattleSceneId = 'normal' | 'warrior' | 'both' | 'lethal' | 'prepared' | 'revealed' | 'absorbed' | 'phase2' | 'artifacts' | 'bleeding' | 'vulnerable' | 'everything'
   | 'b-interrupt' | 'b-broken' | 'b-pierce' | 'b-pierce-prepared' | 'b-rage' | 'b-raging' | 'b-shift' | 'b-boss2' | 'b-frost' | 'b-mark'
-  | 'b-elite' | 'b-boss1' | 'b-crowded'
+  | 'b-elite' | 'b-foreman' | 'b-boss1' | 'b-crowded'
 
 export const battleSceneIds: readonly BattleSceneId[] = ['normal', 'warrior', 'both', 'lethal', 'prepared', 'revealed', 'absorbed', 'phase2', 'artifacts', 'bleeding', 'vulnerable', 'everything',
-  'b-interrupt', 'b-broken', 'b-pierce', 'b-pierce-prepared', 'b-rage', 'b-raging', 'b-shift', 'b-boss2', 'b-frost', 'b-mark', 'b-elite', 'b-boss1', 'b-crowded']
+  'b-interrupt', 'b-broken', 'b-pierce', 'b-pierce-prepared', 'b-rage', 'b-raging', 'b-shift', 'b-boss2', 'b-frost', 'b-mark', 'b-elite', 'b-foreman', 'b-boss1', 'b-crowded']
 
 function encounter(id: string): EncounterDefinition {
   const all = [...defaultDungeonRoster.normal, ...defaultDungeonRoster.elite, ...(defaultDungeonRoster.final ? [defaultDungeonRoster.final] : [])]
@@ -37,7 +38,7 @@ function setIntent(state: BattleState, action: EnemyAction, phase: 1 | 2 = 1): v
 
 /** B1/B2 (the game since X04): the Sector I enemy with its new cycle, at the honest-rules health (x1.75), advanced by real turns to the moment a scene needs. */
 function foeScene(id: string, turns: number, seed: number): BattleState {
-  const foe = sectorFoesB1.find(item => item.id === id)!
+  const foe = [...sectorFoesB1, ...expansionElites].find(item => item.id === id)!
   const state = createBattle({ ...foe, maxHealth: Math.round(foe.maxHealth * 1.75) }, undefined, { seed, economy: honestEconomies['honest-b2'] })
   for (let n = 0; n < turns; n += 1) { state.heroes.warrior.armor = state.heroes.mage.armor = 99; endTurn(state) }
   state.heroes.warrior.armor = state.heroes.mage.armor = 0
@@ -105,6 +106,12 @@ export function battleScene(id: BattleSceneId, seed = 7): BattleState {
       return state
     }
     case 'b-elite': return foeScene('old-mines-johnson', 2, seed)
+    case 'b-foreman': {
+      // The foreman after one shift call: the strike that pierces armor is announced (11 + 2 rage on Jaina), and the party has dealt part of the 26 that stops it.
+      const state = foeScene('old-mines-thistlenettle', 3, seed)
+      state.enemy.hurt = 14
+      return state
+    }
     case 'b-boss1': return foeScene('old-mines-rhahk-zor', 0, seed)
     case 'b-crowded': {
       // Every readout at once: three statuses and rage on an armored enemy, Vulnerability and an artifact on each hero, armor on both.

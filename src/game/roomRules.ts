@@ -11,3 +11,9 @@ export const roomRules = Object.freeze({
   eventEligibility: 'unupgraded-copies-v1',
   emptyPool: 'shorten-offers-disable-empty-action-v1',
 })
+
+/**
+ * "Suspicious dinner" (Sector I Content Expansion v1, GDD E05). Kept apart from `roomRules` on purpose: that object's fingerprint is part of
+ * every saved sector run, so adding to it would make all earlier saves unreadable.
+ */
+export const dinnerRules = Object.freeze({ version: 'suspicious-dinner-1', heal: 6, trophyHealth: 3 })
