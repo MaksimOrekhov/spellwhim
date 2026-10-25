@@ -17,3 +17,9 @@ export const roomRules = Object.freeze({
  * every saved sector run, so adding to it would make all earlier saves unreadable.
  */
 export const dinnerRules = Object.freeze({ version: 'suspicious-dinner-1', heal: 6, trophyHealth: 3 })
+
+/**
+ * "Runaway cart" (E06, docs/design/event-e06-runaway-cart-v1.md). Also kept apart from `roomRules`, for the same reason as `dinnerRules`.
+ * `health` is paid by the hero who rides, who then also carries `armor` into the next real battle; `heal` is what a hero gets for letting the cart go.
+ */
+export const cartRules = Object.freeze({ version: 'runaway-cart-1', health: 3, armor: 2, heal: 2 })

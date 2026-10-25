@@ -15,7 +15,7 @@ import MainMenu from './components/MainMenu.vue'
 import { useBattle } from './composables/useBattle'
 import { useBattleControls } from './composables/useBattleControls'
 import { useBattleAnimation } from './composables/useBattleAnimation'
-import { availableDungeonNodes, claimDungeonArtifact, claimDungeonReward, createDungeonRun, createSectorRun, dungeonArtifactOptions, dungeonEncounter, dungeonNode, dungeonRewardOptions, dungeonRunPhase, enterDungeonNode, resolveDungeonBattle, resolveDungeonRest, upgradeDungeonRest, skipDungeonReward } from './game/campaign'
+import { availableDungeonNodes, battleStartArmor, claimDungeonArtifact, claimDungeonReward, createDungeonRun, createSectorRun, dungeonArtifactOptions, dungeonEncounter, dungeonNode, dungeonRewardOptions, dungeonRunPhase, enterDungeonNode, resolveDungeonBattle, resolveDungeonRest, upgradeDungeonRest, skipDungeonReward } from './game/campaign'
 import { resolveRoom, selectRoom } from './game/dungeonRooms'
 import type { RoomCommand, RoomSelection } from './game/dungeonRooms'
 import type { DungeonRunState } from './game/campaign'
@@ -91,7 +91,7 @@ function publish(next: DungeonRunState) {
 
 function startCurrentBattle() {
   const entry = run.value.battleEntry!
-  startBattle(dungeonEncounter(dungeonNode(run.value.map, entry.nodeId)!, economy), run.value.heroes, entry.seed, entry.nodeId, run.value.artifacts)
+  startBattle(dungeonEncounter(dungeonNode(run.value.map, entry.nodeId)!, economy), run.value.heroes, entry.seed, entry.nodeId, run.value.artifacts, battleStartArmor(run.value))
 }
 function continueSavedRun() {
   if (!saved.value) return

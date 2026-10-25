@@ -78,15 +78,16 @@ export function useBattle(options: { seed?: number; deck?: readonly CardId[]; ru
     log.value = next.result === 'defeat' ? 'Отряд пал…' : next.result === 'victory' ? 'Противник повержен.' : 'Ваш ход. Намерение: ' + next.enemy.nextAction.name + '.'
   }
 
-  function startBattle(encounter: EncounterDefinition, heroes?: BattleState['heroes'], battleSeed?: number, nodeId?: string, artifacts: readonly ArtifactInstance[] = []): void {
+  function startBattle(encounter: EncounterDefinition, heroes?: BattleState['heroes'], battleSeed?: number, nodeId?: string, artifacts: readonly ArtifactInstance[] = [], startingArmor: Partial<Record<HeroId, number>> = {}): void {
     const sequence = battleSequence++
     current.value = createCampaignBattle({
       encounter, heroes: heroes ?? current.value.heroes, deck: deck(),
       seed: battleSeed ?? (seed + sequence) >>> 0, economy,
       battleId: sessionId + '/generation/' + runGeneration + '/battle/' + sequence + '/' + (nodeId ?? ''),
-      artifacts,
+      artifacts, startingArmor,
     })
-    log.value = encounter.name + ' преграждает путь.'
+    const boons = (Object.keys(startingArmor) as HeroId[]).filter(id => (startingArmor[id] ?? 0) > 0).map(id => current.value.heroes[id].name + ' начинает с бронёй ' + startingArmor[id])
+    log.value = encounter.name + ' преграждает путь.' + (boons.length ? ' ' + boons.join(' · ') + '.' : '')
   }
 
   function addCard(card: CardDefinition): void {

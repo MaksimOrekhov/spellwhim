@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { Anvil, Bomb, CookingPot, DoorOpen, Dices, Flame, Gem, Gift, Handshake, Hammer, Heart, Minus, Plus, Replace, ScrollText, ShieldCheck, Soup, Sparkles, Trash, ArrowBigUpDash } from '@lucide/vue'
+import { Anvil, Bomb, CookingPot, DoorOpen, Dices, Flame, Gem, Gift, Handshake, Hammer, Heart, Minus, Plus, Replace, ScrollText, ShieldCheck, Soup, Sparkles, Trash, ArrowBigUpDash, TramFront, Footprints } from '@lucide/vue'
 import type { DungeonRunState } from '../game/campaign'
-import { dinnerHealBudget, dinnerPreview, roomActions, roomEligibleCards, roomReplacementOptions, roomActionAvailable, suggestDinnerHeal } from '../game/dungeonRooms'
-import { dinnerRules, roomRules } from '../game/roomRules'
+import { cartPreview, dinnerHealBudget, dinnerPreview, roomActions, roomEligibleCards, roomReplacementOptions, roomActionAvailable, suggestDinnerHeal } from '../game/dungeonRooms'
+import { cartRules, dinnerRules, roomRules } from '../game/roomRules'
 import type { HeroId } from '../game/types'
 import type { RoomAction, RoomCommand, RoomSelection } from '../game/dungeonRooms'
 import { sectorEventText } from '../game/sectorContent'
@@ -21,13 +21,14 @@ const draft = computed(() => room.value.selection)
 const action = computed(() => draft.value?.action)
 const paid = computed(() => room.value.eventId === 'forgotten-forge')
 const dinner = computed(() => room.value.eventId === 'suspicious-dinner')
+const cart = computed(() => room.value.eventId === 'runaway-cart')
 const title = computed(() => room.value.type === 'forge' ? 'Шахтная кузница' : room.value.type === 'treasure' ? 'Забытый тайник' : sectorEventText[room.value.eventId!].name)
 const copy = computed(() => room.value.type === 'event' ? sectorEventText[room.value.eventId!].text : room.value.type === 'forge' ? 'Горн ещё тёплый. Одна услуга на весь отряд: выберите карту и подтвердите изменение.' : 'Под рельсами спрятан сундук. Возьмите один артефакт или одну карту. От остального придётся отказаться.')
-const labels = computed<Record<RoomAction,string>>(() => ({ upgrade:'Улучшить карту',remove:'Удалить карту',replace:'Заменить карту',card:'Взять обычную карту',risk:'Рискнуть ради улучшенной',heal:'Подкрепиться',artifact: dinner.value ? 'Забрать подозрительный трофей' : 'Взять артефакт',leave: dinner.value ? 'Отказаться' : room.value.type === 'treasure' ? 'Уйти без награды' : 'Уйти, ничего не меняя' }))
-const descriptions = computed<Record<RoomAction,string>>(() => ({ upgrade: paid.value ? `Цена: ${roomRules.upgradeHealth} HP выбранного героя. Он должен пережить оплату.` : 'Одна обычная копия станет улучшенной. Цена маны прежняя.', remove:'Удалить выбранную копию навсегда. Последнюю карту удалить нельзя.',replace:`До ${roomRules.replacements} карт того же класса. Новая копия без улучшения.`,card:`Одна карта из ${roomRules.cards}, без риска для здоровья.`,risk:`${roomRules.riskChance*100}%: улучшенная карта; ${100-roomRules.riskChance*100}%: оба героя теряют по ${roomRules.riskHealth} HP, без карты.`,heal:`До ${dinnerRules.heal} HP на двоих: вы решаете, кому сколько. Выше максимума здоровья не лечит.`,artifact: dinner.value ? `Один из ${room.value.artifactIds.length} предметов. Выбранный герой платит ${dinnerRules.trophyHealth} HP и должен остаться на ногах. Занятый слот можно заменить.` : `До ${roomRules.artifacts} предложений. Один личный слот на героя, возможна замена.`,leave: dinner.value ? 'Уйти голодным, но целым. Вернуться сюда нельзя.' :  room.value.type === 'treasure' ? 'Завершить посещение. Награду потом забрать нельзя.' : 'Завершить посещение без изменений. Вернуться сюда нельзя.' }))
+const labels = computed<Record<RoomAction,string>>(() => ({ upgrade:'Улучшить карту',remove:'Удалить карту',replace:'Заменить карту',card:'Взять обычную карту',risk:'Рискнуть ради улучшенной',heal:'Подкрепиться',ride:'Прыгнуть в вагонетку',bypass:'Пропустить вагонетку',artifact: dinner.value ? 'Забрать подозрительный трофей' : 'Взять артефакт',leave: dinner.value ? 'Отказаться' : room.value.type === 'treasure' ? 'Уйти без награды' : 'Уйти, ничего не меняя' }))
+const descriptions = computed<Record<RoomAction,string>>(() => ({ upgrade: paid.value ? `Цена: ${roomRules.upgradeHealth} HP выбранного героя. Он должен пережить оплату.` : 'Одна обычная копия станет улучшенной. Цена маны прежняя.', remove:'Удалить выбранную копию навсегда. Последнюю карту удалить нельзя.',replace:`До ${roomRules.replacements} карт того же класса. Новая копия без улучшения.`,card:`Одна карта из ${roomRules.cards}, без риска для здоровья.`,risk:`${roomRules.riskChance*100}%: улучшенная карта; ${100-roomRules.riskChance*100}%: оба героя теряют по ${roomRules.riskHealth} HP, без карты.`,heal:`До ${dinnerRules.heal} HP на двоих: вы решаете, кому сколько. Выше максимума здоровья не лечит.`,ride:`Цена: ${cartRules.health} HP выбранного героя, он должен остаться на ногах. Одна обычная карта улучшится, а этот герой начнёт следующий бой с бронёй ${cartRules.armor}. Броня работает только в одном бою.`,bypass:`Выбранный герой получает +${cartRules.heal} HP, не выше максимума. Карты и броня не меняются.`,artifact: dinner.value ? `Один из ${room.value.artifactIds.length} предметов. Выбранный герой платит ${dinnerRules.trophyHealth} HP и должен остаться на ногах. Занятый слот можно заменить.` : `До ${roomRules.artifacts} предложений. Один личный слот на героя, возможна замена.`,leave: dinner.value ? 'Уйти голодным, но целым. Вернуться сюда нельзя.' :  room.value.type === 'treasure' ? 'Завершить посещение. Награду потом забрать нельзя.' : 'Завершить посещение без изменений. Вернуться сюда нельзя.' }))
 
 type Tone = 'safe' | 'cost' | 'risk' | 'leave'
-const actionIcons: Record<RoomAction, typeof Anvil> = { upgrade: ArrowBigUpDash, remove: Trash, replace: Replace, card: Gift, risk: Dices, heal: Soup, artifact: Gem, leave: DoorOpen }
+const actionIcons: Record<RoomAction, typeof Anvil> = { upgrade: ArrowBigUpDash, remove: Trash, replace: Replace, card: Gift, risk: Dices, heal: Soup, ride: TramFront, bypass: Footprints, artifact: Gem, leave: DoorOpen }
 /** Presentation only: what an option costs the party, in one glance. The numbers come from roomRules. */
 const tags = computed<Record<RoomAction, { tone: Tone; text: string; icon: typeof Heart }>>(() => ({
   upgrade: paid.value ? { tone: 'cost', text: `Цена: ${roomRules.upgradeHealth} HP`, icon: Heart } : { tone: 'safe', text: 'Бесплатно', icon: ShieldCheck },
@@ -36,10 +37,12 @@ const tags = computed<Record<RoomAction, { tone: Tone; text: string; icon: typeo
   card: { tone: 'safe', text: 'Без риска', icon: ShieldCheck },
   risk: { tone: 'risk', text: `Риск: ${roomRules.riskChance*100}% / ${100-roomRules.riskChance*100}%`, icon: Flame },
   heal: { tone: 'safe', text: `До ${dinnerRules.heal} HP`, icon: Heart },
+  ride: { tone: 'cost', text: `Цена: ${cartRules.health} HP · +${cartRules.armor} брони`, icon: ShieldCheck },
+  bypass: { tone: 'safe', text: `+${cartRules.heal} HP`, icon: Heart },
   artifact: dinner.value ? { tone: 'cost', text: `Цена: ${dinnerRules.trophyHealth} HP`, icon: Heart } : { tone: 'safe', text: 'Личный слот', icon: Sparkles },
   leave: { tone: 'leave', text: dinner.value ? 'Без последствий' : room.value.type === 'treasure' ? 'Без награды' : 'Без изменений', icon: DoorOpen },
 }))
-const roomIcon = computed(() => room.value.type === 'forge' ? Anvil : dinner.value ? CookingPot : room.value.type === 'treasure' ? Gem : room.value.eventId === 'powder-store' ? Bomb : room.value.eventId === 'goblin-trade' ? Handshake : room.value.eventId === 'forgotten-forge' ? Hammer : ScrollText)
+const roomIcon = computed(() => room.value.type === 'forge' ? Anvil : dinner.value ? CookingPot : cart.value ? TramFront : room.value.type === 'treasure' ? Gem : room.value.eventId === 'powder-store' ? Bomb : room.value.eventId === 'goblin-trade' ? Handshake : room.value.eventId === 'forgotten-forge' ? Hammer : ScrollText)
 const kicker = computed(() => room.value.type === 'forge' ? 'Сервисная комната · Кузница' : room.value.type === 'treasure' ? 'Сервисная комната · Сокровищница' : 'Случай в шахте')
 const sparks = Array.from({ length: 14 }, (_, i) => ({ left: `${(i * 37 + 11) % 100}%`, delay: `${(i * 0.7) % 6}s`, size: `${3 + (i % 4)}px`, dur: `${5 + (i % 5)}s` }))
 const eligible = computed(() => roomEligibleCards(props.run, action.value ?? 'leave'))
@@ -51,12 +54,21 @@ const lossWarning = computed(() => selected.value?.upgrade ? action.value === 'r
 const offers = computed(() => room.value.cards.map(resolveCardDefinition))
 const selectedOwner = computed(() => draft.value?.heroId ? props.run.heroes[draft.value.heroId] : undefined)
 const occupied = computed(() => props.run.artifacts.find(a => a.ownerInstanceId === selectedOwner.value?.instanceId))
-const canConfirm = computed(() => !!action.value && roomActionAvailable(props.run,action.value) && (action.value === 'leave' || action.value === 'risk' || (action.value === 'remove' && selected.value) || (action.value === 'replace' && selected.value && replacements.value.some(c => c.id === draft.value?.cardId)) || (action.value === 'card' && offers.value.some(c => c.id === draft.value?.cardId)) || (action.value === 'artifact' && selectedOwner.value && draft.value?.artifactId && (!dinner.value || preview.value?.valid)) || (action.value === 'heal' && preview.value?.valid)))
+const canConfirm = computed(() => !!action.value && roomActionAvailable(props.run,action.value) && (action.value === 'leave' || action.value === 'risk' || (action.value === 'remove' && selected.value) || (action.value === 'replace' && selected.value && replacements.value.some(c => c.id === draft.value?.cardId)) || (action.value === 'card' && offers.value.some(c => c.id === draft.value?.cardId)) || (action.value === 'artifact' && selectedOwner.value && draft.value?.artifactId && (!dinner.value || preview.value?.valid)) || (action.value === 'heal' && preview.value?.valid) || (action.value === 'bypass' && cartView.value?.valid)))
 /** The dinner's numbers come from `dinnerPreview`, the very function the transaction uses, so what is shown is what happens. */
 const heroList = computed(() => [props.run.heroes.warrior, props.run.heroes.mage])
 const heal = computed<Record<HeroId, number>>(() => draft.value?.heal ?? suggestDinnerHeal(props.run))
 const healBudget = computed(() => dinnerHealBudget(props.run))
 const preview = computed(() => dinner.value && draft.value && (action.value === 'heal' || action.value === 'artifact') ? dinnerPreview(props.run, { action: action.value, heal: heal.value, heroId: draft.value.heroId }) : null)
+/** The cart's numbers come from `cartPreview`, the very function the transaction uses. */
+const cartView = computed(() => cart.value && draft.value && (action.value === 'ride' || action.value === 'bypass') ? cartPreview(props.run, { action: action.value, heroId: draft.value.heroId }) : null)
+const heroName = (id: HeroId) => props.run.heroes[id].name
+const cartSummary = computed(() => {
+  const view = cartView.value
+  if (!view?.valid || !draft.value?.heroId) return ''
+  const id = draft.value.heroId, hero = view.heroes[id]
+  return `${heroName(id)}: ${hero.before} → ${hero.after} HP${view.armor ? ` · следующий бой начнёт с бронёй ${view.armor.amount}` : ''}`
+})
 const dinnerSummary = computed(() => preview.value?.valid && (action.value === 'heal' || draft.value?.heroId) ? `Вариан ${preview.value.heroes.warrior.before} → ${preview.value.heroes.warrior.after} HP · Джайна ${preview.value.heroes.mage.before} → ${preview.value.heroes.mage.after} HP` : '')
 const other = (id: HeroId): HeroId => id === 'warrior' ? 'mage' : 'warrior'
 /** The split always spends the whole budget, so a change moves one point from a hero to the other. */
@@ -71,8 +83,9 @@ function shiftHeal(id: HeroId, direction: 1 | -1) {
 }
 function choose(a: RoomAction) { emit('select', a === 'heal' ? { action: a, heal: suggestDinnerHeal(props.run) } : { action: a }) }
 const payment = computed(() => paid.value && selectedOwner.value ? `Платит ${selectedOwner.value.name}: ${selectedOwner.value.health} → ${selectedOwner.value.health-roomRules.upgradeHealth} HP` : '')
-const operationOpen = computed(() => (action.value === 'upgrade' && (!paid.value || !!selectedOwner.value)) || action.value === 'remove' || action.value === 'replace')
-const operationMode = computed(() => action.value as 'upgrade' | 'remove' | 'replace')
+const operationOpen = computed(() => (action.value === 'upgrade' && (!paid.value || !!selectedOwner.value)) || (action.value === 'ride' && !!cartView.value?.valid) || action.value === 'remove' || action.value === 'replace')
+const operationMode = computed(() => (action.value === 'ride' ? 'upgrade' : action.value) as 'upgrade' | 'remove' | 'replace')
+const ridePayment = computed(() => cartView.value?.valid && cartView.value.armor ? `Платит ${heroName(cartView.value.armor.heroId)}: ${props.run.heroes[cartView.value.armor.heroId].health} → ${props.run.heroes[cartView.value.armor.heroId].health - cartRules.health} HP, затем начнёт следующий бой с бронёй ${cartRules.armor}` : '')
 const isEligible = (copy: { instanceId: string }) => eligible.value.some(c => c.instanceId === copy.instanceId)
 const replacementsFor = (copy: Parameters<typeof roomReplacementOptions>[1]) => roomReplacementOptions(props.run, copy).map(resolveCardDefinition)
 function disabled(a: RoomAction) {
@@ -84,6 +97,8 @@ function disabledReason(a: RoomAction): string {
   if (a === 'risk') return heroes.some(h => h.health <= roomRules.riskHealth) ? `Каждому герою нужно больше ${roomRules.riskHealth} HP` : 'Нет предложения'
   if (a === 'card') return 'Нет карт на выбор'
   if (a === 'heal') return 'Здоровье у всех полное'
+  if (a === 'ride') return heroes.some(h => h.health > cartRules.health) ? 'Нет карт, которые можно улучшить' : `Ни у одного героя нет больше ${cartRules.health} HP`
+  if (a === 'bypass') return 'Здоровье у всех полное'
   if (a === 'artifact' && dinner.value && room.value.artifactIds.length > 0) return `Ни у одного героя нет больше ${dinnerRules.trophyHealth} HP`
   if (a === 'artifact') return 'Нет артефактов на выбор'
   if (a === 'upgrade' && paid.value && !heroes.some(h => h.health > roomRules.upgradeHealth)) return `Ни у одного героя нет больше ${roomRules.upgradeHealth} HP`
@@ -122,8 +137,10 @@ function confirm(choice?: { instanceId?: string; cardId?: string }) {
       <section v-if="draft" class="selection" aria-live="polite">
         <h2>{{ labels[draft.action] }}</h2>
         <p v-if="action==='upgrade' && paid">Кто потратит {{ roomRules.upgradeHealth }} HP?</p>
-        <div v-if="(action==='upgrade' && paid) || action==='artifact'" class="hero-options">
-          <button v-for="hero in heroList" :key="hero.instanceId" class="game-button" :disabled="(action==='upgrade' && hero.health<=roomRules.upgradeHealth) || (action==='artifact' && dinner && hero.health<=dinnerRules.trophyHealth)" :aria-pressed="draft.heroId===hero.id" @click="update({heroId:hero.id})">{{ hero.name }} · {{ hero.health }}/{{ hero.maxHealth }} HP<span v-if="action==='artifact' && dinner"> → {{ Math.max(0, hero.health-dinnerRules.trophyHealth) }}</span><span v-if="action==='artifact'"> · {{ run.artifacts.find(a=>a.ownerInstanceId===hero.instanceId) ? 'слот занят' : 'слот свободен' }}</span></button>
+        <p v-if="action==='ride'">Кто прыгает в вагонетку? Он заплатит {{ cartRules.health }} HP и начнёт следующий бой с бронёй {{ cartRules.armor }}.</p>
+        <p v-if="action==='bypass'">Кого подлечить на {{ cartRules.heal }} HP?</p>
+        <div v-if="(action==='upgrade' && paid) || action==='artifact' || action==='ride' || action==='bypass'" class="hero-options">
+          <button v-for="hero in heroList" :key="hero.instanceId" class="game-button" :disabled="(action==='upgrade' && hero.health<=roomRules.upgradeHealth) || ((action==='ride' || action==='bypass') && !cartPreview(run, {action, heroId:hero.id}).valid) || (action==='artifact' && dinner && hero.health<=dinnerRules.trophyHealth)" :aria-pressed="draft.heroId===hero.id" @click="update({heroId:hero.id})">{{ hero.name }} · {{ hero.health }}/{{ hero.maxHealth }} HP<span v-if="action==='artifact' && dinner"> → {{ Math.max(0, hero.health-dinnerRules.trophyHealth) }}</span><span v-if="action==='ride'"> → {{ hero.health-cartRules.health }} · броня {{ cartRules.armor }}</span><span v-if="action==='bypass'"> → {{ Math.min(hero.maxHealth, hero.health+cartRules.heal) }}</span><span v-if="action==='artifact'"> · {{ run.artifacts.find(a=>a.ownerInstanceId===hero.instanceId) ? 'слот занят' : 'слот свободен' }}</span></button>
         </div>
         <div v-if="action==='heal'" class="dinner-heal">
           <p>Распределите {{ healBudget }} HP между героями. Лечение не превысит максимум здоровья.</p>
@@ -146,8 +163,8 @@ function confirm(choice?: { instanceId?: string; cardId?: string }) {
         <p v-if="action==='leave'">Вы покинете комнату без изменений. Это завершит посещение.</p>
       </section>
     </div>
-    <footer><div class="confirmation-summary" aria-live="polite"><span v-if="selectionSummary">{{ action==='replace' ? 'Заменить' : 'Удалить' }} · {{ selectionSummary }}<template v-if="action==='replace' && draft?.cardId"> → {{ replacements.find(c=>c.id===draft?.cardId)?.name }} (без улучшения)</template></span><strong v-if="lossWarning">{{ lossWarning }}</strong><span v-if="dinnerSummary">{{ dinnerSummary }}</span><span v-if="preview && !preview.valid">{{ preview.reason }}</span><span v-if="!selectionSummary && !dinnerSummary && !(preview && !preview.valid)">Вариан {{ run.heroes.warrior.health }} HP · Джайна {{ run.heroes.mage.health }} HP · Карт: {{ run.deck.length }}</span></div><div><button v-if="draft" class="game-button" @click="emit('select',null)">Отмена выбора</button><button v-if="action && !['upgrade','remove','replace'].includes(action)" class="game-button" :disabled="!canConfirm" @click="confirm()">Подтвердить</button></div></footer>
-    <CardOperationDialog v-if="operationOpen" :key="action" :mode="operationMode" :deck="run.deck" :is-eligible="isEligible" :replacements-for="replacementsFor" :selected-instance-id="draft?.instanceId ?? null" :selected-card-id="draft?.cardId ?? null" :explanation="action==='upgrade' ? (paid ? payment+'. Одна операция за посещение.' : 'Бесплатная услуга кузницы. Одна операция за посещение.') : undefined" :confirm-label="action==='upgrade' && paid ? payment+' · Улучшить' : undefined" @select="chooseCopy" @pick="update({cardId:$event})" @confirm="confirm" @close="emit('select',null)" />
+    <footer><div class="confirmation-summary" aria-live="polite"><span v-if="selectionSummary">{{ action==='replace' ? 'Заменить' : 'Удалить' }} · {{ selectionSummary }}<template v-if="action==='replace' && draft?.cardId"> → {{ replacements.find(c=>c.id===draft?.cardId)?.name }} (без улучшения)</template></span><strong v-if="lossWarning">{{ lossWarning }}</strong><span v-if="dinnerSummary">{{ dinnerSummary }}</span><span v-if="cartSummary">{{ cartSummary }}</span><span v-if="cartView && !cartView.valid">{{ cartView.reason }}</span><span v-if="preview && !preview.valid">{{ preview.reason }}</span><span v-if="!selectionSummary && !dinnerSummary && !cartSummary && !(cartView && !cartView.valid) && !(preview && !preview.valid)">Вариан {{ run.heroes.warrior.health }} HP · Джайна {{ run.heroes.mage.health }} HP · Карт: {{ run.deck.length }}</span></div><div><button v-if="draft" class="game-button" @click="emit('select',null)">Отмена выбора</button><button v-if="action && !['upgrade','ride','remove','replace'].includes(action)" class="game-button" :disabled="!canConfirm" @click="confirm()">Подтвердить</button></div></footer>
+    <CardOperationDialog v-if="operationOpen" :key="action" :mode="operationMode" :deck="run.deck" :is-eligible="isEligible" :replacements-for="replacementsFor" :selected-instance-id="draft?.instanceId ?? null" :selected-card-id="draft?.cardId ?? null" :explanation="action==='ride' ? ridePayment+'. Одна операция за посещение.' : action==='upgrade' ? (paid ? payment+'. Одна операция за посещение.' : 'Бесплатная услуга кузницы. Одна операция за посещение.') : undefined" :confirm-label="action==='ride' ? 'Прыгнуть и улучшить' : action==='upgrade' && paid ? payment+' · Улучшить' : undefined" @select="chooseCopy" @pick="update({cardId:$event})" @confirm="confirm" @close="emit('select',null)" />
   </main>
 </template>
 
@@ -156,6 +173,7 @@ function confirm(choice?: { instanceId?: string; cardId?: string }) {
 .room-screen{--glow:#f0a64a;--glow-soft:#f0a64a30;position:absolute;inset:0;z-index:8;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:var(--sp-3);padding:var(--sp-4) clamp(18px,4vw,70px);color:var(--ink);overflow:hidden;background:radial-gradient(ellipse at 50% 0%,var(--glow-soft),#0000 62%),radial-gradient(ellipse at 50% 120%,var(--glow-soft),#0000 55%),var(--mat-wood)}
 .room-screen--forge,.room-screen--forgotten-forge{--glow:#ff7a2a;--glow-soft:#ff6a3d38}
 .room-screen--treasure{--glow:var(--c-bonus);--glow-soft:#ffd56b30}
+.room-screen--runaway-cart{--glow:#7fb4ff;--glow-soft:#7fb4ff26}
 .room-screen--powder-store{--glow:#ff6a3d;--glow-soft:#ff6a3d2e}
 .room-screen--goblin-trade{--glow:var(--c-heal);--glow-soft:#8ad66f26}
 .room-screen--suspicious-dinner{--glow:#b9d86a;--glow-soft:#9bc24a2a}

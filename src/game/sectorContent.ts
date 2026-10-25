@@ -31,10 +31,15 @@ export const sectorEncounters = [...sectorOneEnemies, sectorOneElite, rhahkZor]
 export const sectorEventIds = ['forgotten-forge', 'powder-store', 'goblin-trade'] as const
 /** Events added by Sector I Content Expansion v1 (docs/design/sector-one-content-expansion-v1.md); only the long route's configuration version 2 offers them. */
 export const expansionEventIds = ['suspicious-dinner'] as const
+/** The events of the long route's configuration 2. Its fingerprint (`LONG_SECTOR_CATALOG_VERSION_2`) reads this list, so it never grows. */
+export const eventIdsV2 = [...sectorEventIds, ...expansionEventIds] as const
+/** Events added by Runaway Cart (E06, docs/design/event-e06-runaway-cart-v1.md); only the long route's configuration version 3 offers them. */
+export const cartEventIds = ['runaway-cart'] as const
 /** Every event a map or a saved room may carry. */
-export const allSectorEventIds = [...sectorEventIds, ...expansionEventIds] as const
+export const allSectorEventIds = [...eventIdsV2, ...cartEventIds] as const
 export type SectorEventId = typeof allSectorEventIds[number]
 export const sectorEventText: Record<SectorEventId, { name: string; text: string }> = {
+  'runaway-cart': { name: 'Вагонетка без тормозов', text: 'Вагонетка несётся под уклон, а у тормоза сидит гоблин и мирно ест бутерброд. «Не волнуйтесь, — кричит он, — тормоз у нас есть. Теперь бы ещё найти, где он». Вариан уже примеривается к борту.' },
   'suspicious-dinner': { name: 'Подозрительный ужин', text: 'В столовой Братства Справедливости дымится котёл. Вариан принюхивается и мрачнеет. Джайна читает табличку: «Блюдо дня — сюрприз повара». Повара нет. Сюрприз остался.' },
   'forgotten-forge': { name: 'Забытая кузница', text: 'Инструменты ещё целы. Вариан проверяет клещи. Джайна замечает: «Инструкция начинается со слов: берегите пальцы».' },
   'powder-store': { name: 'Пороховой склад', text: 'На ящике написано: «Не трясти». Надпись дрожит вместе с крышкой.' },

@@ -2,7 +2,7 @@ import { chooseCard } from './balance'
 import type { ClassicStrategy } from './balance'
 import { cloneBattleState, createTurnPlanner } from './balancePlanner'
 import { createBattle, endTurn, forecastEnemyAction, playCard, previewCard } from './battle'
-import { availableDungeonNodes, claimDungeonArtifact, claimDungeonReward, createCampaignBattle, createSectorRun, dungeonEncounter, dungeonNode, dungeonRewardOptions, enterDungeonNode, resolveDungeonBattle, resolveDungeonRest, skipDungeonReward, upgradeDungeonRest } from './campaign'
+import { availableDungeonNodes, battleStartArmor, claimDungeonArtifact, claimDungeonReward, createCampaignBattle, createSectorRun, dungeonEncounter, dungeonNode, dungeonRewardOptions, enterDungeonNode, resolveDungeonBattle, resolveDungeonRest, skipDungeonReward, upgradeDungeonRest } from './campaign'
 import type { DungeonRunState } from './campaign'
 import { canUpgradeCard } from './cardProgression'
 import { chooseDungeonRouteNode, publicDungeonNodeView } from './dungeonRoutePolicy'
@@ -349,9 +349,13 @@ function pickRoomAction(run: DungeonRunState, policy: DungeonRoutePolicy): { act
       : room.eventId === 'powder-store' ? (policy === 'safe' ? ['card'] : ['risk', 'card'])
         : room.eventId === 'goblin-trade' ? (policy === 'safe' ? ['remove'] : ['replace', 'remove'])
           // The dinner: a hurt party eats first; a healthy one (or a bold policy) takes the trophy, which costs health it can spare.
+          // The cart: a cautious policy lets it pass and mends the most hurt hero; the others ride it for the upgrade and the armor.
+          : room.eventId === 'runaway-cart' ? (policy === 'safe' ? ['bypass', 'ride'] : ['ride', 'bypass'])
           : room.eventId === 'suspicious-dinner' ? (policy === 'safe' || dinnerHealBudget(run) >= dinnerRules.heal ? ['heal', 'artifact'] : ['artifact', 'heal'])
           : (policy === 'safe' ? ['remove', 'upgrade'] : ['upgrade', 'remove'])
-  return { action: wishes.find(item => roomActionAvailable(run, item)) ?? 'leave', hero }
+  const action = wishes.find(item => roomActionAvailable(run, item)) ?? 'leave'
+  const mostHurt: HeroId = run.heroes.warrior.maxHealth - run.heroes.warrior.health >= run.heroes.mage.maxHealth - run.heroes.mage.health ? 'warrior' : 'mage'
+  return { action, hero: action === 'bypass' ? mostHurt : hero }
 }
 
 export function simulateSectorRun(seed: number, economy: EconomyConfig, deck: readonly CardId[], strategy: LabStrategy, policy: DungeonRoutePolicy = 'mixed', config?: SectorConfig): RunLog {
@@ -370,14 +374,14 @@ export function simulateSectorRun(seed: number, economy: EconomyConfig, deck: re
     if (run.room) {
       const { action, hero } = pickRoomAction(run, policy)
       const room = run.room
-      const target = ['upgrade', 'remove', 'replace'].includes(action) ? roomEligibleCards(run, action)[0] : undefined
+      const target = ['upgrade', 'ride', 'remove', 'replace'].includes(action) ? roomEligibleCards(run, action)[0] : undefined
       const replacement = target && action === 'replace' ? room.replacements[cardDefinition(target.definitionId).className].find(card => card.definitionId !== target.definitionId) : undefined
       const owner = (['warrior', 'mage'] as const).find(id => !run.artifacts.some(item => item.ownerInstanceId === run.heroes[id].instanceId))
       let finalAction: RoomAction = action
       const trophyOwner = owner && run.heroes[owner].health > dinnerRules.trophyHealth ? owner : undefined
       if (room.eventId === 'suspicious-dinner' && action === 'artifact' && !trophyOwner) finalAction = roomActionAvailable(run, 'heal') ? 'heal' : 'leave'
       else if (action === 'artifact' && !owner) finalAction = 'card'
-      if (['upgrade', 'remove', 'replace'].includes(finalAction) && !target) finalAction = 'leave'
+      if (['upgrade', 'ride', 'remove', 'replace'].includes(finalAction) && !target) finalAction = 'leave'
       rooms.push({ type: room.type, ...(room.eventId ? { event: room.eventId } : {}), action: finalAction, ...(finalAction === 'heal' ? { heal: suggestDinnerHeal(run) } : {}), ...(finalAction === 'artifact' ? { hero: owner } : {}) })
       run = resolveRoom(run, {
         roomId: room.id, action: finalAction, instanceId: target?.instanceId, cardId: finalAction === 'replace' ? replacement?.definitionId : room.cards[0]?.definitionId,
@@ -393,7 +397,7 @@ export function simulateSectorRun(seed: number, economy: EconomyConfig, deck: re
       const node = dungeonNode(run.map, chosen.id)!
       if (chosen.type === 'final') healthBeforeBoss = heroHealth()
       const encounter = dungeonEncounter(node, economy)
-      const state = createCampaignBattle({ encounter, economy, heroes: run.heroes, deck: run.deck, artifacts: run.artifacts, seed: run.battleEntry!.seed, battleId: 'lab/' + seed + '/' + chosen.id })
+      const state = createCampaignBattle({ encounter, economy, heroes: run.heroes, deck: run.deck, artifacts: run.artifacts, seed: run.battleEntry!.seed, battleId: 'lab/' + seed + '/' + chosen.id, startingArmor: battleStartArmor(run) })
       const fight = runFight(state, createChooser(strategy))
       battles.push({ enemy: node.encounterId!, node: chosen.type, fight })
       if (!state.result) return { seed, result: 'timeout', battles, healthEnd: { warrior: state.heroes.warrior.health, mage: state.heroes.mage.health }, deckEnd: run.deck.map(card => card.definitionId), route, healthBeforeBoss, healed, upgrades: run.deck.filter(card => card.upgrade).length, elites: route.filter(type => type === 'elite').length, rooms }

@@ -13,7 +13,7 @@ import type { ArtifactDefinition, ArtifactId, ArtifactInstance, BattleState, Car
 import { generateSectorMap, sectorOneConfig, validateSectorMap } from './dungeonGenerator'
 import type { SectorConfig } from './dungeonGenerator'
 import { knownSectorEncounters } from './sectorLong'
-import { sectorLongConfigV2 } from './sectorLong'
+import { sectorLongConfigV3 } from './sectorLong'
 import { sectorFoeSets } from './sectorFoesB'
 import type { SectorEventId } from './sectorContent'
 import { createRoomVisit } from './dungeonRooms'
@@ -29,6 +29,7 @@ export interface CampaignBattleOptions {
   battleId?: string
   economy?: EconomyConfig
   artifacts?: readonly ArtifactInstance[]
+  startingArmor?: Partial<Record<HeroId, number>>
 }
 
 /** Shared campaign rules used by the playable app and the headless balance lab. */
@@ -40,6 +41,7 @@ export function createCampaignBattle(options: CampaignBattleOptions = {}): Battl
     battleId: options.battleId,
     economy,
     artifacts: options.artifacts,
+    startingArmor: options.startingArmor,
   })
 }
 
@@ -147,8 +149,16 @@ export interface DungeonRewardOffer {
   artifactIds: ArtifactId[]
 }
 
+/**
+ * A boon an event leaves for the next real battle of the run (Runaway Cart, E06). It is stored in the run until that battle is resolved, so a reload before
+ * or during the battle restores it, and resolving the battle (win or lose) removes it: it can neither be lost nor applied twice.
+ */
+export interface PendingBattleEffect { id: string; kind: 'start-armor'; heroId: HeroId; amount: number; sourceNodeId: string }
+
 export interface DungeonRunState {
   campaign?: { id: string; version: number }
+  /** Boons waiting for the next battle. The key is absent when there are none, so runs saved before E06 are unchanged. */
+  pendingBattleEffects?: PendingBattleEffect[]
   room?: RoomVisit | null
   journal?: RunJournalEntry[]
   runId: string
@@ -295,7 +305,7 @@ export function createDungeonRun(seed: number, economy: EconomyConfig = gameEcon
 }
 
 /** Uses the same run, battle, reward and progression contracts as the legacy control. */
-export function createSectorRun(seed: number, economy: EconomyConfig = gameEconomy, deck: readonly CardId[] = startingDeck, config: SectorConfig = economy.sectorRoute === 'long' ? sectorLongConfigV2 : sectorOneConfig, runId: string = crypto.randomUUID()): DungeonRunState {
+export function createSectorRun(seed: number, economy: EconomyConfig = gameEconomy, deck: readonly CardId[] = startingDeck, config: SectorConfig = economy.sectorRoute === 'long' ? sectorLongConfigV3 : sectorOneConfig, runId: string = crypto.randomUUID()): DungeonRunState {
   const run = createDungeonRun(seed, economy, deck, defaultDungeonRoster, runId)
   return { ...run, map: generateSectorMap(run.mapSeed, config), campaign: { id: config.id, version: config.version }, room: null, journal: [], goldRewards: true }
 }
@@ -323,11 +333,18 @@ export function dungeonRunPhase(run: DungeonRunState): 'map' | 'battle' | 'rewar
   return 'map'
 }
 
+/** The armor each hero starts the coming (or current) battle with, from the run's pending boons. */
+export function battleStartArmor(run: Pick<DungeonRunState, 'pendingBattleEffects'>): Partial<Record<HeroId, number>> {
+  const armor: Partial<Record<HeroId, number>> = {}
+  for (const effect of run.pendingBattleEffects ?? []) if (effect.kind === 'start-armor') armor[effect.heroId] = (armor[effect.heroId] ?? 0) + effect.amount
+  return armor
+}
+
 /** Rebuild only from the unchanged entry state, never from partially paid combat/animation state. */
 export function restoreDungeonBattle(run: DungeonRunState, economy: EconomyConfig = gameEconomy, battleId: string = crypto.randomUUID()): BattleState {
   if (!run.battleEntry || dungeonRunPhase(run) !== 'battle') throw new Error('No battle entry to restore')
   const node = dungeonNode(run.map, run.battleEntry.nodeId)!
-  return createCampaignBattle({ encounter: dungeonEncounter(node, economy), heroes: run.heroes, deck: run.deck, artifacts: run.artifacts, seed: run.battleEntry.seed, battleId })
+  return createCampaignBattle({ encounter: dungeonEncounter(node, economy), heroes: run.heroes, deck: run.deck, artifacts: run.artifacts, seed: run.battleEntry.seed, battleId, startingArmor: battleStartArmor(run) })
 }
 
 function carriedRunHeroes(battle: BattleState): BattleState['heroes'] {
@@ -348,7 +365,8 @@ export function resolveDungeonBattle(run: DungeonRunState, battle: BattleState):
   }
   if (battle.enemy.encounterId !== `${current.encounterId}/${current.id}` || Object.values(run.heroes).some(hero => battle.heroes[hero.id].instanceId !== hero.instanceId)) throw new Error('Stale battle result from another room or run')
   const heroes = carriedRunHeroes(battle)
-  const base = { ...run, heroes, completedNodeIds: addCompletedNode(run, current.id), pendingReward: null, battleEntry: null, decisions: [...run.decisions, `battle:${current.id}`] }
+  const { pendingBattleEffects: _spent, ...rest } = run
+  const base = { ...rest, heroes, completedNodeIds: addCompletedNode(run, current.id), pendingReward: null, battleEntry: null, decisions: [...run.decisions, `battle:${current.id}`] }
   if (battle.result === 'defeat') return { ...base, status: 'defeat' }
   if (current.type === 'final') return { ...base, status: run.campaign ? 'sector-complete' : 'victory' }
   return {

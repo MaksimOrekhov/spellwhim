@@ -498,7 +498,7 @@ describe('saves: runs begun before the expansion', () => {
     expect(sectorCatalogFor(sectorLongConfig.id, false, 1)).toBe(LONG_SECTOR_CATALOG_VERSION)
     expect(sectorCatalogFor(sectorLongConfig.id, false, 2)).toBe(LONG_SECTOR_CATALOG_VERSION_2)
     expect(sectorCatalogFor(sectorLongConfig.id, false, 3)).not.toBe(LONG_SECTOR_CATALOG_VERSION_2)
-    expect(longSectorConfigs.map(config => config.version)).toEqual([1, 2])
+    expect(longSectorConfigs.map(config => config.version)).toEqual([1, 2, 3])
   })
 
   it('loads each save written by the code before the expansion, as a version-1 run that keeps its map, its elite and its rooms', () => {
@@ -564,8 +564,8 @@ describe('saves: runs begun before the expansion', () => {
     expect(IncompatibleSave).toBeDefined()
   })
 
-  it('a new run is version 2 with the expansion fingerprint, and does not read as version 1', () => {
-    const run = createSectorRun(5, economy, deck, undefined, 'new')
+  it('a version-2 run has the expansion fingerprint, and does not read as version 1', () => {
+    const run = createSectorRun(5, economy, deck, sectorLongConfigV2, 'new')
     expect(run.campaign).toEqual({ id: sectorLongConfig.id, version: 2 })
     expect(run.map.configuration).toEqual(sectorLongConfigV2)
     const raw = encodeSnapshot(run, economy, 1)

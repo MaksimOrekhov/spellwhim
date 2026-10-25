@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, useTemplateRef, watch } from 'vue'
-import { Anvil, Check, Crown, FlameKindling, Gem, Lamp, ScrollText, Skull, Swords } from '@lucide/vue'
+import { Anvil, Check, Crown, FlameKindling, Gem, Lamp, ScrollText, ShieldCheck, Skull, Swords } from '@lucide/vue'
 import DeckViewer from './DeckViewer.vue'
 import GameTooltip from './GameTooltip.vue'
 import { availableDungeonNodes } from '../game/campaign'
@@ -84,6 +84,7 @@ watch(current, centreOnParty)
       <div class="campaign-topline"><Lamp :size="22" aria-hidden="true"/><span>{{ map.configuration ? 'СЕКТОР I · '+sectorTitle.toUpperCase() : 'КОНТРОЛЬНЫЙ ПОХОД · 7 ПОСЕЩЕНИЙ' }}</span><span class="seed-chip">ЗЕРНО {{ run.seed }}</span><button class="game-button new-run" @click="emit('mode')">Главное меню</button><DeckViewer :deck="run.deck" /></div>
       <h1>Выберите штрек</h1>
       <p>{{ run.campaign ? 'Следуйте освещённым рельсам. Знак вопроса скрывает комнату, пока отряд в неё не войдёт.' : 'Следуйте рельсам. Привал лечит или улучшает карту, а элита предлагает больше карт на выбор.' }}</p>
+      <p v-for="effect in run.pendingBattleEffects ?? []" :key="effect.id" class="last-decision pending-boon" role="status"><ShieldCheck :size="16" aria-hidden="true"/> {{ run.heroes[effect.heroId].name }} начнёт следующий бой с бронёй {{ effect.amount }}</p>
       <p v-if="run.journal?.length" class="last-decision" role="status">{{ run.journal[run.journal.length-1]?.text }}</p>
     </header>
 
@@ -153,6 +154,7 @@ watch(current, centreOnParty)
 .campaign-header h1{margin:var(--sp-1) 0;color:var(--parch-1);font:700 clamp(24px,2.6vw,36px) var(--font-display);text-shadow:0 2px 0 #000a,0 0 22px #f0a64a55}
 .campaign-header p{margin:0;color:var(--muted);font:600 var(--fs-sm) var(--font-ui)}
 .campaign-header .last-decision{color:var(--brass-1);margin-top:var(--sp-1)}
+.campaign-header .pending-boon{display:flex;align-items:center;gap:var(--sp-1);font-weight:700}
 
 /* the tunnel: one wide corridor, the route runs left to right */
 .map-viewport{container-type:inline-size;width:min(1800px,100%);min-height:380px;flex:1;margin:var(--sp-1) 0;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;scrollbar-color:var(--brass-3) transparent}

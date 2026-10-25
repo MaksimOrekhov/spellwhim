@@ -7,10 +7,10 @@ import type { DungeonRunState } from './campaign'
 import { honestEconomies, knownEconomies } from './economy'
 import type { EconomyConfig } from './economy'
 import { CARVED_GENERATOR_VERSION, sectorOneConfig, validateSectorConfig } from './dungeonGenerator'
-import { allSectorEventIds, sectorEncounters, sectorEventIds } from './sectorContent'
-import { expansionElites, longSectorConfigs, longSectorEnemies, sectorLongConfig, sectorLongConfigV2 } from './sectorLong'
+import { allSectorEventIds, eventIdsV2, sectorEncounters, sectorEventIds } from './sectorContent'
+import { expansionElites, longSectorConfigs, longSectorEnemies, sectorLongConfig, sectorLongConfigV2, sectorLongConfigV3 } from './sectorLong'
 import { createRoomVisit, roomActions } from './dungeonRooms'
-import { dinnerRules, roomRules } from './roomRules'
+import { cartRules, dinnerRules, roomRules } from './roomRules'
 
 export const RUN_SAVE_KEY = 'spellwhim.run.v1'
 export const SAVE_SCHEMA_VERSION = 2
@@ -50,14 +50,16 @@ export const SECTOR_CATALOG_VERSION = checksum(canonical({ base: CATALOG_VERSION
 /** The long route adds three enemies and its own map rules; a save of it declares this instead, so no other build reads it as its own. */
 export const LONG_SECTOR_CATALOG_VERSION = checksum(canonical({ base: SECTOR_CATALOG_VERSION, enemies: longSectorEnemies, config: sectorLongConfig }))
 /** Long route configuration version 2 (Sector I Content Expansion v1): the second elite and the dinner event. Version-1 runs keep `LONG_SECTOR_CATALOG_VERSION` above, which no longer changes. */
-export const LONG_SECTOR_CATALOG_VERSION_2 = checksum(canonical({ base: LONG_SECTOR_CATALOG_VERSION, elites: expansionElites, events: allSectorEventIds, dinner: dinnerRules, config: sectorLongConfigV2 }))
+export const LONG_SECTOR_CATALOG_VERSION_2 = checksum(canonical({ base: LONG_SECTOR_CATALOG_VERSION, elites: expansionElites, events: eventIdsV2, dinner: dinnerRules, config: sectorLongConfigV2 }))
+/** Long route configuration version 3 (Runaway Cart, E06): the cart joins the event pool and leaves a boon for the next battle. Version-2 runs keep `LONG_SECTOR_CATALOG_VERSION_2`, which no longer changes. */
+export const LONG_SECTOR_CATALOG_VERSION_3 = checksum(canonical({ base: LONG_SECTOR_CATALOG_VERSION_2, events: allSectorEventIds, cart: cartRules, config: sectorLongConfigV3 }))
 /** The configuration version a new long run is generated under. */
-export const CURRENT_LONG_CONFIG_VERSION = sectorLongConfigV2.version
+export const CURRENT_LONG_CONFIG_VERSION = sectorLongConfigV3.version
 /** A run that can hold gold also declares the gold catalogue it was played under; runs saved before gold keep the plain sector fingerprint. */
 export const GOLD_CATALOG_VERSION = checksum(canonical(goldCards))
 export const sectorCatalogFor = (campaignId: string | undefined, gold = false, campaignVersion: number = CURRENT_LONG_CONFIG_VERSION) => {
   // An unknown long version has no fingerprint, so a save that names one can never match.
-  const sector = campaignId === sectorLongConfig.id ? (campaignVersion === 1 ? LONG_SECTOR_CATALOG_VERSION : campaignVersion === 2 ? LONG_SECTOR_CATALOG_VERSION_2 : 'unknown-long-version-' + campaignVersion) : SECTOR_CATALOG_VERSION
+  const sector = campaignId === sectorLongConfig.id ? (campaignVersion === 1 ? LONG_SECTOR_CATALOG_VERSION : campaignVersion === 2 ? LONG_SECTOR_CATALOG_VERSION_2 : campaignVersion === 3 ? LONG_SECTOR_CATALOG_VERSION_3 : 'unknown-long-version-' + campaignVersion) : SECTOR_CATALOG_VERSION
   return gold ? checksum(canonical({ base: sector, gold: GOLD_CATALOG_VERSION })) : sector
 }
 export const ROOM_RULES_VERSION = roomRules.version + ':' + checksum(canonical(roomRules))
@@ -94,7 +96,7 @@ const artifactId: Check = value => artifactDefinitions.some(item => item.id === 
 const acquisition = object({ definitionId: cardId, upgrade: oneOf(0, 1) })
 const hero = object({ id: oneOf('warrior', 'mage'), characterId: text, classId: oneOf('warrior', 'mage'), partySlot: oneOf('first', 'second'), instanceId: text, name: text, title: text, health: integer(0, 999), maxHealth: integer(1, 999), armor: oneOf(0), icon: text })
 const node = object({ id: text, layer: integer(0, 30), column: value => typeof value === 'number' && value >= 0 && value < 8 && Number.isInteger(value * 2), type: oneOf('battle', 'elite', 'rest', 'final', 'forge', 'treasure', 'event'), edges: list(text, 8) }, { encounterId: text, encounterHealth: integer(1, 10000), rewardCount: integer(1, 5), healAmount: integer(0, 999), eventId: oneOf(...allSectorEventIds) })
-const roomSelection = object({ action: oneOf('upgrade', 'remove', 'replace', 'card', 'risk', 'artifact', 'heal', 'leave') }, { instanceId: text, heroId: oneOf('warrior', 'mage'), cardId: cardId, artifactId, heal: object({ warrior: integer(0, dinnerRules.heal), mage: integer(0, dinnerRules.heal) }) })
+const roomSelection = object({ action: oneOf('upgrade', 'remove', 'replace', 'card', 'risk', 'artifact', 'heal', 'ride', 'bypass', 'leave') }, { instanceId: text, heroId: oneOf('warrior', 'mage'), cardId: cardId, artifactId, heal: object({ warrior: integer(0, dinnerRules.heal), mage: integer(0, dinnerRules.heal) }) })
 const room = object({ id: text, nodeId: text, type: oneOf('forge', 'treasure', 'event'), cards: list(acquisition, roomRules.cards), riskCard: nullable(acquisition), replacements: object({ warrior: list(acquisition, roomRules.replacementCandidates), mage: list(acquisition, roomRules.replacementCandidates) }), artifactIds: list(artifactId, roomRules.artifacts), riskSuccess: oneOf(true, false), selection: nullable(roomSelection) }, { eventId: oneOf(...allSectorEventIds) })
 const runShape = object({
   runId: text, nextCardId: integer(1), decisions: list(text),
@@ -107,7 +109,7 @@ const runShape = object({
   heroes: object({ warrior: hero, mage: hero }), artifacts: list(object({ instanceId: text, definitionId: artifactId, ownerInstanceId: text }), 2),
   status: oneOf('active', 'victory', 'defeat', 'sector-complete'),
   pendingReward: nullable(object({ id: text, nodeId: text, seed: uint, artifactSeed: uint, count: integer(1, 5), elite: oneOf(true, false), cards: list(acquisition, 5), artifactIds: list(artifactId, 3) }, { rarity: oneOf('gold') })),
-}, { goldRewards: oneOf(true), excludedRewards: list(cardId), excludedArtifacts: list(artifactId, 5), campaign: object({ id: text, version: integer(1) }), room: nullable(room), journal: list(object({ nodeId: text, kind: oneOf('upgrade', 'remove', 'replace', 'card', 'risk', 'artifact', 'heal', 'leave', 'reward', 'skip', 'rest'), text }, { card: object({ instanceId: text, definitionId: cardId, upgrade: oneOf(0, 1) }) })) })
+}, { pendingBattleEffects: list(object({ id: text, kind: oneOf('start-armor'), heroId: oneOf('warrior', 'mage'), amount: integer(1, cartRules.armor), sourceNodeId: text }), 4), goldRewards: oneOf(true), excludedRewards: list(cardId), excludedArtifacts: list(artifactId, 5), campaign: object({ id: text, version: integer(1) }), room: nullable(room), journal: list(object({ nodeId: text, kind: oneOf('upgrade', 'remove', 'replace', 'card', 'risk', 'artifact', 'heal', 'ride', 'bypass', 'leave', 'reward', 'skip', 'rest'), text }, { card: object({ instanceId: text, definitionId: cardId, upgrade: oneOf(0, 1) }) })) })
 
 /** Every sector configuration a save may carry. */
 const knownSectorConfigs = [sectorOneConfig, ...longSectorConfigs]
@@ -155,6 +157,7 @@ export function validateRun(value: unknown): asserts value is DungeonRunState {
     requireValid(canonical({ ...run.room, selection: null }) === canonical(expected))
     requireValid(!run.room.selection || roomActions(run.room).includes(run.room.selection.action))
   }
+  validateBattleEffects(run, sector, isCombat)
   if (run.battleEntry) requireValid(run.battleEntry.nodeId === current?.id && run.battleEntry.seed === deriveDungeonSeed(run.seed, `battle:${current?.id}`))
   const heroes = Object.values(run.heroes)
   requireValid(unique(heroes.map(entry => entry.instanceId)) && unique(heroes.map(entry => entry.partySlot)))
@@ -205,6 +208,24 @@ export function validateRun(value: unknown): asserts value is DungeonRunState {
     run.journal!.forEach(entry=>requireValid(run.completedNodeIds.includes(entry.nodeId)))
     run.completedNodeIds.filter(id=>!isCombat(dungeonNode(run.map,id)!.type)).forEach(id=>requireValid(run.journal!.some(entry=>entry.nodeId===id)))
   }
+}
+
+/**
+ * The boons waiting for the next battle must be exactly the ones the run's history implies: one for each cart ride that no battle has followed yet, nothing else.
+ * A save therefore cannot invent armor, keep a spent boon for another battle, or lose one that is still owed.
+ */
+function validateBattleEffects(run: DungeonRunState, sector: boolean, isCombat: (type: string) => boolean): void {
+  const effects = run.pendingBattleEffects ?? []
+  requireValid(run.pendingBattleEffects === undefined || (sector && effects.length > 0))
+  const owed = new Map<string, string>()
+  for (const entry of run.journal ?? []) {
+    const node = dungeonNode(run.map, entry.nodeId)
+    if (entry.kind !== 'ride' || node?.eventId !== 'runaway-cart') continue
+    const later = run.completedNodeIds.slice(run.completedNodeIds.indexOf(entry.nodeId) + 1)
+    if (run.status === 'active' && later.every(id => !isCombat(dungeonNode(run.map, id)!.type))) owed.set(`${run.runId}/effect/${entry.nodeId}`, entry.nodeId)
+  }
+  requireValid(unique(effects.map(effect => effect.id)) && effects.length === owed.size)
+  effects.forEach(effect => requireValid(owed.get(effect.id) === effect.sourceNodeId && effect.amount === cartRules.armor))
 }
 
 export class IncompatibleSave extends Error {}

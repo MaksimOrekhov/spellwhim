@@ -3,7 +3,7 @@ import { createSSRApp } from 'vue'
 import { renderToString } from 'vue/server-renderer'
 import { generateSectorMap, sectorOneConfig, sectorPaths, validateSectorConfig, validateSectorMap } from './dungeonGenerator'
 import { longSectorEnemies, sectorLongConfig } from './sectorLong'
-import { availableDungeonNodes, createCampaignBattle, createSectorRun, dungeonEncounter, dungeonNode, dungeonRunPhase, enterDungeonNode, resolveDungeonBattle, resolveDungeonRest, restoreDungeonBattle, skipDungeonReward } from './campaign'
+import { availableDungeonNodes, claimDungeonReward, createCampaignBattle, createSectorRun, dungeonEncounter, dungeonNode, dungeonRewardOptions, dungeonRunPhase, enterDungeonNode, resolveDungeonBattle, resolveDungeonRest, restoreDungeonBattle, skipDungeonReward } from './campaign'
 import { resolveRoom } from './dungeonRooms'
 import { gameEconomy, honestEconomies } from './economy'
 import { decodeSnapshot, encodeSnapshot, IncompatibleSave, LONG_SECTOR_CATALOG_VERSION, rulesVersionFor, SECTOR_CATALOG_VERSION, sectorCatalogFor } from './runSave'
@@ -102,7 +102,7 @@ describe('long route modes, saves and versions', () => {
   it('a long run is saved and restored exactly, on the first step and mid-route, with its own catalogue version', () => {
     let run = createSectorRun(11, economy, honestDeck('armor8', true), undefined, 'long-run')
     expect(run.map.layers).toHaveLength(10)
-    expect(run.campaign).toEqual({ id: sectorLongConfig.id, version: 2 })
+    expect(run.campaign).toEqual({ id: sectorLongConfig.id, version: 3 })
     expect(decodeSnapshot(encodeSnapshot(run, economy, 1)).run).toEqual(run)
     run = enterDungeonNode(run, availableDungeonNodes(run)[0]!.id)
     const raw = encodeSnapshot(run, economy, 2)
@@ -140,7 +140,7 @@ describe('a whole long run', () => {
         battle.enemy.health = 0; battle.result = 'victory'
         run = resolveDungeonBattle(run, battle)
         reload()
-        if (run.pendingReward) run = skipDungeonReward(run, run.pendingReward.id)
+        if (run.pendingReward) run = run.pendingReward.elite ? claimDungeonReward(run, dungeonRewardOptions(run)[0]!) : skipDungeonReward(run, run.pendingReward.id)
       }
       reload()
     }

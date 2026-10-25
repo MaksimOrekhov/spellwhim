@@ -4,12 +4,13 @@ import { artifactDefinitions } from './artifacts'
 import { canUpgradeCard } from './cardProgression'
 import type { CardAcquisition } from './cardProgression'
 import { nextRandom, shuffle } from './deck'
-import { dinnerRules, roomRules } from './roomRules'
+import { cartRules, dinnerRules, roomRules } from './roomRules'
 import { cardDefinition, cards } from './types'
 import type { ArtifactId, HeroId, PersistentCard } from './types'
 import type { SectorEventId } from './sectorContent'
 
-export type RoomAction = 'upgrade' | 'remove' | 'replace' | 'card' | 'risk' | 'artifact' | 'heal' | 'leave'
+/** `ride` and `bypass` belong to the runaway cart (E06): ride it for an upgrade and a start of the next battle in armor, or let it pass and mend a hero. */
+export type RoomAction = 'upgrade' | 'remove' | 'replace' | 'card' | 'risk' | 'artifact' | 'heal' | 'ride' | 'bypass' | 'leave'
 /** `heal` (the dinner): health points handed to each hero. */
 export interface RoomSelection { action: RoomAction; instanceId?: string; heroId?: HeroId; cardId?: string; artifactId?: ArtifactId; heal?: Record<HeroId, number> }
 export interface RoomVisit {
@@ -49,11 +50,12 @@ export function roomActions(room: RoomVisit): RoomAction[] {
   if (room.eventId === 'powder-store') return ['card', 'risk', 'leave']
   if (room.eventId === 'goblin-trade') return ['remove', 'replace', 'leave']
   if (room.eventId === 'suspicious-dinner') return ['heal', 'artifact', 'leave']
+  if (room.eventId === 'runaway-cart') return ['ride', 'bypass', 'leave']
   throw new Error('Unknown event')
 }
 
 export function roomEligibleCards(run: DungeonRunState, action: RoomAction): PersistentCard[] {
-  return run.deck.filter(c => action === 'upgrade' ? canUpgradeCard(c) : ['remove','replace'].includes(action) && (run.room?.type !== 'event' || c.upgrade === 0) && (action !== 'remove' || run.deck.length > 1) && (action !== 'replace' || roomReplacementOptions(run,c).length > 0))
+  return run.deck.filter(c => action === 'upgrade' || action === 'ride' ? canUpgradeCard(c) : ['remove','replace'].includes(action) && (run.room?.type !== 'event' || c.upgrade === 0) && (action !== 'remove' || run.deck.length > 1) && (action !== 'replace' || roomReplacementOptions(run,c).length > 0))
 }
 
 /** One shared boundary for rules, UI and saved candidate truncation. All current cards are ordinary. */
@@ -70,6 +72,8 @@ export function roomActionAvailable(run: DungeonRunState, action: RoomAction): b
   if (action === 'risk') return !!run.room.riskCard && Object.values(run.heroes).every(h => h.health > roomRules.riskHealth)
   if (action === 'card') return run.room.cards.length > 0
   if (action === 'heal') return dinnerHealBudget(run) > 0
+  if (action === 'ride') return Object.values(run.heroes).some(h => h.health > cartRules.health) && roomEligibleCards(run, action).length > 0
+  if (action === 'bypass') return Object.values(run.heroes).some(h => h.health < h.maxHealth)
   if (action === 'artifact') return run.room.artifactIds.length > 0 && (run.room.eventId !== 'suspicious-dinner' || Object.values(run.heroes).some(h => h.health > dinnerRules.trophyHealth))
   if (action === 'upgrade' && run.room.eventId === 'forgotten-forge' && !Object.values(run.heroes).some(h => h.health > roomRules.upgradeHealth)) return false
   return !['upgrade','remove','replace'].includes(action) || roomEligibleCards(run,action).length > 0
@@ -117,6 +121,30 @@ export function dinnerPreview(run: Pick<DungeonRunState, 'heroes'>, selection: P
   return { valid: reason === '', reason, heroes: { warrior: { before: run.heroes.warrior.health, after: run.heroes.warrior.health + delta.warrior, delta: delta.warrior }, mage: { before: run.heroes.mage.health, after: run.heroes.mage.health + delta.mage, delta: delta.mage } } }
 }
 
+export interface CartPreview { valid: boolean; reason: string; heroes: Record<HeroId, { before: number; after: number; delta: number }>; armor: { heroId: HeroId; amount: number } | null }
+/**
+ * What the cart does to the chosen hero, from the one function both the picker and the transaction use, so the preview is the result.
+ * Riding costs health and the rider must stay on his feet (strictly more than the cost); the same hero starts the next battle in armor.
+ * Letting the cart pass heals the chosen hero, who must be hurt, by up to the heal amount and never past maximum health.
+ */
+export function cartPreview(run: Pick<DungeonRunState, 'heroes'>, selection: Pick<RoomSelection, 'action' | 'heroId'>): CartPreview {
+  const delta: Record<HeroId, number> = { warrior: 0, mage: 0 }
+  let reason = '', armor: CartPreview['armor'] = null
+  const id = selection.heroId
+  if (selection.action !== 'ride' && selection.action !== 'bypass') reason = 'Это действие не относится к вагонетке'
+  else if (!id) reason = 'Выберите героя'
+  else if (selection.action === 'ride') {
+    if (run.heroes[id].health <= cartRules.health) reason = 'Герой не переживёт цену: нужно больше ' + cartRules.health + ' HP'
+    else { delta[id] = -cartRules.health; armor = { heroId: id, amount: cartRules.armor } }
+  } else {
+    const missing = run.heroes[id].maxHealth - run.heroes[id].health
+    if (missing <= 0) reason = 'Здоровье героя уже полное'
+    else delta[id] = Math.min(cartRules.heal, missing)
+  }
+  const side = (hero: HeroId) => ({ before: run.heroes[hero].health, after: run.heroes[hero].health + delta[hero], delta: delta[hero] })
+  return { valid: reason === '', reason, heroes: { warrior: side('warrior'), mage: side('mage') }, armor }
+}
+
 function requireRoom(run: DungeonRunState, id: string): RoomVisit {
   if (run.status !== 'active' || !run.room || run.room.id !== id || run.currentNodeId !== run.room.nodeId || run.completedNodeIds.includes(run.room.nodeId) || run.pendingReward || run.battleEntry) throw new Error('Invalid or already resolved room')
   return run.room
@@ -155,6 +183,21 @@ export function resolveRoom(run: DungeonRunState, command: RoomCommand): Dungeon
     changed = next.deck.find(c => c.instanceId === previous.instanceId) ?? (action === 'replace' ? next.deck.find(c => c.instanceId === `${run.runId}/card/${run.nextCardId}`) : undefined)
     text = action === 'upgrade' ? `Улучшено: ${cardDefinition(previous.definitionId).name}${paidUpgrade ? ` (−${roomRules.upgradeHealth} HP: ${hero!.name})` : ''}` : action === 'remove' ? `Удалено: ${cardDefinition(previous.definitionId).name}${previous.upgrade ? ' ↑' : ''}` : `Замена: ${cardDefinition(previous.definitionId).name}${previous.upgrade ? ' ↑' : ''} → ${cardDefinition(replacement!.definitionId).name}`
     if (paidUpgrade) next = { ...next, heroes: { ...next.heroes, [hero!.id]: { ...hero!, health: hero!.health - roomRules.upgradeHealth } } }
+  } else if (action === 'ride') {
+    const preview = cartPreview(run, command)
+    if (!preview.valid || !hero) throw new Error('The cart ride is not possible: ' + preview.reason)
+    const previous = roomEligibleCards(run, action).find(c => c.instanceId === command.instanceId)
+    if (!previous) throw new Error('Unavailable card instance')
+    next = confirmDeckOperation(offerDeckOperation(next, room.id, 'upgrade', []), room.id, previous.instanceId)
+    changed = next.deck.find(c => c.instanceId === previous.instanceId)
+    // The payment and the boon are written into the same local value as the upgrade: all of it is published, or none.
+    next = { ...next, heroes: { ...next.heroes, [hero.id]: { ...hero, health: preview.heroes[hero.id].after } }, pendingBattleEffects: [...(run.pendingBattleEffects ?? []), { id: `${run.runId}/effect/${room.nodeId}`, kind: 'start-armor', heroId: hero.id, amount: cartRules.armor, sourceNodeId: room.nodeId }] }
+    text = `Вагонетка: улучшено ${cardDefinition(previous.definitionId).name} (−${cartRules.health} HP: ${hero.name}). ${hero.name} начнёт следующий бой с бронёй ${cartRules.armor}.`
+  } else if (action === 'bypass') {
+    const preview = cartPreview(run, command)
+    if (!preview.valid || !hero) throw new Error('The cart bypass is not possible: ' + preview.reason)
+    next = { ...next, heroes: { ...next.heroes, [hero.id]: { ...hero, health: preview.heroes[hero.id].after } } }
+    text = `Вагонетка пролетела мимо: ${hero.name} +${preview.heroes[hero.id].delta} HP`
   } else if (action === 'card' || action === 'risk') {
     if (action === 'risk' && Object.values(run.heroes).some(h => h.health <= roomRules.riskHealth)) throw new Error('Risk could kill a hero')
     const acquisition = action === 'risk' ? room.riskCard : room.cards.find(c => c.definitionId === command.cardId)

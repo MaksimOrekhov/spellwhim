@@ -18,6 +18,8 @@ export interface BattleOptions {
   /** Mana curve and draw schedule; standard model B when omitted. Balance Lab passes model A explicitly. */
   economy?: EconomyConfig
   artifacts?: readonly ArtifactInstance[]
+  /** Armor a hero already carries when the battle begins (a one-battle boon from a dungeon event); applied after the usual armor reset. */
+  startingArmor?: Partial<Record<HeroId, number>>
 }
 const ENEMY_ARMOR_CAP = 8
 /** B1: the most a raging enemy can add to its announced hits. */
@@ -44,6 +46,7 @@ export function createBattle(encounter: EncounterDefinition = encounters[1]!, pr
       warrior: { id: 'warrior' as const, characterId: 'varian', classId: 'warrior' as const, partySlot: 'first' as const, instanceId: battleId + '/hero/first', name: 'Вариан Ринн', title: 'Король Штормграда', health: 25, maxHealth: 25, armor: 0, icon: '⚔' },
       mage: { id: 'mage' as const, characterId: 'jaina', classId: 'mage' as const, partySlot: 'second' as const, instanceId: battleId + '/hero/second', name: 'Джайна Праудмур', title: 'Верховная волшебница Кирин-Тора', health: 18, maxHealth: 18, armor: 0, icon: '✦' },
     }
+  for (const id of Object.keys(options.startingArmor ?? {}) as HeroId[]) heroes[id].armor += Math.max(0, options.startingArmor![id] ?? 0)
   const artifacts: BattleArtifactState[] = (options.artifacts ?? []).map(item => ({ ...item, usedThisBattle: false, lastTriggeredTurn: null, armedThisTurn: false }))
   const state: BattleState = {
     battleId, seed, rngState: seed, nextActionId: 1, heroes, statuses: createStatuses(), artifacts, artifactNotices: [],

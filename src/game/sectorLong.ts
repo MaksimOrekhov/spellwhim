@@ -1,6 +1,6 @@
 import type { EncounterDefinition } from './types'
 import type { SectorConfig, SectorRow } from './dungeonGenerator'
-import { allSectorEventIds, rhahkZor, sectorEventIds, sectorOneElite, sectorOneEnemies } from './sectorContent'
+import { allSectorEventIds, eventIdsV2, rhahkZor, sectorEventIds, sectorOneElite, sectorOneEnemies } from './sectorContent'
 
 /**
  * EXPERIMENT "Sector I — long route" (docs/design/sector-one-long-v1.md, Decision Log X03). Ten visits instead of six.
@@ -90,10 +90,15 @@ export const expansionElites: readonly EncounterDefinition[] = [thistlenettle]
 
 export const sectorLongConfigV2: SectorConfig = {
   ...sectorLongConfig, version: 2,
-  elitePool: [sectorOneElite.id, thistlenettle.id], eventPool: [...allSectorEventIds],
+  elitePool: [sectorOneElite.id, thistlenettle.id], eventPool: [...eventIdsV2],
 }
+/**
+ * Runaway Cart (E06, docs/design/event-e06-runaway-cart-v1.md). Configuration version 3 of the long route: the event pool gains the cart. Versions 1 and 2 above stay exactly
+ * as they were; their saved runs carry them and their fingerprints. New long runs are generated under this one.
+ */
+export const sectorLongConfigV3: SectorConfig = { ...sectorLongConfigV2, version: 3, eventPool: [...allSectorEventIds] }
 /** Every configuration a saved long run may carry, by version: the map in a save must be exactly the one its version generated. */
-export const longSectorConfigs: readonly SectorConfig[] = [sectorLongConfig, sectorLongConfigV2]
+export const longSectorConfigs: readonly SectorConfig[] = [sectorLongConfig, sectorLongConfigV2, sectorLongConfigV3]
 
 /** Every encounter a Sector I map may name: the standard ones, the long route's extras and the expansion's elite. */
 export const knownSectorEncounters: readonly EncounterDefinition[] = [...sectorOneEnemies, sectorOneElite, rhahkZor, ...longSectorEnemies, ...expansionElites]
