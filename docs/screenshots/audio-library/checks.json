@@ -1,0 +1,52 @@
+{
+  "viewport": "2560x1440",
+  "musicCount": 11,
+  "sfxCount": 32,
+  "decodedCount": 43,
+  "metadataStored": true,
+  "results": [
+    {
+      "name": "music/SFX inventory"
+    },
+    {
+      "name": "all catalog IDs unique",
+      "detail": 43
+    },
+    {
+      "name": "every item has public CC0 source and redistribution record"
+    },
+    {
+      "name": "all local audio files fetch and decode",
+      "detail": {
+        "decoded": 43,
+        "count": 43
+      }
+    },
+    {
+      "name": "browser plays selected music"
+    },
+    {
+      "name": "starting another track replaces the previous player"
+    },
+    {
+      "name": "SFX plays through the same exclusive player"
+    },
+    {
+      "name": "rating persists in localStorage"
+    },
+    {
+      "name": "rating restores after reload"
+    },
+    {
+      "name": "reload stops previous sound"
+    },
+    {
+      "name": "2560×1440 library screenshot saved"
+    },
+    {
+      "name": "browser console clean",
+      "detail": []
+    }
+  ],
+  "failures": []
+}
