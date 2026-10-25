@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, useTemplateRef } from 'vue'
 /** `final`: the fight was the sector's boss, so the next screen sums up the run instead of offering a reward. */
-const props = defineProps<{ result: 'victory' | 'defeat'; continueLabel?: string; final?: boolean }>()
+/** `trophies`: the boss's reward comes next (an adventure run), so the sector is not over yet and the text says what follows. */
+const props = defineProps<{ result: 'victory' | 'defeat'; continueLabel?: string; final?: boolean; trophies?: boolean }>()
 const emit = defineEmits<{ continue: [] }>()
 const dialog = useTemplateRef<HTMLDialogElement>('dialog')
 onMounted(() => dialog.value?.showModal())
@@ -9,7 +10,7 @@ onMounted(() => dialog.value?.showModal())
 const text = computed(() => props.result === 'defeat'
   ? { kicker: 'Отряд пал', title: 'Поражение', body: 'Один из героев не выдержал удара, и поход окончен. Дальше — итоги похода.', button: 'К итогам похода' }
   : props.final
-  ? { kicker: 'Сектор пройден', title: 'Победа!', body: 'Главный противник повержен. Осталось подвести итоги похода.', button: props.continueLabel ?? 'К итогам похода' }
+  ? { kicker: 'Сектор пройден', title: 'Победа!', body: props.trophies ? 'Главный противник повержен. Осталось выбрать трофеи босса.' : 'Главный противник повержен. Осталось подвести итоги похода.', button: props.continueLabel ?? 'К итогам похода' }
   : { kicker: 'Путь открыт', title: 'Победа!', body: 'Противник повержен, штрек свободен. Пора двигаться дальше.', button: props.continueLabel ?? 'Продолжить' })
 </script>
 <template>

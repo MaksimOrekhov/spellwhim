@@ -18,7 +18,7 @@ import BattleBackdrop from './BattleBackdrop.vue'
 import { battleBackground } from '../ui/battleBackground'
 import { ambientProfile } from '../ambient/profiles'
 import { gameAudio } from '../audio/engine'
-const props = defineProps<{ state: BattleState; animation: BattlePresentation; phase: BattlePhase; artifactNotices?: string[]; continueLabel?: string; final?: boolean; captioned?: boolean; /** Lab only: slow-motion factor and a moment of the effect to freeze at. */ fxSpeed?: number; fxHold?: number | null }>()
+const props = defineProps<{ state: BattleState; animation: BattlePresentation; phase: BattlePhase; artifactNotices?: string[]; continueLabel?: string; final?: boolean; trophies?: boolean; captioned?: boolean; /** Lab only: slow-motion factor and a moment of the effect to freeze at. */ fxSpeed?: number; fxHold?: number | null }>()
 const emit = defineEmits<{ impact: [actionId: string]; endTurn: []; continue: [] }>()
 const enemyStatuses = computed(() => statusViews(props.state, 'enemy'))
 // Health the enemy loses to ticking statuses at the start of its turn (Bleeding), drawn as a ghost on its health bar.
@@ -77,7 +77,7 @@ const rayTick = computed(() => [props.state.turn, props.phase, intent.value.name
     <ThreatRays :targets="rayTargets" :later="rayLater" :lethal="rayLethal" :tick="rayTick" :executing="phase === 'enemy'" />
     <p v-if="artifactNotices?.length" class="artifact-feedback" role="status" aria-live="polite">{{ artifactNotices.join(' · ') }}</p>
     <BattleFx :pulse="animation.pulse" :action-id="animation.actionId" :plan="animation.vfx" :sound-active="animation.busy" :speed="fxSpeed" :hold="fxHold" @impact="emit('impact', $event)" />
-    <BattleResult v-if="state.result" :result="state.result" :continue-label="continueLabel" :final="final" @continue="emit('continue')" />
+    <BattleResult v-if="state.result" :result="state.result" :continue-label="continueLabel" :final="final" :trophies="trophies" @continue="emit('continue')" />
   </main>
 </template>
 <style scoped>

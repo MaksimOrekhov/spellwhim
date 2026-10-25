@@ -9,14 +9,18 @@ import CampaignMap from './components/CampaignMap.vue'
 import CardReward from './components/CardReward.vue'
 import EliteReward from './components/EliteReward.vue'
 import RestSite from './components/RestSite.vue'
+import BossReward from './components/BossReward.vue'
+import SectorTransition from './components/SectorTransition.vue'
 import RunComplete from './components/RunComplete.vue'
 import DungeonRoom from './components/DungeonRoom.vue'
 import MainMenu from './components/MainMenu.vue'
 import { useBattle } from './composables/useBattle'
 import { useBattleControls } from './composables/useBattleControls'
 import { useBattleAnimation } from './composables/useBattleAnimation'
-import { availableDungeonNodes, battleStartArmor, claimDungeonArtifact, claimDungeonReward, createDungeonRun, createSectorRun, dungeonArtifactOptions, dungeonEncounter, dungeonNode, dungeonRewardOptions, dungeonRunPhase, enterDungeonNode, resolveDungeonBattle, resolveDungeonRest, upgradeDungeonRest, skipDungeonReward } from './game/campaign'
+import { availableDungeonNodes, battleStartArmor, claimDungeonArtifact, claimDungeonReward, createAdventureRun, createDungeonRun, dungeonArtifactOptions, dungeonEncounter, dungeonNode, dungeonRewardOptions, dungeonRunPhase, enterDungeonNode, resolveDungeonBattle, resolveDungeonRest, upgradeDungeonRest, skipDungeonReward } from './game/campaign'
 import { resolveRoom, selectRoom } from './game/dungeonRooms'
+import { claimBossCard, claimBossDevelopment } from './game/bossReward'
+import type { BossCardCommand, BossDevelopmentCommand } from './game/bossReward'
 import type { RoomCommand, RoomSelection } from './game/dungeonRooms'
 import type { DungeonRunState } from './game/campaign'
 import { createRunSaveStore } from './game/runSave'
@@ -62,7 +66,7 @@ const rewardOptions = computed(() => dungeonRewardOptions(run.value))
 const selectedNodeId = computed(() => run.value.currentNodeId)
 const finalBattle = computed(() => dungeonNode(run.value.map, selectedNodeId.value ?? '')?.type === 'final')
 const musicRequest = computed(() => musicForContext({
-  screen: phase.value === 'start' || phase.value === 'resume' ? 'menu' : phase.value === 'battle' ? 'battle' : phase.value === 'complete' ? 'complete' : 'map',
+  screen: phase.value === 'start' || phase.value === 'resume' ? 'menu' : phase.value === 'battle' ? 'battle' : phase.value === 'complete' || phase.value === 'boss-reward' || phase.value === 'transition' ? 'complete' : 'map',
   encounterId: state.value.enemy.encounterId,
   result: phase.value === 'battle' ? state.value.result : null,
   finalBattle: finalBattle.value,
@@ -73,6 +77,11 @@ const idleArmor = computed<HeroId[]>(() => {
   if (!rules.armorExpires || state.value.result) return []
   const struck = heroesStruckNow(publicIntent(forecastEnemyAction(state.value)))
   return (Object.keys(state.value.heroes) as HeroId[]).filter(id => !struck.includes(id))
+})
+/** The sector boss whose reward is open (or just closed): its name heads the reward screen. */
+const bossName = computed(() => {
+  const node = dungeonNode(run.value.map, run.value.bossReward?.nodeId ?? run.value.map.finalNodeId)
+  return node ? dungeonEncounter(node, economy).name : ''
 })
 const encounterName = computed(() => {
   const node = run.value.currentNodeId ? dungeonNode(run.value.map, run.value.currentNodeId) : undefined
@@ -206,6 +215,20 @@ function chooseArtifact(artifactId: Parameters<typeof claimDungeonArtifact>[1], 
   phase.value = 'map'
 }
 
+function chooseBossCard(offerId: string, command: BossCardCommand) {
+  if (phase.value !== 'boss-reward' || run.value.bossReward?.id !== offerId) return
+  publish(claimBossCard(run.value, offerId, command))
+  if (command.kind !== 'skip') gameAudio.play('reward')
+  phase.value = dungeonRunPhase(run.value)
+}
+
+function chooseBossDevelopment(offerId: string, command: BossDevelopmentCommand) {
+  if (phase.value !== 'boss-reward' || run.value.bossReward?.id !== offerId) return
+  publish(claimBossDevelopment(run.value, offerId, command))
+  if (command.kind !== 'skip') gameAudio.play('reward')
+  phase.value = dungeonRunPhase(run.value)
+}
+
 function chooseRestTarget(heroId: HeroId | null, sourceId?: string) {
   if (phase.value !== 'rest' || sourceId !== run.value.runId + '/' + run.value.currentNodeId) return
   publish(resolveDungeonRest(run.value, heroId))
@@ -222,7 +245,7 @@ function restartRun() {
   cancel()
   const nextSeed = seedOnce ?? (((Date.now() >>> 0) === run.value.seed ? run.value.seed + 1 : Date.now()) >>> 0)
   seedOnce = null
-  publish(createSectorRun(nextSeed, economy, startDeck))
+  publish(createAdventureRun(nextSeed, economy, startDeck))
   restart(nextSeed)
   saved.value = null
   loadNotice.value = ''
@@ -248,15 +271,17 @@ function confirmRoom(command: RoomCommand) {
     <div class="game-wrap">
       <AudioSettings />
       <p v-if="experimental" class="economy-badge" :title="economy.label">Лаборатория · {{ economy.label }}</p>
-      <MainMenu v-if="phase === 'start' || phase === 'resume'" :saved="saved ? { active: saved.run.status === 'active' } : null" :can-return="!!phaseBeforeStart && phaseBeforeStart !== 'resume'" :finished="phaseBeforeStart === 'complete'" :notice="loadNotice" :unreadable="phase === 'resume' && !saved" @continue="continueSavedRun" @return="phase = phaseBeforeStart!" @new-run="restartRun" @download="downloadSave" @retry="retryLoad" />
+      <MainMenu v-if="phase === 'start' || phase === 'resume'" :saved="saved ? { active: saved.run.status === 'active' || dungeonRunPhase(saved.run) === 'transition', atExit: dungeonRunPhase(saved.run) === 'transition' } : null" :can-return="!!phaseBeforeStart && phaseBeforeStart !== 'resume'" :finished="phaseBeforeStart === 'complete'" :notice="loadNotice" :unreadable="phase === 'resume' && !saved" @continue="continueSavedRun" @return="phase = phaseBeforeStart!" @new-run="restartRun" @download="downloadSave" @retry="retryLoad" />
       <CampaignMap v-else-if="phase === 'map'" :map="run.map" :run="run" @enter="enterNode" @mode="showStart" />
       <DungeonRoom v-else-if="phase === 'room'" :key="run.room!.id" :run="run" @select="chooseRoom" @confirm="confirmRoom" />
       <EliteReward v-else-if="phase === 'reward' && run.pendingReward?.elite" :key="run.pendingReward.id" :offer-id="run.pendingReward.id" :deck="run.deck" :options="rewardOptions" :artifacts="dungeonArtifactOptions(run)" :heroes="run.heroes" :owned-artifacts="run.artifacts" :encounter-name="encounterName" :gold="run.pendingReward.rarity === 'gold'" @choose-card="chooseReward" @choose-artifact="chooseArtifact" />
       <CardReward v-else-if="phase === 'reward'" :key="run.pendingReward!.id" :offer-id="run.pendingReward!.id" :deck="run.deck" :options="rewardOptions" :encounter-name="encounterName" @choose="chooseReward" @skip="skipReward" />
+      <BossReward v-else-if="phase === 'boss-reward' && run.bossReward" :key="run.bossReward.id" :reward="run.bossReward" :boss-name="bossName" :deck="run.deck" :heroes="run.heroes" :owned-artifacts="run.artifacts" @claim-card="chooseBossCard" @claim-development="chooseBossDevelopment" />
       <RestSite v-else-if="phase === 'rest'" :key="run.runId + '/' + selectedNodeId" :source-id="run.runId + '/' + selectedNodeId" :heroes="run.heroes" :deck="run.deck" :heal-amount="selectedNodeId ? dungeonNode(run.map, selectedNodeId)?.healAmount ?? 6 : 6" @choose="chooseRestTarget" @upgrade="chooseRestUpgrade" />
+      <SectorTransition v-else-if="phase === 'transition' && run.journey" :run="run" @menu="showStart" />
       <RunComplete v-else-if="phase === 'complete'" :result="run.status === 'defeat' ? 'defeat' : 'victory'" :run="run" @new-run="restartRun" @menu="showStart" />
       <template v-else>
-        <BattleBoard :state="state" :animation="animation" :phase="battlePhase" :artifact-notices="state.artifactNotices" :continue-label="finalBattle ? (run.campaign ? 'Завершить сектор I' : 'Завершить поход') : 'Выбрать награду'" :final="finalBattle" @impact="impact" @end-turn="onEndTurn" @continue="onBattleContinue" />
+        <BattleBoard :state="state" :animation="animation" :phase="battlePhase" :artifact-notices="state.artifactNotices" :continue-label="finalBattle ? (run.journey ? 'Забрать трофеи босса' : run.campaign ? 'Завершить сектор I' : 'Завершить поход') : 'Выбрать награду'" :final="finalBattle" :trophies="finalBattle && !!run.journey" @impact="impact" @end-turn="onEndTurn" @continue="onBattleContinue" />
         <BattleHand v-if="!isOver" :cards="cards" :outgoing="pendingCard" :outgoing-index="state.pending?.handIndex ?? 0" :draw-count="drawCount" :discard-count="discardCount" :exhausted-count="state.exhausted.length" :phase="battlePhase" :mana="state.mana" :max-mana="state.maxMana" :next-mana="manaForTurn(state.economy, state.turn + 1)" :next-draw="drawForTurn(state.economy, state.turn + 1)" :draw-boost-from="state.economy.drawSchedule.boost?.fromTurn" :draw-boost-amount="state.economy.drawSchedule.boost?.amount" :idle-armor="idleArmor" @play="playCard" @end-turn="onEndTurn" />
       </template>
       <ArmorChoiceDialog v-if="choosing" :card="choosing.card" :choice="choosing.choice" :heroes="state.heroes" @pick="pickArmorTarget" @cancel="cancelArmorChoice" />

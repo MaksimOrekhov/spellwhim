@@ -10,7 +10,7 @@ import jainaPortrait from '../assets/art/jaina-krea.webp'
  */
 const props = defineProps<{
   /** A run waiting in the save slot: `active` can be continued, `finished` only shows its result. */
-  saved: { active: boolean } | null
+  saved: { active: boolean; /** The run waits at the exit of a cleared sector (the boss reward is closed). */ atExit?: boolean } | null
   /** The menu was opened from a run in progress (the map, a result), which can be returned to. */
   canReturn: boolean
   /** The run that can be returned to is over (its summary was on screen): the way back leads to that summary. */
@@ -43,7 +43,8 @@ watch([() => props.saved?.active ?? null, () => props.canReturn, () => props.unr
       <h1>Spellwhim</h1>
       <h2>Мёртвые копи</h2>
       <p class="menu-story">Вариан и Джайна спускаются в Старые штольни: подрывники, механики и Рак'Зор в конце длинного пути. Стройте колоду вдвоём, выбирайте штреки и прикрывайте друг друга от ударов.</p>
-      <p v-if="saved?.active" class="menu-note">Отряд ждёт у последней комнаты. Прерванный бой начнётся заново с тем же здоровьем и колодой.</p>
+      <p v-if="saved?.atExit" class="menu-note">Отряд ждёт у выхода из пройденного сектора: трофеи босса забраны, колода и здоровье сохранены.</p>
+      <p v-else-if="saved?.active" class="menu-note">Отряд ждёт у последней комнаты. Прерванный бой начнётся заново с тем же здоровьем и колодой.</p>
       <p v-else-if="saved" class="menu-note">Сохранённый поход завершён.</p>
       <p v-if="notice" class="menu-note" role="status">{{ notice }}</p>
       <div class="menu-actions">

@@ -13,7 +13,9 @@ import type { ArtifactDefinition, ArtifactId, ArtifactInstance, BattleState, Car
 import { generateSectorMap, sectorOneConfig, validateSectorMap } from './dungeonGenerator'
 import type { SectorConfig } from './dungeonGenerator'
 import { knownSectorEncounters } from './sectorLong'
-import { sectorLongConfigV3 } from './sectorLong'
+import { sectorLongConfig, sectorLongConfigV3 } from './sectorLong'
+import { createBossReward, newJourney, sectorAfter, waitsAtSectorExit } from './adventure'
+import type { BossReward, RunJourney } from './adventure'
 import { sectorFoeSets } from './sectorFoesB'
 import type { SectorEventId } from './sectorContent'
 import { createRoomVisit } from './dungeonRooms'
@@ -180,6 +182,10 @@ export interface DungeonRunState {
   pendingReward: DungeonRewardOffer | null
   /** Elite victories of this run offer gold cards. Set when a sector run starts; runs saved before gold carry no flag and keep their ordinary elite offers. */
   goldRewards?: true
+  /** The adventure above the sector (Sector Transition v1). Set when an adventure run starts; runs saved before it, the short sector and Balance Lab runs carry none and end at the first boss. */
+  journey?: RunJourney
+  /** The open reward of the sector boss that has just fallen: present only between that victory and the moment both of its tracks are closed. */
+  bossReward?: BossReward
   /** Cards that never appear in this run's reward offers (Balance Lab controls); empty in the game. */
   excludedRewards?: CardId[]
   /** Artifacts that are never offered or equipped in this run (EXPERIMENT economies whose rules void them); absent in the standard game. */
@@ -310,8 +316,17 @@ export function createSectorRun(seed: number, economy: EconomyConfig = gameEcono
   return { ...run, map: generateSectorMap(run.mapSeed, config), campaign: { id: config.id, version: config.version }, room: null, journal: [], goldRewards: true }
 }
 
+/**
+ * A run of the game itself: the long Old Mines as the first sector of the three-sector adventure. Everything but the ledger is `createSectorRun`;
+ * Balance Lab and the short sector keep calling that one and end at the boss, as before.
+ */
+export function createAdventureRun(seed: number, economy: EconomyConfig = gameEconomy, deck: readonly CardId[] = startingDeck, runId: string = crypto.randomUUID()): DungeonRunState {
+  const run = createSectorRun(seed, economy, deck, undefined, runId)
+  return run.campaign?.id === sectorLongConfig.id ? { ...run, journey: newJourney() } : run
+}
+
 export function availableDungeonNodes(run: DungeonRunState): DungeonMapNode[] {
-  if (run.status !== 'active' || run.pendingReward || run.room) return []
+  if (run.status !== 'active' || run.pendingReward || run.bossReward || run.room) return []
   if (run.currentNodeId && !run.completedNodeIds.includes(run.currentNodeId)) return []
   const sourceIds = run.currentNodeId ? dungeonNode(run.map, run.currentNodeId)?.edges ?? [] : run.map.startNodeIds
   return sourceIds.filter(id => !run.visitedNodeIds.includes(id)).map(id => dungeonNode(run.map, id)).filter((node): node is DungeonMapNode => !!node)
@@ -324,10 +339,12 @@ export function enterDungeonNode(run: DungeonRunState, id: string): DungeonRunSt
   return ['forge', 'treasure', 'event'].includes(node.type) ? { ...next, room: createRoomVisit(next, node) } : next
 }
 
-export function dungeonRunPhase(run: DungeonRunState): 'map' | 'battle' | 'reward' | 'rest' | 'room' | 'complete' {
-  if (run.status !== 'active') return 'complete'
+/** `boss-reward`: the sector boss is down and its reward is open. `transition`: the reward is closed and the party stands at the sector's exit, the run still alive. */
+export function dungeonRunPhase(run: DungeonRunState): 'map' | 'battle' | 'reward' | 'boss-reward' | 'rest' | 'room' | 'transition' | 'complete' {
+  if (run.status !== 'active') return run.status === 'sector-complete' && waitsAtSectorExit(run.journey) ? 'transition' : 'complete'
   if (run.room) return 'room'
   if (run.pendingReward) return 'reward'
+  if (run.bossReward) return 'boss-reward'
   if (run.battleEntry) return 'battle'
   if (run.currentNodeId && !run.completedNodeIds.includes(run.currentNodeId)) return 'rest'
   return 'map'
@@ -368,7 +385,13 @@ export function resolveDungeonBattle(run: DungeonRunState, battle: BattleState):
   const { pendingBattleEffects: _spent, ...rest } = run
   const base = { ...rest, heroes, completedNodeIds: addCompletedNode(run, current.id), pendingReward: null, battleEntry: null, decisions: [...run.decisions, `battle:${current.id}`] }
   if (battle.result === 'defeat') return { ...base, status: 'defeat' }
-  if (current.type === 'final') return { ...base, status: run.campaign ? 'sector-complete' : 'victory' }
+  if (current.type === 'final') {
+    // An adventure run does not end at a sector's boss: the boss leaves a reward and the party goes on. Anything else ends here, as it always did.
+    if (run.journey && sectorAfter(run.journey.sectorId)) {
+      return { ...base, bossReward: createBossReward({ runId: run.runId, runSeed: run.seed, nodeId: current.id, deck: run.deck, ownedArtifacts: run.artifacts.map(item => item.definitionId), excludedArtifacts: run.excludedArtifacts }) }
+    }
+    return { ...base, status: run.campaign ? 'sector-complete' : 'victory' }
+  }
   return {
     ...base,
     pendingReward: createDungeonRewardOffer(run, current),
