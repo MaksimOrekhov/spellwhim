@@ -144,4 +144,7 @@
   --mat-card-paper:   repeating-linear-gradient(8deg, #7a4a1a0d 0 .1em, #0000 .1em .4em);
   --card-engrave:     0 .06em 0 #fff8, 0 -.04em 0 #3a240e55;
   --glow-upgrade:     0 0 .9em #ffe08acc;
+  /* gold rarity (cards): polished gold for the frame, a softer glow than the upgrade star so the two never read as one thing */
+  --mat-gold-rim:     linear-gradient(145deg, #fff1b8 0%, var(--brass-2) 22%, #b98428 48%, #f3d27d 70%, var(--brass-3) 100%);
+  --glow-gold:        0 0 .8em .06em #ffd56b99;
 }

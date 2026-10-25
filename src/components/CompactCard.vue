@@ -23,7 +23,7 @@ const style = computed(() => ({ ...classThemeStyle(props.card.className), '--emb
 </script>
 
 <template>
-  <span class="cf tc" :class="[`cf--${theme.ornament}`, { 'is-locked': locked, 'is-dim': block?.kind === 'phase', 'is-bonus': bonus, 'is-upgraded': !!card.upgrade }]" :style="style" :data-card-class="theme.id">
+  <span class="cf tc" :class="[`cf--${theme.ornament}`, { 'is-locked': locked, 'is-dim': block?.kind === 'phase', 'is-bonus': bonus, 'is-upgraded': !!card.upgrade, 'is-gold': card.rarity === 'gold' }]" :style="style" :data-card-class="theme.id">
     <span class="cf-rim" aria-hidden="true"></span>
     <span class="cf-body">
       <span class="cf-art tc-art">

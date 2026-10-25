@@ -8,7 +8,9 @@ export type ArtifactId = 'reliable-wedge' | 'double-pulley' | 'weakpoint-lens' |
 export type GameResult = 'victory' | 'defeat' | null
 /** Cards that exist only in the starting deck of the B2 experiment: no reward, no upgrade, not part of the saved-catalogue fingerprint. */
 export type ExperimentalCardId = 'frost-grip' | 'ice-breaker'
-export type CardId = ExperimentalCardId | 'sword-strike' | 'fireball' | 'guard' | 'quick-cut' | 'thunderbolt' | 'bastion' | 'parry' | 'shield-bash' | 'interpose' | 'frostbolt' | 'arcane-insight' | 'ice-ward' | 'rend' | 'reaping-blow' | 'boil-blood' | 'stance-strike' | 'wound-clamp' | 'covering-counter' | 'crushing-swing' | 'arcane-mark' | 'ice-echo' | 'frost-seal' | 'blood-resonance'
+/** Gold cards (GDD §6): a separate rarity with its own catalogue, offered only by elite rewards and unique by definition in a deck. */
+export type GoldCardId = 'commanders-order' | 'bloody-finale' | 'weakpoint-verdict' | 'concerted-volley'
+export type CardId = ExperimentalCardId | GoldCardId | 'sword-strike' | 'fireball' | 'guard' | 'quick-cut' | 'thunderbolt' | 'bastion' | 'parry' | 'shield-bash' | 'interpose' | 'frostbolt' | 'arcane-insight' | 'ice-ward' | 'rend' | 'reaping-blow' | 'boil-blood' | 'stance-strike' | 'wound-clamp' | 'covering-counter' | 'crushing-swing' | 'arcane-mark' | 'ice-echo' | 'frost-seal' | 'blood-resonance'
 export type StatusId = 'vulnerability' | 'bleeding' | 'frostbite'
 /** Who can hold a status. `'enemy'` is the current opponent; hero keys follow the legacy engine key (`Hero.id`). */
 export type StatusCarrierId = 'enemy' | HeroId
@@ -22,7 +24,11 @@ export type BattleStatuses = Record<StatusCarrierId, StatusInstance[]>
 export type CardTag = 'strike' | 'offensive-spell' | 'defense'
 /** The bonus belongs to the party member who owns the card's class (see `party.ts`), never to a named character. */
 export interface CardDamageBonus {
-  condition: 'owner-has-armor'
+  /**
+   * `owner-has-armor`: while the card's owner has armor. `other-class-played`: a card of another class has already been played this turn
+   * (`BattleState.classesPlayedThisTurn`); it names no class, hero or pair, so it holds for any party.
+   */
+  condition: 'owner-has-armor' | 'other-class-played'
   amount: number
 }
 /** `class:<id>` addresses the party member of that class; it resolves through the actual party and fails safe if absent or ambiguous. */
@@ -73,6 +79,8 @@ export interface CardDefinition {
   damageBonus?: CardDamageBonus
   exhaust?: boolean
   reward?: boolean
+  /** Absent: an ordinary card. Rarity is a separate axis from class, cost and upgrade level. */
+  rarity?: 'gold'
   /** EXPERIMENT "Honest Turn B2": a card that exists only in the starting deck of that mode. Left out of the saved-catalogue fingerprint and of every reward pool. */
   experimental?: boolean
 }
@@ -159,6 +167,18 @@ export const experimentalCards: CardDefinition[] = [
   { id: 'ice-breaker', name: 'Раскол льда', className: 'warrior', cost: 1, description: '5 урона. Если враг обморожен: ещё 7 урона, Обморожение снимается.', icon: '⚔', kind: 'attack', tags: ['strike'], effects: [{ type: 'damage', amount: 5 }, { type: 'status-burst', status: 'frostbite', perPoint: 7 }], experimental: true },
 ]
 
+/**
+ * Gold cards, first batch (GDD G01–G04). Like the experimental pair they stay out of `cards`: the catalogue the saves fingerprint, the ordinary
+ * reward pools and every "all cards" check keep their exact contents, and `cardDefinition` is the one place that knows them. They have no
+ * upgraded version (GDD: ordinary upgrades do not apply to gold at first) and exhaust, so each can be played once per battle.
+ */
+export const goldCards: CardDefinition[] = [
+  { id: 'commanders-order', name: 'Командирский приказ', className: 'warrior', cost: 2, description: '5 брони цели врага и 5 брони напарнику. Добор карты. Выбывает до конца боя.', icon: '⬡', kind: 'defense', tags: ['defense'], effects: [{ type: 'armor', amount: 5, target: 'threatened' }, { type: 'armor', amount: 5, target: 'partner' }, { type: 'draw', amount: 1 }], exhaust: true, rarity: 'gold' },
+  { id: 'bloody-finale', name: 'Кровавая развязка', className: 'warrior', cost: 2, description: '6 урона и ещё 2 за каждую силу Кровотечения врага. Снимает Кровотечение. 3 брони цели врага. Выбывает до конца боя.', icon: '⚔', kind: 'attack', tags: ['strike'], effects: [{ type: 'damage', amount: 6 }, { type: 'status-burst', status: 'bleeding', perPoint: 2 }, { type: 'armor', amount: 3, target: 'threatened' }], exhaust: true, rarity: 'gold' },
+  { id: 'weakpoint-verdict', name: 'Приговор слабой точке', className: 'mage', cost: 2, description: '7 урона. Накладывает Уязвимость. Добор карты. Выбывает до конца боя.', icon: '✹', kind: 'spell', tags: ['offensive-spell'], effects: [{ type: 'damage', amount: 7 }, { type: 'status', status: 'vulnerability' }, { type: 'draw', amount: 1 }], exhaust: true, rarity: 'gold' },
+  { id: 'concerted-volley', name: 'Согласованный залп', className: 'mage', cost: 2, description: '7 урона. Добор карты. Если в этот ход уже сыграна карта другого класса: +2 урона. Выбывает до конца боя.', icon: '✹', kind: 'spell', tags: ['offensive-spell'], effects: [{ type: 'damage', amount: 7 }, { type: 'draw', amount: 1 }], damageBonus: { condition: 'other-class-played', amount: 2 }, exhaust: true, rarity: 'gold' },
+]
+
 export const startingDeck: CardId[] = [
   'sword-strike', 'sword-strike', 'fireball', 'fireball', 'guard', 'guard',
   'parry', 'parry', 'shield-bash', 'shield-bash', 'interpose', 'interpose',
@@ -166,7 +186,7 @@ export const startingDeck: CardId[] = [
 ]
 
 export function cardDefinition(id: CardId): CardDefinition {
-  const definition = cards.find(card => card.id === id) ?? experimentalCards.find(card => card.id === id)
+  const definition = cards.find(card => card.id === id) ?? experimentalCards.find(card => card.id === id) ?? goldCards.find(card => card.id === id)
   if (!definition) throw new Error('Unknown card: ' + id)
   return definition
 }
@@ -290,6 +310,8 @@ export interface BattleState {
   artifactNotices: string[]
   enemy: EnemyState
   hand: CardInstance[]
+  /** Classes of the cards played (resolved) so far this player turn, in order; emptied when the enemy's turn ends. The one history "other class" conditions read. */
+  classesPlayedThisTurn: CardClassId[]
   blockedDraws: number
   drawPile: CardInstance[]
   discardPile: CardInstance[]

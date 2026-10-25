@@ -6,7 +6,7 @@ import { defaultDungeonRoster } from './encountersV10'
 import type { DungeonRoster } from './rosters'
 import type { EconomyConfig } from './economy'
 import { shuffle } from './deck'
-import { canUpgradeCard, resolveCardDefinition, validateAcquisition } from './cardProgression'
+import { availableGoldCards, canUpgradeCard, resolveCardDefinition, validateAcquisition } from './cardProgression'
 import type { CardAcquisition } from './cardProgression'
 import type { DeckInput, PersistentCard } from './types'
 import type { ArtifactDefinition, ArtifactId, ArtifactInstance, BattleState, CardDefinition, CardId, EncounterDefinition, Hero, HeroId } from './types'
@@ -104,6 +104,8 @@ export const DUNGEON_LAYER_COUNT = 6
 export const REST_HEAL_AMOUNT = 6
 export const NORMAL_REWARD_CHOICES = 3
 export const ELITE_REWARD_CHOICES = 5
+/** Gold cards an elite victory offers when the run gives gold: three of the cards the deck does not hold yet (GDD §6, "gold from three"). */
+export const GOLD_REWARD_CHOICES = 3
 
 export type DungeonNodeType = 'battle' | 'elite' | 'rest' | 'final' | 'forge' | 'treasure' | 'event'
 
@@ -139,6 +141,8 @@ export interface DungeonRewardOffer {
   artifactSeed: number
   count: number
   elite: boolean
+  /** Present on an elite offer whose cards are gold; absent on every ordinary offer and on elite offers made before gold existed. */
+  rarity?: 'gold'
   cards: CardAcquisition[]
   artifactIds: ArtifactId[]
 }
@@ -164,6 +168,8 @@ export interface DungeonRunState {
   artifacts: ArtifactInstance[]
   status: DungeonRunStatus
   pendingReward: DungeonRewardOffer | null
+  /** Elite victories of this run offer gold cards. Set when a sector run starts; runs saved before gold carry no flag and keep their ordinary elite offers. */
+  goldRewards?: true
   /** Cards that never appear in this run's reward offers (Balance Lab controls); empty in the game. */
   excludedRewards?: CardId[]
   /** Artifacts that are never offered or equipped in this run (EXPERIMENT economies whose rules void them); absent in the standard game. */
@@ -291,7 +297,7 @@ export function createDungeonRun(seed: number, economy: EconomyConfig = gameEcon
 /** Uses the same run, battle, reward and progression contracts as the legacy control. */
 export function createSectorRun(seed: number, economy: EconomyConfig = gameEconomy, deck: readonly CardId[] = startingDeck, config: SectorConfig = economy.sectorRoute === 'long' ? sectorLongConfig : sectorOneConfig, runId: string = crypto.randomUUID()): DungeonRunState {
   const run = createDungeonRun(seed, economy, deck, defaultDungeonRoster, runId)
-  return { ...run, map: generateSectorMap(run.mapSeed, config), campaign: { id: config.id, version: config.version }, room: null, journal: [] }
+  return { ...run, map: generateSectorMap(run.mapSeed, config), campaign: { id: config.id, version: config.version }, room: null, journal: [], goldRewards: true }
 }
 
 export function availableDungeonNodes(run: DungeonRunState): DungeonMapNode[] {
@@ -355,16 +361,18 @@ function seededOffer<T>(seed: number, pool: readonly T[], count: number): T[] {
   return shuffle({ rngState: seed >>> 0 }, pool).slice(0, count)
 }
 
-function createDungeonRewardOffer(run: DungeonRunState, node: DungeonMapNode): DungeonRewardOffer {
+export function createDungeonRewardOffer(run: DungeonRunState, node: DungeonMapNode): DungeonRewardOffer {
   const elite = node.type === 'elite'
   const seed = deriveDungeonSeed(run.seed, `reward:${node.id}`)
   const artifactSeed = deriveDungeonSeed(run.seed, `artifact-reward:${node.id}`)
   const count = elite ? ELITE_REWARD_CHOICES : NORMAL_REWARD_CHOICES
+  const gold = elite && run.goldRewards ? seededOffer(seed, availableGoldCards(run.deck), GOLD_REWARD_CHOICES) : []
   const artifactPool = elite ? artifactDefinitions.filter(definition => !run.artifacts.some(owned => owned.definitionId === definition.id) && !run.excludedArtifacts?.includes(definition.id)) : []
   return {
     id: `${run.runId}/reward/${node.id}`,
-    nodeId: node.id, seed, artifactSeed, count, elite,
-    cards: seededOffer(seed, campaignRewards(run.excludedRewards), count).map(card => ({ definitionId: card.id, upgrade: 0 })),
+    nodeId: node.id, seed, artifactSeed, elite,
+    // A deck that already holds every gold card gets the ordinary elite offer instead of an empty one.
+    ...(gold.length ? { count: gold.length, rarity: 'gold' as const, cards: gold.map(card => ({ definitionId: card.id, upgrade: 0 as const })) } : { count, cards: seededOffer(seed, campaignRewards(run.excludedRewards), count).map(card => ({ definitionId: card.id, upgrade: 0 as const })) }),
     artifactIds: seededOffer(artifactSeed, artifactPool, Math.min(3, artifactPool.length)).map(item => item.id),
   }
 }
@@ -385,7 +393,7 @@ export function claimDungeonReward(run: DungeonRunState, reward: CardDefinition,
   const choice = run.pendingReward?.cards.find(card => card.definitionId === reward.id)
   if (run.status !== 'active' || !run.pendingReward || run.pendingReward.id !== offerId || !choice) throw new Error('This card was not in the current dungeon reward offer')
   const copy = acquiredCopy(run, choice)
-  return { ...run, deck: [...run.deck, copy], nextCardId: run.nextCardId + 1, decisions: [...run.decisions, run.pendingReward.id], pendingReward: null, ...(run.journal ? { journal: [...run.journal, { nodeId: run.currentNodeId!, kind: 'reward' as const, text: `Получено: ${reward.name}`, card: copy }] } : {}) }
+  return { ...run, deck: [...run.deck, copy], nextCardId: run.nextCardId + 1, decisions: [...run.decisions, run.pendingReward.id], pendingReward: null, ...(run.journal ? { journal: [...run.journal, { nodeId: run.currentNodeId!, kind: 'reward' as const, text: `${reward.rarity === 'gold' ? 'Золотая карта' : 'Получено'}: ${reward.name}`, card: copy }] } : {}) }
 }
 
 export function skipDungeonReward(run: DungeonRunState, offerId: string): DungeonRunState {
@@ -452,7 +460,7 @@ function betweenRooms(run: DungeonRunState): void {
 }
 
 export function acquiredCopy(run: DungeonRunState, card: CardAcquisition): PersistentCard {
-  validateAcquisition(card)
+  validateAcquisition(card, run.deck)
   return { definitionId: card.definitionId, upgrade: card.upgrade, instanceId: `${run.runId}/card/${run.nextCardId}` }
 }
 
@@ -461,7 +469,7 @@ export function offerDeckOperation(run: DungeonRunState, sourceId: string, kind:
   betweenRooms(run)
   if (!sourceId || !['remove', 'replace', 'upgrade'].includes(kind) || run.deckOperations.some(offer => offer.sourceId === sourceId)) throw new Error('Deck operation source already exists or is invalid')
   if ((kind === 'replace') !== (options.length > 0)) throw new Error('Only replacement services have card offers')
-  options.forEach(validateAcquisition)
+  options.forEach(card => validateAcquisition(card))
   return { ...run, deckOperations: [...run.deckOperations, { sourceId, kind, options: options.map(card => ({ ...card })), resolved: false }] }
 }
 

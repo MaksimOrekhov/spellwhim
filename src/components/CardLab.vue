@@ -7,7 +7,7 @@ import SpellCard from './SpellCard.vue'
 import CompactCard from './CompactCard.vue'
 import DeckViewer from './DeckViewer.vue'
 import CardOperationDialog from './CardOperationDialog.vue'
-import { cards } from '../game/types'
+import { cards, goldCards } from '../game/types'
 import { createBattle, previewCard } from '../game/battle'
 import { applyStatus } from '../game/statuses'
 import { classThemes, classThemeStyle } from '../game/classThemes'
@@ -25,6 +25,8 @@ const em = Number(props.query.get('em') ?? 14)
 // ── sheet: every card of the catalogue, by class ─────────────────────────────
 const byClass = Object.keys(classThemes).map(id => ({ id: id as keyof typeof classThemes, cards: cards.filter(card => card.className === id) }))
 
+const goldSheet = goldCards
+
 // ── states: the same cards in the states a player meets ──────────────────────
 function board(setup?: (state: BattleState) => void): BattleState {
   const state = createBattle(encounters.find(item => item.id === 'root-sentinel')!, undefined, { seed: 7 })
@@ -34,6 +36,7 @@ function board(setup?: (state: BattleState) => void): BattleState {
 const calm = board()
 // The enemy's declared action is an attack, so "if the enemy attacks" cards are active; Vulnerability and Jaina's armor wake the synergies.
 const hot = board(state => { applyStatus(state, 'enemy', 'vulnerability'); state.heroes.mage.armor = 3; state.heroes.warrior.armor = 4 })
+const warm = board(state => { state.classesPlayedThisTurn.push('warrior') })
 const frozen = board(state => { applyStatus(state, 'enemy', 'frostbite'); applyStatus(state, 'enemy', 'bleeding', 3) })
 const def = (id: CardId, upgrade: 0 | 1 = 0) => resolveCardDefinition({ definitionId: id, upgrade })
 interface Specimen { title: string; card: CardDefinition; preview: CardPreview; block?: CardBlock | null }
@@ -47,6 +50,7 @@ const groups = computed<{ name: string; items: Specimen[] }[]>(() => [
   { name: 'Улучшенные', items: [specimen('Удар мечом ↑', def('sword-strike', 1), calm), specimen('Огненный шар ↑', def('fireball', 1), calm), specimen('Каменный бастион ↑', def('bastion', 1), calm), specimen('Тайное предвидение ↑', def('arcane-insight', 1), calm)] },
   { name: 'Статусы: Уязвимость, Кровотечение, Обморожение', items: [specimen('Удар щитом', def('shield-bash'), calm), specimen('Рассекающий удар', def('rend'), calm), specimen('Кровавая расплата (кровь 3)', def('reaping-blow'), frozen), specimen('Жар в венах (кровь 3)', def('boil-blood'), frozen)] },
   { name: 'Мороз и сталь (B2)', items: [specimen('Ледяная хватка', cardOf('frost-grip'), calm), specimen('Раскол льда', cardOf('ice-breaker'), calm), specimen('Раскол льда (мороз)', cardOf('ice-breaker'), frozen), specimen('Ледяная стрела ↑ + связка', def('frostbolt', 1), hot)] },
+  { name: 'Золотые карты', items: [specimen('Командирский приказ', def('commanders-order'), calm), specimen('Кровавая развязка', def('bloody-finale'), calm), specimen('Развязка: Кровотечение 3', def('bloody-finale'), frozen), specimen('Приговор слабой точке', def('weakpoint-verdict'), calm), specimen('Приговор: враг Уязвим', def('weakpoint-verdict'), hot), specimen('Залп: условие не выполнено', def('concerted-volley'), calm), specimen('Залп: сыграна карта Воина', def('concerted-volley'), warm), specimen('Золотая: не хватает маны', def('concerted-volley'), calm, manaBlock)] },
   { name: 'Дорогие и многословные', items: [specimen('Синяя печать', def('frost-seal'), calm), specimen('Кровавый резонанс', def('blood-resonance'), frozen), specimen('Ледяное эхо', def('ice-echo'), calm), specimen('Прикрыть союзника', def('interpose'), calm)] },
 ])
 function cardOf(id: CardId): CardDefinition { return def(id) }
@@ -70,6 +74,15 @@ onMounted(() => { if (props.view === 'deck') setTimeout(() => (document.querySel
       <h2>{{ classThemes[group.id].name }} · {{ group.cards.length }}</h2>
       <div class="lab-row">
         <figure v-for="card in group.cards" :key="card.id" :title="card.id">
+          <SpellCard :card="card" :preview="neutralPreview(card)" />
+          <CompactCard v-if="query.get('tiles') === '1'" class="lab-tile" :card="card" :preview="neutralPreview(card)" />
+        </figure>
+      </div>
+    </section>
+    <section>
+      <h2>Золотые · {{ goldSheet.length }}</h2>
+      <div class="lab-row">
+        <figure v-for="card in goldSheet" :key="card.id" :title="card.id">
           <SpellCard :card="card" :preview="neutralPreview(card)" />
           <CompactCard v-if="query.get('tiles') === '1'" class="lab-tile" :card="card" :preview="neutralPreview(card)" />
         </figure>

@@ -3,6 +3,7 @@ import { shuffle } from './deck'
 import { cloneEconomy } from './economy'
 import { cloneStatuses, statusSignature } from './statuses'
 import { resolveCardDefinition } from './cardProgression'
+import { goldCards } from './types'
 import type { BattleState, CardId, CardInstance } from './types'
 
 /**
@@ -83,6 +84,7 @@ export function cloneBattleState(state: BattleState): BattleState {
     enemy: { ...state.enemy },
     economy: cloneEconomy(state.economy),
     hand: [...state.hand], drawPile: [...state.drawPile], discardPile: [...state.discardPile], exhausted: [...state.exhausted],
+    classesPlayedThisTurn: [...state.classesPlayedThisTurn],
   }
 }
 
@@ -154,6 +156,10 @@ export function determinize(state: BattleState, salt = 0): BattleState {
   return copy
 }
 
+/** Cards whose rules read the classes already played this turn; only a battle that still holds one needs that history in its identity. */
+const readsClassHistory = new Set<string>(goldCards.filter(card => card.damageBonus?.condition === 'other-class-played').map(card => card.id))
+const classHistoryMatters = (state: BattleState) => [state.hand, state.drawPile, state.discardPile].some(zone => zone.some(card => readsClassHistory.has(card.definitionId)))
+
 function digest(state: BattleState): string {
   const ids = (cards: readonly CardInstance[]) => cards.map(card => variantKey(card)).join(',')
   return [
@@ -162,6 +168,7 @@ function digest(state: BattleState): string {
     ...(state.artifacts.length ? [visibleArtifactState(state)] : []),
     ...extraStatusSignature(state),
     ...(state.enemy.hurt ? ['h' + state.enemy.hurt] : []),
+    ...(classHistoryMatters(state) ? ['c' + [...new Set(state.classesPlayedThisTurn)].sort().join('+')] : []),
     ids(state.drawPile), [...state.exhausted].map(card => variantKey(card)).sort().join(','), state.rngState,
   ].join('|')
 }

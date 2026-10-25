@@ -6,7 +6,7 @@
    → name plate across the seam (.cf-plate) → gems for the numbers (.cf-gem) → corner jewels: mana cost, class seal, upgrade star. */
 .cf{--trim:var(--class-accent);position:relative;display:block;color:var(--parch-ink);text-align:left;font-family:var(--font-ui);text-shadow:none}
 .cf--arcane{--trim:var(--class-secondary)}
-.cf.is-upgraded{--trim:var(--brass-1)}
+.cf.is-upgraded,.cf.is-gold{--trim:var(--brass-1)}
 .cf>*{pointer-events:none}
 
 /* frame */
@@ -18,6 +18,10 @@
 .cf--arcane .cf-rim{background:
   linear-gradient(145deg,color-mix(in srgb,var(--class-secondary) 60%,var(--class-primary)) 0%,var(--class-primary) 24%,color-mix(in srgb,var(--class-accent) 80%,#000) 55%,color-mix(in srgb,var(--class-primary) 55%,#000) 100%)}
 .cf.is-upgraded .cf-rim{box-shadow:0 .35em .8em #0a181ab0,inset 0 .1em .12em #fff8,inset 0 -.2em .35em #0007,inset 0 0 0 .1em #0004,0 0 0 .08em color-mix(in srgb,var(--brass-4) 80%,#000),var(--glow-upgrade)}
+/* gold rarity: a polished gold frame with the class colour inlaid in it, a crown jewel on top and a warmer paper. The class still reads from the inlay, the watermark and the seal. */
+.cf.is-gold .cf-rim{background:linear-gradient(115deg,#0000 36%,#fff7 47%,#0000 58%),var(--mat-gold-rim);box-shadow:var(--glow-gold),0 .35em .8em #0a181ab0,inset 0 .1em .12em #fffb,inset 0 -.2em .35em #0007,inset 0 0 0 .1em var(--brass-4),inset 0 0 0 .22em color-mix(in srgb,var(--class-primary) 75%,var(--brass-3)),inset 0 0 0 .3em var(--brass-3)}
+.cf.is-gold .cf-rim::after{position:absolute;left:50%;top:-.42em;translate:-50% 0;width:1.5em;height:1em;border-radius:50% 50% 60% 60%/60% 60% 50% 50%;background:var(--mat-gem-topaz);border:.1em solid var(--brass-1);box-shadow:0 .1em .2em #000a,0 0 0 .06em var(--brass-4),inset 0 .08em .1em #fffb;content:""}
+.cf.is-gold .cf-paper{--paper:color-mix(in srgb,var(--parch-1) 90%,var(--brass-1));--paper-2:color-mix(in srgb,var(--parch-2) 88%,var(--brass-2))}
 /* body shell and art window */
 .cf-body{position:absolute;inset:.5em;display:flex;flex-direction:column;border-radius:1em .9em 1.1em .95em/.95em 1.1em .9em 1.05em;background:var(--class-surface);box-shadow:0 0 0 .1em color-mix(in srgb,var(--class-surface) 70%,#000),0 0 0 .2em var(--trim),0 0 .5em .22em color-mix(in srgb,var(--trim) 35%,#0000),inset 0 0 1.2em #000a}
 .cf-art{position:relative;display:block;flex:none;overflow:hidden;border-radius:inherit;border-bottom-left-radius:0;border-bottom-right-radius:0;background:var(--class-surface)}
@@ -33,6 +37,7 @@
 /* name plate */
 .cf-plate{position:absolute;z-index:2;display:grid;place-items:center;border-radius:.95em .8em 1em .85em/.9em 1em .8em .95em;background:linear-gradient(180deg,color-mix(in srgb,var(--class-primary) 62%,var(--class-surface)),var(--class-surface) 130%);box-shadow:0 .18em .32em #000a,0 0 0 .09em var(--brass-3),0 0 0 .16em color-mix(in srgb,var(--brass-1) 80%,var(--class-primary)),inset 0 .1em .08em #fff5,inset 0 -.16em .22em #0009;color:#fff7e3}
 .cf--arcane .cf-plate{box-shadow:0 .18em .32em #000a,0 0 .6em -.05em var(--class-secondary),0 0 0 .09em var(--brass-3),0 0 0 .16em color-mix(in srgb,var(--brass-1) 80%,var(--class-secondary)),inset 0 .1em .08em #fff6,inset 0 -.16em .22em #0009}
+.cf.is-gold .cf-plate{background:linear-gradient(180deg,color-mix(in srgb,var(--brass-2) 55%,var(--class-surface)),var(--class-surface) 130%);box-shadow:0 .18em .32em #000a,0 0 0 .09em var(--brass-4),0 0 0 .18em var(--brass-1),inset 0 .1em .08em #fff6,inset 0 -.16em .22em #0009}
 .cf.is-upgraded .cf-plate{background:linear-gradient(180deg,color-mix(in srgb,var(--brass-2) 55%,var(--class-surface)),var(--class-surface) 130%);box-shadow:0 .18em .32em #000a,0 0 0 .09em var(--brass-4),0 0 0 .18em var(--brass-1),var(--glow-upgrade),inset 0 .1em .08em #fff6,inset 0 -.16em .22em #0009}
 .cf-name{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center;font:700 var(--name-size,1.1em)/1.2 var(--font-display);letter-spacing:.01em;text-shadow:0 .06em .1em #000,0 0 .4em #0009}
 
@@ -59,8 +64,8 @@
 .cf-seal img{width:100%;height:100%;display:block;filter:drop-shadow(0 .05em .05em #000a)}
 .cf-cost{position:absolute;z-index:3;left:-.5em;top:-.5em;display:grid;place-items:center;width:2.95em;height:2.95em;border-radius:var(--shape-medallion);background:radial-gradient(circle at 30% 24%,#fff 0,#0000 .38em),var(--mat-gem-mana);border:.15em solid var(--brass-1);box-shadow:0 .22em .42em #000a,0 0 0 .08em var(--brass-4),inset 0 .1em .15em #fff9,inset 0 -.24em .34em #0b2a6a99;color:#fff}
 .cf-cost b{font:700 1.75em/1 var(--font-num);text-shadow:0 .06em .1em #0b2a6a,0 0 .1em #0b2a6a}
-.cf-upgrade{position:absolute;z-index:4;right:-.4em;top:-.4em;display:grid;place-items:center;width:2.1em;height:2.1em;border-radius:var(--shape-medallion);background:radial-gradient(circle at 34% 26%,#fff8d6,var(--brass-1) 30%,var(--brass-2) 70%,var(--brass-3));border:.12em solid var(--brass-4);box-shadow:0 .16em .3em #000a,var(--glow-upgrade);color:var(--parch-ink)}
-.cf .cf-upgrade .glyph{width:1.35em;height:1.35em;stroke-width:2.6}
+.cf-upgrade,.cf-rarity{position:absolute;z-index:4;right:-.4em;top:-.4em;display:grid;place-items:center;width:2.1em;height:2.1em;border-radius:var(--shape-medallion);background:radial-gradient(circle at 34% 26%,#fff8d6,var(--brass-1) 30%,var(--brass-2) 70%,var(--brass-3));border:.12em solid var(--brass-4);box-shadow:0 .16em .3em #000a,var(--glow-upgrade);color:var(--parch-ink)}
+.cf .cf-upgrade .glyph,.cf .cf-rarity .glyph{width:1.35em;height:1.35em;stroke-width:2.6}
 
 /* states: unaffordable (muted, red cost), not your phase (dimmer), active synergy (gold aura) */
 .cf.is-locked .cf-rim,.cf.is-locked .cf-body,.cf.is-locked .cf-plate{filter:saturate(.4) brightness(.78)}

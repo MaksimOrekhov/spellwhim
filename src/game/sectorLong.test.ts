@@ -6,7 +6,7 @@ import { longSectorEnemies, sectorLongConfig } from './sectorLong'
 import { availableDungeonNodes, createCampaignBattle, createSectorRun, dungeonEncounter, dungeonNode, dungeonRunPhase, enterDungeonNode, resolveDungeonBattle, resolveDungeonRest, restoreDungeonBattle, skipDungeonReward } from './campaign'
 import { resolveRoom } from './dungeonRooms'
 import { gameEconomy, honestEconomies } from './economy'
-import { decodeSnapshot, encodeSnapshot, IncompatibleSave, LONG_SECTOR_CATALOG_VERSION, rulesVersionFor, SECTOR_CATALOG_VERSION } from './runSave'
+import { decodeSnapshot, encodeSnapshot, IncompatibleSave, LONG_SECTOR_CATALOG_VERSION, rulesVersionFor, SECTOR_CATALOG_VERSION, sectorCatalogFor } from './runSave'
 import { resolveRulesMode, rulesModes } from './rulesMode'
 import { honestDeck } from './honestDecks'
 import { createChooser, runFight } from './honestLab'
@@ -106,7 +106,9 @@ describe('long route modes, saves and versions', () => {
     expect(decodeSnapshot(encodeSnapshot(run, economy, 1)).run).toEqual(run)
     run = enterDungeonNode(run, availableDungeonNodes(run)[0]!.id)
     const raw = encodeSnapshot(run, economy, 2)
-    expect(JSON.parse(raw).payload.catalogVersion).toBe(LONG_SECTOR_CATALOG_VERSION)
+    // A new run can hold gold, so it declares the long catalogue together with the gold one; a run saved before gold keeps the plain long fingerprint (goldCards.test.ts).
+    expect(JSON.parse(raw).payload.catalogVersion).toBe(sectorCatalogFor(sectorLongConfig.id, true))
+    expect(sectorCatalogFor(sectorLongConfig.id, false)).toBe(LONG_SECTOR_CATALOG_VERSION)
     expect(LONG_SECTOR_CATALOG_VERSION).not.toBe(SECTOR_CATALOG_VERSION)
     expect(decodeSnapshot(raw).run).toEqual(run)
     expect(dungeonNode(run.map, run.currentNodeId!)).toBeTruthy()

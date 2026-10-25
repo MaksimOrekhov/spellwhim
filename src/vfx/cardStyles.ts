@@ -42,6 +42,11 @@ export const cardVfxStyles: Record<CardId, CardVfxStyle> = {
   'boil-blood': { school: 'blood', rune: 'heat' },
   'frost-seal': { school: 'frost', rune: 'seal' },
   'blood-resonance': { school: 'blood', strike: 'arcane-bolt' },
+  // Gold: the school of what the card does; the gold frame is the card's own, the effect stays readable by school.
+  'commanders-order': { school: 'physical', guard: 'steel' },
+  'bloody-finale': { school: 'blood', strike: 'cleave', guard: 'steel' },
+  'weakpoint-verdict': { school: 'arcane', strike: 'arcane-bolt' },
+  'concerted-volley': { school: 'arcane', strike: 'arcane-bolt' },
 }
 
 /** A card the table does not know yet still gets a sensible look from its class and shape instead of a wrong one. */

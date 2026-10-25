@@ -1,8 +1,8 @@
-import type { CardDefinition, CardEffect, CardId, ExperimentalCardId } from './types'
+import type { CardDefinition, CardEffect, CardId, ExperimentalCardId, GoldCardId } from './types'
 
 type Upgrade = { effect?: { index: number; amount: number }; insert?: { index: number; effect: CardEffect }; description: string }
 /** Full delta only. Costs, classes, status rules and exhaust are inherited unchanged. GDD §5.2 prototype. */
-export const cardUpgrades: Record<Exclude<CardId, ExperimentalCardId>, Upgrade> = {
+export const cardUpgrades: Record<Exclude<CardId, ExperimentalCardId | GoldCardId>, Upgrade> = {
   'sword-strike': { effect: { index: 0, amount: 8 }, description: '8 урона.' },
   fireball: { effect: { index: 0, amount: 10 }, description: '10 урона.' },
   guard: { effect: { index: 0, amount: 5 }, description: '5 брони цели врага.' },

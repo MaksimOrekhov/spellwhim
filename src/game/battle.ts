@@ -48,7 +48,7 @@ export function createBattle(encounter: EncounterDefinition = encounters[1]!, pr
   const state: BattleState = {
     battleId, seed, rngState: seed, nextActionId: 1, heroes, statuses: createStatuses(), artifacts, artifactNotices: [],
     enemy: { encounterId: encounter.id, name: encounter.name, title: encounter.title, health: encounter.maxHealth, maxHealth: encounter.maxHealth, armor: 0, appearance: encounter.appearance, phase: 1, nextActionPhase: 1, behavior: encounter.behavior, behaviorIndex: 1, nextAction: encounter.behavior.phase1[0]!, focus: initialFocus(heroes, encounter.behavior.phase1[0]!), ...(encounter.phaseNote ? { phaseNote: encounter.phaseNote } : {}) },
-    hand: [], blockedDraws: 0, drawPile: [], discardPile: [], exhausted: [], pending: null,
+    hand: [], classesPlayedThisTurn: [], blockedDraws: 0, drawPile: [], discardPile: [], exhausted: [], pending: null,
     economy, mana: manaForTurn(economy, 1), maxMana: manaForTurn(economy, 1), turn: 1, result: null,
   }
   const copies = (options.deck ?? startingDeck).map((card, index) => {
@@ -175,6 +175,8 @@ function buildPlan(state: BattleState, card: CardDefinition, historical = false,
     parts.push({ kind: 'base', id: 'card', label: 'Урон карты', amount: baseDamage })
     if (card.damageBonus?.condition === 'owner-has-armor' && owner.ok && state.heroes[owner.hero].armor > 0) {
       parts.push({ kind: 'class-bonus', id: 'owner-armor', label: 'Броня ' + characterGenitive(state.heroes[owner.hero].characterId), amount: card.damageBonus.amount })
+    } else if (card.damageBonus?.condition === 'other-class-played' && state.classesPlayedThisTurn.some(classId => classId !== card.className)) {
+      parts.push({ kind: 'class-bonus', id: 'other-class', label: 'Карта другого класса', detail: 'Уже сыграна карта другого класса', amount: card.damageBonus.amount })
     }
     for (const bonus of hitBonuses(state, 'enemy')) {
       parts.push({ kind: 'status', id: bonus.id, label: bonus.label, amount: bonus.amount })
@@ -200,7 +202,7 @@ function buildPlan(state: BattleState, card: CardDefinition, historical = false,
   if (hit.parts.length > 1) {
     for (const part of hit.parts) {
       if (part.kind === 'status' && part.id === 'vulnerability') vulnerabilityBonus += part.amount
-      else if (part.kind === 'class-bonus') armorBonus += part.amount
+      else if (part.kind === 'class-bonus' && part.id === 'owner-armor') armorBonus += part.amount
       else if (part.kind === 'artifact') artifactDamage += part.amount
     }
     // Labels keep the established reading order of the log: statuses, then class condition, then artifacts.
@@ -281,7 +283,7 @@ function buildPlan(state: BattleState, card: CardDefinition, historical = false,
       artifactBonuses: artifactTriggers.map(trigger => trigger.reason),
       appliedStatuses: reachable.flatMap(effect => effect.type === 'status' ? [effect.status] : []), statusDamage, statusFuture,
       damageParts: hit.parts,
-      bonusOwner: card.damageBonus && owner.ok ? { hero: owner.hero, characterId: state.heroes[owner.hero].characterId } : null,
+      bonusOwner: card.damageBonus?.condition === 'owner-has-armor' && owner.ok ? { hero: owner.hero, characterId: state.heroes[owner.hero].characterId } : null,
       classHeroes: usesClassTarget ? resolvedClassHeroes(state.heroes) : {},
     },
   }
@@ -323,6 +325,9 @@ export function armorChoice(state: BattleState, instanceId: string): ArmorChoice
   if (!instance || state.result || state.pending || !hitsBothHeroes(state)) return null
   const card = resolveCardDefinition(instance)
   if (!card.effects.some(effect => effect.type === 'armor' && (effect.target === 'threatened' || effect.target === 'partner'))) return null
+  // Equal shares (Commander's Order: 5 and 5) leave nothing to decide: either choice gives each hero the same armor, so nobody is asked.
+  const share = (target: 'threatened' | 'partner') => card.effects.reduce((sum, effect) => sum + (effect.type === 'armor' && effect.target === target ? effect.amount : 0), 0)
+  if (share('threatened') === share('partner')) return null
   const prepared = state.enemy.nextAction.kind === 'prepare'
   const ids = heroIdsInPartyOrder(state.heroes)
   const options = ids.map((focus): ArmorChoiceOption => {
@@ -366,6 +371,8 @@ export function resolveCardPlay(state: BattleState, actionId: string): PlayResul
   if (!pending || pending.actionId !== actionId) return { ok: false, reason: 'stale-action' }
   // Clear the transaction before applying anything; duplicate animation events are harmless.
   state.pending = null
+  // The turn's class history grows as a play resolves, so a card previewed or started later this turn sees this one and a card never sees itself.
+  state.classesPlayedThisTurn.push(resolveCardDefinition(pending.card).className)
   updateResult(state)
   const healthBefore = state.enemy.health
   let drawn = 0
@@ -556,6 +563,7 @@ export function endTurn(state: BattleState): boolean {
     }
   }
   state.turn += 1
+  state.classesPlayedThisTurn = []
   // The curve grows at the start of the turn and the pool is refilled completely.
   state.maxMana = manaForTurn(state.economy, state.turn)
   state.mana = state.maxMana

@@ -7,7 +7,7 @@ import { createBattle, previewCard } from '../game/battle'
 import { characterGenitive } from '../game/party'
 import { getClassTheme } from '../game/classThemes'
 
-export type GlyphKind = 'damage' | 'armor' | 'draw' | 'vulnerable' | 'exhaust' | 'bonus' | 'lock' | 'bleeding' | 'frostbite' | 'upgrade'
+export type GlyphKind = 'damage' | 'armor' | 'draw' | 'vulnerable' | 'exhaust' | 'bonus' | 'lock' | 'bleeding' | 'frostbite' | 'upgrade' | 'gold'
 export type Tone = 'on' | 'off' | 'plain'
 
 export interface StatChip {
@@ -26,7 +26,7 @@ export interface StatChip {
 /** `short` is used when the card is partly covered by its neighbour and only a narrow strip is visible. */
 export interface RuleLine { tone: Tone; glyph?: GlyphKind; text: string; short: string }
 export interface CardTag { id: 'vulnerability' | 'exhaust' | 'frostbite'; glyph: GlyphKind; text: string; short: string }
-export interface DamagePart { label: string; amount: number; kind: 'base' | 'armor' | 'vulnerability' | 'status' | 'artifact' }
+export interface DamagePart { label: string; amount: number; kind: 'base' | 'armor' | 'synergy' | 'vulnerability' | 'status' | 'artifact' }
 export interface Keyword { glyph: GlyphKind; name: string; text: string }
 export interface CardNotesModel {
   title: string
@@ -81,8 +81,16 @@ export function statChips(card: CardDefinition, preview: CardPreview): StatChip[
   if (preview.damage > 0) {
     chips.push({ kind: 'damage', value: preview.damage, caption: 'врагу', base: preview.damage - preview.bonusDamage, boosted: preview.bonusDamage > 0, inactive: false, spoken: `${preview.damage} ${damageWord(preview.damage)} врагу` })
   }
-  for (const effect of preview.resolvedEffects ?? card.effects) {
-    if (effect.type === 'armor') chips.push({ kind: 'armor', value: effect.amount, caption: armorCaption(effect.target, preview), base: 0, boosted: false, inactive: false, spoken: `${effect.amount} брони ${armorCaption(effect.target, preview)}` })
+  const armorEffects = (preview.resolvedEffects ?? card.effects).filter((effect): effect is Extract<CardEffect, { type: 'armor' }> => effect.type === 'armor')
+  const merged = new Set<CardEffect>()
+  for (const effect of armorEffects) {
+    if (merged.has(effect)) continue
+    // The same armor for "the threatened hero" and "the partner" is armor for both heroes: one gem, not two equal ones (the gold Commander's Order).
+    const twin = effect.target === 'threatened' ? armorEffects.find(other => other !== effect && other.target === 'partner' && other.amount === effect.amount && !merged.has(other)) : undefined
+    if (twin) {
+      merged.add(twin)
+      chips.push({ kind: 'armor', value: effect.amount, caption: 'обоим', base: 0, boosted: false, inactive: false, spoken: `${effect.amount} брони каждому герою` })
+    } else chips.push({ kind: 'armor', value: effect.amount, caption: armorCaption(effect.target, preview), base: 0, boosted: false, inactive: false, spoken: `${effect.amount} брони ${armorCaption(effect.target, preview)}` })
   }
   if (preview.draw > 0) chips.push({ kind: 'draw', value: preview.draw, caption: cardsWord(preview.draw), base: 0, boosted: false, inactive: false, spoken: `добор: ${preview.draw} ${cardsWord(preview.draw)}` })
   if (preview.damage === 0 && totalBase > 0) {
@@ -109,7 +117,12 @@ export function ruleLines(card: CardDefinition, preview: CardPreview): RuleLine[
       ? { tone: 'on', glyph: 'damage', text: 'Враг атакует — урон!', short: 'Урон врагу!' }
       : { tone: 'off', glyph: 'damage', text: 'Урон, если враг атакует', short: 'При атаке врага' })
   }
-  if (card.damageBonus) {
+  if (card.damageBonus?.condition === 'other-class-played') {
+    const synergy = preview.damageParts.find(part => part.id === 'other-class')
+    lines.push(synergy
+      ? { tone: 'on', glyph: 'bonus', text: `+${synergy.amount} — уже сыграна карта другого класса`, short: `+${synergy.amount} другой класс` }
+      : { tone: 'off', glyph: 'bonus', text: `+${card.damageBonus.amount}, если в этот ход уже сыграна карта другого класса`, short: `+${card.damageBonus.amount} после др. класса` })
+  } else if (card.damageBonus) {
     lines.push(preview.armorBonus > 0
       ? { tone: 'on', glyph: 'armor', text: `+${preview.armorBonus} — броня ${bonusOwnerGenitive(preview)}`, short: `+${preview.armorBonus} броня` }
       : { tone: 'off', glyph: 'armor', text: `+${card.damageBonus.amount} при броне ${bonusOwnerGenitive(preview)}`, short: `+${card.damageBonus.amount} при броне` })
@@ -166,7 +179,7 @@ export function damageParts(preview: CardPreview): DamagePart[] {
   return preview.damageParts.filter(part => part.amount > 0).map(part => ({
     label: part.kind === 'base' ? part.label : part.detail ?? part.label,
     amount: part.amount,
-    kind: part.kind === 'status' && part.id === 'vulnerability' ? 'vulnerability' : kinds[part.kind],
+    kind: part.kind === 'status' && part.id === 'vulnerability' ? 'vulnerability' : part.id === 'other-class' ? 'synergy' : kinds[part.kind],
   }))
 }
 
@@ -185,7 +198,12 @@ export function cardNotes(card: CardDefinition, preview: CardPreview, context: '
       ? { tone: 'on', glyph: 'damage', text: 'Условие выполнено: противник атакует, карта наносит урон.', short: '' }
       : { tone: 'off', glyph: 'damage', text: 'Условие не выполнено: урон наносится, только если следующее действие врага — атака.', short: '' })
   }
-  if (card.damageBonus) {
+  if (card.damageBonus?.condition === 'other-class-played') {
+    const synergy = preview.damageParts.find(part => part.id === 'other-class')
+    conditions.push(synergy
+      ? { tone: 'on', glyph: 'bonus', text: `Бонус активен: в этот ход уже сыграна карта другого класса, +${synergy.amount} урона.`, short: '' }
+      : { tone: 'off', glyph: 'bonus', text: `Бонус не активен: +${card.damageBonus.amount} урона, если в этот ход уже сыграна карта другого класса (не этого).`, short: '' })
+  } else if (card.damageBonus) {
     conditions.push(preview.armorBonus > 0
       ? { tone: 'on', glyph: 'armor', text: `Бонус активен: у ${bonusOwnerGenitive(preview)} есть броня, +${preview.armorBonus} урона. Броня не расходуется.`, short: '' }
       : { tone: 'off', glyph: 'armor', text: `Бонус не активен: +${card.damageBonus.amount} урона, пока у ${bonusOwnerGenitive(preview)} есть броня.`, short: '' })
@@ -225,7 +243,7 @@ export function cardNotes(card: CardDefinition, preview: CardPreview, context: '
   const shownConditions = parts.length > 1 ? conditions.filter(line => line.tone !== 'on' || line.glyph === 'damage') : conditions
   return {
     title: card.name,
-    subtitle: `${getClassTheme(card.className).name}${card.upgrade ? ' · Улучшена' : ''} · ${kindLabel[card.kind]} · ${card.cost} ${plural(card.cost, 'мана', 'маны', 'маны')}`,
+    subtitle: `${getClassTheme(card.className).name}${card.rarity === 'gold' ? ' · Золотая' : ''}${card.upgrade ? ' · Улучшена' : ''} · ${kindLabel[card.kind]} · ${card.cost} ${plural(card.cost, 'мана', 'маны', 'маны')}`,
     description: card.description,
     damage: preview.damage > 0
       ? { total: preview.damage, parts, formula: parts.length > 1 ? `${parts.map(part => part.amount).join(' + ')} = ${preview.damage}` : String(preview.damage), armorDamage: preview.armorDamage, healthDamage: preview.healthDamage }

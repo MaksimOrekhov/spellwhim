@@ -25,12 +25,15 @@ const artUrl = computed(() => cardArt[props.card.id])
 const locked = computed(() => props.block?.kind === 'mana')
 const bonus = computed(() => !props.block && props.preview.bonusDamage > 0)
 const upgraded = computed(() => !!props.card.upgrade)
+const gold = computed(() => props.card.rarity === 'gold')
 const simple = computed(() => !face.value.lines.length && !face.value.tags.length)
 const dense = computed(() => (props.vis ?? 1) < 0.9)
 /** Three or more rule rows do not fit under the gems: active bonuses then shrink to pills (icon + short text); the notes keep the full sentences. */
 const crowded = computed(() => face.value.lines.length + (face.value.tags.length ? 1 : 0) > 2)
 /** An active line also shrinks to a pill when its sentence is too long for one or two rows of the card. */
-const asPill = (line: RuleLine) => line.tone === 'on' && (crowded.value || line.text.length > 30)
+const asPill = (line: RuleLine) => line.tone === 'on' && (crowded.value || line.text.length > (face.value.tags.length ? 20 : 30))
+/** A waiting rule that would wrap to several rows and push the tag row ("Выбывает") out of the card is shown in its short form; the notes keep the full sentence. */
+const squeezed = (line: RuleLine) => face.value.tags.length > 0 && line.text.length > 26
 const waiting = computed(() => face.value.lines.filter(line => !asPill(line)))
 const pills = computed(() => face.value.lines.filter(asPill))
 /** Names are never wrapped: long ones simply shrink a little so the title stays on one line on its plate. */
@@ -39,7 +42,7 @@ const style = computed(() => ({ ...classThemeStyle(props.card.className), '--emb
 </script>
 
 <template>
-  <span class="cf sc" :class="[`cf--${theme.ornament}`, { 'is-locked': locked, 'is-dim': block?.kind === 'phase', 'is-bonus': bonus, 'is-dense': dense, 'is-simple': simple, 'is-solo': simple && face.chips.length === 1, 'is-upgraded': upgraded }]" :style="style" :data-card-class="theme.id">
+  <span class="cf sc" :class="[`cf--${theme.ornament}`, { 'is-locked': locked, 'is-dim': block?.kind === 'phase', 'is-bonus': bonus, 'is-dense': dense, 'is-simple': simple, 'is-solo': simple && face.chips.length === 1, 'is-upgraded': upgraded, 'is-gold': gold }]" :style="style" :data-card-class="theme.id">
     <span class="cf-rim sc-rim" aria-hidden="true"></span>
     <span class="cf-body">
       <span class="cf-art sc-art">
@@ -57,7 +60,7 @@ const style = computed(() => ({ ...classThemeStyle(props.card.className), '--emb
         </span>
         <span class="sc-rules">
           <span v-if="pills.length" class="sc-pills"><span v-for="(line, i) in pills" :key="'p' + i" class="pill"><CardGlyph v-if="line.glyph" :kind="line.glyph" /><span>{{ line.short }}</span></span></span>
-          <span v-for="(line, i) in waiting" :key="'l' + i" class="rule" :class="'rule--' + line.tone"><CardGlyph v-if="line.glyph" :kind="line.glyph" /><span>{{ dense ? line.short : line.text }}</span></span>
+          <span v-for="(line, i) in waiting" :key="'l' + i" class="rule" :class="'rule--' + line.tone"><CardGlyph v-if="line.glyph" :kind="line.glyph" /><span>{{ dense || squeezed(line) ? line.short : line.text }}</span></span>
           <span v-if="face.tags.length" class="sc-tags"><span v-for="tag in face.tags" :key="tag.id" class="tag" :class="'tag--' + tag.id"><CardGlyph :kind="tag.glyph" /><span>{{ dense ? tag.short : tag.text }}</span></span></span>
         </span>
         <span class="sc-foot"></span>
@@ -65,6 +68,7 @@ const style = computed(() => ({ ...classThemeStyle(props.card.className), '--emb
     </span>
     <span class="cf-plate sc-plate"><strong class="cf-name">{{ card.name }}</strong></span>
     <span class="cf-seal" aria-hidden="true"><img :src="theme.emblem" alt="" draggable="false" /></span>
+    <span v-if="gold" class="cf-rarity" aria-label="Золотая карта" title="Золотая карта"><CardGlyph kind="gold" /></span>
     <span v-if="upgraded" class="cf-upgrade" aria-label="Улучшена" title="Улучшена"><CardGlyph kind="upgrade" /></span>
     <span class="cf-cost" aria-hidden="true"><b>{{ card.cost }}</b></span>
   </span>

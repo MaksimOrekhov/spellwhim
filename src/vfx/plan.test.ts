@@ -3,7 +3,7 @@ import { createBattle, endTurn, forecastEnemyAction, resolveCardPlay, startCardP
 import { resolveCardDefinition } from '../game/cardProgression'
 import { honestEconomies } from '../game/economy'
 import { applyStatus } from '../game/statuses'
-import { cards, experimentalCards } from '../game/types'
+import { cards, experimentalCards, goldCards } from '../game/types'
 import type { BattleState, CardId, EnemyAction } from '../game/types'
 import { cardVfxStyles } from './cardStyles'
 import { cardVfxPlan, enemyVfxPlan, weightOf } from './plan'
@@ -410,7 +410,7 @@ describe('reduced motion', () => {
 
 describe('the catalogue', () => {
   it('has a look for every card and builds a plan for each in several situations', () => {
-    const ids = [...cards, ...experimentalCards].map(card => card.id)
+    const ids = [...cards, ...experimentalCards, ...goldCards].map(card => card.id)
     expect(Object.keys(cardVfxStyles).sort()).toEqual([...ids].sort())
     const situations: ((state: BattleState) => void)[] = [
       () => undefined,

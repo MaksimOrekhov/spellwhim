@@ -1,0 +1,908 @@
+{
+ "seeds": 100,
+ "strategies": [
+  "planner"
+ ],
+ "rows": [
+  {
+   "enemy": "raider",
+   "strategy": "planner",
+   "deck": "control",
+   "win": 1,
+   "turns": 3.08,
+   "lost": 4.19,
+   "lostWon": 4.19,
+   "value": 0.903
+  },
+  {
+   "enemy": "raider",
+   "strategy": "planner",
+   "deck": "+thunderbolt (old elite prize)",
+   "win": 1,
+   "turns": 3.09,
+   "lost": 4.04,
+   "lostWon": 4.04,
+   "value": 0.906
+  },
+  {
+   "enemy": "raider",
+   "strategy": "planner",
+   "deck": "+rend (old elite prize)",
+   "win": 1,
+   "turns": 3,
+   "lost": 4.37,
+   "lostWon": 4.37,
+   "value": 0.898
+  },
+  {
+   "enemy": "raider",
+   "strategy": "planner",
+   "deck": "+commanders-order",
+   "win": 1,
+   "turns": 3.13,
+   "lost": 3.68,
+   "lostWon": 3.68,
+   "value": 0.914
+  },
+  {
+   "enemy": "raider",
+   "strategy": "planner",
+   "deck": "+bloody-finale",
+   "win": 1,
+   "turns": 3.13,
+   "lost": 3.95,
+   "lostWon": 3.95,
+   "value": 0.908
+  },
+  {
+   "enemy": "raider",
+   "strategy": "planner",
+   "deck": "+weakpoint-verdict",
+   "win": 1,
+   "turns": 3.07,
+   "lost": 4.4,
+   "lostWon": 4.4,
+   "value": 0.898
+  },
+  {
+   "enemy": "raider",
+   "strategy": "planner",
+   "deck": "+concerted-volley",
+   "win": 1,
+   "turns": 3.13,
+   "lost": 4.05,
+   "lostWon": 4.05,
+   "value": 0.906
+  },
+  {
+   "enemy": "raider",
+   "strategy": "planner",
+   "deck": "+all four gold",
+   "win": 1,
+   "turns": 3.25,
+   "lost": 4.25,
+   "lostWon": 4.25,
+   "value": 0.901
+  },
+  {
+   "enemy": "raider",
+   "strategy": "planner",
+   "deck": "bleed package (+rend, +ice-echo)",
+   "win": 1,
+   "turns": 3,
+   "lost": 4.52,
+   "lostWon": 4.52,
+   "value": 0.895
+  },
+  {
+   "enemy": "raider",
+   "strategy": "planner",
+   "deck": "bleed package +bloody-finale",
+   "win": 1,
+   "turns": 3.02,
+   "lost": 4.33,
+   "lostWon": 4.33,
+   "value": 0.899
+  },
+  {
+   "enemy": "digger",
+   "strategy": "planner",
+   "deck": "control",
+   "win": 1,
+   "turns": 3.35,
+   "lost": 3.22,
+   "lostWon": 3.22,
+   "value": 0.925
+  },
+  {
+   "enemy": "digger",
+   "strategy": "planner",
+   "deck": "+thunderbolt (old elite prize)",
+   "win": 1,
+   "turns": 3.42,
+   "lost": 3.66,
+   "lostWon": 3.66,
+   "value": 0.915
+  },
+  {
+   "enemy": "digger",
+   "strategy": "planner",
+   "deck": "+rend (old elite prize)",
+   "win": 1,
+   "turns": 3.08,
+   "lost": 3.13,
+   "lostWon": 3.13,
+   "value": 0.927
+  },
+  {
+   "enemy": "digger",
+   "strategy": "planner",
+   "deck": "+commanders-order",
+   "win": 1,
+   "turns": 3.49,
+   "lost": 3.7,
+   "lostWon": 3.7,
+   "value": 0.914
+  },
+  {
+   "enemy": "digger",
+   "strategy": "planner",
+   "deck": "+bloody-finale",
+   "win": 1,
+   "turns": 3.52,
+   "lost": 3.33,
+   "lostWon": 3.33,
+   "value": 0.923
+  },
+  {
+   "enemy": "digger",
+   "strategy": "planner",
+   "deck": "+weakpoint-verdict",
+   "win": 1,
+   "turns": 3.32,
+   "lost": 3.79,
+   "lostWon": 3.79,
+   "value": 0.912
+  },
+  {
+   "enemy": "digger",
+   "strategy": "planner",
+   "deck": "+concerted-volley",
+   "win": 1,
+   "turns": 3.51,
+   "lost": 4.3,
+   "lostWon": 4.3,
+   "value": 0.9
+  },
+  {
+   "enemy": "digger",
+   "strategy": "planner",
+   "deck": "+all four gold",
+   "win": 1,
+   "turns": 3.58,
+   "lost": 4.1,
+   "lostWon": 4.1,
+   "value": 0.905
+  },
+  {
+   "enemy": "digger",
+   "strategy": "planner",
+   "deck": "bleed package (+rend, +ice-echo)",
+   "win": 1,
+   "turns": 3.13,
+   "lost": 2.86,
+   "lostWon": 2.86,
+   "value": 0.933
+  },
+  {
+   "enemy": "digger",
+   "strategy": "planner",
+   "deck": "bleed package +bloody-finale",
+   "win": 1,
+   "turns": 3.22,
+   "lost": 3.51,
+   "lostWon": 3.51,
+   "value": 0.918
+  },
+  {
+   "enemy": "watchman",
+   "strategy": "planner",
+   "deck": "control",
+   "win": 1,
+   "turns": 3.09,
+   "lost": 8.72,
+   "lostWon": 8.72,
+   "value": 0.797
+  },
+  {
+   "enemy": "watchman",
+   "strategy": "planner",
+   "deck": "+thunderbolt (old elite prize)",
+   "win": 1,
+   "turns": 3.16,
+   "lost": 9.07,
+   "lostWon": 9.07,
+   "value": 0.789
+  },
+  {
+   "enemy": "watchman",
+   "strategy": "planner",
+   "deck": "+rend (old elite prize)",
+   "win": 1,
+   "turns": 3.03,
+   "lost": 8.83,
+   "lostWon": 8.83,
+   "value": 0.795
+  },
+  {
+   "enemy": "watchman",
+   "strategy": "planner",
+   "deck": "+commanders-order",
+   "win": 1,
+   "turns": 3.22,
+   "lost": 9.14,
+   "lostWon": 9.14,
+   "value": 0.787
+  },
+  {
+   "enemy": "watchman",
+   "strategy": "planner",
+   "deck": "+bloody-finale",
+   "win": 1,
+   "turns": 3.24,
+   "lost": 9.06,
+   "lostWon": 9.06,
+   "value": 0.789
+  },
+  {
+   "enemy": "watchman",
+   "strategy": "planner",
+   "deck": "+weakpoint-verdict",
+   "win": 1,
+   "turns": 3.1,
+   "lost": 9.03,
+   "lostWon": 9.03,
+   "value": 0.79
+  },
+  {
+   "enemy": "watchman",
+   "strategy": "planner",
+   "deck": "+concerted-volley",
+   "win": 1,
+   "turns": 3.15,
+   "lost": 9.02,
+   "lostWon": 9.02,
+   "value": 0.79
+  },
+  {
+   "enemy": "watchman",
+   "strategy": "planner",
+   "deck": "+all four gold",
+   "win": 1,
+   "turns": 3.22,
+   "lost": 9.49,
+   "lostWon": 9.49,
+   "value": 0.779
+  },
+  {
+   "enemy": "watchman",
+   "strategy": "planner",
+   "deck": "bleed package (+rend, +ice-echo)",
+   "win": 1,
+   "turns": 3.01,
+   "lost": 9.19,
+   "lostWon": 9.19,
+   "value": 0.786
+  },
+  {
+   "enemy": "watchman",
+   "strategy": "planner",
+   "deck": "bleed package +bloody-finale",
+   "win": 1,
+   "turns": 3.08,
+   "lost": 8.83,
+   "lostWon": 8.83,
+   "value": 0.795
+  },
+  {
+   "enemy": "overseer",
+   "strategy": "planner",
+   "deck": "control",
+   "win": 1,
+   "turns": 3.9,
+   "lost": 8.32,
+   "lostWon": 8.32,
+   "value": 0.807
+  },
+  {
+   "enemy": "overseer",
+   "strategy": "planner",
+   "deck": "+thunderbolt (old elite prize)",
+   "win": 1,
+   "turns": 3.92,
+   "lost": 8.53,
+   "lostWon": 8.53,
+   "value": 0.802
+  },
+  {
+   "enemy": "overseer",
+   "strategy": "planner",
+   "deck": "+rend (old elite prize)",
+   "win": 1,
+   "turns": 3.54,
+   "lost": 8.44,
+   "lostWon": 8.44,
+   "value": 0.804
+  },
+  {
+   "enemy": "overseer",
+   "strategy": "planner",
+   "deck": "+commanders-order",
+   "win": 1,
+   "turns": 3.97,
+   "lost": 8.6,
+   "lostWon": 8.6,
+   "value": 0.8
+  },
+  {
+   "enemy": "overseer",
+   "strategy": "planner",
+   "deck": "+bloody-finale",
+   "win": 1,
+   "turns": 3.97,
+   "lost": 8.29,
+   "lostWon": 8.29,
+   "value": 0.807
+  },
+  {
+   "enemy": "overseer",
+   "strategy": "planner",
+   "deck": "+weakpoint-verdict",
+   "win": 1,
+   "turns": 3.89,
+   "lost": 8.76,
+   "lostWon": 8.76,
+   "value": 0.796
+  },
+  {
+   "enemy": "overseer",
+   "strategy": "planner",
+   "deck": "+concerted-volley",
+   "win": 1,
+   "turns": 3.94,
+   "lost": 8.35,
+   "lostWon": 8.35,
+   "value": 0.806
+  },
+  {
+   "enemy": "overseer",
+   "strategy": "planner",
+   "deck": "+all four gold",
+   "win": 1,
+   "turns": 4,
+   "lost": 9.24,
+   "lostWon": 9.24,
+   "value": 0.785
+  },
+  {
+   "enemy": "overseer",
+   "strategy": "planner",
+   "deck": "bleed package (+rend, +ice-echo)",
+   "win": 1,
+   "turns": 3.63,
+   "lost": 8.79,
+   "lostWon": 8.79,
+   "value": 0.796
+  },
+  {
+   "enemy": "overseer",
+   "strategy": "planner",
+   "deck": "bleed package +bloody-finale",
+   "win": 1,
+   "turns": 3.85,
+   "lost": 8.99,
+   "lostWon": 8.99,
+   "value": 0.791
+  },
+  {
+   "enemy": "johnson",
+   "strategy": "planner",
+   "deck": "control",
+   "win": 1,
+   "turns": 6.18,
+   "lost": 16.49,
+   "lostWon": 16.49,
+   "value": 0.617
+  },
+  {
+   "enemy": "johnson",
+   "strategy": "planner",
+   "deck": "+thunderbolt (old elite prize)",
+   "win": 1,
+   "turns": 6.14,
+   "lost": 16.84,
+   "lostWon": 16.84,
+   "value": 0.608
+  },
+  {
+   "enemy": "johnson",
+   "strategy": "planner",
+   "deck": "+rend (old elite prize)",
+   "win": 1,
+   "turns": 5.52,
+   "lost": 17.38,
+   "lostWon": 17.38,
+   "value": 0.596
+  },
+  {
+   "enemy": "johnson",
+   "strategy": "planner",
+   "deck": "+commanders-order",
+   "win": 1,
+   "turns": 6.36,
+   "lost": 14.7,
+   "lostWon": 14.7,
+   "value": 0.658
+  },
+  {
+   "enemy": "johnson",
+   "strategy": "planner",
+   "deck": "+bloody-finale",
+   "win": 1,
+   "turns": 6.29,
+   "lost": 16.25,
+   "lostWon": 16.25,
+   "value": 0.622
+  },
+  {
+   "enemy": "johnson",
+   "strategy": "planner",
+   "deck": "+weakpoint-verdict",
+   "win": 1,
+   "turns": 6.09,
+   "lost": 16.72,
+   "lostWon": 16.72,
+   "value": 0.611
+  },
+  {
+   "enemy": "johnson",
+   "strategy": "planner",
+   "deck": "+concerted-volley",
+   "win": 1,
+   "turns": 6.19,
+   "lost": 16.61,
+   "lostWon": 16.61,
+   "value": 0.614
+  },
+  {
+   "enemy": "johnson",
+   "strategy": "planner",
+   "deck": "+all four gold",
+   "win": 1,
+   "turns": 6.44,
+   "lost": 16.45,
+   "lostWon": 16.45,
+   "value": 0.617
+  },
+  {
+   "enemy": "johnson",
+   "strategy": "planner",
+   "deck": "bleed package (+rend, +ice-echo)",
+   "win": 1,
+   "turns": 5.59,
+   "lost": 17.49,
+   "lostWon": 17.49,
+   "value": 0.593
+  },
+  {
+   "enemy": "johnson",
+   "strategy": "planner",
+   "deck": "bleed package +bloody-finale",
+   "win": 1,
+   "turns": 5.74,
+   "lost": 17.97,
+   "lostWon": 17.97,
+   "value": 0.582
+  },
+  {
+   "enemy": "rhahk-zor",
+   "strategy": "planner",
+   "deck": "control",
+   "win": 1,
+   "turns": 6.97,
+   "lost": 15.78,
+   "lostWon": 15.78,
+   "value": 0.633
+  },
+  {
+   "enemy": "rhahk-zor",
+   "strategy": "planner",
+   "deck": "+thunderbolt (old elite prize)",
+   "win": 1,
+   "turns": 6.94,
+   "lost": 16.03,
+   "lostWon": 16.03,
+   "value": 0.627
+  },
+  {
+   "enemy": "rhahk-zor",
+   "strategy": "planner",
+   "deck": "+rend (old elite prize)",
+   "win": 1,
+   "turns": 6.37,
+   "lost": 14.96,
+   "lostWon": 14.96,
+   "value": 0.652
+  },
+  {
+   "enemy": "rhahk-zor",
+   "strategy": "planner",
+   "deck": "+commanders-order",
+   "win": 1,
+   "turns": 7.13,
+   "lost": 16.38,
+   "lostWon": 16.38,
+   "value": 0.619
+  },
+  {
+   "enemy": "rhahk-zor",
+   "strategy": "planner",
+   "deck": "+bloody-finale",
+   "win": 1,
+   "turns": 7.11,
+   "lost": 16.09,
+   "lostWon": 16.09,
+   "value": 0.626
+  },
+  {
+   "enemy": "rhahk-zor",
+   "strategy": "planner",
+   "deck": "+weakpoint-verdict",
+   "win": 1,
+   "turns": 6.89,
+   "lost": 16.38,
+   "lostWon": 16.38,
+   "value": 0.619
+  },
+  {
+   "enemy": "rhahk-zor",
+   "strategy": "planner",
+   "deck": "+concerted-volley",
+   "win": 1,
+   "turns": 7.03,
+   "lost": 17.21,
+   "lostWon": 17.21,
+   "value": 0.6
+  },
+  {
+   "enemy": "rhahk-zor",
+   "strategy": "planner",
+   "deck": "+all four gold",
+   "win": 1,
+   "turns": 7.25,
+   "lost": 17.04,
+   "lostWon": 17.04,
+   "value": 0.604
+  },
+  {
+   "enemy": "rhahk-zor",
+   "strategy": "planner",
+   "deck": "bleed package (+rend, +ice-echo)",
+   "win": 1,
+   "turns": 6.41,
+   "lost": 16,
+   "lostWon": 16,
+   "value": 0.628
+  },
+  {
+   "enemy": "rhahk-zor",
+   "strategy": "planner",
+   "deck": "bleed package +bloody-finale",
+   "win": 1,
+   "turns": 6.69,
+   "lost": 15.66,
+   "lostWon": 15.66,
+   "value": 0.636
+  },
+  {
+   "enemy": "saboteur",
+   "strategy": "planner",
+   "deck": "control",
+   "win": 1,
+   "turns": 3.01,
+   "lost": 2.38,
+   "lostWon": 2.38,
+   "value": 0.945
+  },
+  {
+   "enemy": "saboteur",
+   "strategy": "planner",
+   "deck": "+thunderbolt (old elite prize)",
+   "win": 1,
+   "turns": 3,
+   "lost": 2.56,
+   "lostWon": 2.56,
+   "value": 0.94
+  },
+  {
+   "enemy": "saboteur",
+   "strategy": "planner",
+   "deck": "+rend (old elite prize)",
+   "win": 1,
+   "turns": 2.96,
+   "lost": 2.82,
+   "lostWon": 2.82,
+   "value": 0.934
+  },
+  {
+   "enemy": "saboteur",
+   "strategy": "planner",
+   "deck": "+commanders-order",
+   "win": 1,
+   "turns": 3.02,
+   "lost": 2.69,
+   "lostWon": 2.69,
+   "value": 0.937
+  },
+  {
+   "enemy": "saboteur",
+   "strategy": "planner",
+   "deck": "+bloody-finale",
+   "win": 1,
+   "turns": 3,
+   "lost": 2.38,
+   "lostWon": 2.38,
+   "value": 0.945
+  },
+  {
+   "enemy": "saboteur",
+   "strategy": "planner",
+   "deck": "+weakpoint-verdict",
+   "win": 1,
+   "turns": 3,
+   "lost": 2.84,
+   "lostWon": 2.84,
+   "value": 0.934
+  },
+  {
+   "enemy": "saboteur",
+   "strategy": "planner",
+   "deck": "+concerted-volley",
+   "win": 1,
+   "turns": 3,
+   "lost": 2.72,
+   "lostWon": 2.72,
+   "value": 0.937
+  },
+  {
+   "enemy": "saboteur",
+   "strategy": "planner",
+   "deck": "+all four gold",
+   "win": 1,
+   "turns": 3.02,
+   "lost": 2.5,
+   "lostWon": 2.5,
+   "value": 0.942
+  },
+  {
+   "enemy": "saboteur",
+   "strategy": "planner",
+   "deck": "bleed package (+rend, +ice-echo)",
+   "win": 1,
+   "turns": 2.94,
+   "lost": 2.49,
+   "lostWon": 2.49,
+   "value": 0.942
+  },
+  {
+   "enemy": "saboteur",
+   "strategy": "planner",
+   "deck": "bleed package +bloody-finale",
+   "win": 1,
+   "turns": 2.97,
+   "lost": 2.56,
+   "lostWon": 2.56,
+   "value": 0.94
+  },
+  {
+   "enemy": "tinkerer",
+   "strategy": "planner",
+   "deck": "control",
+   "win": 1,
+   "turns": 3.18,
+   "lost": 7.57,
+   "lostWon": 7.57,
+   "value": 0.824
+  },
+  {
+   "enemy": "tinkerer",
+   "strategy": "planner",
+   "deck": "+thunderbolt (old elite prize)",
+   "win": 1,
+   "turns": 3.21,
+   "lost": 7.49,
+   "lostWon": 7.49,
+   "value": 0.826
+  },
+  {
+   "enemy": "tinkerer",
+   "strategy": "planner",
+   "deck": "+rend (old elite prize)",
+   "win": 1,
+   "turns": 3.01,
+   "lost": 7.56,
+   "lostWon": 7.56,
+   "value": 0.824
+  },
+  {
+   "enemy": "tinkerer",
+   "strategy": "planner",
+   "deck": "+commanders-order",
+   "win": 1,
+   "turns": 3.28,
+   "lost": 7.39,
+   "lostWon": 7.39,
+   "value": 0.828
+  },
+  {
+   "enemy": "tinkerer",
+   "strategy": "planner",
+   "deck": "+bloody-finale",
+   "win": 1,
+   "turns": 3.27,
+   "lost": 7.44,
+   "lostWon": 7.44,
+   "value": 0.827
+  },
+  {
+   "enemy": "tinkerer",
+   "strategy": "planner",
+   "deck": "+weakpoint-verdict",
+   "win": 1,
+   "turns": 3.14,
+   "lost": 7.81,
+   "lostWon": 7.81,
+   "value": 0.818
+  },
+  {
+   "enemy": "tinkerer",
+   "strategy": "planner",
+   "deck": "+concerted-volley",
+   "win": 1,
+   "turns": 3.25,
+   "lost": 7.67,
+   "lostWon": 7.67,
+   "value": 0.822
+  },
+  {
+   "enemy": "tinkerer",
+   "strategy": "planner",
+   "deck": "+all four gold",
+   "win": 1,
+   "turns": 3.3,
+   "lost": 7.56,
+   "lostWon": 7.56,
+   "value": 0.824
+  },
+  {
+   "enemy": "tinkerer",
+   "strategy": "planner",
+   "deck": "bleed package (+rend, +ice-echo)",
+   "win": 1,
+   "turns": 3.02,
+   "lost": 7.85,
+   "lostWon": 7.85,
+   "value": 0.817
+  },
+  {
+   "enemy": "tinkerer",
+   "strategy": "planner",
+   "deck": "bleed package +bloody-finale",
+   "win": 1,
+   "turns": 3.06,
+   "lost": 7.5,
+   "lostWon": 7.5,
+   "value": 0.826
+  },
+  {
+   "enemy": "veteran",
+   "strategy": "planner",
+   "deck": "control",
+   "win": 1,
+   "turns": 4,
+   "lost": 4.24,
+   "lostWon": 4.24,
+   "value": 0.901
+  },
+  {
+   "enemy": "veteran",
+   "strategy": "planner",
+   "deck": "+thunderbolt (old elite prize)",
+   "win": 1,
+   "turns": 4.05,
+   "lost": 5.45,
+   "lostWon": 5.45,
+   "value": 0.873
+  },
+  {
+   "enemy": "veteran",
+   "strategy": "planner",
+   "deck": "+rend (old elite prize)",
+   "win": 1,
+   "turns": 3.73,
+   "lost": 3.77,
+   "lostWon": 3.77,
+   "value": 0.912
+  },
+  {
+   "enemy": "veteran",
+   "strategy": "planner",
+   "deck": "+commanders-order",
+   "win": 1,
+   "turns": 4.1,
+   "lost": 4.57,
+   "lostWon": 4.57,
+   "value": 0.894
+  },
+  {
+   "enemy": "veteran",
+   "strategy": "planner",
+   "deck": "+bloody-finale",
+   "win": 1,
+   "turns": 4.08,
+   "lost": 4.82,
+   "lostWon": 4.82,
+   "value": 0.888
+  },
+  {
+   "enemy": "veteran",
+   "strategy": "planner",
+   "deck": "+weakpoint-verdict",
+   "win": 1,
+   "turns": 3.99,
+   "lost": 4.38,
+   "lostWon": 4.38,
+   "value": 0.898
+  },
+  {
+   "enemy": "veteran",
+   "strategy": "planner",
+   "deck": "+concerted-volley",
+   "win": 1,
+   "turns": 4.05,
+   "lost": 4.87,
+   "lostWon": 4.87,
+   "value": 0.887
+  },
+  {
+   "enemy": "veteran",
+   "strategy": "planner",
+   "deck": "+all four gold",
+   "win": 1,
+   "turns": 4.11,
+   "lost": 4.52,
+   "lostWon": 4.52,
+   "value": 0.895
+  },
+  {
+   "enemy": "veteran",
+   "strategy": "planner",
+   "deck": "bleed package (+rend, +ice-echo)",
+   "win": 1,
+   "turns": 3.83,
+   "lost": 4.4,
+   "lostWon": 4.4,
+   "value": 0.898
+  },
+  {
+   "enemy": "veteran",
+   "strategy": "planner",
+   "deck": "bleed package +bloody-finale",
+   "win": 1,
+   "turns": 3.95,
+   "lost": 4.75,
+   "lostWon": 4.75,
+   "value": 0.89
+  }
+ ]
+}

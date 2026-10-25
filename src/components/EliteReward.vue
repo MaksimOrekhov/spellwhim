@@ -16,6 +16,8 @@ const props = defineProps<{
   encounterName: string
   deck?: readonly PersistentCard[]
   offerId?: string
+  /** The card offer is gold: three unique cards of the gold catalogue instead of five ordinary ones. */
+  gold?: boolean
 }>()
 const emit = defineEmits<{
   chooseCard: [card: CardDefinition, offerId?: string]
@@ -43,17 +45,18 @@ function takeArtifact() {
 <template>
   <main class="elite-reward">
     <div class="elite-content">
-      <p class="reward-kicker">ЭЛИТНАЯ НАХОДКА · {{ encounterName.toUpperCase() }}</p>
+      <p class="reward-kicker">{{ gold ? 'ЗОЛОТАЯ НАГРАДА ЭЛИТЫ' : 'ЭЛИТНАЯ НАХОДКА' }} · {{ encounterName.toUpperCase() }}</p>
       <h1>Выберите одну награду</h1>
-      <p class="reward-copy">Одна карта из {{ options.length }} или один личный артефакт. Артефакт занимает личный слот выбранного героя.</p>
+      <p v-if="gold" class="reward-copy">Одна золотая карта из {{ options.length }} или один личный артефакт. Золотая карта уникальна: в колоде может быть только одна такая, и сыграть её можно один раз за бой.</p>
+      <p v-else class="reward-copy">Одна карта из {{ options.length }} или один личный артефакт. Артефакт занимает личный слот выбранного героя.</p>
 
       <div class="reward-tabs" role="tablist" aria-label="Виды награды">
-        <button role="tab" :aria-selected="section === 'cards'" @click="section = 'cards'; selectedArtifactId = null; selectedOwnerId = null">Карты · {{ options.length }}</button>
+        <button role="tab" :aria-selected="section === 'cards'" @click="section = 'cards'; selectedArtifactId = null; selectedOwnerId = null">{{ gold ? 'Золотые карты' : 'Карты' }} · {{ options.length }}</button>
         <button role="tab" :aria-selected="section === 'artifacts'" @click="section = 'artifacts'">Артефакты · {{ artifacts.length }}</button>
       </div>
 
-      <section v-if="section === 'cards'" class="card-offer" aria-label="Карты на выбор">
-        <button v-for="{ card, preview } in cardItems" :key="card.id" class="reward-option" :aria-label="'Взять карту: ' + card.name + '. ' + (card.upgrade ? 'Улучшена. ' : '') + card.description" @click="emit('chooseCard', card, offerId)">
+      <section v-if="section === 'cards'" class="card-offer" :class="{ 'card-offer--gold': gold }" :aria-label="gold ? 'Золотые карты на выбор' : 'Карты на выбор'">
+        <button v-for="{ card, preview } in cardItems" :key="card.id" class="reward-option" :data-card-id="card.id" :aria-label="(gold ? 'Взять золотую карту: ' : 'Взять карту: ') + card.name + '. ' + (card.upgrade ? 'Улучшена. ' : '') + card.description" @click="emit('chooseCard', card, offerId)">
           <SpellCard :card="card" :preview="preview" />
           <CardNotes class="reward-notes" :card="card" :preview="preview" mode="choose" />
         </button>
@@ -87,7 +90,7 @@ function takeArtifact() {
           <button class="take-button" :disabled="!selectedOwner" @click="takeArtifact">{{ replaced ? 'Заменить и взять артефакт' : 'Взять артефакт' }}</button>
         </div>
       </section>
-      <p v-if="section === 'artifacts'" class="decline-hint">Выбор карты в соседней вкладке означает отказаться от всех предложенных артефактов.</p>
+      <p v-if="section === 'artifacts'" class="decline-hint">Выбор {{ gold ? 'золотой карты' : 'карты' }} в соседней вкладке означает отказаться от всех предложенных артефактов.</p>
       <DeckViewer v-if="deck" :deck="deck" />
     </div>
   </main>
@@ -99,7 +102,7 @@ function takeArtifact() {
 h1{margin:0;color:var(--parch-1);font:700 clamp(26px,3vw,42px)/var(--lh-tight) var(--font-display)}.reward-copy{margin:6px 0 12px;color:var(--muted);font-size:var(--fs-md)}
 .reward-tabs{display:flex;justify-content:center;gap:var(--sp-2);margin:0 auto var(--sp-3)}.reward-tabs button,.owner-option,.take-button{border:var(--border-soft);border-radius:var(--shape-plank);background:var(--mat-quiet);color:var(--ink);font:800 var(--fs-sm) var(--font-ui);cursor:pointer}
 .reward-tabs button{min-height:40px;padding:7px 20px}.reward-tabs button[aria-selected=true]{border-color:var(--brass-1);background:var(--mat-brass);color:var(--parch-ink)}
-.card-offer{display:flex;justify-content:center;align-items:flex-start;gap:clamp(10px,1.3vw,22px)}.reward-option{display:flex;flex-direction:column;align-items:center;gap:.65em;width:min(19vw,245px);padding:.2em;border:0;border-radius:var(--shape-dialog);background:none;font-size:clamp(12px,min(1.3vw,2.4vh),22px);cursor:pointer;transition:transform var(--dur-base) var(--ease-out)}.reward-option:hover,.reward-option:focus-visible{transform:translateY(-.35em)}.reward-option:focus-visible,.artifact-option:focus-visible,.owner-option:focus-visible,.reward-tabs button:focus-visible,.take-button:focus-visible{outline:var(--focus-ring);outline-offset:var(--focus-offset)}.reward-notes{font-size:.68em;pointer-events:none}
+.card-offer{display:flex;justify-content:center;align-items:flex-start;gap:clamp(10px,1.3vw,22px)}.reward-option{display:flex;flex-direction:column;align-items:center;gap:.65em;width:min(19vw,245px);padding:.2em;border:0;border-radius:var(--shape-dialog);background:none;font-size:clamp(12px,min(1.3vw,2.4vh),22px);cursor:pointer;transition:transform var(--dur-base) var(--ease-out)}.reward-option:hover,.reward-option:focus-visible{transform:translateY(-.35em)}.card-offer--gold .reward-option:hover :deep(.cf-rim),.card-offer--gold .reward-option:focus-visible :deep(.cf-rim){filter:brightness(1.12)}.reward-option:focus-visible,.artifact-option:focus-visible,.owner-option:focus-visible,.reward-tabs button:focus-visible,.take-button:focus-visible{outline:var(--focus-ring);outline-offset:var(--focus-offset)}.reward-notes{font-size:.68em;pointer-events:none}
 .artifact-inventory{display:flex;justify-content:center;gap:var(--sp-3);margin-bottom:var(--sp-3)}.inventory-slot{display:grid;gap:2px;min-width:min(36vw,300px);padding:var(--sp-2) var(--sp-4);border:var(--border-soft);border-radius:var(--shape-banner);background:var(--mat-teal-panel);text-align:left}.inventory-slot strong{color:var(--brass-1);font:800 var(--fs-sm) var(--font-display)}.inventory-slot span{font-size:var(--fs-xs)}.slot-empty{color:var(--muted)}
 .artifact-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-3);max-width:1050px;margin:0 auto}.artifact-option{display:grid;justify-items:center;align-content:start;gap:var(--sp-2);min-height:138px;padding:var(--sp-3);border:var(--border-soft);border-radius:var(--shape-dialog);background:var(--mat-quiet);color:var(--ink);font:500 var(--fs-sm)/var(--lh-body) var(--font-ui);cursor:pointer}.artifact-option svg{color:var(--gold)}.artifact-option strong{font:800 var(--fs-md) var(--font-display);color:var(--parch-1)}.artifact-option.is-selected,.owner-option.is-selected{border-color:var(--brass-1);box-shadow:var(--glow-bonus);background:var(--mat-wood)}
 .owner-choice{max-width:900px;margin:var(--sp-3) auto 0}.owner-choice>p:first-child{margin:0 0 var(--sp-2);color:var(--parch-1);font:800 var(--fs-lg) var(--font-display)}.owner-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-2)}.owner-option{display:grid;gap:2px;min-height:54px;padding:8px 12px;text-align:left}.owner-option span{color:var(--muted);font:600 var(--fs-xs) var(--font-ui)}.replacement-copy,.decline-hint{margin:var(--sp-2) 0;color:var(--gold);font-size:var(--fs-xs)}.take-button{margin-top:var(--sp-2);min-height:42px;padding:7px 20px;background:var(--mat-brass);color:var(--parch-ink)}.take-button:disabled{opacity:.5;cursor:default}

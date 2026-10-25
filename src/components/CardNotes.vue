@@ -56,7 +56,7 @@ header small{font:var(--fw-bold) .68em/1.2 var(--font-ui);letter-spacing:.1em;te
 .notes-sum{flex-basis:100%;margin:.2em 0 0;padding:.4em .6em;border-radius:var(--shape-chip);background:#fff6;list-style:none;font-size:.86em;color:var(--parch-ink)}
 .notes-sum li{display:flex;justify-content:space-between;gap:1em;padding:.08em 0}
 .notes-sum b{font:var(--fw-semibold) 1em/1.2 var(--font-num)}
-.part--armor b{color:var(--c-armor-deep)}.part--vulnerability b{color:#9a5200}
+.part--synergy b{color:#8a5a00}.part--armor b{color:var(--c-armor-deep)}.part--vulnerability b{color:#9a5200}
 .notes-sub{flex-basis:100%;margin:0 0 0 1.75em;font:var(--fw-semibold) .8em/1.25 var(--font-ui);color:var(--parch-ink-soft)}
 .notes-cond{display:flex;gap:.4em;margin:.4em 0 0;font-size:.82em;line-height:1.3}
 .notes-cond .glyph{flex:none;width:1.25em;height:1.25em;margin-top:.05em}
